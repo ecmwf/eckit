@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -126,21 +118,21 @@ template <typename T>
 using enable_if_rvalue_t = enable_if_t<std::is_rvalue_reference<T>::value>;
 
 template <typename T>
-using enable_if_move_constructible_encodable_rvalue_t
-    = enable_if_t<is_encodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
+using enable_if_move_constructible_encodable_rvalue_t =
+    enable_if_t<is_encodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
 
 template <typename T>
-using enable_if_move_constructible_decodable_rvalue_t
-    = enable_if_t<is_decodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
+using enable_if_move_constructible_decodable_rvalue_t =
+    enable_if_t<is_decodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
 
 template <typename T, bool EnableBool = true>
 using enable_if_scalar_t = enable_if_t<std::is_scalar<T>::value && EnableBool>;
 
 template <typename T>
 constexpr bool is_array_datatype() {
-    return std::is_same_v<T, double> || std::is_same_v<T, float> || std::is_same_v<T, int> || std::is_same_v<T, long>
-           || std::is_same_v<T, std::int32_t> || std::is_same_v<T, std::int64_t> || std::is_same_v<T, std::uint64_t>
-           || std::is_same_v<T, size_t> || std::is_same_v<T, std::byte>;
+    return std::is_same_v<T, double> || std::is_same_v<T, float> || std::is_same_v<T, int> || std::is_same_v<T, long> ||
+           std::is_same_v<T, std::int32_t> || std::is_same_v<T, std::int64_t> || std::is_same_v<T, std::uint64_t> ||
+           std::is_same_v<T, size_t> || std::is_same_v<T, std::byte>;
 }
 
 template <typename T>

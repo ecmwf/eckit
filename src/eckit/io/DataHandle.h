@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -36,8 +29,8 @@ class RestartTransfer {
     Offset from_;
 
 public:
-    RestartTransfer(const Offset& from) :
-        from_(from) {}
+
+    RestartTransfer(const Offset& from) : from_(from) {}
     const Offset& from() const { return from_; }
 };
 
@@ -46,6 +39,7 @@ public:
 
 class DataHandle : public Streamable {
 public:
+
     friend std::ostream& operator<<(std::ostream& s, const DataHandle& handle) {
         handle.print(s);
         return s;
@@ -99,7 +93,8 @@ public:
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&, long bufsize = -1, Length maxsize = -1, TransferWatcher& = TransferWatcher::dummy());
+    virtual Length copyTo(DataHandle&, long bufsize = -1, Length maxsize = -1,
+                          TransferWatcher& = TransferWatcher::dummy());
 
 
     // /// Append to an other datahandle
@@ -159,6 +154,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Class members
 
     static ClassSpec classSpec_;
@@ -171,8 +167,8 @@ class AutoClose {
     DataHandle& handle_;
 
 public:
-    AutoClose(DataHandle& handle) :
-        handle_(handle) {}
+
+    AutoClose(DataHandle& handle) : handle_(handle) {}
     ~AutoClose() noexcept(false);
 };
 

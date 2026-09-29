@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 
 
 namespace eckit::geo::iterator {
@@ -25,36 +18,39 @@ namespace eckit::geo::grid {
 
 class Reduced : public Grid {
 public:
+
     // -- Methods
 
-    size_t size() const override { return niacc().back(); }
+    size_t size() const override { return nxacc().back(); }
+    std::vector<size_t> shape() const override { return {size()}; }
 
     // -- Overridden methods
 
-    std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
-
-protected:
-    // -- Constructors
-
-    explicit Reduced(const area::BoundingBox& = {}, Projection* = nullptr);
-
-    // -- Methods
-
-    const std::vector<size_t>& niacc() const;
-
-    virtual size_t ni(size_t j) const = 0;
-    virtual size_t nj() const         = 0;
-
-private:
-    // -- Members
-
-    mutable std::vector<size_t> niacc_;
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
 
     // Methods
 
-    virtual const std::vector<double>& latitudes() const   = 0;
-    virtual std::vector<double> longitudes(size_t i) const = 0;
+    virtual const std::vector<double>& latitudes() const        = 0;
+    virtual const std::vector<double>& longitudes(size_t) const = 0;
+
+protected:
+
+    // -- Constructors
+
+    using Grid::Grid;
+
+    // -- Methods
+
+    const std::vector<size_t>& nxacc() const;
+
+    virtual size_t nxj(size_t) const = 0;
+
+private:
+
+    // -- Members
+
+    mutable std::vector<size_t> nxacc_;
 
     // -- Friends
 

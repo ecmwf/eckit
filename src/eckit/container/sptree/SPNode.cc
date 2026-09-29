@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef SPNode_CC
 #define SPNode_CC
@@ -24,8 +17,7 @@ namespace eckit {
 
 template <class Traits, class NodeType>
 template <class V>
-SPNode<Traits, NodeType>::SPNode(const V& value) :
-    value_(value), left_(0), right_(0), next_(0) {}
+SPNode<Traits, NodeType>::SPNode(const V& value) : value_(value), left_(0), right_(0), next_(0) {}
 
 template <class Traits, class NodeType>
 SPNodeInfo<Traits, NodeType> SPNode<Traits, NodeType>::nearestNeighbour(Alloc& a, const Point& p) {

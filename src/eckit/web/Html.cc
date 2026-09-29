@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fstream>
 
@@ -116,11 +109,9 @@ std::string Html::removeHex(const std::string& s) {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Html::Include::Include(const std::string& name, HtmlObject* sub) :
-    sub_(sub), name_(name) {}
+Html::Include::Include(const std::string& name, HtmlObject* sub) : sub_(sub), name_(name) {}
 
-Html::Include::Include(const std::string& name, HtmlObject& sub) :
-    sub_(&sub), name_(name) {}
+Html::Include::Include(const std::string& name, HtmlObject& sub) : sub_(&sub), name_(name) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -177,8 +168,7 @@ void Html::Include::print(std::ostream& s) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Html::Image::Image(const std::string& name) :
-    name_(name) {}
+Html::Image::Image(const std::string& name) : name_(name) {}
 
 void Html::Image::print(std::ostream& s) const {
     s << "<IMG SRC=\"" << resource() + '/' + name_ << "\">";
@@ -192,8 +182,7 @@ std::string Html::Image::resource() {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Html::Link::Link(Url& url) :
-    url_(addHex(url.str())) {}
+Html::Link::Link(Url& url) : url_(addHex(url.str())) {}
 
 void Html::Link::print(std::ostream& s) const {
     if (url_.length()) {
@@ -293,16 +282,15 @@ void Html::BeginTextArea::print(std::ostream& s) const {
 }
 
 void Html::EndTextArea::print(std::ostream& s) const {
-    s << "</TEXTAREA>" << std::endl
-      << HttpStream::doEncode;
+    s << "</TEXTAREA>" << std::endl << HttpStream::doEncode;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class ImageProvider : public HtmlResource {
 public:
-    ImageProvider() :
-        HtmlResource(Html::Image::resource()) {}
+
+    ImageProvider() : HtmlResource(Html::Image::resource()) {}
     void GET(std::ostream&, Url&);
 };
 
@@ -336,8 +324,8 @@ void ImageProvider::GET(std::ostream& out, Url& url) {
 
 class HtmlProvider : public HtmlResource {
 public:
-    HtmlProvider() :
-        HtmlResource("/html") {}
+
+    HtmlProvider() : HtmlResource("/html") {}
     virtual ~HtmlProvider() {}
     void GET(std::ostream&, Url&);
 };

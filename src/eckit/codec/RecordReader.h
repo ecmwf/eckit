@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -26,6 +18,7 @@ namespace eckit::codec {
 
 class RecordReader {
 public:
+
     explicit RecordReader(const Record::URI& ref);
     explicit RecordReader(const std::string& path, std::uint64_t offset = 0);
     explicit RecordReader(Stream stream, std::uint64_t offset = 0);
@@ -58,6 +51,7 @@ public:
     void checksum(bool);
 
 private:
+
     Record::URI uri() const;
 
     RecordItem::URI uri(const std::string& key) const;
@@ -65,6 +59,7 @@ private:
     void trace(const std::string&, const char* file, int line, const char* func);
 
 private:
+
     Session session_;
 
     Stream stream_;

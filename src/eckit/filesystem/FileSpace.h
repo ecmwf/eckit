@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   FileSpace.h
 /// @date   Mar 1998
@@ -17,15 +10,15 @@
 #define eckit_FileSpace_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FileSpace : private NonCopyable {
+class FileSpace {
 
 public:  // methods
+
     const PathName& sameFileSystem(const PathName&) const;
     const std::vector<PathName>& fileSystems() const { return fileSystems_; }
 
@@ -42,7 +35,13 @@ public:  // methods
     static const FileSpace& lookUp(const std::string&);
 
 private:  // methods
+
     FileSpace(const std::string&);
+
+    FileSpace(const FileSpace&)            = delete;
+    FileSpace& operator=(const FileSpace&) = delete;
+    FileSpace(FileSpace&&)                 = delete;
+    FileSpace& operator=(FileSpace&&)      = delete;
 
     ~FileSpace();
 
@@ -51,6 +50,7 @@ private:  // methods
     const PathName& find(const PathName&, bool&) const;
 
 private:  // members
+
     std::string name_;
     time_t last_;
     std::vector<PathName> fileSystems_;

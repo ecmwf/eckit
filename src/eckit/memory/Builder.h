@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file Builder.h
 /// @author Tiago Quintino
@@ -33,6 +26,7 @@ namespace eckit {
 
 class Builder {
 public:
+
     // -- Types
 
     using key_t = std::string;
@@ -58,6 +52,7 @@ public:
     virtual key_t build_type() const = 0;
 
 private:
+
     // -- Methods
 
     virtual void print(std::ostream& os) const { os << "Builder(" << build_type() << "):" << name(); }
@@ -75,6 +70,7 @@ private:
 template <class Base>
 class BuilderT0 : public Builder {
 public:
+
     // -- Types
 
     using product_t = Base;
@@ -93,6 +89,7 @@ public:
 template <class Base>
 class BuilderT1 : public Builder {
 public:
+
     // -- Types
 
     using product_t = Base;
@@ -113,6 +110,7 @@ public:
 template <class Base>
 class BuilderT2 : public Builder {
 public:
+
     // -- Types
 
     using product_t = Base;
@@ -135,6 +133,7 @@ public:
 template <class Base, class T>
 class ConcreteBuilderT0 final : public BuilderT0<Base> {
 public:
+
     // -- Types
 
     using base_t = BuilderT0<Base>;
@@ -174,6 +173,7 @@ public:
     typename base_t::product_t* create() const override { return new T(); }
 
 private:
+
     // -- Members
 
     typename base_t::key_t key_;
@@ -193,6 +193,7 @@ private:
 template <class Base, class T>
 class ConcreteBuilderT1 final : public BuilderT1<Base> {
 public:
+
     // -- Types
 
     using base_t = BuilderT1<Base>;
@@ -233,6 +234,7 @@ public:
 
 
 private:
+
     // -- Members
 
     typename base_t::key_t key_;
@@ -252,6 +254,7 @@ private:
 template <class Base, class T>
 class ConcreteBuilderT2 final : public BuilderT2<Base> {
 public:
+
     // -- Types
 
     using base_t = BuilderT2<Base>;
@@ -294,6 +297,7 @@ public:
 
 
 private:
+
     // -- Members
 
     typename base_t::key_t key_;

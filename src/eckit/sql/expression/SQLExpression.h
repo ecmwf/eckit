@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File SQLExpression.h
 // Baudouin Raoult - ECMWF Dec 03
@@ -35,6 +28,7 @@ class Dictionary;
 
 class SQLExpression : public std::enable_shared_from_this<SQLExpression> {
 public:
+
     SQLExpression();
     virtual ~SQLExpression();
 
@@ -89,6 +83,7 @@ public:
     virtual void print(std::ostream&) const = 0;
 
 protected:
+
     SQLExpression(const SQLExpression&)            = default;
     SQLExpression& operator=(const SQLExpression&) = default;
 
@@ -100,6 +95,7 @@ protected:
     // Vector* vector_;
 
 private:
+
     std::string title_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLExpression& p) {

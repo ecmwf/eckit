@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
@@ -16,8 +19,8 @@ namespace eckit {
 
 class TelemetryClient : public eckit::Tool {
 public:
-    TelemetryClient(int argc, char** argv) :
-        Tool(argc, argv, "TELEMETRY_HOME") {}
+
+    TelemetryClient(int argc, char** argv) : Tool(argc, argv, "TELEMETRY_HOME") {}
 
     ~TelemetryClient() {}
 

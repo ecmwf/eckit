@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -44,9 +36,11 @@ Interpreted interprete(T& in) {
 /// @brief Write record
 class RecordWriter {
 public:
+
     using Key = std::string;
 
 public:
+
     /// @brief Set compression
     void compression(const std::string&);
 
@@ -117,6 +111,7 @@ public:
     size_t estimateMaximumSize() const;
 
 private:
+
     std::vector<std::string> keys_;
     std::map<std::string, Encoder> encoders_;
     std::map<std::string, DataInfo> info_;

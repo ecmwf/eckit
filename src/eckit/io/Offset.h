@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Offset.h
 // Baudouin Raoult - ECMWF Jul 96
@@ -39,9 +32,11 @@ class Stream;
 
 class Offset {
 public:  // types
-    typedef long long value_t;
+
+    using value_t = long long;
 
 public:
+
     friend std::ostream& operator<<(std::ostream& s, const Offset& x);
 
     friend Stream& operator<<(Stream& s, const Offset& x);
@@ -49,10 +44,8 @@ public:
     friend Stream& operator>>(Stream& s, Offset& x);
 
     // Offset(fpos_t); <- To implement
-    Offset(value_t l = 0) :
-        value_(l) {}
-    Offset(const Offset& other) :
-        value_(other.value_) {}
+    Offset(value_t l = 0) : value_(l) {}
+    Offset(const Offset& other) : value_(other.value_) {}
 
 #include "eckit/io/Offset.b"
 
@@ -88,6 +81,7 @@ public:
     void load(DumpLoad&);
 
 private:
+
     // -- Members
 
     value_t value_;
@@ -95,7 +89,7 @@ private:
     friend class Length;
 };
 
-typedef std::vector<Offset> OffsetList;
+using OffsetList = std::vector<Offset>;
 
 //-----------------------------------------------------------------------------
 

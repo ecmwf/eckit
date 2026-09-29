@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File io/AsyncHandle.h
 // Baudouin Raoult - ECMWF Dec 17
@@ -28,6 +21,7 @@ namespace eckit {
 
 class AsyncHandle : public DataHandle, public HandleHolder {
 public:
+
     /// Contructor, taking ownership
 
     AsyncHandle(DataHandle*, size_t = 1024 * 1024, size_t rounding = 64 * 1024);
@@ -80,7 +74,9 @@ public:
 #endif
 
 private:  // methods
+
 private:  // members
+
     std::string message_;
     size_t maxSize_;
     size_t used_;

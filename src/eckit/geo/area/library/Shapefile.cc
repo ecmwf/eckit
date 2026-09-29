@@ -1,0 +1,255 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#include "eckit/geo/area/library/Shapefile.h"
+
+#include <algorithm>
+#include <memory>
+#include <ostream>
+#include <vector>
+
+#include "shapefil.h"
+
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/area/Polygon.h"
+#include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/Unzip.h"
+#include "eckit/geo/polygon/Polygon.h"
+#include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
+
+
+namespace eckit::geo::area::library {
+
+
+// PIMPL body: holds the shapelib-typed state so <shapefil.h> stays out of the
+// installed public header. Kept in the .cc so that the unique_ptr in the
+// Shapefile class only sees a complete Implementation type where its
+// destructor is instantiated (i.e. in ~Shapefile() below).
+struct Shapefile::Implementation {
+    SHPInfo* shp = nullptr;
+};
+
+
+namespace {
+
+
+PathName path_shp(const PathName& file) {
+    if (file.extension() == ".zip") {
+        // check for exactly one .shp file in the zip
+        if (auto list = cache::Unzip::list(file, true); std::count_if(list.begin(), list.end(), [](const auto& what) {
+                                                            return PathName(what).extension() == ".shp";
+                                                        }) != 1) {
+            throw ReadError("Shapefile: found none/more than one .shp file(s) in '" + file + "', expecting one",
+                            Here());
+        }
+
+        static cache::Unzip unzip(LibEcKitGeo::cacheDir() + "/shapefile");
+
+        auto dir = unzip.to_cached_path(file);
+
+        std::vector<PathName> files;
+        std::vector<PathName> dirs;
+        dir.children(files, dirs);
+
+        files.erase(
+            std::remove_if(files.begin(), files.end(), [](const auto& file) { return file.extension() != ".shp"; }),
+            files.end());
+
+        if (files.size() != 1) {
+            throw ReadError("Shapefile: found none/more than one .shp file(s) in '" + file + "', expecting one",
+                            Here());
+        }
+
+        return files.front();
+    }
+
+    return file;
+}
+
+
+PathName path_dbf(const PathName& file, const PathName& shp) {
+    if (file.asString().empty()) {
+        auto str = shp.asString();
+        return str.substr(0, str.length() - 4) + ".dbf";
+    }
+
+    return file;
+}
+
+
+}  // namespace
+
+
+Shapefile::Shapefile(const spec::Spec& spec) :
+    Shapefile(path_shp(spec.get_string(spec.has("shp") ? "shp" : "file")),
+              spec.has("dbf") ? spec.get_string("dbf") : "",
+              spec.has("name_field") ? spec.get_string("name_field") : "") {}
+
+
+Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
+
+
+Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
+    shpPath_(path_shp(shp)),
+    dbfPath_(path_dbf(dbf, shpPath_)),
+    impl_(std::make_unique<Implementation>()),
+    nEntities_(0) {
+    Log::debug<LibEcKitGeo>() << "eckit::geo::area::library::Shapefile(shp='" << shpPath_.realName() << "',dbf='"
+                              << dbfPath_.realName() << "',name='" << name << "')" << std::endl;
+
+    if ((impl_->shp = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
+        throw CantOpenFile(shpPath_ + " (as .shp)", Here());
+    }
+
+    int type = 0;
+    SHPGetInfo(impl_->shp, &nEntities_, &type, nullptr, nullptr);
+
+    if (type != SHPT_ARC && type != SHPT_POLYGON) {
+        throw ReadError("Shapefile: unsupported shape type", Here());
+    }
+
+    if (!name.empty()) {
+        DBFInfo* dbf = DBFOpen(dbfPath_.localPath(), "rb");
+        if (dbf == nullptr) {
+            throw CantOpenFile(shpPath_ + " (as .dbf)", Here());
+        }
+
+        // find named field index
+        std::map<std::string, int> to_index;
+
+        char fieldName[12];
+        for (int i = 0, n = DBFGetFieldCount(dbf); i < n; ++i) {
+            if (DBFGetNativeFieldType(dbf, i) == 'C') {
+                DBFGetFieldInfo(dbf, i, fieldName, nullptr, nullptr);
+                if (name == fieldName) {
+                    name_ = name;
+
+                    // map entities names (they have to be unique)
+                    for (int e = 0; e < nEntities_; ++e) {
+                        ASSERT(to_entity.emplace(DBFReadStringAttribute(dbf, e, i), e).second);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        DBFClose(dbf);
+
+        if (name_.empty()) {
+            throw ReadError("Shapefile: field '" + name + "' not found in '" + dbfPath_ + "'", Here());
+        }
+    }
+}
+
+
+Shapefile::~Shapefile() {
+    SHPClose(impl_->shp);
+}
+
+
+Shapefile* Shapefile::make_from_url(const std::string& url) {
+    static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "shapefile" /
+                                    std::to_string(cache::Download::version()));
+
+    return new Shapefile(download.to_cached_path(url, cache::Download::url_file_basename(url, false),
+                                                 cache::Download::url_file_extension(url)));
+}
+
+
+void Shapefile::fill_spec(spec::Custom& custom) const {
+    custom.set("type", "shapefile");
+    custom.set("shp", shpPath_);
+    custom.set("shp", dbfPath_);
+    if (!name_.empty()) {
+        custom.set("field", name_);
+    }
+}
+
+
+std::ostream& Shapefile::list(std::ostream& out) const {
+    JSON j(out);
+    j.startObject();
+
+    j << "type" << "shapefile";
+    j << "shp" << shpPath_;
+    j << "dbf" << dbfPath_;
+    j << "size" << size();
+    if (!name_.empty()) {
+        j << "name" << name_;
+        j << "areas";
+        j.startList();
+        for (const auto& [key, val_] : to_entity) {
+            j << key;
+        }
+        j.endList();
+    }
+
+    j.endObject();
+    return out;
+}
+
+
+Area* Shapefile::make_area_from_name(const std::string& name) const {
+    ASSERT(!name_.empty() && !name.empty());
+
+    return make_area(to_entity.at(name));
+}
+
+
+Area* Shapefile::make_area(size_t entity) const {
+    struct Object : std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> {
+        explicit Object(SHPObject* ptr) : unique_ptr{ptr, SHPDestroyObject} { ASSERT(operator bool()); }
+    };
+
+    Object obj(SHPReadObject(impl_->shp, static_cast<int>(entity)));
+    ASSERT(obj);
+    ASSERT(obj->nSHPType == SHPT_ARC || obj->nSHPType == SHPT_POLYGON);
+
+    area::Polygon::container_type parts;
+
+    for (int p = 0; p < obj->nParts; ++p) {
+        auto start = obj->panPartStart[p];
+        auto end   = (p == obj->nParts - 1) ? obj->nVertices : obj->panPartStart[p + 1];
+
+        if (start < end) {
+            using points_type = polygon::Polygon::container_type;
+
+            // only process closed loops
+            points_type::value_type first(obj->padfX[start], obj->padfY[start]);
+            points_type::value_type last(obj->padfX[end - 1], obj->padfY[end - 1]);
+
+            if (points_equal(first, last)) {
+                points_type pts;
+                pts.reserve(end - start);
+
+                for (auto j = start; j < end; ++j) {
+                    pts.emplace_back(obj->padfX[j], obj->padfY[j]);
+                }
+
+                parts.emplace_back(pts);
+            }
+        }
+    }
+
+    return new area::Polygon(parts);
+}
+
+
+#if 0
+class AreaLibrary {
+public:
+    void add_library(const std::string& lib, const Value& value) {
+        std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(value));
+
+        emplace(lib, ShapefileURL{LibEcKitGeo::url(spec->get_string("url"))});
+    }
+};
+#endif
+
+
+}  // namespace eckit::geo::area::library

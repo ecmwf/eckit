@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 name: Notify Issues
 
 on:
@@ -9,6 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify Issues
-        uses: ecmwf-actions/notify-teams-issue@v1
+        uses: ecmwf/notify-teams-issue@v1
         with:
           incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}

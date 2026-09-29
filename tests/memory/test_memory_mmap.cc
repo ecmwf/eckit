@@ -1,19 +1,12 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
-#include <cerrno>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
 
 #include <cassert>
 #include <cstdio>
@@ -106,8 +99,7 @@ CASE("Test memory map") {
     // map the file
     std::cout << "mapping " << Bytes(MAP_SIZE) << " from " << Bytes(SIZE_LW) << " to " << Bytes(SIZE_UP) << std::endl;
 
-    if ((map = (int*)MMap::mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, SIZE_LW))
-        == MAP_FAILED) {
+    if ((map = (int*)MMap::mmap(nullptr, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, SIZE_LW)) == MAP_FAILED) {
         close(fd), perror("Error mmapping the file"), exit(EXIT_FAILURE);
     }
 

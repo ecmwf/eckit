@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstring>
 
@@ -37,14 +30,11 @@ PathName::PathName(const std::string& type, const std::string& p, bool tildeIsUs
     path_ = PathNameFactory::build(type, p, tildeIsUserHome);
 }
 
-PathName::PathName(const PathName& other) :
-    path_(other.path_->clone()) {}
+PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
 
-PathName::PathName(const LocalPathName& other) :
-    path_(new BasePathNameT<LocalPathName>(other)) {}
+PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}
 
-PathName::PathName(BasePathName* path) :
-    path_(path) {
+PathName::PathName(BasePathName* path) : path_(path) {
     ASSERT(path);
 }
 
@@ -354,8 +344,8 @@ void operator>>(Stream& s, PathName& path) {
 
 // TODO: Read from ~etc/disk/...
 
-static const char* NAMES[] = {"/locked/", "/transfer/", "/defrag/", "/temp/", "/obstmp/",
-                              "/infrequent/", "/prearc/", "/cache/", nullptr};
+static const char* NAMES[] = {"/locked/",     "/transfer/", "/defrag/", "/temp/", "/obstmp/",
+                              "/infrequent/", "/prearc/",   "/cache/",  nullptr};
 
 std::string PathName::shorten(const std::string& s) {
 

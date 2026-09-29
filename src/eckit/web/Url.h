@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 
@@ -31,8 +24,8 @@ class UrlAccess {
 
 
 public:
-    UrlAccess(Url& url, const std::string& s) :
-        url_(url), s_(s) {}
+
+    UrlAccess(Url& url, const std::string& s) : url_(url), s_(s) {}
 
     operator std::string();
     operator long();
@@ -43,10 +36,16 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Url : private eckit::NonCopyable {
+class Url {
 public:
+
     Url(std::istream&);
     Url(const std::string&);
+
+    Url(const Url&)            = delete;
+    Url& operator=(const Url&) = delete;
+    Url(Url&&)                 = delete;
+    Url& operator=(Url&&)      = delete;
 
     ~Url();
 
@@ -103,9 +102,11 @@ public:
     const std::string& streamType() const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // methods
+
     void parse(const std::string&, bool);
     void parse(std::istream&);
 
@@ -115,7 +116,8 @@ private:  // methods
     }
 
 private:  // members
-    typedef std::map<std::string, std::string> dict_t;
+
+    using dict_t = std::map<std::string, std::string>;
 
     std::unique_ptr<DataHandle> handle_;
     std::string type_;

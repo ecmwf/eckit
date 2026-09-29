@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef KDTree_H
 #define KDTree_H
@@ -21,19 +14,20 @@
 namespace eckit {
 
 template <class Traits>
-class KDTreeX : public SPTree<Traits, KDNode<Traits> > {
+class KDTreeX : public SPTree<Traits, KDNode<Traits>> {
 public:
-    typedef KDNode<Traits> Node;
-    typedef SPTree<Traits, Node> SPTreeType;  // cannot redefine as SPTree since some compilers in-class redefinitions
-    typedef typename Traits::Alloc Alloc;
 
-    typedef typename SPTreeType::Value Value;
-    typedef typename SPTreeType::Point Point;
-    typedef typename SPTreeType::Payload Payload;
+    using Node       = KDNode<Traits>;
+    using SPTreeType = SPTree<Traits, Node>;  // cannot redefine as SPTree since some compilers in-class redefinitions
+    using Alloc      = typename Traits::Alloc;
+
+    using Value   = typename SPTreeType::Value;
+    using Point   = typename SPTreeType::Point;
+    using Payload = typename SPTreeType::Payload;
 
 public:
-    KDTreeX(Alloc& alloc) :
-        SPTreeType(alloc) {}
+
+    KDTreeX(Alloc& alloc) : SPTreeType(alloc) {}
 
     /// ITER must be a random access iterator
     /// WARNING: container is changed (sorted)
@@ -67,32 +61,35 @@ public:
 
 
 template <class Traits>
-class KDTreeMemory : public KDTreeX<TT<Traits, KDMemory> > {
+class KDTreeMemory : public KDTreeX<TT<Traits, KDMemory>> {
     KDMemory alloc_;
 
 public:
-    typedef KDTreeX<TT<Traits, KDMemory> > KDTree;
-    typedef typename KDTree::Value Value;
-    typedef typename KDTree::Point Point;
-    typedef typename KDTree::Payload Payload;
+
+    using KDTree  = KDTreeX<TT<Traits, KDMemory>>;
+    using Value   = typename KDTree::Value;
+    using Point   = typename KDTree::Point;
+    using Payload = typename KDTree::Payload;
 
 public:
-    KDTreeMemory() :
-        KDTree(alloc_) {}
+
+    KDTreeMemory() : KDTree(alloc_) {}
 };
 
 template <class Traits>
-class KDTreeMapped : public KDTreeX<TT<Traits, KDMapped> > {
+class KDTreeMapped : public KDTreeX<TT<Traits, KDMapped>> {
     KDMapped alloc_;
 
 public:
-    typedef KDTreeX<TT<Traits, KDMapped> > KDTree;
-    typedef typename KDTree::Value Value;
-    typedef typename KDTree::Point Point;
-    typedef typename KDTree::Payload Payload;
-    typedef typename KDTree::Node Node;
+
+    using KDTree  = KDTreeX<TT<Traits, KDMapped>>;
+    using Value   = typename KDTree::Value;
+    using Point   = typename KDTree::Point;
+    using Payload = typename KDTree::Payload;
+    using Node    = typename KDTree::Node;
 
 public:
+
     KDTreeMapped(const eckit::PathName& path, size_t itemCount, size_t metadataSize) :
         KDTree(alloc_), alloc_(path, itemCount, sizeof(Node), metadataSize) {}
 };

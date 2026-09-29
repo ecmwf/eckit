@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/types/SemanticVersion.h"
 
@@ -21,15 +14,14 @@
 
 namespace eckit {
 
-SemanticVersion::SemanticVersion() :
-    major_(0), minor_(0), patch_(0) {}
+SemanticVersion::SemanticVersion() : major_(0), minor_(0), patch_(0) {}
 
 SemanticVersion::SemanticVersion(unsigned long major, unsigned long minor, unsigned long patch) :
     major_(major), minor_(minor), patch_(patch) {}
 
 static unsigned long s2int(const std::string& s) {
     if (s.size() == std::count_if(s.begin(), s.end(), [](unsigned char c) { return std::isdigit(c); })) {
-        unsigned long r = ::strtoul(s.data(), NULL, 0);
+        unsigned long r = ::strtoul(s.data(), nullptr, 0);
         if (r != ULONG_MAX) {
             return r;
         }

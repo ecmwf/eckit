@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstring>
 #include <iostream>
@@ -29,25 +22,15 @@ struct xxHash::Context {
         reset();
     }
 
-    ~Context() {
-        XXH64_freeState(state_);
-    }
+    ~Context() { XXH64_freeState(state_); }
 
-    void reset() {
-        XXH64_reset(state_, 0);
-    }
+    void reset() { XXH64_reset(state_, 0); }
 
-    void update(const void* buffer, long length) {
-        XXH64_update(state_, buffer, size_t(length));
-    }
+    void update(const void* buffer, long length) { XXH64_update(state_, buffer, size_t(length)); }
 
-    std::string digest() {
-        return toString(XXH64_digest(state_));
-    }
+    std::string digest() { return toString(XXH64_digest(state_)); }
 
-    static std::string compute(const void* buffer, long length) {
-        return toString(XXH64(buffer, size_t(length), 0));
-    }
+    static std::string compute(const void* buffer, long length) { return toString(XXH64(buffer, size_t(length), 0)); }
 
     static std::string toString(XXH64_hash_t hash) {
         static const char* hex = "0123456789abcdef";

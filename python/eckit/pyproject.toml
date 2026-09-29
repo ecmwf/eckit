@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
+
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eckit"
+description = "Python bindings for eckit"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [
+	{ name = "European Centre for Medium-Range Weather Forecasts (ECMWF)", email = "software.support@ecmwf.int" }
+]
+classifiers = [
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Developers",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Cython",
+	"Programming Language :: Python :: Implementation :: CPython",
+	"Operating System :: POSIX :: Linux",
+	"Operating System :: MacOS",
+	"Topic :: Scientific/Engineering",
+]
+# NOTE don't list `dependencies` in this file, use setup.py instead
+dynamic = ["version", "dependencies"]
+
+[project.scripts]
+eckit-geo-share-download = "eckit.tools.geo_share_download:main"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["_eckit*"]

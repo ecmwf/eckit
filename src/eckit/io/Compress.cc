@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <iomanip>
@@ -30,14 +23,12 @@ inline static size_t MAX_CODE(size_t nbits) {
     return (1 << nbits) - 1;
 }
 
-enum
-{
+enum {
     RESET_TABLE = 256,
     END_MARKER  = 257,
     FIRST_CODE  = 258,
 
     MIN_BITS = 9,
-
 };
 
 /* UNUSED
@@ -73,6 +64,7 @@ class Entry {
     size_t code_;
 
 public:
+
     Entry(size_t = END_MARKER);
 
     Entry operator+(unsigned char) const;
@@ -109,8 +101,7 @@ public:
     void output(eckit::BitIO& out, size_t nbits) const;
 };
 
-Entry::Entry(size_t code) :
-    code_(code) {
+Entry::Entry(size_t code) : code_(code) {
     if (code < 256) {
         chars_.push_back(code);
     }
@@ -171,8 +162,7 @@ static void init_table(std::set<Entry>& table) {
 }
 }  // namespace
 
-Compress::Compress(size_t maxBits) :
-    maxBits_(maxBits) {}
+Compress::Compress(size_t maxBits) : maxBits_(maxBits) {}
 
 
 size_t Compress::encode(DataHandle& in, DataHandle& out) {

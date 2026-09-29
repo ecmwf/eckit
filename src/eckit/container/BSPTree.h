@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef BSPTree_H
 #define BSPTree_H
@@ -22,14 +15,16 @@ namespace eckit {
 template <class Traits, class Partition>
 class BSPTreeX : public SPTree<Traits, BSPNode<Traits, Partition> > {
 public:
-    typedef typename Traits::Alloc Alloc;
+
+    using Alloc = typename Traits::Alloc;
 
 private:
+
     Partition partition_;
 
 public:
-    BSPTreeX(Alloc& alloc) :
-        SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
+
+    BSPTreeX(Alloc& alloc) : SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
 
 
     /// Container must be a random access
@@ -46,8 +41,8 @@ class BSPTreeMemory : public BSPTreeX<TT<Traits, KDMemory>, Partition> {
     KDMemory alloc_;
 
 public:
-    BSPTreeMemory() :
-        BSPTreeX<TT<Traits, KDMemory>, Partition>(alloc_) {}
+
+    BSPTreeMemory() : BSPTreeX<TT<Traits, KDMemory>, Partition>(alloc_) {}
 };
 
 template <class Traits, class Partition>
@@ -55,6 +50,7 @@ class BSPTreeMapped : public BSPTreeX<TT<Traits, KDMapped>, Partition> {
     KDMapped alloc_;
 
 public:
+
     BSPTreeMapped(const eckit::PathName& path, size_t itemCount, size_t metadataSize) :
         BSPTreeX<TT<Traits, KDMapped>, Partition>(alloc_),
         alloc_(path, itemCount, sizeof(BSPNode<TT<Traits, KDMapped>, Partition>), metadataSize) {}

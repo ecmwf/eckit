@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @author Florian Rathgeber
@@ -63,16 +56,17 @@ class Params {
     struct Concept;
 
 public:  // types
-    typedef std::list<Params> List;
-    typedef std::string key_t;
-    typedef Value value_t;
+
+    using List    = std::list<Params>;
+    using key_t   = std::string;
+    using value_t = Value;
 
     struct BaseFactory {
         virtual ~BaseFactory() {}
         virtual Concept* build(Stream& s) = 0;
     };
 
-    typedef BaseFactory* factory_t;
+    using factory_t = BaseFactory*;
 
     template <typename T>
     struct Factory : BaseFactory {
@@ -82,12 +76,11 @@ public:  // types
     };
 
 public:  // methods
-    template <typename T>
-    explicit Params(const T& x) :
-        self_(new Model<T>(x)) {}
 
-    Params(const Params& x) :
-        self_(x.self_->copy_()) {}
+    template <typename T>
+    explicit Params(const T& x) : self_(new Model<T>(x)) {}
+
+    Params(const Params& x) : self_(x.self_->copy_()) {}
 
     static void registerFactory(const std::string& name, factory_t f) { factories()[name] = f; }
 
@@ -121,11 +114,11 @@ public:  // methods
     friend value_t getValue(const Params& p, const key_t& key);
 
 private:  // internal classes
-    typedef std::map<std::string, factory_t> factory_map;
+
+    using factory_map = std::map<std::string, factory_t>;
     static factory_map& factories();
 
-    Params(Concept* _concept) :
-        self_(_concept) {}
+    Params(Concept* _concept) : self_(_concept) {}
 
     struct Concept {
         virtual ~Concept() {}
@@ -137,10 +130,8 @@ private:  // internal classes
 
     template <typename T>
     struct Model : Concept {
-        Model(T x) :
-            data_(x) {}
-        Model(Stream& s) :
-            data_(s) {}
+        Model(T x) : data_(x) {}
+        Model(Stream& s) : data_(s) {}
 
         virtual Concept* copy_() const { return new Model(data_); }
 
@@ -157,11 +148,13 @@ private:  // internal classes
     };
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const Params& p);
 
     friend Stream& operator<<(Stream& s, const Params& p);
 
 private:  // members
+
     const Concept* self_;
 };
 

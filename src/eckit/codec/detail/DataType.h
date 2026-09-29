@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <cstddef>
+#include <cstdlib>
 #include <string>
 
 //------------------------------------------------------------------------------------------------------
@@ -21,6 +14,7 @@ namespace eckit::codec {
 
 class DataType {
 public:
+
     using kind_t = long;
 
     static const kind_t KIND_BYTE   = 1;
@@ -55,6 +49,7 @@ public:
     static bool kind_valid(kind_t);
 
 private:
+
     static std::string byte_str() { return "byte"; }
     static std::string int32_str() { return "int32"; }
     static std::string int64_str() { return "int64"; }
@@ -66,6 +61,7 @@ private:
     [[noreturn]] static void throw_not_recognised(std::string datatype);
 
 public:
+
     explicit DataType(const std::string&);
     DataType(long);
     DataType(const DataType&)            = default;
@@ -83,6 +79,7 @@ public:
     friend bool operator!=(kind_t kind, DataType dt2);
 
 private:
+
     kind_t kind_;
 };
 

@@ -1,21 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/Composer.h"
 
-#include <vector>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -57,6 +46,12 @@ std::vector<Point> Composer::inv_points(const Point& p) const {
 }
 
 
+const std::string& Composer::type() const {
+    static const std::string type{"composer"};
+    return type;
+}
+
+
 void Composer::fill_spec(spec::Custom& custom) const {
     std::vector<std::string> specs;
     for (const auto* proj : *this) {
@@ -86,12 +81,12 @@ Point Composer::inv(const Point& p) const {
 
 
 Projection* Composer::compose_back(Projection* p, const Spec& spec) {
-    return new Composer{p, ProjectionFactory::instance().get(spec.get_string("projection")).create(spec)};
+    return new Composer{p, ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec)};
 }
 
 
 Projection* Composer::compose_front(const Spec& spec, Projection* p) {
-    return new Composer{ProjectionFactory::instance().get(spec.get_string("projection")).create(spec), p};
+    return new Composer{ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec), p};
 }
 
 

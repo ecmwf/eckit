@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   June 2017
@@ -15,6 +8,7 @@
 #define eckit_io_EasyCURL_h
 
 #include <map>
+#include <string>
 
 #include "eckit/io/MemoryHandle.h"
 
@@ -24,7 +18,7 @@ class Value;
 class EasyCURLResponseImp;
 class CURLHandle;
 
-typedef std::map<std::string, std::string> EasyCURLHeaders;
+using EasyCURLHeaders = std::map<std::string, std::string>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,6 +26,7 @@ class EasyCURLResponse {
     mutable EasyCURLResponseImp* imp_;
 
 public:
+
     EasyCURLResponse(EasyCURLResponseImp*);
     ~EasyCURLResponse();
 
@@ -49,6 +44,7 @@ public:
     eckit::DataHandle* dataHandle(const std::string& message = "") const;
 
 private:
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponse& c) {
@@ -61,6 +57,7 @@ private:
 
 class EasyCURL {
 public:
+
     EasyCURL();
 
     ~EasyCURL();
@@ -71,6 +68,11 @@ public:
     EasyCURLResponse POST(const std::string& url, const std::string& data);
     EasyCURLResponse DELETE(const std::string& url);
 
+    void setopt(const std::string& name, bool);
+    void setopt(const std::string& name, long);
+    void setopt(const std::string& name, const std::string&);
+    void setopt(const std::string& name, const char*);
+
     void verbose(bool on);
     void followLocation(bool on);
     void sslVerifyPeer(bool on);
@@ -78,15 +80,16 @@ public:
     void failOnError(bool on);
     void useSSL(bool use);
 
-
     void customRequest(const std::string&);
     void headers(const EasyCURLHeaders& headers);
     void userAgent(const std::string&);
 
 public:
+
     void print(std::ostream&) const;
 
 private:
+
     CURLHandle* ch_;
 
     EasyCURLResponse request(const std::string& url, bool stream = false);
@@ -97,6 +100,15 @@ private:
     }
 };
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// CURL options applicable to new curl handles
+
+void easycurl_setopt_bool(const std::string& name, bool value);
+void easycurl_setopt_long(const std::string& name, long value);
+void easycurl_setopt_string(const std::string& name, const std::string& value);
+void easycurl_clear_options();
 
 //----------------------------------------------------------------------------------------------------------------------
 

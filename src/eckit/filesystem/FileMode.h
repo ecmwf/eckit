@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 /// @author Tiago Quintino
@@ -32,6 +25,7 @@ class PathName;
 
 class FileMode {
 public:
+
     FileMode(mode_t m = 0);
 
     FileMode(const std::string& s);
@@ -51,6 +45,7 @@ public:
     static FileMode fromPath(const PathName& path);
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& os, const FileMode& mode) {
         mode.print(os);
         return os;
@@ -64,7 +59,8 @@ private:  // methods
 
     std::string toString() const;
 
-private:           // members
+private:  // members
+
     mode_t mode_;  ///< store the actual mode
 };
 

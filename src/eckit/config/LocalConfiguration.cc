@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date Jul 2015
@@ -20,17 +13,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LocalConfiguration::LocalConfiguration(char separator) :
-    Configuration(Value::makeOrderedMap(), separator) {}
+LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeOrderedMap(), separator) {}
 
-LocalConfiguration::LocalConfiguration(Stream& s) :
-    Configuration(Value(s)) {}
+LocalConfiguration::LocalConfiguration(Stream& s) : Configuration(Value(s)) {}
 
-LocalConfiguration::LocalConfiguration(const Value& root, char separator) :
-    Configuration(root, separator) {}
+LocalConfiguration::LocalConfiguration(const Value& root, char separator) : Configuration(root, separator) {}
 
-LocalConfiguration::LocalConfiguration(const Configuration& other) :
-    Configuration(other) {}
+LocalConfiguration::LocalConfiguration(const Configuration& other) : Configuration(other) {}
 
 LocalConfiguration::LocalConfiguration(const Configuration& other, const std::string& path) :
     Configuration(other, path) {}
@@ -121,6 +110,15 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, size_t value) 
     return *this;
 }
 
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<bool>& value) {
+    ValueList values;
+    for (std::vector<bool>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    setValue(s, values);
+    return *this;
+}
+
 LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<int>& value) {
     ValueList values;
     for (std::vector<int>::const_iterator v = value.begin(); v != value.end(); ++v) {
@@ -192,7 +190,7 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const Configur
 
 LocalConfiguration& LocalConfiguration::set(const std::string& s, const Configuration* value[], size_t size) {
     ValueList values;
-    for (size_t i=0; i<size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         values.push_back(value[i]->getValue());
     }
     setValue(s, values);

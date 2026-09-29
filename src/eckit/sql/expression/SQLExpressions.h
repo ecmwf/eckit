@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Piotr Kuchta
 /// @author Simon Smart
@@ -27,14 +20,13 @@ namespace eckit::sql::expression {
 
 // n.b. shared pointer not unique_ptr.
 //      needs to be copyable to be used by YACC
-typedef std::vector<std::shared_ptr<SQLExpression>> ExpressionsVector;
+using ExpressionsVector = std::vector<std::shared_ptr<SQLExpression>>;
 
 class Expressions : public SQLExpression, public ExpressionsVector {
 public:
-    Expressions() :
-        ExpressionsVector() {}
-    Expressions(size_t i) :
-        ExpressionsVector(i, 0) {}
+
+    Expressions() : ExpressionsVector() {}
+    Expressions(size_t i) : ExpressionsVector(i, nullptr) {}
 
     Expressions(const Expressions&)            = default;
     Expressions& operator=(const Expressions&) = default;
@@ -83,9 +75,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////
 };
 
-typedef std::vector<Expressions> VectorOfExpressions;
-// class VectorOfExpressions : public vector<Expressions> { public: ~VectorOfExpressions() { for (size_t i=0; i <
-// size(); ++i) ; } };
+using VectorOfExpressions = std::vector<Expressions>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

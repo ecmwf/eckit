@@ -1,24 +1,23 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Projection.h"
 
-#include <memory>
+#include <ostream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/share/Projection.h"
+#include "eckit/geo/util/mutex.h"
+#include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
+#include "eckit/types/FloatCompare.h"
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
@@ -28,58 +27,164 @@
 namespace eckit::geo {
 
 
-ProjectionProblem::ProjectionProblem(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("ProjectionProblem: [" + what + "], in " + loc.asString());
+namespace {
+
+
+util::recursive_mutex MUTEX;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 
 
-Figure* Projection::make_figure() const {
-    NOTIMP;
+}  // namespace
+
+
+Projection::Projection(Figure* ptr) : figure_(ptr != nullptr ? ptr : FigureFactory::make_default()) {
+    ASSERT(figure_);
 }
 
 
-const Figure& Projection::figure() const {
-    if (!figure_) {
-        figure_.reset(make_figure());
-        ASSERT(figure_);
+const Projection::Spec& Projection::spec() const {
+    if (!spec_) {
+        spec_ = std::make_shared<spec::Custom>();
+
+        auto& custom = *spec_;
+        fill_spec(custom);
+
+        if (std::string name; !custom.empty() && ProjectionSpecByName::instance().match(custom, name)) {
+            custom.clear();
+            custom.set(className(), name);
+        }
     }
 
-    return *figure_;
-}
-
-
-spec::Custom* Projection::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
-
-    fill_spec(*custom);
-    return custom;
-}
-
-
-std::string Projection::spec_str() const {
-    std::unique_ptr<const spec::Custom> custom(spec());
-    return custom->str();
+    return *spec_;
 }
 
 
 std::string Projection::proj_str() const {
 #if eckit_HAVE_PROJ
-    std::unique_ptr<spec::Custom> custom(spec());
-    return projection::PROJ::proj_str(*custom);
+    return projection::PROJ::proj_str(dynamic_cast<const spec::Custom&>(spec()));
 #else
     NOTIMP;
 #endif
 }
 
 
-Projection* Projection::make_from_spec(const Spec& spec) {
-    return ProjectionFactory::instance().get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "projection")).create(spec);
+bool Projection::is_default() const {
+    return spec_str() == projection_default().spec_str();
 }
 
 
-void Projection::fill_spec(spec::Custom&) const {
-    NOTIMP;
+const Projection& Projection::projection_default() {
+    static const projection::None proj;
+    return proj;
+}
+
+
+const Projection* ProjectionFactory::make_default() {
+    return new projection::EquidistantCylindrical;
+}
+
+
+Projection* Projection::make_from_spec(const Spec& spec) {
+    // an explicit 'projection' has to name its type
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
+
+    if (spec.has(PROJECTION)) {
+        const auto& cfg = spec.spec(PROJECTION);
+        return ProjectionFactoryType::instance().get(cfg.get_string("type")).create(cfg);
+    }
+
+    if (spec.has(ROTATION)) {
+        if (auto* rotation = projection::Rotation::make_from_spec(spec); rotation != nullptr) {
+            return rotation;
+        }
+    }
+
+    // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)
+    if (std::string type; spec.get("type", type) && ProjectionFactory::has_type(type)) {
+        return ProjectionFactoryType::instance().get(type).create(spec);
+    }
+
+    return new projection::EquidistantCylindrical(spec);
+}
+
+
+void Projection::fill_spec(spec::Custom& custom) const {
+    if (!figure_->is_default()) {
+        figure_->fill_spec(custom);
+    }
+
+    if (!types::is_approximately_equal(false_.X(), 0.)) {
+        custom.set("x_0", false_.X());
+    }
+
+    if (!types::is_approximately_equal(false_.Y(), 0.)) {
+        custom.set("y_0", false_.Y());
+    }
+}
+
+
+const Projection* ProjectionFactory::make_from_string(const std::string& str) {
+    std::unique_ptr<Projection::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    return instance().make_from_spec_(*spec);
+}
+
+
+ProjectionFactory& ProjectionFactory::instance() {
+    static ProjectionFactory obj;
+    return obj;
+}
+
+
+const Projection* ProjectionFactory::make_from_spec_(const Projection::Spec& spec) const {
+    lock_type lock;
+
+    std::unique_ptr<Projection::Spec> cfg(make_spec_(spec));
+
+    if (std::string type; cfg->get("type", type)) {
+        return ProjectionFactoryType::instance().get(type).create(*cfg);
+    }
+
+    list(Log::error() << "Projection: cannot build projection without 'type', choices are: ");
+    throw exception::SpecError("Projection: cannot build projection without 'type'", Here());
+}
+
+
+Projection::Spec* ProjectionFactory::make_spec_(const Projection::Spec& spec) const {
+    lock_type lock;
+    share::Projection::instance();
+
+    auto* cfg = new spec::Layered(spec);
+    ASSERT(cfg != nullptr);
+
+
+    // hardcoded, interpreted options (contributing to projectionspec)
+
+    if (spec.has("proj")) {
+        cfg->push_back(new spec::Custom{{"type", "proj"}});
+    }
+    else if (spec.has("rotation")) {
+        std::vector<double> rotation;
+        spec.get("rotation", rotation);
+        cfg->push_back(new spec::Custom{{"type", "rotation"}, {"rotation", rotation}});
+    }
+
+    return cfg;
+}
+
+
+std::ostream& ProjectionFactory::list_(std::ostream& out) const {
+    lock_type lock;
+    share::Projection::instance();
+
+    out << ProjectionSpecByName::instance() << std::endl;
+    out << ProjectionFactoryType::instance() << std::endl;
+
+    return out;
 }
 
 

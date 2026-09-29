@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/net/HttpHeader.h"
@@ -37,18 +30,15 @@ bool HttpHeader::compare::operator()(const std::string& a, const std::string& b)
 }
 
 
-HttpHeader::HttpHeader() :
-    version_("HTTP/1.0"), statusCode_(HttpError::OK), contentLength_(0), received_(false) {
+HttpHeader::HttpHeader() : version_("HTTP/1.0"), statusCode_(HttpError::OK), contentLength_(0), received_(false) {
     header_[Content_Type]    = "text/html";
     header_["Cache-Control"] = "no-cache";
     header_["MIME-Version"]  = "1.0";
 }
 
 HttpHeader& HttpHeader::operator=(std::map<std::string, std::string, std::less<std::string> >& parsed) {
-    for (std::map<std::string, std::string, std::less<std::string> >::const_iterator i
-         = parsed.begin();
-         i != parsed.end();
-         ++i) {
+    for (std::map<std::string, std::string, std::less<std::string> >::const_iterator i = parsed.begin();
+         i != parsed.end(); ++i) {
         header_[(*i).first] = (*i).second;
     }
 
@@ -289,8 +279,7 @@ static std::string nextLine(net::TCPSocket& socket) {
     }
 }
 
-HttpHeader::HttpHeader(net::TCPSocket& socket) :
-    received_(true) {
+HttpHeader::HttpHeader(net::TCPSocket& socket) : received_(true) {
     std::string line = nextLine(socket);
 
     size_t i = line.find_first_of(' ');

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Oct 96
@@ -29,13 +22,14 @@ namespace eckit {
 
 class HyperCube {
 public:  // types
-    typedef std::vector<Ordinal> Dimensions;
-    typedef std::vector<Ordinal> Coordinates;
-    typedef std::vector<Ordinal> Remapping;
+
+    using Dimensions  = std::vector<Ordinal>;
+    using Coordinates = std::vector<Ordinal>;
+    using Remapping   = std::vector<Ordinal>;
 
 public:  // methods
-    explicit HyperCube(const Dimensions& d) :
-        dimensions_(d) {}
+
+    explicit HyperCube(const Dimensions& d) : dimensions_(d) {}
 
     /// Translate coordinates into an index to a 1 dimension array
     Ordinal index(const Coordinates&) const;
@@ -60,6 +54,7 @@ public:  // methods
     static void combine(Remapping&, const Remapping&);
 
 private:  // members
+
     Dimensions dimensions_;
 };
 

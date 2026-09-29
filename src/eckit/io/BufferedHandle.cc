@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstring>
 
@@ -18,10 +11,26 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 BufferedHandle::BufferedHandle(DataHandle* h, size_t size, bool opened) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
+    HandleHolder(h),
+    buffer_(size),
+    pos_(0),
+    size_(size),
+    used_(0),
+    eof_(false),
+    read_(false),
+    position_(0),
+    opened_(opened) {}
 
 BufferedHandle::BufferedHandle(DataHandle& h, size_t size, bool opened) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
+    HandleHolder(h),
+    buffer_(size),
+    pos_(0),
+    size_(size),
+    used_(0),
+    eof_(false),
+    read_(false),
+    position_(0),
+    opened_(opened) {}
 
 BufferedHandle::~BufferedHandle() {}
 

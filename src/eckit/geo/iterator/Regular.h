@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -18,7 +10,7 @@
 
 
 namespace eckit::geo {
-class Range;
+class Projection;
 namespace grid {
 class Regular;
 }
@@ -28,21 +20,26 @@ class Regular;
 namespace eckit::geo::iterator {
 
 
-class Regular final : public Iterator {
+class Regular : public Iterator {
 public:
+
     // -- Constructors
 
     explicit Regular(const grid::Regular&, size_t index = 0);
 
 private:
+
     // -- Members
 
-    const grid::Regular& grid_;
+    const Projection& projection_;
+
+    const bool xy_;
     const std::vector<double>& x_;
     const std::vector<double>& y_;
-    size_t i_;
-    size_t j_;
+    size_t ix_;
+    size_t iy_;
     size_t index_;
+
     const size_t nx_;
     const size_t ny_;
     const size_t size_;
@@ -57,7 +54,7 @@ private:
 
     size_t index() const override { return index_; }
 
-    void fill_spec(spec::Custom&) const override;
+    [[nodiscard]] Iterator* clone() const override { return new Regular(*this); }
 };
 
 

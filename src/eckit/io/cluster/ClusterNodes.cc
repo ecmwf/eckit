@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File ClusterNodes.cc
 // Baudouin Raoult - (c) ECMWF Jul 11
@@ -20,9 +13,10 @@
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"
+#include "eckit/net/IPAddress.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
-#include "eckit/net/IPAddress.h"
 
 namespace eckit {
 
@@ -41,7 +35,8 @@ class ClusterNodeEntry {
     char attributes_[MAX_NODE_ATTRIBUTES][256];
     int port_;
 
-    ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port, const std::set<std::string>& attributes) :
+    ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port,
+                     const std::set<std::string>& attributes) :
         active_(true), lastSeen_(Clock::now()), offLine_(false), port_(port) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
@@ -58,8 +53,9 @@ class ClusterNodeEntry {
     }
 
 public:
+
     ClusterNodeEntry(const NodeInfo& info) :
-    ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
+        ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
 
     NodeInfo asNodeInfo() const {
         NodeInfo info;
@@ -233,14 +229,14 @@ inline unsigned long version(ClusterNodeEntry*) {
     return 1;
 }
 
-typedef MappedArray<ClusterNodeEntry> NodeArray;
-static NodeArray* nodeArray = 0;
+using NodeArray             = MappedArray<ClusterNodeEntry>;
+static NodeArray* nodeArray = nullptr;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::set<std::string> offsiteNodes_;
 
 static void init() {
-    nodeArray = new NodeArray("~/etc/cluster/nodes", 1024);
+    nodeArray = new NodeArray(Main::instance().rundir() / "cluster/nodes", 1024);
 
     EtcKeyTable config("cluster/offsite", 1);
     if (config.exists()) {

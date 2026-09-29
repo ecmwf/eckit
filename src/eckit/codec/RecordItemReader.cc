@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/codec/RecordItemReader.h"
@@ -61,8 +53,8 @@ Data read_data(const Record& record, int data_section_index, Stream in) {
     if (not data_begin.valid()) {
         throw InvalidRecord("Data section is not valid");
     }
-    auto data_size
-        = static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
+    auto data_size =
+        static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
     if (data_size > 0) {
         if (data.read(in, data_size) != data_size) {
             throw InvalidRecord("Data section is not valid");

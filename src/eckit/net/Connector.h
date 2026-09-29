@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -30,14 +23,15 @@ class ConnectorException : public Exception {
     virtual bool retryOnClient() const { return true; }
 
 public:
-    ConnectorException(const std::string& what) :
-        Exception(what) {}
+
+    ConnectorException(const std::string& what) : Exception(what) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Connector : public Stream {
 public:
+
     Connector(const std::string& name, const std::string& node);
 
     ~Connector();
@@ -64,6 +58,7 @@ public:
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
 protected:
+
     // -- Members
     // None
     Connector(const std::string&, int, const std::string&);
@@ -81,6 +76,7 @@ protected:
     // None
 
 private:
+
     // -- Members
 
     std::string host_;
@@ -143,8 +139,8 @@ class AutoMemoize {
     unsigned long t_;
 
 public:
-    AutoMemoize(Connector& c, unsigned long t) :
-        c_(c), t_(t) { c_.memoize(true, t_); }
+
+    AutoMemoize(Connector& c, unsigned long t) : c_(c), t_(t) { c_.memoize(true, t_); }
     ~AutoMemoize() { c_.memoize(false, t_); }
 };
 

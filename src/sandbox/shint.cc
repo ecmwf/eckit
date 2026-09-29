@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 #include <semaphore.h>
 #include <unistd.h>
 
@@ -52,8 +55,8 @@ class SemForker : public ProcessControler {
     }
 
 public:
-    SemForker(short want) :
-        ProcessControler(true), want_(want * 500) {}
+
+    SemForker(short want) : ProcessControler(true), want_(want * 500) {}
 
     short want_;
 };
@@ -65,12 +68,13 @@ const short nprocs = 16;
 
 class SemApp : public Tool {
 public:
-    SemApp(int argc, char** argv) :
-        Tool(argc, argv, "HOME") {}
+
+    SemApp(int argc, char** argv) : Tool(argc, argv, "HOME") {}
 
     ~SemApp() {}
 
 private:
+
     short limits() {
         //        short lim = 0;
         //        for(short i = 1; i <= nprocs; ++i) {

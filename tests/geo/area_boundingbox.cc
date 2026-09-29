@@ -1,16 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
@@ -19,10 +13,38 @@
 namespace eckit::geo::test {
 
 
+CASE("AreaFactory::make_from_string") {
+    const area::BoundingBox expected_area;
+    const std::string expected_spec = expected_area.spec_str();
+
+    for (const auto& spec : std::vector<std::string>{
+             "{}",
+             "{north: 90, south: -90, west: 0, east: 360}",
+             "{type: bounding_box}",
+             "{north: 90}",
+         }) {
+        std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
+
+        EXPECT(expected_spec == area->spec_str());
+        EXPECT(expected_area == *area);
+    }
+
+    std::unique_ptr<const Area> area1(
+        geo::AreaFactory::make_from_string(R"({north: 90, west: 0, south: -90, east: 360})"));
+
+    EXPECT(area1->spec_str() == expected_spec);
+
+    std::unique_ptr<const Area> area2(
+        geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
+
+    EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
+}
+
+
 CASE("global") {
     area::BoundingBox a;
     area::BoundingBox b(90, 0, -90, 360);
-    EXPECT_EQUAL(a, b);
+    EXPECT(a == b);
 }
 
 
@@ -37,14 +59,14 @@ CASE("longitude (normalisation)") {
     for (double west : {-900, -720, -540, -360, -180, 0, 180, 360, 540, 720, 900}) {
         area::BoundingBox a(90, west, 90, west);
 
-        EXPECT_EQUAL(a.west, west);
+        EXPECT_EQUAL(a.west(), west);
         EXPECT(a.empty());
 
         area::BoundingBox b{90, west, -90, west - 1};
-        std::unique_ptr<area::BoundingBox> c(
-            area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1));
+        auto c = area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1);
+        ASSERT(c);
 
-        EXPECT(c->east == c->west + 360 - 1);
+        EXPECT(c->east() == c->west() + 360 - 1);
         EXPECT(b == *c);
     }
 }
@@ -54,36 +76,36 @@ CASE("assignment") {
     area::BoundingBox a(10, 1, -10, 100);
     area::BoundingBox b(20, 2, -20, 200);
 
-    EXPECT_NOT_EQUAL(a.north, b.north);
-    EXPECT_NOT_EQUAL(a, b);
+    EXPECT_NOT_EQUAL(a.north(), b.north());
+    EXPECT(a != b);
 
     b = a;
 
-    EXPECT_EQUAL(a.north, b.north);
-    EXPECT_EQUAL(a, b);
+    EXPECT_EQUAL(a.north(), b.north());
+    EXPECT(a == b);
 
-    b = {30., b.west, b.south, b.east};
+    b = {30., b.west(), b.south(), b.east()};
 
-    EXPECT_EQUAL(b.north, 30);
-    EXPECT_EQUAL(a.north, 10);
+    EXPECT_EQUAL(b.north(), 30);
+    EXPECT_EQUAL(a.north(), 10);
 
     area::BoundingBox c(a);
 
-    EXPECT_EQUAL(a.north, c.north);
-    EXPECT_EQUAL(a, c);
+    EXPECT_EQUAL(a.north(), c.north());
+    EXPECT(a == c);
 
-    c = {40., c.west, c.south, c.east};
+    c = {40., c.west(), c.south(), c.east()};
 
-    EXPECT_EQUAL(c.north, 40);
-    EXPECT_EQUAL(a.north, 10);
+    EXPECT_EQUAL(c.north(), 40);
+    EXPECT_EQUAL(a.north(), 10);
 
     auto d(std::move(a));
 
-    EXPECT_EQUAL(d.north, 10);
+    EXPECT_EQUAL(d.north(), 10);
 
-    d = {50., d.west, d.south, d.east};
+    d = {50., d.west(), d.south(), d.east()};
 
-    EXPECT_EQUAL(d.north, 50);
+    EXPECT_EQUAL(d.north(), 50);
 }
 
 
@@ -94,8 +116,8 @@ CASE("comparison") {
     EXPECT(!area::bounding_box_equal(a, b));
 
     for (const auto& c : {a, b}) {
-        const area::BoundingBox d{c.north, c.west + 42 * PointLonLat::FULL_ANGLE, c.south,
-                                  c.east + 41 * PointLonLat::FULL_ANGLE};
+        const area::BoundingBox d{c.north(), c.west() + 42 * PointLonLat::FULL_ANGLE, c.south(),
+                                  c.east() + 41 * PointLonLat::FULL_ANGLE};
         EXPECT(area::bounding_box_equal(c, d));
     }
 }
@@ -104,14 +126,19 @@ CASE("comparison") {
 CASE("properties") {
     area::BoundingBox a{10, 1, -10, 100};
     area::BoundingBox b{20, 2, -20, 200};
-    std::unique_ptr<area::BoundingBox> c(area::BoundingBox::make_global_prime());
-    std::unique_ptr<area::BoundingBox> d(area::BoundingBox::make_global_antiprime());
+
+    auto c = area::BoundingBox::make_global_prime();
+    ASSERT(c);
+
+    auto d = area::BoundingBox::make_global_antiprime();
+    ASSERT(d);
+
     area::BoundingBox e;
 
     for (const auto& bb : {a, b, *c, *d, e}) {
         EXPECT(!bb.empty());
-        EXPECT(bb.contains({10, 0}));
-        EXPECT(bb.global() == bb.contains({0, 0}));
+        EXPECT(bb.contains(PointLonLat{10, 0}));
+        EXPECT(bb.global() == bb.contains(PointLonLat{0, 0}));
         EXPECT(bb.global() == (bb.periodic() && bb.contains(NORTH_POLE) && bb.contains(SOUTH_POLE)));
     }
 }
@@ -124,8 +151,8 @@ CASE("intersects") {
     EXPECT(!area::bounding_box_equal(a, b));
 
     for (const auto& c : {a, b}) {
-        const area::BoundingBox d{c.north, c.west + 42 * PointLonLat::FULL_ANGLE, c.south,
-                                  c.east + 41 * PointLonLat::FULL_ANGLE};
+        const area::BoundingBox d{c.north(), c.west() + 42 * PointLonLat::FULL_ANGLE, c.south(),
+                                  c.east() + 41 * PointLonLat::FULL_ANGLE};
         EXPECT(area::bounding_box_equal(c, d));
     }
 }

@@ -1,13 +1,7 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
+#include <cmath>
 #include <iostream>
 #include <sstream>
 
@@ -17,11 +11,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Seconds::Seconds(double seconds, bool compact) :
-    seconds_(seconds), compact_(compact) {}
+Seconds::Seconds(double seconds, bool compact) : seconds_(seconds), compact_(compact) {}
 
 Seconds::Seconds(const ::timeval& time, bool compact) :
-    seconds_(time.tv_sec + time.tv_usec / 1000000.0), compact_(compact) {}
+    seconds_(time.tv_sec + (time.tv_usec / usec_per_sec)), compact_(compact) {}
 
 static struct {
     int length_;
@@ -55,7 +48,7 @@ static struct {
     },
     {
         0,
-        0,
+        nullptr,
         0,
     },
 };
@@ -67,7 +60,7 @@ std::ostream& operator<<(std::ostream& s, const Seconds& sec) {
 
     std::ostringstream ss;
     double t = sec.seconds_;
-    long n   = t;
+    long n   = std::lround(t);
     int flg  = 0;
 
     for (int i = 0; periods[i].length_; i++) {

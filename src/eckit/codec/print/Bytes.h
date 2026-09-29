@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -20,6 +12,7 @@ namespace eckit::codec {
 
 struct Bytes {
 public:
+
     explicit Bytes(size_t bytes) : bytes_(bytes) {}
 
     explicit operator size_t() const { return bytes_; }
@@ -31,6 +24,7 @@ public:
     friend std::ostream& operator<<(std::ostream&, const Bytes&);
 
 private:
+
     size_t bytes_;
 };
 

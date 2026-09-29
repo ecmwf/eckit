@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Manuel Fuentes
 /// @author Baudouin Raoult
@@ -16,8 +9,6 @@
 #define eckit_Value_h
 
 #include <list>
-
-#include "eckit/deprecated.h"
 
 #include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
@@ -147,6 +138,7 @@ class JSON;
 
 class Value {
 public:
+
     // -- Contructors
 
     Value();
@@ -336,6 +328,7 @@ public:
     void hash(eckit::Hash&) const;
 
 public:
+
     bool contains(const char*) const;
     bool contains(const std::string&) const;
     bool contains(const Value&) const;
@@ -383,12 +376,15 @@ public:
 
 
 protected:
+
     Value(Content*);
 
 private:  // members
+
     Content* content_;
 
 private:  // methods
+
     void json(JSON& s) const { s << *content_; }
     void print(std::ostream& s) const { s << *content_; }
     void encode(Stream& s) const { s << *content_; }
@@ -469,18 +465,6 @@ Value toValue(const std::map<K, V>& l) {
     return Value::makeMap(r);
 }
 
-template <typename T>
-DEPRECATED("Use toValue() instead")
-Value makeVectorValue(const std::vector<T>& v) {
-    return toValue(v);
-}
-
-template <typename T>
-DEPRECATED("Use toValue instead")
-Value makeVectorValue(const std::list<T>& v) {
-    return toValue(v);
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
@@ -533,7 +517,7 @@ void fromValue(std::map<K, V>& v, const Value& value) {
 
 template <>
 struct VectorPrintSelector<Value> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 }  // namespace eckit

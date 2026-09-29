@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File MapAllocator.h
 // MARS (Baudouin Raoult) - ECMWF Nov 01
@@ -15,7 +8,6 @@
 #define eckit_MapAllocator_h
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/types/Types.h"
 
 
@@ -25,14 +17,21 @@ namespace eckit {
 
 class MapAllocatorTooSmall : public Exception {
 public:
+
     MapAllocatorTooSmall(size_t, size_t);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class MapAllocator : private eckit::NonCopyable {
+class MapAllocator {
 public:
+
     MapAllocator(size_t);
+
+    MapAllocator(const MapAllocator&)            = delete;
+    MapAllocator& operator=(const MapAllocator&) = delete;
+    MapAllocator(MapAllocator&&)                 = delete;
+    MapAllocator& operator=(MapAllocator&&)      = delete;
 
     ~MapAllocator();
 
@@ -40,6 +39,7 @@ public:
     void deallocate(void*);
 
 private:  // members
+
     int fd_;
     void* addr_;
     char* next_;

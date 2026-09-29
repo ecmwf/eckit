@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstring>
 
@@ -29,9 +22,9 @@ namespace {
 
 static const std::vector<long> INTEGER_DATA{9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111, 1234};
 static const std::vector<double> REAL_DATA{99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1, 12.3};
-static const std::vector<std::string> STRING_DATA{"cccc", "a-longer-string", "cccc", "cccc",
-                                                  "", "hijklmno", "aaaabbbb", "a-longer-string",
-                                                  "another-string", "another-string2", ""};
+static const std::vector<std::string> STRING_DATA{
+    "cccc",           "a-longer-string", "cccc", "cccc", "", "hijklmno", "aaaabbbb", "a-longer-string",
+    "another-string", "another-string2", ""};
 
 static const std::vector<long> BITFIELD_DATA{0, 1, 2, 4, 8, 9, 10, 12, 13, 15, 11};
 static const std::vector<long> BF1_DATA{0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1};
@@ -42,6 +35,7 @@ static const std::vector<long> BF3_DATA{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1};
 class TestTable : public eckit::sql::SQLTable {
 
 public:
+
     TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
         SQLTable(db, path, name) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
@@ -51,15 +45,20 @@ public:
         std::vector<std::string> bfNames = {"bf1", "bf2", "bf3"};
         std::vector<int32_t> bfSizes     = {1, 2, 1};
         std::string bfType               = eckit::sql::type::SQLBitfield::make("Bitfield", bfNames, bfSizes, "dummy");
-        addColumn("bfcolumn", 3, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
-        addColumn("bgcolumn@tbl1", 4, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
-        addColumn("bgcolumn@tbl2", 5, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
+        addColumn("bfcolumn", 3, eckit::sql::type::SQLType::lookup(bfType), false, 0, true,
+                  std::make_pair(bfNames, bfSizes));
+        addColumn("bgcolumn@tbl1", 4, eckit::sql::type::SQLType::lookup(bfType), false, 0, true,
+                  std::make_pair(bfNames, bfSizes));
+        addColumn("bgcolumn@tbl2", 5, eckit::sql::type::SQLType::lookup(bfType), false, 0, true,
+                  std::make_pair(bfNames, bfSizes));
         addColumn("preselected.bfcolumn", 6, eckit::sql::type::SQLType::lookup("integer"), false, 0);
     }
 
 private:
+
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
+
         TestTableIterator(const TestTable& owner,
                           const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
                           std::function<void(eckit::sql::SQLTableIterator&)> updateCallback) :
@@ -76,6 +75,7 @@ private:
         }
 
     private:
+
         ~TestTableIterator() override {}
         void rewind() override { idx_ = 0; }
         bool next() override {
@@ -186,6 +186,7 @@ class TestOutput : public eckit::sql::SQLOutput {
     }
 
 public:  // visible members
+
     std::vector<long> intOutput_;
     std::vector<double> floatOutput_;
     std::vector<std::string> strOutput_;
@@ -251,7 +252,8 @@ CASE("Select from constructed table") {
         }
         EXPECT(o.floatOutput == REAL_DATA);
         EXPECT(o.strOutput == STRING_DATA);
-        EXPECT(o.columnNames == std::vector<std::string>({"icol", "scol", "rcol", "bfcolumn", "bgcolumn@tbl1", "bgcolumn@tbl2", "preselected.bfcolumn"}));
+        EXPECT(o.columnNames == std::vector<std::string>({"icol", "scol", "rcol", "bfcolumn", "bgcolumn@tbl1",
+                                                          "bgcolumn@tbl2", "preselected.bfcolumn"}));
     }
 
 
@@ -286,8 +288,8 @@ CASE("Select from constructed table") {
 
     SECTION("Test SQL select where string is not empty") {
 
-        for (const auto& sql : {"select rcol from table1 where scol != \"\"",
-                                "select rcol from table1 where scol != ''"}) {
+        for (const auto& sql :
+             {"select rcol from table1 where scol != \"\"", "select rcol from table1 where scol != ''"}) {
 
             eckit::sql::SQLParser::parseString(session, sql);
 
@@ -303,8 +305,7 @@ CASE("Select from constructed table") {
 
     SECTION("Test SQL select distinct") {
 
-        std::vector<std::string> queries = {"select distinct icol from table1",
-                                            "select distinct rcol from table1",
+        std::vector<std::string> queries = {"select distinct icol from table1", "select distinct rcol from table1",
                                             "select distinct scol from table1",
                                             "select distinct icol,rcol from table1"};
 
@@ -324,14 +325,16 @@ CASE("Select from constructed table") {
                 EXPECT(o.columnNames == std::vector<std::string>({"rcol"}));
             }
             else if (i == 2) {
-                EXPECT(o.strOutput == std::vector<std::string>({"cccc", "a-longer-string", "", "hijklmno", "aaaabbbb", "another-string", "another-string2"}));
+                EXPECT(o.strOutput == std::vector<std::string>({"cccc", "a-longer-string", "", "hijklmno", "aaaabbbb",
+                                                                "another-string", "another-string2"}));
                 EXPECT(o.intOutput.empty() && o.floatOutput.empty());
                 EXPECT(o.columnNames == std::vector<std::string>({"scol"}));
             }
             else {
                 // Test that it is finding unique rows, not values (n.b. 6666/88.8)
                 EXPECT(o.intOutput == std::vector<long>({9999, 8888, 7777, 6666, 6666, 4444, 3333, 2222, 1111, 1234}));
-                EXPECT(o.floatOutput == std::vector<double>({99.9, 88.8, 77.7, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1, 12.3}));
+                EXPECT(o.floatOutput ==
+                       std::vector<double>({99.9, 88.8, 77.7, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1, 12.3}));
                 EXPECT(o.strOutput.empty());
                 EXPECT(o.columnNames == std::vector<std::string>({"icol", "rcol"}));
             }
@@ -366,8 +369,11 @@ CASE("Select from constructed table") {
             }
             else {
                 EXPECT(o.intOutput.empty());
-                EXPECT(o.floatOutput == std::vector<double>({88.8, 66.6, 77.7, 99.9, 11.1, 22.2, 44.4, 33.3, 88.8, 12.3, 66.6}));
-                EXPECT(o.strOutput == std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2", "another-string", "aaaabbbb", "a-longer-string", "a-longer-string", "", ""}));
+                EXPECT(o.floatOutput ==
+                       std::vector<double>({88.8, 66.6, 77.7, 99.9, 11.1, 22.2, 44.4, 33.3, 88.8, 12.3, 66.6}));
+                EXPECT(o.strOutput == std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2",
+                                                                "another-string", "aaaabbbb", "a-longer-string",
+                                                                "a-longer-string", "", ""}));
                 EXPECT(o.columnNames == std::vector<std::string>({"rcol", "scol"}));
             }
         }
@@ -384,7 +390,8 @@ CASE("Select from constructed table") {
         eckit::sql::SQLParser().parseString(session, sql);
         session.statement().execute();
 
-        EXPECT(o.columnNames == std::vector<std::string>({"bfcolumn.bf1", "bgcolumn.bf3@tbl1", "bfcolumn.bf2", "bgcolumn.bf1@tbl2"}));
+        EXPECT(o.columnNames ==
+               std::vector<std::string>({"bfcolumn.bf1", "bgcolumn.bf3@tbl1", "bfcolumn.bf2", "bgcolumn.bf1@tbl2"}));
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
             EXPECT(o.intOutput[4 * row] == BF1_DATA[row]);
             EXPECT(o.intOutput[4 * row + 1] == BF3_DATA[row]);
@@ -449,7 +456,8 @@ CASE("Test with implicit tables") {
         }
         EXPECT(o.floatOutput == REAL_DATA);
         EXPECT(o.strOutput == STRING_DATA);
-        EXPECT(o.columnNames == std::vector<std::string>({"icol", "scol", "rcol", "bfcolumn", "bgcolumn@tbl1", "bgcolumn@tbl2", "preselected.bfcolumn"}));
+        EXPECT(o.columnNames == std::vector<std::string>({"icol", "scol", "rcol", "bfcolumn", "bgcolumn@tbl1",
+                                                          "bgcolumn@tbl2", "preselected.bfcolumn"}));
     }
 
     SECTION("Test selection of bitfield bit columns") {
@@ -458,7 +466,8 @@ CASE("Test with implicit tables") {
         eckit::sql::SQLParser().parseString(session, sql);
         session.statement().execute();
 
-        EXPECT(o.columnNames == std::vector<std::string>({"bfcolumn.bf1", "bgcolumn.bf3@tbl1", "bfcolumn.bf2", "bgcolumn.bf1@tbl2"}));
+        EXPECT(o.columnNames ==
+               std::vector<std::string>({"bfcolumn.bf1", "bgcolumn.bf3@tbl1", "bfcolumn.bf2", "bgcolumn.bf1@tbl2"}));
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
             EXPECT(o.intOutput[4 * row] == BF1_DATA[row]);
             EXPECT(o.intOutput[4 * row + 1] == BF3_DATA[row]);

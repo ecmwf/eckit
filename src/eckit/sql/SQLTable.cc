@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLTable.h"
 
@@ -32,17 +25,15 @@ void SQLTable::clearColumns() {}
 
 std::vector<std::string> SQLTable::columnNames() const {
     std::vector<std::string> results;
-    for (std::map<int, SQLColumn*>::const_iterator j = columnsByIndex_.begin();
-         j != columnsByIndex_.end();
-         ++j) {
+    for (std::map<int, SQLColumn*>::const_iterator j = columnsByIndex_.begin(); j != columnsByIndex_.end(); ++j) {
         results.push_back((*j).second->name());
     }
     return results;
 }
 
 FieldNames SQLTable::bitColumnNames(const std::string& name) const {
-    typedef std::map<std::string, FieldNames>::const_iterator I;
-    I i = bitColumnNames_.find(name);
+    using I = std::map<std::string, FieldNames>::const_iterator;
+    I i     = bitColumnNames_.find(name);
     if (i != bitColumnNames_.end()) {
         return (*i).second;
     }

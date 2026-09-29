@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -24,7 +16,7 @@ namespace eckit::geo {
 
 
 using difference_type = std::make_signed_t<size_t>;
-using pl_type         = std::vector<long>;
+using pl_type         = std::vector<long>;  // sync with eckit::spec::Custom number_type
 
 
 namespace util {
@@ -55,11 +47,16 @@ std::vector<double> arange(double start, double stop, double step);
 const std::vector<double>& gaussian_latitudes(size_t N, bool increasing);
 
 
-std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
+const std::vector<double>& gaussian_quadrature_weights(size_t N);
 
 
-std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max,
-                                                           double eps);
+const std::vector<double>& linspace(double start, double stop, size_t num);
+
+
+std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max);
+
+
+std::vector<double> reverse(const std::vector<double>&);
 
 
 bool reduced_classical_pl_known(size_t N);

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Pedro Maciel
@@ -22,7 +15,6 @@
 #include <vector>
 
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::option {
 
@@ -31,12 +23,14 @@ namespace eckit::option {
 class Option;
 
 
-class CmdArgs : public LocalConfiguration, private NonCopyable {
+class CmdArgs : public LocalConfiguration {
 
 public:  // types
-    typedef void (*usage_proc)(const std::string& name);
+
+    using usage_proc = void (*)(const std::string& name);
 
 public:  // methods
+
     CmdArgs(usage_proc usage, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
 
     /// Initialise argument parser with a list of options
@@ -47,6 +41,11 @@ public:  // methods
 
     CmdArgs(std::function<void(const std::string&)> usage, std::vector<Option*>& options, int args_count = -1,
             int minimum_args = 0, bool throw_on_error = false);
+
+    CmdArgs(const CmdArgs&)            = delete;
+    CmdArgs& operator=(const CmdArgs&) = delete;
+    CmdArgs(CmdArgs&&)                 = delete;
+    CmdArgs& operator=(CmdArgs&&)      = delete;
 
     ~CmdArgs();
 
@@ -73,11 +72,13 @@ public:  // methods
     std::vector<std::string>::iterator end() { return args_.end(); }
 
 private:  // methods
+
     void init(std::function<void(const std::string&)> usage, int args_count, int minumum_args, bool throw_on_errror);
 
     void print(std::ostream&) const override;
 
 private:  // members
+
     std::set<std::string> keys_;
     std::vector<std::string> args_;
     std::vector<Option*> options_;

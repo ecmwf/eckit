@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2017 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #define OMPI_SKIP_MPICXX 1
 #define MPICH_SKIP_MPICXX 1
@@ -33,8 +26,6 @@ char** argv;
 CASE("Test MPI Communicator group") {
     // Get default communicator
     Comm& all = eckit::mpi::comm();
-
-    std::string start = all.name();
 
     // Check sizes and ranks
     EXPECT(all.size() == 4);
@@ -107,16 +98,24 @@ CASE("Test MPI Communicator group") {
     EXPECT(remoteChildGroup.compare(parentGroup.excl(localRanks)) >= 0);
 
     // Expressed by range incl
-    EXPECT(childGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
-    EXPECT(childGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(
+               parentGroup.range_incl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(
+               parentGroup.range_incl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(
+               parentGroup.range_excl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(
+               parentGroup.range_excl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
 
     // Expressed by range incl (explicit)
-    EXPECT(childGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
-    EXPECT(childGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{
+               {localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{
+               {remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{
+               {remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{
+               {localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

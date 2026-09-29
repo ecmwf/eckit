@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -18,7 +11,6 @@
 #include <map>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -37,6 +29,7 @@ class ResourceQualifier {
     std::string name_;   // Name,  e.g. "debug"
 
 public:
+
     ResourceQualifier();
     ResourceQualifier(const std::string&, const std::string&, const std::string&);
 
@@ -49,9 +42,10 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class ResourceMgr : private eckit::NonCopyable {
+class ResourceMgr {
 
 public:  // class methods
+
     static ResourceMgr& instance();
 
     static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
@@ -59,7 +53,13 @@ public:  // class methods
     bool registCmdArgOptions(const std::string&);
 
 private:
+
     ResourceMgr();
+
+    ResourceMgr(const ResourceMgr&)            = delete;
+    ResourceMgr& operator=(const ResourceMgr&) = delete;
+    ResourceMgr(ResourceMgr&&)                 = delete;
+    ResourceMgr& operator=(ResourceMgr&&)      = delete;
 
     bool doLookUp(const std::string&, const std::string&, const std::string&, std::string&);
 
@@ -72,11 +72,13 @@ private:
     friend class ResourceBase;
 
 private:  // methods
+
     void readConfigFile(const LocalPathName&);
     bool parse(const char*);
 
 private:  // members
-    typedef std::map<ResourceQualifier, std::string> ResMap;
+
+    using ResMap = std::map<ResourceQualifier, std::string>;
 
     ResMap resmap_;
 

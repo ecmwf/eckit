@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/linalg/Vector.h"
 
@@ -20,22 +13,18 @@ namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Vector::Vector() :
-    array_(0), length_(0), own_(false) {}
+Vector::Vector() : array_{nullptr}, length_(0), own_(false) {}
 
 
-Vector::Vector(Size length) :
-    array_(new Scalar[length]), length_(length), own_(true) {}
+Vector::Vector(Size length) : array_(new Scalar[length]), length_(length), own_(true) {}
 
 
-Vector::Vector(const Scalar array[], Size length) :
-    array_(const_cast<Scalar*>(array)), length_(length), own_(false) {
+Vector::Vector(const Scalar array[], Size length) : array_(const_cast<Scalar*>(array)), length_(length), own_(false) {
     ASSERT(array_ && length_ > 0);
 }
 
 
-Vector::Vector(Stream& stream) :
-    array_(0), length_(0), own_(false) {
+Vector::Vector(Stream& stream) : array_{nullptr}, length_(0), own_(false) {
     Size length;
     stream >> length;
     resize(length);
@@ -45,8 +34,7 @@ Vector::Vector(Stream& stream) :
 }
 
 
-Vector::Vector(const Vector& other) :
-    array_(new Scalar[other.length_]), length_(other.length_), own_(true) {
+Vector::Vector(const Vector& other) : array_(new Scalar[other.length_]), length_(other.length_), own_(true) {
     ::memcpy(array_, other.array_, length_ * sizeof(Scalar));
 }
 

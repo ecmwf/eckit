@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// \file FunctionROWNUMBER.h
 /// Piotr Kuchta - (C) ECMWF July 2009
@@ -23,7 +16,7 @@ namespace eckit::sql::expression::function {
 static FunctionBuilder<FunctionROWNUMBER> rownumberFunctionBuilder("rownumber");
 
 FunctionROWNUMBER::FunctionROWNUMBER(const std::string& name, const expression::Expressions& args) :
-    FunctionIntegerExpression(name, args), count_(0) {}
+    FunctionIntegerExpression(name, args), count_{nullptr} {}
 
 
 FunctionROWNUMBER::FunctionROWNUMBER(const FunctionROWNUMBER& other) :
@@ -54,11 +47,10 @@ bool FunctionROWNUMBER::isConstant() const {
 }
 
 std::shared_ptr<SQLExpression> FunctionROWNUMBER::simplify(bool&) {
-    return 0;
+    return nullptr;
 }
 
-void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/
-}
+void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/ }
 
 const eckit::sql::type::SQLType* FunctionROWNUMBER::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");

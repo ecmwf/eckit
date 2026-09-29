@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date   November 2020
@@ -18,7 +11,6 @@
 #include <vector>
 
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::system {
 
@@ -27,8 +19,18 @@ class Plugin;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LibraryManager : private eckit::NonCopyable {
+class LibraryManager {
 public:  // class methods
+
+    LibraryManager() = default;  // Necessary, because class is used as base class
+
+    LibraryManager(const LibraryManager&)            = delete;
+    LibraryManager& operator=(const LibraryManager&) = delete;
+    LibraryManager(LibraryManager&&)                 = delete;
+    LibraryManager& operator=(LibraryManager&&)      = delete;
+
+    virtual ~LibraryManager() = default;  // Necessary, because class is used as base class
+
     /// @brief Register a library
     static void enregister(const std::string& name, Library* obj);
 

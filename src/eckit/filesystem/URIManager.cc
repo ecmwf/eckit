@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/config/LibEcKit.h"
@@ -21,12 +14,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, URIManager*> URIManagerMap;
+using URIManagerMap = std::map<std::string, URIManager*>;
 
 /// Registry for all URI managers
 ///
 class URIManagerRegistry {
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static URIManagerRegistry& instance() {
@@ -99,6 +93,7 @@ public:  // methods
     }
 
 private:  // members
+
     URIManagerMap map_;
     mutable Mutex mutex_;
 };
@@ -106,8 +101,7 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-URIManager::URIManager(const std::string& name) :
-    name_(name) {
+URIManager::URIManager(const std::string& name) : name_(name) {
     URIManagerRegistry::instance().enregister(name, this);
 }
 
@@ -158,8 +152,8 @@ class LocalFilePartManager : public URIManager {
     PathName path(const URI& uri) const override { return PathName("local", uri.name()); }
 
 public:
-    LocalFilePartManager(const std::string& name) :
-        URIManager(name) {}
+
+    LocalFilePartManager(const std::string& name) : URIManager(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -202,8 +196,8 @@ class HttpURIManager : public URIManager {
     }
 
 public:
-    HttpURIManager(const std::string& name) :
-        URIManager(name) {}
+
+    HttpURIManager(const std::string& name) : URIManager(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

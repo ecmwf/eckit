@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -19,20 +12,18 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class StringTools : private NonCopyable {
+class StringTools {
 public:
-    static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
 
-    /// @deprecated Use extract variables
-    static std::vector<std::string> substituteVariables(const std::string&);
+    StringTools() = delete;
+
+    static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
 
     static std::vector<std::string> listVariables(const std::string&);
 
@@ -62,9 +53,6 @@ public:
 
     static bool isQuoted(const std::string& value);
     static std::string unQuote(const std::string& value);
-
-private:
-    StringTools();  // Non instantiable
 };
 
 //----------------------------------------------------------------------------------------------------------------------

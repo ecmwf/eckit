@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -28,15 +21,14 @@ namespace eckit {
 template <class T>
 class Resource : public ResourceBase {
 public:  // methods
+
     // Standalone
 
-    Resource(const std::string& str, const T& value) :
-        ResourceBase(nullptr, str), value_(value) {}
+    Resource(const std::string& str, const T& value) : ResourceBase(nullptr, str), value_(value) {}
 
     // Part of a configurable
 
-    Resource(Configurable* owner, const std::string& str, const T& value) :
-        ResourceBase(owner, str), value_(value) {}
+    Resource(Configurable* owner, const std::string& str, const T& value) : ResourceBase(owner, str), value_(value) {}
 
     Resource(const std::string& str, const std::string& value, bool) :
         ResourceBase(nullptr, str), value_(eckit::Translator<std::string, T>()(value)) {}
@@ -49,6 +41,7 @@ public:  // methods
     }
 
 private:  // members
+
     T value_;
 
     // From ResourceBase
@@ -70,8 +63,8 @@ std::ostream& operator<<(std::ostream& os, const Resource<T>& r) {
 template <class T, class LIB>
 class LibResource : public ResourceBase {
 public:  // methods
-    LibResource(const std::string& str, const T& value) :
-        ResourceBase(nullptr, str), value_(value) {}
+
+    LibResource(const std::string& str, const T& value) : ResourceBase(nullptr, str), value_(value) {}
 
     operator const T&() const {
         const_cast<LibResource<T, LIB>*>(this)->init();
@@ -84,6 +77,7 @@ public:  // methods
     }
 
 private:  // members
+
     T value_;
 
     // From ResourceBase

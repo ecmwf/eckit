@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "KDMapped.h"
 
@@ -27,7 +20,13 @@ namespace eckit {
 
 
 KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size_t metadataSize) :
-    path_(path), header_(itemCount, itemSize, metadataSize), size_(0), base_(0), root_(0), addr_(0), fd_(-1) {
+    path_(path),
+    header_(itemCount, itemSize, metadataSize),
+    size_(0),
+    base_{nullptr},
+    root_(0),
+    addr_{nullptr},
+    fd_(-1) {
 
     int oflags = O_RDWR | O_CREAT;
     int mflags = PROT_READ | PROT_WRITE;
@@ -56,12 +55,14 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
 
         ASSERT(header_.headerSize_ == sizeof(header_));
 
-        base   = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
+        base = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) *
+               header_.itemSize_;
         count_ = header_.itemCount_;
     }
     else {
         readonly_ = false;
-        base      = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
+        base      = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) *
+               header_.itemSize_;
 
         char c = 0;
 
@@ -74,7 +75,7 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
         SYSCALL(::write(fd_, &c, 1));
     }
 
-    addr_ = MMap::mmap(0, size_, mflags, MAP_SHARED, fd_, 0);
+    addr_ = MMap::mmap(nullptr, size_, mflags, MAP_SHARED, fd_, 0);
     if (addr_ == MAP_FAILED) {
         Log::error() << "open(" << path << ')' << Log::syserr << std::endl;
         throw FailedSystemCall("mmap");
@@ -102,12 +103,16 @@ KDMapped::KDMapped(const KDMapped& other) :
     root_(other.root_),
     addr_(other.addr_),
     fd_(other.fd_) {
-    const_cast<KDMapped&>(other).addr_ = 0;
+    const_cast<KDMapped&>(other).addr_ = nullptr;
     const_cast<KDMapped&>(other).fd_   = -1;
 }
 
 // Warning, takes ownership of maps
 KDMapped& KDMapped::operator=(const KDMapped& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     path_  = other.path_;
     count_ = other.count_;
     size_  = other.size_;
@@ -118,7 +123,7 @@ KDMapped& KDMapped::operator=(const KDMapped& other) {
     header_ = other.header_;
     base_   = other.base_;
 
-    const_cast<KDMapped&>(other).addr_ = 0;
+    const_cast<KDMapped&>(other).addr_ = nullptr;
     const_cast<KDMapped&>(other).fd_   = -1;
 
     return *this;

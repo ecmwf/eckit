@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iostream>
 
@@ -27,8 +20,8 @@ using namespace eckit::system;
 class EckitInfo : public eckit::EckitTool {
 
 public:  // methods
-    EckitInfo(int argc, char** argv) :
-        eckit::EckitTool(argc, argv) {
+
+    EckitInfo(int argc, char** argv) : eckit::EckitTool(argc, argv) {
 
         options_.push_back(new eckit::option::SimpleOption<bool>("json", "Produce JSON output"));
 
@@ -40,16 +33,14 @@ public:  // methods
     }
 
 private:  // methods
+
     virtual void execute(const eckit::option::CmdArgs& args);
     virtual void usage(const std::string& tool) const;
-    virtual int minimumPositionalArguments() const {
-        return 0;
-    }
+    virtual int minimumPositionalArguments() const { return 0; }
 };
 
 void EckitInfo::usage(const std::string& tool) const {
-    eckit::Log::info() << std::endl
-                       << "Usage: " << tool << "[options] ..." << std::endl;
+    eckit::Log::info() << std::endl << "Usage: " << tool << "[options] ..." << std::endl;
     eckit::EckitTool::usage(tool);
 }
 
@@ -112,11 +103,8 @@ void EckitInfo::execute(const eckit::option::CmdArgs& args) {
             std::cout << "Libraries:" << std::endl;
             for (const std::string& libname : LibraryManager::list()) {
                 const Library& lib = LibraryManager::lookup(libname);
-                std::cout << "  "
-                          << lib.name() << " "
-                          << lib.version() << " "
-                          << "(" << lib.gitsha1(7) << ") "
-                          << lib.libraryPath() << std::endl;
+                std::cout << "  " << lib.name() << " " << lib.version() << " "
+                          << "(" << lib.gitsha1(7) << ") " << lib.libraryPath() << std::endl;
             }
         }
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/utils/Translator.h"
@@ -38,8 +31,7 @@ void CmdArg::encode(Stream& s) const {
     }
 }
 
-CmdArg::CmdArg(Stream& s) :
-    Streamable(s) {
+CmdArg::CmdArg(Stream& s) : Streamable(s) {
     long size;
     s >> size;
 
@@ -56,8 +48,7 @@ CmdArg::CmdArg() {}
 
 CmdArg::~CmdArg() {}
 
-CmdArg::CmdArg(const CmdArg& other) :
-    args_(other.args_) {}
+CmdArg::CmdArg(const CmdArg& other) : Streamable(other), args_(other.args_) {}
 
 CmdArg& CmdArg::operator=(const CmdArg& other) {
     args_ = other.args_;
@@ -140,8 +131,7 @@ void CmdArg::erase(const std::string& s) {
 
 void CmdArg::operator+=(const CmdArg& other) {
     Log::debug() << "Appending " << other << std::endl;
-    Log::debug() << "To " << std::endl
-                 << *this << std::endl;
+    Log::debug() << "To " << std::endl << *this << std::endl;
     CmdArg tmp = other;
 
     // Find where we start adding

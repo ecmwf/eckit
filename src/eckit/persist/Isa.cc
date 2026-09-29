@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iostream>
 #include <map>
@@ -17,7 +10,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static std::map<std::string, Isa*>* map_ = 0;
+static std::map<std::string, Isa*>* map_ = nullptr;
 
 void Isa::add(TypeInfo* t, const std::string& s) {
     Isa* i = new Isa(t, get(s));
@@ -26,11 +19,11 @@ void Isa::add(TypeInfo* t, const std::string& s) {
 }
 
 Isa* Isa::get(const std::string& s) {
-    if (map_ == 0) {
+    if (map_ == nullptr) {
         map_ = new std::map<std::string, Isa*>;
     }
     std::map<std::string, Isa*>::iterator j = map_->find(s);
-    return (j == map_->end()) ? (Isa*)0 : (Isa*)(*j).second;
+    return (j == map_->end()) ? nullptr : (Isa*)(*j).second;
 }
 
 void _describe(std::ostream& s, int depth, int what) {

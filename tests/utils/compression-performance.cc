@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
 #include <cstdio>
@@ -57,8 +50,8 @@ size_t timeCompress(const Compressor& compressor, eckit::Buffer& inBuffer, eckit
 }
 
 template <int N>
-void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_t inlen, eckit::Buffer& outBuffer, size_t outlen,
-                    eckit::Timer& timer) {
+void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_t inlen, eckit::Buffer& outBuffer,
+                    size_t outlen, eckit::Timer& timer) {
 
     timer.start();
 
@@ -75,8 +68,7 @@ void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_
 struct BinaryData {
     eckit::Buffer in;
     std::string description;
-    BinaryData(const eckit::PathName& path, const std::string& desc) :
-        in(path.size()), description(desc) {
+    BinaryData(const eckit::PathName& path, const std::string& desc) : in(path.size()), description(desc) {
         std::unique_ptr<DataHandle> dh(path.fileHandle());
         dh->openForRead();
         dh->read(in, in.size());

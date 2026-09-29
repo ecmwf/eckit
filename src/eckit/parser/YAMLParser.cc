@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   YAMLParser.h
 /// @author Baudouin Raoult
@@ -42,8 +35,7 @@ struct YAMLItem : public Counted {
         return v;
     }
 
-    YAMLItem(long indent = 0, const Value& value = Value()) :
-        indent_(indent), value_(value) {}
+    YAMLItem(long indent = 0, const Value& value = Value()) : indent_(indent), value_(value) {}
 
     virtual ~YAMLItem() {
         // std::cout << "~YAMLItem " << value_ << std::endl;
@@ -65,9 +57,9 @@ class YAMLItemLock {
     const YAMLItem* item_;
 
 public:
-    YAMLItemLock(const YAMLItem* item) :
-        item_(0) { set(item); }
-    ~YAMLItemLock() { set(0); }
+
+    YAMLItemLock(const YAMLItem* item) : item_{nullptr} { set(item); }
+    ~YAMLItemLock() { set(nullptr); }
 
     void set(const YAMLItem* item) {
         if (item != item_) {
@@ -89,8 +81,7 @@ struct YAMLItemEOF : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return Value(); }
 
-    YAMLItemEOF() :
-        YAMLItem(-1) {}
+    YAMLItemEOF() : YAMLItem(-1) {}
     virtual bool isEOF() const { return true; }
 };
 
@@ -131,8 +122,7 @@ struct YAMLItemStartDocument : public YAMLItem {
     }
 
 
-    YAMLItemStartDocument() :
-        YAMLItem(-1) {}
+    YAMLItemStartDocument() : YAMLItem(-1) {}
 
 
     virtual bool isStartDocument() const { return true; }
@@ -147,8 +137,7 @@ struct YAMLItemValue : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return value_; }
 
-    YAMLItemValue(size_t indent, const Value& value) :
-        YAMLItem(indent, value) {}
+    YAMLItemValue(size_t indent, const Value& value) : YAMLItem(indent, value) {}
 };
 
 struct YAMLItemAnchor : public YAMLItem {
@@ -165,8 +154,7 @@ struct YAMLItemAnchor : public YAMLItem {
         return v;
     }
 
-    YAMLItemAnchor(size_t indent, const Value& value) :
-        YAMLItem(indent, value) {}
+    YAMLItemAnchor(size_t indent, const Value& value) : YAMLItem(indent, value) {}
 };
 
 struct YAMLItemReference : public YAMLItem {
@@ -177,8 +165,7 @@ struct YAMLItemReference : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return parser.anchor(value_); }
 
-    YAMLItemReference(size_t indent, const Value& value) :
-        YAMLItem(indent, value) {}
+    YAMLItemReference(size_t indent, const Value& value) : YAMLItem(indent, value) {}
 };
 
 struct YAMLItemKey : public YAMLItem {
@@ -190,8 +177,7 @@ struct YAMLItemKey : public YAMLItem {
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    YAMLItemKey(YAMLItem* item) :
-        YAMLItem(item->indent_, item->value_) {
+    YAMLItemKey(YAMLItem* item) : YAMLItem(item->indent_, item->value_) {
 
         YAMLItemLock lock(item);  // Trigger deletion
     }
@@ -315,8 +301,7 @@ struct YAMLItemEntry : public YAMLItem {
 
     virtual void print(std::ostream& s) const { s << "YAMLItemEntry[indent=" << indent_ << "]"; }
 
-    YAMLItemEntry(size_t indent) :
-        YAMLItem(indent) {}
+    YAMLItemEntry(size_t indent) : YAMLItem(indent) {}
 
     Value value(YAMLParser& parser) const {
         std::vector<Value> l;
@@ -377,16 +362,14 @@ struct YAMLItemEndDocument : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return Value(); }
 
-    YAMLItemEndDocument() :
-        YAMLItem(-1) {}
+    YAMLItemEndDocument() : YAMLItem(-1) {}
 
 
     virtual bool isEndDocument() const { return true; }
 };
 
 
-YAMLParser::YAMLParser(std::istream& in) :
-    ObjectParser(in, true, true), last_(0) {
+YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true, true), last_{nullptr} {
     stop_.push_back(0);
     comma_.push_back(0);
     colon_.push_back(0);
@@ -430,12 +413,8 @@ static Value toValue(std::string& s) {
     static Regex integer8("^0o[0-7_]+$", false);
     static Regex integer10("^[-+]?[0-9_]+$", false);
     static Regex integer16("0x[0-9a-fA-F_]+$", false);
-    static Regex float10(
-        "^[-+]?(\\.[0-9_]+|[0-9_]+(\\.[0-9_]*)?)([eE][-+]?[0-9]+)?$",
-        false);
-    static Regex floatspecial(
-        "^(\\.(nan|NaN|NAN)|[-+]?\\.(inf|Inf|INF))$",
-        false);
+    static Regex float10("^[-+]?(\\.[0-9_]+|[0-9_]+(\\.[0-9_]*)?)([eE][-+]?[0-9]+)?$", false);
+    static Regex floatspecial("^(\\.(nan|NaN|NAN)|[-+]?\\.(inf|Inf|INF))$", false);
     // static Regex time("[0-9]+:[0-9]+:[0-9]+$", false);
 
     /*
@@ -736,10 +715,9 @@ void YAMLParser::loadItem() {
 
     size_t indent = pos_;
 
-    YAMLItem* item = 0;
-    std::string key;
-    size_t cnt = 0;
-    bool isKey = false;
+    YAMLItem* item = nullptr;
+    size_t cnt     = 0;
+    bool isKey     = false;
     Value v;
 
 

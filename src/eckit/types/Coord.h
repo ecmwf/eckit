@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // Claude  Gibert - ECMWF Dec 97
 
@@ -27,6 +20,7 @@ class DumpLoad;
 
 class Coord {
 public:
+
     friend std::ostream& operator<<(std::ostream& s, const Coord& x) {
         x.print(s);
         return s;
@@ -36,10 +30,8 @@ public:
 
     // -- Contructors
 
-    Coord(double l = 0) :
-        value_(l) {}
-    Coord(const Coord& other) :
-        value_(other.value_) {}
+    Coord(double l = 0) : value_(l) {}
+    Coord(const Coord& other) : value_(other.value_) {}
 
 
     // -- Operators
@@ -84,6 +76,7 @@ public:
     double value() { return value_; }
 
 protected:
+
     // -- Members
 
     double value_;
@@ -92,7 +85,7 @@ protected:
     friend class Area;
 };
 
-typedef std::vector<Coord> CoordList;
+using CoordList = std::vector<Coord>;
 
 //---------------------------------------------------------
 // Longitude
@@ -100,6 +93,7 @@ typedef std::vector<Coord> CoordList;
 
 class Longitude : public Coord {
 public:
+
     // -- Contructors
 
     Longitude(double l = 0);
@@ -111,6 +105,7 @@ public:
 
 class Latitude : public Coord {
 public:
+
     // -- Contructors
 
     Latitude(double l = 0);

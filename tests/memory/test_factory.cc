@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
@@ -14,7 +7,6 @@
 
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
-#include "eckit/memory/Owned.h"
 #include "eckit/testing/Test.h"
 #include "eckit/value/Properties.h"
 
@@ -23,19 +15,34 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Base0 {
+class Base {
 public:
-    using builder_t = BuilderT0<Base0>;
 
-    static std::string className() { return "eckit_test.Base0"; }
+    Base()            = default;
+    Base(const Base&) = default;
+    Base(Base&&)      = default;
 
-    virtual ~Base0() = default;
+    Base& operator=(const Base&) = default;
+    Base& operator=(Base&&)      = default;
+
+    virtual ~Base() = default;
 
     virtual std::string foo() const = 0;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
+class Base0 : public Base {
+public:
+
+    using builder_t = BuilderT0<Base0>;
+
+    static std::string className() { return "eckit_test.Base0"; }
+};
+
 class A0 : public Base0 {
 public:
+
     static std::string className() { return "eckit_test.A0"; }
 
     A0() : s1_("A.0") {}
@@ -43,11 +50,13 @@ public:
     std::string foo() const override { return className() + "." + s1_; }
 
 private:
+
     std::string s1_;
 };
 
 class B0 : public Base0 {
 public:
+
     static std::string className() { return "eckit_test.B0"; }
 
     B0() : s2_("B.0") {}
@@ -55,6 +64,7 @@ public:
     std::string foo() const override { return className() + "." + s2_; }
 
 private:
+
     std::string s2_;
 };
 
@@ -63,20 +73,18 @@ static const ConcreteBuilderT0<Base0, B0> builder_B0;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Base1 : public Owned {
+class Base1 : public Base {
 public:
+
     using builder_t = BuilderT1<Base1>;
     using ARG1      = const Properties&;
 
     static std::string className() { return "eckit_test.Base1"; }
-
-    virtual ~Base1() = default;
-
-    virtual std::string foo() const = 0;
 };
 
 class A1 : public Base1 {
 public:
+
     static std::string className() { return "eckit_test.A1"; }
 
     explicit A1(const Properties& p) : s1_(p["mystr"].as<std::string>() + ".1") {}
@@ -84,11 +92,13 @@ public:
     std::string foo() const override { return className() + "." + s1_; }
 
 private:
+
     std::string s1_;
 };
 
 class B1 : public Base1 {
 public:
+
     static std::string className() { return "eckit_test.B1"; }
 
     explicit B1(const Properties& p) : s2_(p["mystr"].as<std::string>() + ".2") {}
@@ -96,6 +106,7 @@ public:
     std::string foo() const override { return className() + "." + s2_; }
 
 private:
+
     std::string s2_;
 };
 
@@ -104,21 +115,19 @@ static const ConcreteBuilderT1<Base1, B1> builder_B1;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Base2 : public Owned {
+class Base2 : public Base {
 public:
+
     using builder_t = BuilderT2<Base2>;
     using ARG1      = std::string;
     using ARG2      = int;
 
     static std::string className() { return "eckit_test.Base2"; }
-
-    virtual ~Base2() = default;
-
-    virtual std::string foo() const = 0;
 };
 
 class A2 : public Base2 {
 public:
+
     static std::string className() { return "eckit_test.A2"; }
 
     A2(std::string s, int i) : s1_(s + "." + std::to_string(i)) {}
@@ -126,11 +135,13 @@ public:
     std::string foo() const override { return className() + "." + s1_; }
 
 private:
+
     std::string s1_;
 };
 
 class B2 : public Base2 {
 public:
+
     static std::string className() { return "eckit_test.B2"; }
 
     B2(std::string s, int i) : s2_(s + "." + std::to_string(i)) {}
@@ -138,6 +149,7 @@ public:
     std::string foo() const override { return className() + "." + s2_; }
 
 private:
+
     std::string s2_;
 };
 

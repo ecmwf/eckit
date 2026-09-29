@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @author Simon Smart
@@ -29,6 +22,7 @@ namespace eckit {
 
 class QueueInterruptedError : public Exception {
 public:
+
     QueueInterruptedError(const std::string& msg, const CodeLocation& here) :
         Exception(std::string("Threaded queue interrupted") + (msg.size() ? (std::string(": ") + msg) : std::string()),
                   here) {}
@@ -40,8 +34,8 @@ template <typename ELEM>
 class Queue {
 
 public:  // public
-    Queue(size_t max) :
-        max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
+
+    Queue(size_t max) : max_(max), interrupt_{nullptr}, closed_(false) { ASSERT(max > 0); }
 
     Queue(const Queue&)            = delete;
     Queue& operator=(const Queue&) = delete;
@@ -151,6 +145,7 @@ public:  // public
     }
 
 private:  // members
+
     std::queue<ELEM> queue_;
     std::mutex mutex_;
     std::condition_variable cv_;

@@ -1,21 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/eckit.h"
 
 #include <fcntl.h>
-#include <cstdint>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cstdint>
 #include <cstring>
 
 #include "eckit/container/MappedArray.h"
@@ -29,12 +22,11 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-MappedArray<T>::MappedArray(const PathName& path, unsigned long size) :
-    sem_(path), size_(size) {
+MappedArray<T>::MappedArray(const PathName& path, unsigned long size) : sem_(path), size_(size) {
 
     AutoLock<Semaphore> lock(sem_);
 
-    typedef Padded<typename MappedArray<T>::Header, 4096> PaddedHeader;
+    using PaddedHeader = Padded<typename MappedArray<T>::Header, 4096>;
 
     fd_ = ::open(path.localPath(), O_RDWR | O_CREAT, 0777);
     if (fd_ < 0) {

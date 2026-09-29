@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @date   Jun 2011
 /// @author Baudouin Raoult
@@ -25,6 +18,7 @@
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Tokenizer.h"
@@ -42,8 +36,9 @@ class ClusterDisk {
     char path_[2048];
 
 public:
+
     ClusterDisk(const std::string& node, const std::string& type, const std::string& path) :
-        active_(true), offLine_(false), lastSeen_(::time(0)) {
+        active_(true), offLine_(false), lastSeen_(::time(nullptr)) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
         zero(type_);
@@ -125,7 +120,7 @@ public:
     }
 };
 std::ostream& operator<<(std::ostream& s, const ClusterDisk& d) {
-    s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(0) - d.lastSeen_) << ","
+    s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(nullptr) - d.lastSeen_) << ","
       << (d.offLine_ ? "off" : "on") << "-line"
       << "]";
     return s;
@@ -137,11 +132,19 @@ inline unsigned long version(ClusterDisk*) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class DiskArray : private eckit::NonCopyable {
+class DiskArray {
 
 public:
-    typedef ClusterDisk* iterator;
-    typedef const ClusterDisk* const_iterator;
+
+    using iterator       = ClusterDisk*;
+    using const_iterator = const ClusterDisk*;
+
+    DiskArray() = default;
+
+    DiskArray(const DiskArray&)            = delete;
+    DiskArray& operator=(const DiskArray&) = delete;
+    DiskArray(DiskArray&&)                 = delete;
+    DiskArray& operator=(DiskArray&&)      = delete;
 
     virtual ~DiskArray() {}
 
@@ -176,8 +179,8 @@ class MemoryMappedDiskArray : public DiskArray {
     MappedArray<ClusterDisk> map_;
 
 public:
-    MemoryMappedDiskArray(const PathName& path, unsigned long size) :
-        DiskArray(), map_(path, size) {}
+
+    MemoryMappedDiskArray(const PathName& path, unsigned long size) : DiskArray(), map_(path, size) {}
 };
 
 class SharedMemoryDiskArray : public DiskArray {
@@ -198,6 +201,7 @@ class SharedMemoryDiskArray : public DiskArray {
     SharedMemArray<ClusterDisk> map_;
 
 public:
+
     SharedMemoryDiskArray(const PathName& path, const std::string& name, unsigned long size) :
         DiskArray(), map_(path, name, size) {}
 };
@@ -206,7 +210,7 @@ static DiskArray* clusterDisks = nullptr;
 static pthread_once_t once     = PTHREAD_ONCE_INIT;
 
 static void diskarray_init() {
-    LocalPathName path("~/etc/cluster/disks");  // avoid recursion...
+    LocalPathName path(Main::instance().rundir() / "cluster/disks");
 
     size_t disksArraySize = Resource<size_t>("disksArraySize", 10240);
 
@@ -256,7 +260,7 @@ void ClusterDisks::cleanup() {
 
 void ClusterDisks::forget(const NodeInfo& info) {
     if (info.name() == "marsfs") {
-        time_t now = ::time(0);
+        time_t now = ::time(nullptr);
         pthread_once(&once, diskarray_init);
         AutoLock<DiskArray> lock(*clusterDisks);
 
@@ -272,7 +276,7 @@ void ClusterDisks::forget(const NodeInfo& info) {
 
 void ClusterDisks::offLine(const NodeInfo& info) {
     if (info.name() == "marsfs") {
-        time_t now = ::time(0);
+        time_t now = ::time(nullptr);
         pthread_once(&once, diskarray_init);
         AutoLock<DiskArray> lock(*clusterDisks);
 

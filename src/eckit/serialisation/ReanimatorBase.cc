@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Streamable.h"
@@ -19,11 +12,13 @@ namespace eckit {
 
 class NotSubClass : public Exception {
 public:
+
     NotSubClass(const std::string&, const std::string&);
 };
 
 class UnknowClass : public Exception {
 public:
+
     UnknowClass(const std::string&);
 };
 
@@ -32,7 +27,7 @@ public:
 
 // Should protected with a mutex...
 
-typedef std::map<std::string, ReanimatorBase*, std::less<std::string> > Map;
+using Map = std::map<std::string, ReanimatorBase*, std::less<std::string>>;
 
 // This trick garanty than a std::map is created
 
@@ -41,8 +36,7 @@ static Map& theMap() {
     return m;
 }
 
-ReanimatorBase::ReanimatorBase(const ClassSpec& spec) :
-    spec_(spec) {
+ReanimatorBase::ReanimatorBase(const ClassSpec& spec) : spec_(spec) {
     theMap()[std::string(spec_.name_)] = this;
     //	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
 }
@@ -53,16 +47,16 @@ ReanimatorBase::~ReanimatorBase() {
 }
 
 
-UnknowClass::UnknowClass(const std::string& w) :
-    Exception(std::string("Unknow class: ") + w) {}
+UnknowClass::UnknowClass(const std::string& w) : Exception(std::string("Unknow class: ") + w) {}
 
 NotSubClass::NotSubClass(const std::string& found, const std::string& clss) :
-    Exception(std::string("Not a sub class: object ") + found + std::string(" found, but it is not subclass of ") + clss) {}
+    Exception(std::string("Not a sub class: object ") + found + std::string(" found, but it is not subclass of ") +
+              clss) {}
 
 
 Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
     if (!s.next()) {
-        return 0;
+        return nullptr;
     }
 
     std::string name;
@@ -80,11 +74,11 @@ Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
 
     if (c) {
         const ClassSpec* a = &r->spec_;
-        while (a != 0 && a != c) {
+        while (a != nullptr && a != c) {
             a = a->superClass_;
         }
 
-        if (a == 0) {
+        if (a == nullptr) {
             throw NotSubClass(name, c->name_);
         }
     }

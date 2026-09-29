@@ -1,6 +1,8 @@
-cmake_options: -DENABLE_ECKIT_GEO=ON
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 dependencies: |
   ecmwf/ecbuild
-  MathisRosenhauer/libaec@master
+  Deutsches-Klimarechenzentrum/libaec@refs/tags/v1.1.6
 dependency_branch: develop
 parallelism_factor: 8

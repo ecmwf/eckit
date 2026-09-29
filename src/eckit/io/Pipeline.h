@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Pipeline.h
 // Baudouin Raoult - ECMWF Feb 97
@@ -17,7 +10,6 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/TransferWatcher.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------
@@ -26,11 +18,17 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Pipeline : private NonCopyable {
+class Pipeline {
 public:
+
     // -- Contructors
 
     Pipeline(TransferWatcher& = TransferWatcher::dummy());
+
+    Pipeline(const Pipeline&)            = delete;
+    Pipeline& operator=(const Pipeline&) = delete;
+    Pipeline(Pipeline&&)                 = delete;
+    Pipeline& operator=(Pipeline&&)      = delete;
 
     // -- Destructor
 
@@ -46,10 +44,12 @@ public:
 
 
 private:
+
     virtual void execute(DataHandle& in, DataHandle& out) = 0;
 
 
 private:  // members
+
     Mutex mutex_;
 
     long count_;

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <ostream>
 
@@ -23,7 +16,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_(0), buffer_(size) {
+ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_{nullptr}, buffer_(size) {
     ASSERT(size);
     setp(buffer_.data(), buffer_.data() + buffer_.size());
 }
@@ -33,7 +26,7 @@ ChannelBuffer::~ChannelBuffer() {
 }
 
 bool ChannelBuffer::active() const {
-    return target_ != 0;
+    return target_ != nullptr;
 }
 
 
@@ -61,15 +54,17 @@ void ChannelBuffer::reset() {
     sync();
     if (target_) {
         target_->detach();
-        target_ = 0;
+        target_ = nullptr;
     }
 }
 
 bool ChannelBuffer::dumpBuffer() {
-    // When setting and using pointers we should have boundary checks. In a multi threaded environment we already have experienced weird behaviour.
-    // With these checks the race conditions are not gone but they won't cause any segfaults. See https://github.com/ecmwf/eckit/issues/89
+    // When setting and using pointers we should have boundary checks. In a multi threaded environment we already have
+    // experienced weird behaviour. With these checks the race conditions are not gone but they won't cause any
+    // segfaults. See https://github.com/ecmwf/eckit/issues/89
     if (target_) {
-        // Explicitly check that `pptr()` is not larger than end of buffer. Racecondition can end up adding larger values.
+        // Explicitly check that `pptr()` is not larger than end of buffer. Racecondition can end up adding larger
+        // values.
         target_->write(buffer_.data(), std::min(pptr(), buffer_.data() + buffer_.size()));
     }
     setp(buffer_.data(), buffer_.data() + buffer_.size());
@@ -85,7 +80,7 @@ void ChannelBuffer::indent(const char* space) {
 void ChannelBuffer::unindent() {
     if (target_) {
         IndentTarget* indent = dynamic_cast<IndentTarget*>(target_);
-        if (indent == 0) {
+        if (indent == nullptr) {
             throw SeriousBug("Attempt to unindent a Channel that is not indented");
         }
         setTarget(indent->target_);

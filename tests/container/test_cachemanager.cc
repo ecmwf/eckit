@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <string>
 
@@ -14,6 +7,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
+#include "eckit/testing/Filesystem.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -46,10 +40,10 @@ struct CacheTraits {
 
 
 struct Manager : eckit::CacheManager<CacheTraits> {
-    Manager() :
-        eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ false, /*maxCacheSize*/ 0) {}
+    Manager() : eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ false, /*maxCacheSize*/ 0) {}
 
 private:
+
     friend CacheTraits;
 };
 
@@ -60,6 +54,7 @@ struct CacheCreator : Manager::CacheContentCreator {
     CacheCreator& operator=(const CacheCreator&) = delete;
 
 private:
+
     void create(const eckit::PathName& path, CacheTraits::value_type& value, bool& saved) final {
         Log::info() << "CacheCreator::create(path='" << path << "')" << std::endl;
         path.touch();
@@ -74,6 +69,7 @@ struct ManagerCantMiss : eckit::CacheManager<CacheTraits> {
         eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ true, /*maxCacheSize*/ 0) {}
 
 private:
+
     friend CacheTraits;
 };
 
@@ -84,39 +80,17 @@ struct CacheCreatorCantMiss : ManagerCantMiss::CacheContentCreator {
     CacheCreatorCantMiss& operator=(const CacheCreatorCantMiss&) = delete;
 
 private:
+
     void create(const eckit::PathName&, CacheTraits::value_type&, bool&) final { NOTIMP; }
 };
 
 }  // namespace caching
 
-namespace {
-
-void deldir(eckit::PathName& p) {
-    if (!p.exists()) {
-        return;
-    }
-
-    std::vector<eckit::PathName> files;
-    std::vector<eckit::PathName> dirs;
-    p.children(files, dirs);
-
-    for (auto& f : files) {
-        f.unlink();
-    }
-    for (auto& d : dirs) {
-        deldir(d);
-    }
-
-    p.rmdir();
-}
-
-}  // namespace
-
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_cachemanager") {
     PathName dir = caching::CacheTraits::name();
-    deldir(dir);
+    testing::deldir(dir);
     EXPECT(!dir.exists());
 
     using value_t     = caching::CacheTraits::value_type;

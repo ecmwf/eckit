@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_utils_MD5_H
 #define eckit_utils_MD5_H
@@ -22,6 +15,7 @@ namespace eckit {
 class MD5 : public Hash {
 
 public:  // types
+
     MD5();
 
     explicit MD5(const char*);
@@ -82,21 +76,22 @@ public:  // types
 
     void numericalDigest(unsigned char out[MD5_DIGEST_LENGTH]) const;
 
-private:                       // members
+private:  // members
+
     mutable digest_t digest_;  ///< cached digest
 
     /* POINTER defines a generic pointer type */
-    typedef unsigned char* POINTER;
+    using POINTER = unsigned char*;
 
     /* UINT4 defines a four byte word */
-    typedef uint32_t UINT4;
+    using UINT4 = uint32_t;
 
     /* MD5 context. */
-    typedef struct {
+    struct MD5_CTX {
         UINT4 state[4];           /* state (ABCD) */
         UINT4 count[2];           /* number of bits, modulo 2^64 (lsb first) */
         unsigned char buffer[64]; /* input buffer */
-    } MD5_CTX;
+    };
 
     mutable MD5_CTX s_;
 

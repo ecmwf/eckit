@@ -1,16 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
-#include <sstream>
-#include <iomanip>
 #include <cstdint>
+#include <iomanip>
+#include <sstream>
 
 #include "eckit/eckit.h"
 
@@ -22,11 +15,9 @@ namespace eckit {
 
 const char* TimeStamp::defaultFormat_ = "%Y-%m-%d %H:%M:%S";
 
-TimeStamp::TimeStamp(const std::string& format) :
-    time_(Clock::now()), format_(format) {}
+TimeStamp::TimeStamp(const std::string& format) : time_(Clock::now()), format_(format) {}
 
-TimeStamp::TimeStamp(time_t t, const std::string& format) :
-    time_(t), format_(format) {}
+TimeStamp::TimeStamp(time_t t, const std::string& format) : time_(t), format_(format) {}
 
 std::ostream& operator<<(std::ostream& s, const TimeStamp& x) {
 

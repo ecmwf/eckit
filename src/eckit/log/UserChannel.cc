@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <vector>
@@ -23,10 +16,11 @@ namespace eckit {
 
 class UserBuffer : public std::streambuf {
 public:
-    typedef UserChannel::MsgType MsgType;
+
+    using MsgType = UserChannel::MsgType;
 
     UserBuffer(std::size_t size = 1024) :
-        std::streambuf(), buffer_(size + 1), msgType_(UserChannel::NONE), user_(nullptr) {
+        std::streambuf(), buffer_(size + 1), msgType_(UserChannel::NONE), user_{nullptr} {
         ASSERT(size);
         char* base = &buffer_.front();
         setp(base, base + buffer_.size() - 1);  // don't consider the space for '\0'
@@ -41,6 +35,7 @@ public:
     UserMsg* userMsg() const { return user_; }
 
 private:
+
     std::vector<char> buffer_;  ///< internal buffer
     MsgType msgType_;           ///< type of next message
     UserMsg* user_;             ///< interface to user messeges
@@ -73,6 +68,7 @@ private:
     }
 
 protected:
+
     virtual int_type overflow(int_type ch) {
         if (ch == traits_type::eof()) {
             return sync();
@@ -87,8 +83,7 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-UserChannel::UserChannel() :
-    std::ostream(new UserBuffer()), buffer_(dynamic_cast<UserBuffer*>(rdbuf())) {
+UserChannel::UserChannel() : std::ostream(new UserBuffer()), buffer_(dynamic_cast<UserBuffer*>(rdbuf())) {
     ASSERT(buffer_);
 }
 

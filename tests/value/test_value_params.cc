@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 #include <sys/types.h>
 #include <limits>
 
@@ -41,14 +34,15 @@ const double dmax               = numeric_limits<double>::max();
 
 class TestParams : public DispatchParams<TestParams> {
 public:
-    TestParams(const std::string& payload) :
-        payload_(payload) { dispatch_["foo"] = &TestParams::getPayload; }
+
+    TestParams(const std::string& payload) : payload_(payload) { dispatch_["foo"] = &TestParams::getPayload; }
     TestParams(Stream& s) {
         dispatch_["foo"] = &TestParams::getPayload;
         s >> payload_;
     }
 
 private:
+
     Params::value_t getPayload(const Params::key_t& key) const { return payload_; }
 
     friend void encode(const TestParams&, Stream&);
@@ -99,8 +93,7 @@ struct CompositeParamsFixture {
 };
 
 struct ListParamsFixture {
-    ListParamsFixture() :
-        p(CompositeParams(ListParamsFixture::pl())) {}
+    ListParamsFixture() : p(CompositeParams(ListParamsFixture::pl())) {}
 
     static Params::List& pl() {
         static Params::List l;
@@ -123,8 +116,7 @@ struct ListParamsFixture {
 };
 
 struct ScopedParamsFixture {
-    ScopedParamsFixture() :
-        p(ScopeParams("scope", Params(Properties().set("foo", "bar")))) {}
+    ScopedParamsFixture() : p(ScopeParams("scope", Params(Properties().set("foo", "bar")))) {}
 
     Params p;
 };
@@ -139,15 +131,13 @@ struct CompositeScopedParamsFixture {
 };
 
 struct DispatchParamsFixture {
-    DispatchParamsFixture() :
-        p(TestParams("bar")) {}
+    DispatchParamsFixture() : p(TestParams("bar")) {}
 
     Params p;
 };
 
 struct AnyKeyParamsFixture {
-    AnyKeyParamsFixture() :
-        p(AnyKeyParams("foo")) {}
+    AnyKeyParamsFixture() : p(AnyKeyParams("foo")) {}
 
     Params p;
 };
@@ -177,7 +167,7 @@ void test_vals(const Params& p) {
     EXPECT((unsigned long long)p["unsigned long long"] == ullmax);
     EXPECT((double)p["double"] == dmax);
     EXPECT(p["string"] == "foo");
-    EXPECT(p["Length"] == Length(42));
+    EXPECT_EQUAL(static_cast<int>(p["Length"]), 42);
     EXPECT(p["Date"] == (Date(2015, 2, 1)));
     EXPECT(p["PathName"] == PathName("/var/tmp"));
 }

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -20,12 +13,18 @@
 
 namespace eckit::net {
 
-class TCPServer : public TCPSocket, private NonCopyable {
+class TCPServer : public TCPSocket {
 public:
+
     TCPServer(const SocketOptions& = SocketOptions::server());
     explicit TCPServer(int port, const SocketOptions& = SocketOptions::server());
 
-    ~TCPServer();
+    TCPServer(const TCPServer&)            = delete;
+    TCPServer& operator=(const TCPServer&) = delete;
+    TCPServer(TCPServer&&)                 = delete;
+    TCPServer& operator=(TCPServer&&)      = delete;
+
+    ~TCPServer() override;
 
     void willFork(bool);
 
@@ -40,22 +39,26 @@ public:
     void close() override;
 
 protected:  // members
+
     int port_;
     int listen_;
 
     SocketOptions options_;  //< options to build the socket
 
 protected:  // methods
+
     void bind() override;
 
     void print(std::ostream& s) const override;
 
 private:  // methods
+
     // To be used by Select
 
     std::string bindingAddress() const override;
 
 private:  // members
+
     bool closeExec_;
     Mutex mutex_;
 };
@@ -65,8 +68,11 @@ private:  // members
 
 class EphemeralTCPServer : public TCPServer {
 public:
+
     EphemeralTCPServer(const SocketOptions& = SocketOptions::data());
     explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
+
+    ~EphemeralTCPServer() override = default;
 };
 
 }  // namespace eckit::net

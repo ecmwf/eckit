@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   Transport.h
 /// @author Baudouin Raoult
@@ -18,14 +11,13 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/distributed/TransportStatistics.h"
 
 
 namespace eckit::option {
 class Option;
 class CmdArgs;
-}
+}  // namespace eckit::option
 
 namespace eckit::distributed {
 
@@ -34,28 +26,34 @@ class Message;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Transport : private eckit::NonCopyable {
-public: // methods
+class Transport {
+public:  // methods
 
-    Transport(const eckit::option::CmdArgs &args);
+    Transport(const eckit::option::CmdArgs& args);
+
+    Transport(const Transport&)            = delete;
+    Transport& operator=(const Transport&) = delete;
+    Transport(Transport&&)                 = delete;
+    Transport& operator=(Transport&&)      = delete;
+
     virtual ~Transport();
 
-    virtual void sendMessageToNextWorker(const Message &message) = 0;
-    virtual void getNextWorkMessage(Message &message) = 0;
-    virtual void sendStatisticsToProducer(const Message &message) = 0;
+    virtual void sendMessageToNextWorker(const Message& message)  = 0;
+    virtual void getNextWorkMessage(Message& message)             = 0;
+    virtual void sendStatisticsToProducer(const Message& message) = 0;
 
-    virtual void sendToWriter(size_t writer, const Message &message) = 0;
-    virtual void getNextWriteMessage(Message &message) = 0;
+    virtual void sendToWriter(size_t writer, const Message& message) = 0;
+    virtual void getNextWriteMessage(Message& message)               = 0;
 
     virtual void sendShutDownMessage(const Actor&) = 0;
 
-    virtual void initialise() = 0;
-    virtual void abort() = 0;
+    virtual void initialise()  = 0;
+    virtual void abort()       = 0;
     virtual void synchronise() = 0;
 
     virtual bool producer() const = 0;
-    virtual bool single() const = 0;
-    virtual bool writer() const = 0;
+    virtual bool single() const   = 0;
+    virtual bool writer() const   = 0;
 
     virtual const std::string& title() const;
     virtual const std::string& id() const;
@@ -69,21 +67,20 @@ protected:
 
     TransportStatistics statistics_;
 
-private: // methods
+private:  // methods
 
-    virtual void print(std::ostream &out) const = 0;
+    virtual void print(std::ostream& out) const = 0;
 
-    friend std::ostream &operator<<(std::ostream &s, const Transport &x) {
+    friend std::ostream& operator<<(std::ostream& s, const Transport& x) {
         x.print(s);
         return s;
     }
-
 };
 
 
 class TransportFactory {
     std::string name_;
-    virtual Transport* make(const eckit::option::CmdArgs &args) = 0 ;
+    virtual Transport* make(const eckit::option::CmdArgs& args) = 0;
 
 protected:
 
@@ -92,22 +89,21 @@ protected:
 
 public:
 
-    static Transport* build(const eckit::option::CmdArgs &args);
-    static void list(std::ostream &);
-
+    static Transport* build(const eckit::option::CmdArgs& args);
+    static void list(std::ostream&);
 };
 
 
-template<class T>
+template <class T>
 class TransportBuilder : public TransportFactory {
-    virtual Transport* make(const eckit::option::CmdArgs &args) override {
-        return new T(args);
-    }
+    virtual Transport* make(const eckit::option::CmdArgs& args) override { return new T(args); }
+
 public:
+
     TransportBuilder(const std::string& name) : TransportFactory(name) {}
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit::distributed
+}  // namespace eckit::distributed

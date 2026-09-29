@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 /// @author Baudouin Raoult
@@ -19,7 +12,6 @@
 
 #include <pthread.h>
 
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -27,10 +19,16 @@ namespace eckit {
 
 /// Class meant to be used only for static mutexes protecting local resources inside a single compilation unit
 
-class StaticMutex : private NonCopyable {
+class StaticMutex {
 
 public:  // methods
+
     StaticMutex();
+
+    StaticMutex(const StaticMutex&)            = delete;
+    StaticMutex& operator=(const StaticMutex&) = delete;
+    StaticMutex(StaticMutex&&)                 = delete;
+    StaticMutex& operator=(StaticMutex&&)      = delete;
 
     ~StaticMutex();
 
@@ -38,6 +36,7 @@ public:  // methods
     void unlock();
 
 protected:  // members
+
     void init();
 
     /// since this will be static memory, it should be initialized to zero by the system

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 #include <semaphore.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
@@ -45,23 +48,29 @@ const unsigned short SLOT = 0;
 class MemorySharedLimit {
 
 public:  // types
-    typedef unsigned short parts_t;
 
-    struct Token : private eckit::NonCopyable {
+    using parts_t = unsigned short;
 
-        Token(MemorySharedLimit& limit, parts_t parts) :
-            limit_(limit), parts_(parts) {}
+    struct Token {
+
+        Token(MemorySharedLimit& limit, parts_t parts) : limit_(limit), parts_(parts) {}
+
+        Token(const Token&)            = delete;
+        Token& operator=(const Token&) = delete;
+        Token(Token&&)                 = delete;
+        Token& operator=(Token&&)      = delete;
 
         ~Token() { limit_.release(parts_); }
 
     private:
+
         MemorySharedLimit& limit_;
         parts_t parts_;
     };
 
 public:  // methods
-    MemorySharedLimit(const PathName& path, size_t managed) :
-        shint_(path, 1), managed_(managed) {
+
+    MemorySharedLimit(const PathName& path, size_t managed) : shint_(path, 1), managed_(managed) {
         ASSERT(short(nlimit()) == nlimit());  // "SEM_MAX_VALUE must fit short in this architecture
 
         std::cout << "nlimit() " << nlimit() << std::endl;
@@ -112,6 +121,7 @@ public:  // methods
     }
 
 private:  // methods
+
     parts_t partitions(size_t mem) {
         size_t parts = mem / partsize_;
         return static_cast<parts_t>(parts);
@@ -130,7 +140,8 @@ private:  // methods
         throw eckit::BadValue(oss.str(), Here());
     }
 
-private:                      // members
+private:  // members
+
     eckit::SharedInt shint_;  ///< shared int
     size_t managed_;          ///< amount of memory managed
     size_t partsize_;         ///< minimal amount of memory possible to check out
@@ -169,8 +180,8 @@ class Forker : public ProcessControler {
     }
 
 public:
-    Forker() :
-        ProcessControler(true) {}
+
+    Forker() : ProcessControler(true) {}
 };
 
 
@@ -180,12 +191,13 @@ const short nprocs = 8;
 
 class MemApp : public Tool {
 public:
-    MemApp(int argc, char** argv) :
-        Tool(argc, argv, "HOME") {}
+
+    MemApp(int argc, char** argv) : Tool(argc, argv, "HOME") {}
 
     ~MemApp() {}
 
 private:
+
     MemApp(const MemApp&)            = delete;
     MemApp& operator=(const MemApp&) = delete;
 

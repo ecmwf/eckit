@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -16,8 +9,8 @@
 #define eckit_LocalConfiguration_H
 
 #include <initializer_list>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
@@ -36,6 +29,7 @@ class LocalConfiguration : public Configuration, public Configured {
     ///       eckit::Value should remain an internal detail of configuration objects
 
 public:  // methods
+
     explicit LocalConfiguration(char separator = '.');
     explicit LocalConfiguration(Stream& s);
     explicit LocalConfiguration(const Configuration& other);
@@ -51,14 +45,15 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, bool value) override;
     LocalConfiguration& set(const std::string& name, int value) override;
     LocalConfiguration& set(const std::string& name, long value) override;
-    LocalConfiguration& set(const std::string& name, long long value);
+    LocalConfiguration& set(const std::string& name, long long value) override;
     LocalConfiguration& set(const std::string& name, size_t value) override;
     LocalConfiguration& set(const std::string& name, float value) override;
     LocalConfiguration& set(const std::string& name, double value) override;
 
+    LocalConfiguration& set(const std::string& name, const std::vector<bool>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<int>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<long>& value) override;
-    LocalConfiguration& set(const std::string& name, const std::vector<long long>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<long long>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<size_t>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<float>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<double>& value) override;
@@ -71,7 +66,7 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, const std::vector<ConfigurationT>& value) {
         std::vector<const Configuration*> abstract_pointers;
         abstract_pointers.reserve(value.size());
-        for (auto& v: value) {
+        for (auto& v : value) {
             abstract_pointers.emplace_back(&v);
         }
         return set(name, abstract_pointers.data(), abstract_pointers.size());
@@ -82,7 +77,7 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, std::initializer_list<ConfigurationT>&& value) {
         std::vector<const Configuration*> abstract_pointers;
         abstract_pointers.reserve(value.size());
-        for (auto& v: value) {
+        for (auto& v : value) {
             abstract_pointers.emplace_back(&v);
         }
         return set(name, abstract_pointers.data(), abstract_pointers.size());
@@ -92,6 +87,7 @@ public:  // methods
     LocalConfiguration& remove(const std::string& name);
 
 protected:
+
     friend class Configuration;
 
     /// to be used only by class Configuration
@@ -102,6 +98,7 @@ protected:
     LocalConfiguration& set(const std::string& name, const Configuration* abstract_pointers[], size_t size);
 
 private:
+
     void setValue(const std::vector<std::string>& path, size_t i, Value& root, const Value& value);
     void setValue(const std::string& s, const Value& value);
 };
@@ -110,7 +107,7 @@ private:
 
 template <>
 struct VectorPrintSelector<LocalConfiguration> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 }  // namespace eckit

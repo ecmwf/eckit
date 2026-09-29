@@ -1,17 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/option/MultiValueOption.h"
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"
@@ -44,8 +38,8 @@ MultiValueOption::MultiValueOption(const std::string& name, const std::string& d
 size_t MultiValueOption::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
                              args_t::const_iterator end) const {
     if (std::distance(begin, end) < n_mandatory_values_) {
-        throw UserError("Not enough option values found for MultiValueOption, where at least "
-                        + std::to_string(n_mandatory_values_) + " were expected");
+        throw UserError("Not enough option values found for MultiValueOption, where at least " +
+                        std::to_string(n_mandatory_values_) + " were expected");
     }
 
     // Collect n_mandatory_values_ mandatory values from the range [begin, end)

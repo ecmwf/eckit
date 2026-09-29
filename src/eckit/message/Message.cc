@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 2017- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Jun 2020
@@ -32,6 +25,7 @@ class NoContent : public MessageContent {
     void* operator new(size_t);
 
 public:
+
     NoContent() { attach(); }
 };
 
@@ -40,22 +34,23 @@ static NoContent noContent;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Message::Message() :
-    content_(&noContent) {
+Message::Message() : content_(&noContent) {
     content_->attach();
 }
 
-Message::Message(MessageContent* content) :
-    content_(content ? content : &noContent) {
+Message::Message(MessageContent* content) : content_(content ? content : &noContent) {
     content_->attach();
 }
 
-Message::Message(const Message& other) :
-    content_(other.content_) {
+Message::Message(const Message& other) : content_(other.content_) {
     content_->attach();
 }
 
 Message& Message::operator=(const Message& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     if (content_ != other.content_) {
         content_->detach();
         content_ = other.content_;
@@ -100,6 +95,10 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
     return content_->getDoubleArray(key, v);
 }
 
+void Message::getFloatArray(const std::string& key, std::vector<float>& v) const {
+    return content_->getFloatArray(key, v);
+}
+
 size_t Message::getSize(const std::string& key) const {
     return content_->getSize(key);
 }
@@ -108,13 +107,16 @@ void Message::getDoubleArray(const std::string& key, double* data, size_t len) c
     return content_->getDoubleArray(key, data, len);
 }
 
+void Message::getFloatArray(const std::string& key, float* data, size_t len) const {
+    return content_->getFloatArray(key, data, len);
+}
 
 eckit::Buffer Message::decode() const {
     return lookupDecoder().decode(*this);
 };
 
-Message Message::transform(const eckit::StringDict& dict) const {
-    return Message(content_->transform(dict));
+void Message::transform(const eckit::OrderedStringDict& dict) {
+    content_->transform(dict);
 }
 
 eckit::DataHandle* Message::readHandle() const {

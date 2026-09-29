@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fcntl.h>
-#include <csignal>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/net/ProxiedTCPServer.h"
 
@@ -23,8 +16,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ProxiedTCPServer::ProxiedTCPServer(int port, const net::SocketOptions& options) :
-    net::TCPServer(port, options) {}
+ProxiedTCPServer::ProxiedTCPServer(int port, const net::SocketOptions& options) : net::TCPServer(port, options) {}
 
 ProxiedTCPServer::~ProxiedTCPServer() {}
 
@@ -37,9 +29,7 @@ net::TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout
 
     char c;
     unsigned long x   = 0;
-    unsigned long end = ('\r' << 24L) | ('\n'
-                                         << 16L)
-                        | ('\r' << 8L) | '\n';
+    unsigned long end = ('\r' << 24L) | ('\n' << 16L) | ('\r' << 8L) | '\n';
 
     while (socket.read(&c, 1) == 1) {
 

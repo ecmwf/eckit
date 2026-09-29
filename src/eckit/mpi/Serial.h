@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_mpi_Serial_h
 #define eckit_mpi_Serial_h
@@ -19,6 +12,7 @@ namespace eckit::mpi {
 
 class Serial : public eckit::mpi::Comm {
 public:
+
     struct Constants {
         static constexpr int anyTag() { return -1; }
         static constexpr int anySource() { return -1; }
@@ -27,6 +21,7 @@ public:
     };
 
 protected:  // methods
+
     template <class T>
     friend class CommBuilder;
 
@@ -81,11 +76,11 @@ protected:  // methods
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
                           size_t recvcount, Data::Code type, size_t root) const override;
 
-    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
-                        Operation::Code op, size_t root) const override;
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op,
+                        size_t root) const override;
 
-    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
-                               Operation::Code op, size_t root) const override;
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op,
+                               size_t root) const override;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
@@ -114,8 +109,8 @@ protected:  // methods
 
     Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
-    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-                                      int dest, int sendtag, int source, int recvtag) const override;
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type, int dest, int sendtag, int source,
+                                      int recvtag) const override;
 
     Comm& split(int color, const std::string& name) const override;
 

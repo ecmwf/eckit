@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Types.h
 // Baudouin Raoult - ECMWF Jun 96
@@ -29,13 +22,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef unsigned long Ordinal;  ///< for counting
+using Ordinal = unsigned long;  ///< for counting
 
-typedef std::vector<Ordinal> OrdinalList;
+using OrdinalList = std::vector<Ordinal>;
 
-typedef std::vector<std::string> StringList;
-typedef std::set<std::string> StringSet;
-typedef std::map<std::string, std::string> StringDict;
+using StringList        = std::vector<std::string>;
+using StringSet         = std::set<std::string>;
+using StringDict        = std::map<std::string, std::string>;
+using OrderedStringDict = std::vector<std::pair<std::string, std::string>>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -57,17 +51,18 @@ class output_list {
     void flush();
 
 public:
+
     void push_back(const T&);
     output_list(std::ostream&);
     ~output_list();
 };
 
 struct output_iterator {
-    typedef std::output_iterator_tag iterator_category;
-    typedef void value_type;
-    typedef void difference_type;
-    typedef void pointer;
-    typedef void reference;
+    using iterator_category = std::output_iterator_tag;
+    using value_type        = void;
+    using difference_type   = void;
+    using pointer           = void;
+    using reference         = void;
 };
 
 template <class T>
@@ -76,8 +71,8 @@ class output_list_iterator : public output_iterator {
     output_list<T>* list_;
 
 public:
-    output_list_iterator(output_list<T>* l) :
-        list_(l) {}
+
+    output_list_iterator(output_list<T>* l) : list_(l) {}
     ~output_list_iterator() {}
 
     output_list_iterator<T>& operator=(const T& v) {
@@ -96,20 +91,20 @@ class VectorPrintContracted {};
 
 template <typename T>
 struct VectorPrintSelector {
-    typedef VectorPrintContracted selector;
+    using selector = VectorPrintContracted;
 };
 
 template <>
 struct VectorPrintSelector<std::string> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 template <>
 struct VectorPrintSelector<double> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 template <typename K, typename V>
-struct VectorPrintSelector<std::pair<K, V> > {
-    typedef VectorPrintSimple selector;
+struct VectorPrintSelector<std::pair<K, V>> {
+    using selector = VectorPrintSimple;
 };
 
 
@@ -121,8 +116,8 @@ inline std::ostream& __print_list(std::ostream& s, const T& t, VectorPrintContra
     return s;
 }
 
-template <typename T>
-inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, VectorPrintSimple) {
+template <typename T, typename A>
+inline std::ostream& __print_list(std::ostream& s, const std::vector<T, A>& t, VectorPrintSimple) {
 
     s << '[';
     for (Ordinal i = 0; i < t.size(); i++) {
@@ -186,8 +181,8 @@ namespace std {
 //      specializations for any standard library template" if the "declaration
 //      depends on user-defined types".
 
-template <class T>
-inline std::ostream& operator<<(std::ostream& s, const std::vector<T>& v) {
+template <class T, class A>
+inline std::ostream& operator<<(std::ostream& s, const std::vector<T, A>& v) {
     return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
 }
 
@@ -216,16 +211,16 @@ namespace eckit {
 class Stream;  // forward
 
 /// Operators to send vectors in streams
-template <class T>
-Stream& operator<<(Stream&, const std::vector<T>&);
-template <class T>
-Stream& operator>>(Stream&, std::vector<T>&);
+template <class T, class A>
+Stream& operator<<(Stream&, const std::vector<T, A>&);
+template <class T, class A>
+Stream& operator>>(Stream&, std::vector<T, A>&);
 
 /// Operators to send sets in streams
-template <class T>
-Stream& operator<<(Stream&, const std::vector<T>&);
-template <class T>
-Stream& operator>>(Stream&, std::vector<T>&);
+template <class T, class A>
+Stream& operator<<(Stream&, const std::vector<T, A>&);
+template <class T, class A>
+Stream& operator>>(Stream&, std::vector<T, A>&);
 
 /// Operators to send maps in streams
 /// Note: the value type V must have a constructor from Stream&

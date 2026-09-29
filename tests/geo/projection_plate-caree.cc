@@ -1,19 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
 
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -24,15 +16,15 @@ using P = std::unique_ptr<Projection>;
 
 
 CASE("projection: plate-caree") {
-    Point p = PointLonLat{1, 1};
-    Point q = Point2{1, 1};
-    P projection(ProjectionFactory::instance().get("plate-carree").create(spec::Custom{}));
+    Point p = PointXY{1, 1};
+    Point q = PointLonLat{1, 1};
+    P projection(ProjectionFactoryType::instance().get("plate-carree").create(spec::Custom{}));
 
     EXPECT(points_equal(q, projection->inv(p)));
-    EXPECT(std::holds_alternative<Point2>(projection->inv(p)));
+    EXPECT(std::holds_alternative<PointLonLat>(projection->inv(p)));
 
     EXPECT(points_equal(p, projection->fwd(q)));
-    EXPECT(std::holds_alternative<PointLonLat>(projection->fwd(q)));
+    EXPECT(std::holds_alternative<PointXY>(projection->fwd(q)));
 }
 
 

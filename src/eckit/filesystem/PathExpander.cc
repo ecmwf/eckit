@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fstream>
 #include <sstream>
@@ -25,7 +18,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, PathExpander*> PathExpanderMap;
+using PathExpanderMap = std::map<std::string, PathExpander*>;
 
 struct PathExpanderRegistry {
     eckit::Mutex mutex_;
@@ -91,8 +84,7 @@ std::string PathExpander::expand(const std::string& path) {
     return newpath;
 }
 
-PathExpander::PathExpander(const std::string& name) :
-    name_(name) {
+PathExpander::PathExpander(const std::string& name) : name_(name) {
     eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
 
     PathExpanderMap& m = PathExpanderRegistry::instance().map();
@@ -117,8 +109,8 @@ std::ostream& operator<<(std::ostream& s, const PathExpander& p) {
 
 class ENVVAR : public PathExpander {
 public:
-    ENVVAR(const std::string& name) :
-        PathExpander(name) {}
+
+    ENVVAR(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         size_t pos      = var.find_first_of("?");
@@ -151,8 +143,8 @@ static ENVVAR envvar("ENVVAR");
 
 class FILE : public PathExpander {
 public:
-    FILE(const std::string& name) :
-        PathExpander(name) {}
+
+    FILE(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         size_t pos      = var.find_first_of("?");
@@ -187,8 +179,8 @@ static FILE file("FILE");
 
 class CWDFS : public PathExpander {
 public:
-    CWDFS(const std::string& name) :
-        PathExpander(name) {}
+
+    CWDFS(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         LocalPathName mnt = LocalPathName::cwd().mountPoint();
@@ -203,8 +195,8 @@ static CWDFS cwdfs("CWDFS");
 
 class CWD : public PathExpander {
 public:
-    CWD(const std::string& name) :
-        PathExpander(name) {}
+
+    CWD(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         LocalPathName mnt = LocalPathName::cwd();

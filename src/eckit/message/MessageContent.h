@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 2017- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Jun 2020
@@ -39,6 +32,7 @@ class MetadataGatherer;
 
 class Transformer {
 public:
+
     // virtual MessageContent* tranform(CodesContent*) const = 0;
 };
 
@@ -47,6 +41,7 @@ public:
 class MessageContent : public eckit::Counted {
 
 public:
+
     virtual operator bool() const;
 
     virtual void write(eckit::DataHandle&) const;
@@ -61,10 +56,13 @@ public:
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
+    virtual void getFloatArray(const std::string& key, std::vector<float>&) const;
+
     virtual size_t getSize(const std::string& key) const;
 
     // Write double array at key to pre allocated array.
     virtual void getDoubleArray(const std::string& key, double* data, size_t len) const;
+    virtual void getFloatArray(const std::string& key, float* data, size_t len) const;
 
     virtual eckit::DataHandle* readHandle() const;
 
@@ -72,10 +70,11 @@ public:
 
     virtual const void* data() const;
 
-    virtual MessageContent* transform(const Transformer&) const;
-    virtual MessageContent* transform(const eckit::StringDict&) const;
+    virtual void transform(const Transformer&);
+    virtual void transform(const eckit::OrderedStringDict&);
 
 private:
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const MessageContent& p) {

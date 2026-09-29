@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File FunctionVAR.h
 // Baudouin Raoult - ECMWF Dec 03
@@ -20,6 +13,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionVAR : public FunctionExpression {
 public:
+
     FunctionVAR(const std::string&, const expression::Expressions&);
     FunctionVAR(const FunctionVAR&);
     ~FunctionVAR();
@@ -37,11 +31,13 @@ public:
     static int arity() { return 1; }
 
 protected:
+
     // -- Overridden methods
     using FunctionExpression::eval;
     double eval(bool& missing) const override;
 
 private:
+
     // No copy allowed
     FunctionVAR& operator=(const FunctionVAR&);
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   Message.h
 /// @author Baudouin Raoult
@@ -18,8 +11,8 @@
 
 #include <string>
 
-#include "eckit/serialisation/Stream.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/serialisation/Stream.h"
 
 #include "eckit/distributed/Actor.h"
 
@@ -29,7 +22,7 @@ namespace eckit::distributed {
 
 class Message : public eckit::Stream {
 
-public: // methods
+public:  // methods
 
     Message(int tag = Actor::WORK, size_t size = 1024 * 1024);
     ~Message();
@@ -37,11 +30,11 @@ public: // methods
     void rewind();
     bool shutdownRequested() const;
 
-    void       *messageData();
-    const void *messageData() const;
-    size_t      bufferSize() const;
-    size_t      messageSize() const;
-    void        messageReceived(int, int);
+    void* messageData();
+    const void* messageData() const;
+    size_t bufferSize() const;
+    size_t messageSize() const;
+    void messageReceived(int, int);
 
     const void* getBlob(size_t& size);
 
@@ -50,10 +43,10 @@ public: // methods
     int tag() const;
     int source() const;
 
-    static const Message &readyMessage();
-    static const Message &shutdownMessage();
+    static const Message& readyMessage();
+    static const Message& shutdownMessage();
 
-    friend std::ostream& operator<<(std::ostream &s, const Message &x) {
+    friend std::ostream& operator<<(std::ostream& s, const Message& x) {
         x.print(s);
         return s;
     }
@@ -73,15 +66,14 @@ private:  // methods
 
     // From Stream
     virtual std::string name() const;
-    virtual long write(const void *, long);
-    virtual long read(void *, long);
+    virtual long write(const void*, long);
+    virtual long read(void*, long);
 
-    void print( std::ostream &out ) const;
-
+    void print(std::ostream& out) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

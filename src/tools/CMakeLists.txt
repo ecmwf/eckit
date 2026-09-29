@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ecbuild_add_executable( TARGET      eckit_version
                         OUTPUT_NAME eckit-version
                         SOURCES     eckit-version.cc
@@ -12,35 +15,33 @@ ecbuild_add_executable( TARGET      eckit_info
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
+ecbuild_add_executable( TARGET      eckit_fraction
+                        OUTPUT_NAME eckit-fraction
+                        SOURCES     eckit-fraction.cc
+                        LIBS        eckit_option eckit )
+
 ecbuild_add_executable( TARGET      eckit_codec_list
                         OUTPUT_NAME eckit-codec-list
                         CONDITION   eckit_HAVE_ECKIT_CODEC
                         SOURCES     eckit-codec-list.cc
                         LIBS        eckit_codec eckit_option )
 
-ecbuild_add_executable( TARGET      eckit_grid
-                        OUTPUT_NAME eckit-grid
-                        CONDITION   eckit_HAVE_ECKIT_GEO
-                        SOURCES     eckit-grid.cc
-                        LIBS        eckit_geo eckit_option )
+foreach( _name
+        eckit-geo-area-list
+        eckit-geo-gaussian-latitudes
+        eckit-geo-grid
+        eckit-geo-grid-cache
+        eckit-geo-grid-list
+        eckit-geo-grid-nearest
+        eckit-geo-grid-spec )
+    string(REPLACE "-" "_" _target ${_name})
+    ecbuild_add_executable( TARGET      ${_target}
+                            OUTPUT_NAME ${_name}
+                            SOURCES     ${_name}.cc
+                            CONDITION   eckit_HAVE_ECKIT_GEO
+                            LIBS        eckit_geo eckit_option )
+endforeach()
 
-ecbuild_add_executable( TARGET      eckit_grid_list
-                        OUTPUT_NAME eckit-grid-list
-                        CONDITION   eckit_HAVE_ECKIT_GEO
-                        SOURCES     eckit-grid-list.cc
-                        LIBS        eckit_geo eckit_option )
-
-ecbuild_add_executable( TARGET      eckit_grid_nearest
-                        OUTPUT_NAME eckit-grid-nearest
-                        CONDITION   eckit_HAVE_ECKIT_GEO
-                        SOURCES     eckit-grid-nearest.cc
-                        LIBS        eckit_geo eckit_option )
-
-ecbuild_add_executable( TARGET      eckit_grid_spec
-                        OUTPUT_NAME eckit-grid-spec
-                        CONDITION   eckit_HAVE_ECKIT_GEO
-                        SOURCES     eckit-grid-spec.cc
-                        LIBS        eckit_geo eckit_option )
 
 ### NOT TO INSTALL
 
@@ -61,13 +62,6 @@ ecbuild_add_executable( TARGET      syslog_client
                         NOINSTALL
                         SOURCES     syslog-client.cc
                         LIBS        eckit )
-
-ecbuild_add_executable( TARGET      eckit_rsync
-                        OUTPUT_NAME eckit-rsync
-                        CONDITION   eckit_HAVE_RSYNC
-                        NOINSTALL
-                        SOURCES     rsync.cc
-                        LIBS        eckit_option eckit )
 
 ecbuild_add_executable( TARGET      eckit_hash
                         OUTPUT_NAME eckit-hash

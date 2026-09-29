@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
 #include <fstream>
@@ -45,12 +38,8 @@ std::string report_type_to_name(Report::Type t) {
     ASSERT(t < Report::ENDTAG);  // ensure client code sticks to enum Report
 
     static const std::map<int, std::string> type_to_name = {
-        {Report::APPSTART, "appstart"},
-        {Report::APPSTOP, "appstop"},
-        {Report::INFO, "info"},
-        {Report::METER, "meter"},
-        {Report::COUNTER, "counter"},
-        {Report::KEEPALIVE, "keepalive"},
+        {Report::APPSTART, "appstart"}, {Report::APPSTOP, "appstop"}, {Report::INFO, "info"},
+        {Report::METER, "meter"},       {Report::COUNTER, "counter"}, {Report::KEEPALIVE, "keepalive"},
     };
 
     size_t count = type_to_name.size();
@@ -67,12 +56,18 @@ std::string report_type_to_name(Report::Type t) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Reporter : public NonCopyable {
+class Reporter {
 public:
+
     static Reporter& instance();
     static int version() { return 1; }
 
     Reporter();
+
+    Reporter(const Reporter&)            = delete;
+    Reporter& operator=(const Reporter&) = delete;
+    Reporter(Reporter&&)                 = delete;
+    Reporter& operator=(Reporter&&)      = delete;
 
     ~Reporter() = default;
 
@@ -85,6 +80,7 @@ public:
     unsigned long long countSent() { return countSent_; }
 
 private:
+
     std::vector<std::unique_ptr<net::UDPClient>> clients_;  //< list of clients to contact servers
 
     std::string service_type_;
@@ -111,7 +107,8 @@ static YAMLConfiguration* loadConfig() {
         return new YAMLConfiguration(s);
     }
 
-    PathName telemetryConfigFile = Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
+    PathName telemetryConfigFile =
+        Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
 
     if (telemetryConfigFile.exists()) {
         return new YAMLConfiguration(telemetryConfigFile);
@@ -194,6 +191,7 @@ void Reporter::broadcast(const void* buf, size_t length) {
 
 class NullReport : public Report {
 public:
+
     NullReport() {}
     ~NullReport() override {}
     void json(JSON&) const override {}
@@ -201,8 +199,8 @@ public:
 
 class WraperReport : public Report {
 public:
-    WraperReport(std::function<void(JSON&)>& f) :
-        callable_(f) {}
+
+    WraperReport(std::function<void(JSON&)>& f) : callable_(f) {}
     ~WraperReport() override {}
     void json(JSON& j) const override { callable_(j); }
     std::function<void(JSON&)>& callable_;

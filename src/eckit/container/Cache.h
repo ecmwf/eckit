@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date   Oct 2012
@@ -14,16 +7,14 @@
 #ifndef eckit_container_Cache_h
 #define eckit_container_Cache_h
 
-#include <cstdint>
 #include <sys/time.h>
+#include <cstdint>
 
 #include <iostream>
 #include <map>
 #include <utility>
 
 #include "eckit/eckit.h"
-
-#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
@@ -36,13 +27,13 @@ namespace eckit {
 /// @todo implement the expire() and the different policies
 
 template <typename K, typename V>
-class Cache : private NonCopyable {
+class Cache {
 
 public:  // types
+
     struct Entry {
-        Entry(const V& v) :
-            v_(v), expired_(false), hits_(0) {
-            gettimeofday(&age_, 0);
+        Entry(const V& v) : v_(v), expired_(false), hits_(0) {
+            gettimeofday(&age_, nullptr);
             last_ = age_;
         }
 
@@ -50,12 +41,12 @@ public:  // types
             v_       = v;
             expired_ = false;
             hits_    = 0;
-            gettimeofday(&age_, 0);
+            gettimeofday(&age_, nullptr);
             last_ = age_;
         }
 
         V& access() {
-            gettimeofday(&last_, 0);
+            gettimeofday(&last_, nullptr);
             ++hits_;
             return v_;
         }
@@ -67,11 +58,11 @@ public:  // types
         struct ::timeval last_;
     };
 
-    typedef K key_type;
-    typedef V value_type;
-    typedef Entry entry_type;
+    using key_type   = K;
+    using value_type = V;
+    using entry_type = Entry;
 
-    typedef std::map<key_type, entry_type> store_type;
+    using store_type = std::map<key_type, entry_type>;
 
     class Policy {
         /// Expires the Least Recently Used (LRU) entries
@@ -86,7 +77,13 @@ public:  // types
     };
 
 public:  // methods
+
     Cache();
+
+    Cache(const Cache&)            = delete;
+    Cache& operator=(const Cache&) = delete;
+    Cache(Cache&&)                 = delete;
+    Cache& operator=(Cache&&)      = delete;
 
     ~Cache();
 
@@ -128,19 +125,20 @@ public:  // methods
     }
 
 private:  // methods
+
     /// marks an object as expired
     /// @returns true if object was present and is marked as expired
     void expire(typename store_type::iterator i);
 
 private:  // members
+
     store_type storage_;
 };
 
 //-----------------------------------------------------------------------------
 
 template <typename K, typename V>
-Cache<K, V>::Cache() :
-    storage_() {}
+Cache<K, V>::Cache() : storage_() {}
 
 template <typename K, typename V>
 Cache<K, V>::~Cache() {
@@ -210,7 +208,7 @@ void Cache<K, V>::expire(typename store_type::iterator i) {
 template <typename K, typename V>
 void Cache<K, V>::purge() {
     // collect all expired
-    typedef typename store_type::iterator siterator;
+    using siterator = typename store_type::iterator;
     std::vector<siterator> expired;
     for (siterator i = storage_.begin(); i != storage_.end(); ++i) {
         if (i->second.expired_) {
@@ -244,7 +242,7 @@ size_t Cache<K, V>::size() const {
 
 template <typename K, typename V>
 void Cache<K, V>::print(std::ostream& out) const {
-    typedef typename store_type::const_iterator siterator;
+    using siterator = typename store_type::const_iterator;
     for (siterator i = storage_.begin(); i != storage_.end(); ++i) {
         out << i->second.v_ << std::endl;
     }

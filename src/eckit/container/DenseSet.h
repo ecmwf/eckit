@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_DenseSet_h
 #define eckit_DenseSet_h
@@ -18,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/log/JSON.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
 
 
 namespace eckit {
@@ -27,20 +20,22 @@ namespace eckit {
 
 template <typename V>
 class DenseSet {
-public:                    // types
-    typedef V value_type;  ///< value type
+public:  // types
+
+    using value_type = V;  ///< value type
 
 private:  // types
-    typedef std::vector<value_type> store_t;
+
+    using store_t = std::vector<value_type>;
 
 public:  // methods
-    typedef typename store_t::const_reference const_reference;
 
-    typedef typename store_t::const_iterator iterator;
-    typedef typename store_t::const_iterator const_iterator;
+    using const_reference = typename store_t::const_reference;
 
-    DenseSet(size_t s = 0) :
-        sorted_(true) {
+    using iterator       = typename store_t::const_iterator;
+    using const_iterator = typename store_t::const_iterator;
+
+    DenseSet(size_t s = 0) : sorted_(true) {
         if (s > 0) {
             reserve(s);
         }
@@ -156,7 +151,8 @@ public:  // methods
 
     void merge(const DenseSet& other) {
 
-        if (other.empty()) return;
+        if (other.empty())
+            return;
 
         if (empty()) {
             values_ = other.values_;
@@ -176,20 +172,23 @@ public:  // methods
 
             if (i >= values_.size() || values_[i] > other.values_[j]) {
                 if (values_.capacity() == values_.size()) {
-                    values_.reserve(std::max(values_.size(), other.values_.size())*2);
+                    values_.reserve(std::max(values_.size(), other.values_.size()) * 2);
                 }
-                values_.insert(values_.begin()+i, other.values_[j]);
+                values_.insert(values_.begin() + i, other.values_[j]);
                 i++;
                 j++;
-            } else if (values_[i] == other.values_[j]) {
+            }
+            else if (values_[i] == other.values_[j]) {
                 j++;
-            } else { // if (*it1 < *it2)
+            }
+            else {  // if (*it1 < *it2)
                 i++;
             }
         }
     }
 
-private:              // members
+private:  // members
+
     store_t values_;  ///< storage of the values
 
     bool sorted_;

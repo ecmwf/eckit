@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <iomanip>
@@ -34,11 +27,18 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class TxnArray : private eckit::NonCopyable {
+class TxnArray {
 
 public:
-    typedef TxnID* iterator;
-    typedef const TxnID* const_iterator;
+
+    using iterator       = TxnID*;
+    using const_iterator = const TxnID*;
+
+    TxnArray()                           = default;
+    TxnArray(const TxnArray&)            = delete;
+    TxnArray& operator=(const TxnArray&) = delete;
+    TxnArray(TxnArray&&)                 = delete;
+    TxnArray& operator=(TxnArray&&)      = delete;
 
     virtual ~TxnArray() {}
 
@@ -60,8 +60,8 @@ class MemoryMappedTxnArray : public TxnArray {
     MappedArray<TxnID> map_;
 
 public:
-    MemoryMappedTxnArray(const PathName& path, unsigned long size) :
-        TxnArray(), map_(path, size) {}
+
+    MemoryMappedTxnArray(const PathName& path, unsigned long size) : TxnArray(), map_(path, size) {}
 };
 
 class SharedMemoryTxnArray : public TxnArray {
@@ -75,6 +75,7 @@ class SharedMemoryTxnArray : public TxnArray {
     SharedMemArray<TxnID> map_;
 
 public:
+
     SharedMemoryTxnArray(const PathName& path, const std::string& name, unsigned long size) :
         TxnArray(), map_(path, name, size) {}
 };
@@ -90,8 +91,7 @@ PathName TxnLog<T>::buildPath(const std::string& name) {
 }
 
 template <class T>
-TxnLog<T>::TxnLog(const std::string& name) :
-    path_(buildPath(name)), next_(path_ + "/next") {
+TxnLog<T>::TxnLog(const std::string& name) : path_(buildPath(name)), next_(path_ + "/next") {
     std::string txnArrayType = Resource<std::string>("txnArrayType", "MemoryMapped");
 
     if (txnArrayType == "MemoryMapped") {
@@ -195,13 +195,14 @@ class RecoverThread : public Thread {
     virtual void run();
 
 public:
+
     RecoverThread(const PathName&, TxnArray&, TxnRecoverer<T>&, long);
     void recover();
 };
 
 template <class T>
 RecoverThread<T>::RecoverThread(const PathName& path, TxnArray& nextID, TxnRecoverer<T>& client, long age) :
-    nextID_(nextID), client_(client), age_(age), now_(::time(0)) {
+    nextID_(nextID), client_(client), age_(age), now_(::time(nullptr)) {
     AutoLock<TxnArray> lock(nextID_);
     PathName::match(path + "/[0-9]*", result_);
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/linalg/sparse/LinearAlgebraEigen.h"
@@ -42,7 +35,8 @@ void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y)
     ASSERT(A.outer()[0] == 0);
 
     // Eigen requires non-const pointers to the data
-    spm_t Ai(A.rows(), A.cols(), A.nonZeros(), const_cast<Index*>(A.outer()), const_cast<Index*>(A.inner()), const_cast<Scalar*>(A.data()));
+    spm_t Ai(A.rows(), A.cols(), A.nonZeros(), const_cast<Index*>(A.outer()), const_cast<Index*>(A.inner()),
+             const_cast<Scalar*>(A.data()));
     vec_t xi(Eigen::VectorXd::Map(const_cast<Scalar*>(x.data()), x.size()));
     vec_t yi(Eigen::VectorXd::Map(y.data(), y.size()));
 
@@ -59,7 +53,8 @@ void LinearAlgebraEigen::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C)
     ASSERT(A.outer()[0] == 0);
 
     // Eigen requires non-const pointers to the data
-    spm_t Ai(A.rows(), A.cols(), A.nonZeros(), const_cast<Index*>(A.outer()), const_cast<Index*>(A.inner()), const_cast<Scalar*>(A.data()));
+    spm_t Ai(A.rows(), A.cols(), A.nonZeros(), const_cast<Index*>(A.outer()), const_cast<Index*>(A.inner()),
+             const_cast<Scalar*>(A.data()));
     mat_t Bi(Eigen::MatrixXd::Map(const_cast<Scalar*>(B.data()), B.rows(), B.cols()));
     mat_t Ci(Eigen::MatrixXd::Map(C.data(), C.rows(), C.cols()));
 

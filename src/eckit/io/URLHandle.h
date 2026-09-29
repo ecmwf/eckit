@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   June 2017
@@ -27,8 +20,8 @@ class URLException : public Exception {
     int code_;
 
 public:
-    URLException(const std::string& what, int code) :
-        Exception(what), code_(code) {}
+
+    URLException(const std::string& what, int code) : Exception(what), code_(code) {}
     int code() const { return code_; }
 };
 
@@ -36,6 +29,7 @@ public:
 
 class URLHandle : public DataHandle {
 public:
+
     URLHandle(const std::string& uri, bool useSSL = true);
 
     URLHandle(Stream&);
@@ -68,6 +62,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     std::string uri_;
     std::unique_ptr<DataHandle> handle_;
 

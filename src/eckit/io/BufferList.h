@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 2021- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Simon Smart
 /// @author Tiago Quintino
@@ -18,7 +11,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/Length.h"
-#include "eckit/memory/OnlyMovable.h"
 
 namespace eckit {
 
@@ -26,9 +18,19 @@ namespace eckit {
 
 /// A class to aggregate buffers into a single object that can be read as a whole
 
-class BufferList : public OnlyMovable {
+class BufferList {
 
 public:  // methods
+
+    BufferList() = default;
+
+    BufferList(const BufferList&)            = delete;
+    BufferList& operator=(const BufferList&) = delete;
+    BufferList(BufferList&&)                 = default;
+    BufferList& operator=(BufferList&&)      = default;
+
+    ~BufferList() = default;
+
     void append(Buffer&& buf);
 
     size_t count() const { return buffers_.size(); }
@@ -39,6 +41,7 @@ public:  // methods
     Buffer consolidate();
 
 private:  // members
+
     std::list<Buffer> buffers_;
 };
 

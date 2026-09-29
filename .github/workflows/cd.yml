@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 name: cd
 
 on:
@@ -7,5 +10,9 @@ on:
 
 jobs:
   deploy:
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/create-package.yml@v2
+    uses: ecmwf/reusable-workflows/.github/workflows/create-package.yml@v2
     secrets: inherit
+  wheel:
+    uses: ./.github/workflows/build-wheel-wrapper.yml
+    secrets: inherit
+

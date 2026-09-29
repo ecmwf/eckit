@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   TransportStatistics.h
 /// @author Baudouin Raoult
@@ -32,8 +25,9 @@ class TocHandler;
 
 class TransportStatistics : public eckit::Statistics {
 public:
-    TransportStatistics() ;
-    TransportStatistics(eckit::Stream &) ;
+
+    TransportStatistics();
+    TransportStatistics(eckit::Stream&);
 
 
     size_t sendCount_;
@@ -48,18 +42,18 @@ public:
     eckit::Timing shutdownTiming_;
 
 
-    TransportStatistics &operator+=(const TransportStatistics &other) ;
-    TransportStatistics &operator/=(size_t) ;
+    TransportStatistics& operator+=(const TransportStatistics& other);
+    TransportStatistics& operator/=(size_t);
 
-    void report(std::ostream &out, const char *indent = "") const;
+    void report(std::ostream& out, const char* indent = "") const;
 
     void csvHeader(std::ostream& out) const;
 
     void csvRow(std::ostream& out) const;
 
-    void encode(eckit::Stream &) const;
+    void encode(eckit::Stream&) const;
 
-    friend eckit::Stream &operator<<(eckit::Stream &s, const TransportStatistics &x) {
+    friend eckit::Stream& operator<<(eckit::Stream& s, const TransportStatistics& x) {
         x.encode(s);
         return s;
     }
@@ -67,6 +61,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

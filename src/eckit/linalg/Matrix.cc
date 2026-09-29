@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/linalg/Matrix.h"
 
@@ -20,12 +13,10 @@ namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Matrix::Matrix() :
-    array_(0), rows_(0), cols_(0), own_(false) {}
+Matrix::Matrix() : array_{nullptr}, rows_(0), cols_(0), own_(false) {}
 
 
-Matrix::Matrix(Size rows, Size cols) :
-    array_(new Scalar[rows * cols]), rows_(rows), cols_(cols), own_(true) {
+Matrix::Matrix(Size rows, Size cols) : array_(new Scalar[rows * cols]), rows_(rows), cols_(cols), own_(true) {
     ASSERT(size() > 0);
     ASSERT(array_);
 }
@@ -38,8 +29,7 @@ Matrix::Matrix(const Scalar* array, Size rows, Size cols) :
 }
 
 
-Matrix::Matrix(Stream& stream) :
-    array_(0), rows_(0), cols_(0), own_(false) {
+Matrix::Matrix(Stream& stream) : array_{nullptr}, rows_(0), cols_(0), own_(false) {
     Size rows, cols;
     stream >> rows;
     stream >> cols;

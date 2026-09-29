@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Length.h
 // Baudouin Raoult - ECMWF Jul 96
@@ -36,9 +29,11 @@ class Stream;
 
 class Length {
 public:  // types
-    typedef long long value_t;
+
+    using value_t = long long;
 
 public:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const Length& x);
 
     friend Stream& operator<<(Stream& s, const Length& x);
@@ -47,14 +42,13 @@ public:  // methods
 
     // -- Contructors
 
-    Length(long long l = 0) :
-        value_(l) {}
-    Length(const Length& other) :
-        value_(other.value_) {}
+    Length(long long l = 0) : value_(l) {}
+    Length(const Length& other) : value_(other.value_) {}
 
 #include "eckit/io/Length.b"
 
 public:  // operators
+
     Length& operator=(const Length& other) {
         value_ = other.value_;
         return *this;
@@ -79,12 +73,13 @@ public:  // operators
     void load(DumpLoad&);
 
 private:  // members
+
     value_t value_;
 
     friend class Offset;
 };
 
-typedef std::vector<Length> LengthList;
+using LengthList = std::vector<Length>;
 
 
 #ifdef _AIX

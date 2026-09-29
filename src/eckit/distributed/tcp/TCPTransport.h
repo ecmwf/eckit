@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   TCPTransport.h
 /// @author Baudouin Raoult
@@ -16,11 +9,11 @@
 #ifndef eckit_TCPTransport_H
 #define eckit_TCPTransport_H
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "eckit/net/TCPServer.h"
 #include "eckit/io/Select.h"
+#include "eckit/net/TCPServer.h"
 
 #include "eckit/distributed/Transport.h"
 
@@ -31,7 +24,7 @@ class Stream;
 namespace eckit::option {
 class Option;
 class CmdArgs;
-}
+}  // namespace eckit::option
 
 namespace eckit::distributed {
 
@@ -42,17 +35,17 @@ class Message;
 class Connection;
 
 class TCPTransport : public Transport {
-public: // methods
+public:  // methods
 
-    TCPTransport(const eckit::option::CmdArgs &args);
+    TCPTransport(const eckit::option::CmdArgs& args);
     virtual ~TCPTransport() override;
 
-protected: // methods
+protected:  // methods
 
 
-    virtual void sendMessageToNextWorker(const Message &message) override;
-    virtual void getNextWorkMessage(Message &message) override;
-    virtual void sendStatisticsToProducer(const Message &message) override;
+    virtual void sendMessageToNextWorker(const Message& message) override;
+    virtual void getNextWorkMessage(Message& message) override;
+    virtual void sendStatisticsToProducer(const Message& message) override;
     virtual void sendShutDownMessage(const Actor&) override;
 
     virtual bool producer() const override;
@@ -61,29 +54,25 @@ protected: // methods
     virtual void abort() override;
     virtual void synchronise() override;
     virtual bool writer() const override;
-    virtual void sendToWriter(size_t writer, const Message &message) override;
-    virtual void getNextWriteMessage(Message &message) override;
+    virtual void sendToWriter(size_t writer, const Message& message) override;
+    virtual void getNextWriteMessage(Message& message) override;
 
     void print(std::ostream& out) const override;
 
 
 private:
 
-    // typedef bool (TCPTransport::*)(Connection&);
-
-    // void all(bool (TCPTransport ::* const)(Connection&));
-
     void disconnect() const;
     void disconnect(Connection&) const;
     void disconnect(std::exception& e, Connection&) const;
     Connection& producerConnection() const;
 
-private: // members
+private:  // members
 
     void accept();
     void connect();
 
-    bool send(const Message &message);
+    bool send(const Message& message);
     void cleanup();
 
     mutable std::unique_ptr<Connection> producer_;
@@ -99,11 +88,10 @@ private: // members
     bool master_;
     bool worker_;
     bool writer_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date JUl 2015
@@ -16,7 +9,6 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/io/SharedBuffer.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -25,18 +17,25 @@ class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class YAMLConfiguration : public Configuration, private eckit::NonCopyable {
+class YAMLConfiguration : public Configuration {
 
 public:
+
     YAMLConfiguration(const PathName& path, char separator = '.');
     YAMLConfiguration(std::istream&, char separator = '.');
     YAMLConfiguration(Stream&, char separator = '.');
     YAMLConfiguration(const std::string&, char separator = '.');
     YAMLConfiguration(const SharedBuffer&, char separator = '.');
 
+    YAMLConfiguration(const YAMLConfiguration&)            = delete;
+    YAMLConfiguration& operator=(const YAMLConfiguration&) = delete;
+    YAMLConfiguration(YAMLConfiguration&&)                 = delete;
+    YAMLConfiguration& operator=(YAMLConfiguration&&)      = delete;
+
     ~YAMLConfiguration() override;
 
 private:  // members
+
     std::string path_;
 
     void print(std::ostream&) const override;

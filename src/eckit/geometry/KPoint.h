@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef KPoint_H
 #define KPoint_H
@@ -24,14 +17,12 @@ namespace eckit::geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-enum XYZCOORDS
-{
+enum XYZCOORDS {
     XX = 0,
     YY = 1,
     ZZ = 2
 };
-enum LLCOORDS
-{
+enum LLCOORDS {
     LON = XX,
     LAT = YY
 };
@@ -41,9 +32,11 @@ enum LLCOORDS
 template <int SIZE = 2>
 class KPoint {
 protected:
+
     double x_[SIZE] = {0};
 
 public:
+
     static const size_t DIMS = SIZE;
 
     double x(size_t axis) const { return x_[axis]; }

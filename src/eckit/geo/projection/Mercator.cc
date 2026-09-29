@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/Mercator.h"
@@ -15,21 +7,23 @@
 #include <cmath>
 #include <limits>
 
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Mercator> PROJECTION_1("mercator");
-static ProjectionBuilder<Mercator> PROJECTION_2("merc");
+static ProjectionRegisterType<Mercator> PROJECTION_1("mercator");
+static ProjectionRegisterType<Mercator> PROJECTION_2("merc");
 
 
 Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
-    ProjectionOnFigure(figure_ptr),
-    centre_(PointLonLat::make(centre.lon, centre.lat, -PointLonLat::FLAT_ANGLE)),
+    Projection(figure_ptr),
+    centre_(PointLonLat::make(centre.lon(), centre.lat(), -PointLonLat::FLAT_ANGLE)),
     first_(first),
     eps_(1e-10),
     max_iter_(15) {
@@ -37,15 +31,15 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
     // - Equation (7-9) to calculate phi iteratively
     // - Equation (15-11) to calculate t
 
-    if (types::is_approximately_equal(first.lat, PointLonLat::RIGHT_ANGLE)
-        || types::is_approximately_equal(first.lat, -PointLonLat::RIGHT_ANGLE)) {
-        throw ProjectionProblem("Mercator: projection cannot be calculated at the poles", Here());
+    if (types::is_approximately_equal(first.lat(), PointLonLat::RIGHT_ANGLE) ||
+        types::is_approximately_equal(first.lat(), -PointLonLat::RIGHT_ANGLE)) {
+        throw exception::ProjectionError("Mercator: projection cannot be calculated at the poles", Here());
     }
 
-    auto lam0 = util::DEGREE_TO_RADIAN * centre_.lon;
-    auto phi0 = util::DEGREE_TO_RADIAN * centre_.lat;
-    auto lam1 = util::DEGREE_TO_RADIAN * first.lon;
-    auto phi1 = util::DEGREE_TO_RADIAN * first.lat;
+    auto lam0 = util::DEGREE_TO_RADIAN * centre_.lon();
+    auto phi0 = util::DEGREE_TO_RADIAN * centre_.lat();
+    auto lam1 = util::DEGREE_TO_RADIAN * first.lon();
+    auto phi1 = util::DEGREE_TO_RADIAN * first.lat();
 
     e_    = figure().eccentricity();
     lam0_ = lam0;
@@ -55,9 +49,8 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
 
     w_  = 1. / m_;
     x0_ = m_ * (lam0_ - lam1);
-    y0_ = m_
-          * std::log(std::tan(M_PI_4 - 0.5 * phi1)
-                     / std::pow(((1. - e_ * std::sin(phi1)) / (1. + e_ * std::sin(phi1))), 0.5 * e_));
+    y0_ = m_ * std::log(std::tan(M_PI_4 - 0.5 * phi1) /
+                        std::pow(((1. - e_ * std::sin(phi1)) / (1. + e_ * std::sin(phi1))), 0.5 * e_));
 
     ASSERT(types::is_approximately_equal(phi1, calculate_phi(std::exp(y0_ * w_)), eps_));
 }
@@ -85,35 +78,40 @@ double Mercator::calculate_phi(double t) const {
 }
 
 
-Point2 Mercator::fwd(const PointLonLat& p) const {
-    auto phi = util::DEGREE_TO_RADIAN * p.lat;
-    auto lam = util::DEGREE_TO_RADIAN * p.lon;
+PointXY Mercator::fwd(const PointLonLat& p) const {
+    auto phi = util::DEGREE_TO_RADIAN * p.lat();
+    auto lam = util::DEGREE_TO_RADIAN * p.lon();
     auto s   = std::sin(phi);
 
-    return {
-        x0_ + m_ * (lam - lam0_),
-        types::is_approximately_equal(s, 1.) ? std::numeric_limits<double>::infinity()
-        : types::is_approximately_equal(s, -1.)
-            ? -std::numeric_limits<double>::infinity()
-            : y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) / std::pow(((1. - e_ * s) / (1. + e_ * s)), 0.5 * e_))};
+    return {x0_ + m_ * (lam - lam0_), types::is_approximately_equal(s, 1.) ? std::numeric_limits<double>::infinity()
+                                      : types::is_approximately_equal(s, -1.)
+                                          ? -std::numeric_limits<double>::infinity()
+                                          : y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) /
+                                                                std::pow(((1. - e_ * s) / (1. + e_ * s)), 0.5 * e_))};
 }
 
 
-PointLonLat Mercator::inv(const Point2& q) const {
-    return PointLonLat::make(util::RADIAN_TO_DEGREE * (lam0_ + (q.X - x0_) * w_),
-                             util::RADIAN_TO_DEGREE * calculate_phi(std::exp(-(q.Y - y0_) * w_)));
+PointLonLat Mercator::inv(const PointXY& q) const {
+    return PointLonLat::make(util::RADIAN_TO_DEGREE * (lam0_ + (q.X() - x0_) * w_),
+                             util::RADIAN_TO_DEGREE * calculate_phi(std::exp(-(q.Y() - y0_) * w_)));
+}
+
+
+const std::string& Mercator::type() const {
+    static const std::string type{"mercator"};
+    return type;
 }
 
 
 void Mercator::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+    Projection::fill_spec(custom);
 
-    custom.set("projection", "mercator");
-    if (!types::is_approximately_equal(centre_.lat, 0.)) {
-        custom.set("lat_ts", centre_.lat);
+    custom.set("type", "mercator");
+    if (!types::is_approximately_equal(centre_.lat(), 0.)) {
+        custom.set("lat_ts", centre_.lat());
     }
-    if (!types::is_approximately_equal(centre_.lon, 0.)) {
-        custom.set("lon_0", centre_.lon);
+    if (!types::is_approximately_equal(centre_.lon(), 0.)) {
+        custom.set("lon_0", centre_.lon());
     }
 }
 

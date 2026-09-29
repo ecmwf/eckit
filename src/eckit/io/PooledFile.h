@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -17,16 +10,21 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 class PoolFileEntry;
 
-class PooledFile : private NonCopyable {
+class PooledFile {
 public:
+
     PooledFile(const PathName& name);
+
+    PooledFile(const PooledFile&)            = delete;
+    PooledFile& operator=(const PooledFile&) = delete;
+    PooledFile(PooledFile&&)                 = delete;
+    PooledFile& operator=(PooledFile&&)      = delete;
 
     /// @pre must have been closed
     ~PooledFile();
@@ -52,6 +50,7 @@ public:
     size_t nbSeeks() const;
 
 private:
+
     PathName name_;
     PoolFileEntry* entry_;
 };
@@ -59,6 +58,7 @@ private:
 
 class PooledFileError : public FileError {
 public:
+
     PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc);
 };
 

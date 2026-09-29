@@ -1,17 +1,8 @@
-// #include <cmath>
-
-// Some of the math.h/cmath functions are not clean when switching to C++11
-#if __cplusplus <= 199711L
-#include <cmath>
-#else
-#include <cmath>
-#define fpclassify(x) std::fpclassify((x))
-#define isinf(x) std::isinf((x))
-#define isnan(x) std::isnan((x))
-#define signbit(x) std::signbit((x))
-#endif
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <sys/types.h>
+#include <cmath>
 #include <limits>
 
 #include "eckit/exception/Exceptions.h"
@@ -22,13 +13,6 @@ namespace eckit::types {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace detail {
-
-// FIXME: The following functions are available in std:: as of C++11:
-// * fpclassify
-// * isinf
-// * isnan
-// * signbit
-// For the moment we have to use the (non namespaced) versions from math.h
 
 template <class T>
 inline T abs(T);
@@ -46,27 +30,25 @@ float abs(float x) {
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
 union Double {
-    typedef double float_t;
-    typedef int64_t int_t;
+    using float_t = double;
+    using int_t   = int64_t;
 
     float_t f_;
     int_t i_;
 
-    Double(double x) :
-        f_(x) {}
+    Double(double x) : f_(x) {}
 };
 
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
 union Float {
-    typedef float float_t;
-    typedef int32_t int_t;
+    using float_t = float;
+    using int_t   = int32_t;
 
     float_t f_;
     int_t i_;
 
-    Float(float x) :
-        f_(x) {}
+    Float(float x) : f_(x) {}
 };
 
 // The difference between the bit representations of two floating point
@@ -123,15 +105,15 @@ bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
     }
 
     // NaNs and infinity are always different
-    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) {
+    if (std::isnan(a) || std::isnan(b) || std::isinf(a) || std::isinf(b)) {
         return false;
     }
 
     // Subnormal numbers are treated as 0
-    if (fpclassify(a) == FP_SUBNORMAL) {
+    if (std::fpclassify(a) == FP_SUBNORMAL) {
         a = 0;
     }
-    if (fpclassify(b) == FP_SUBNORMAL) {
+    if (std::fpclassify(b) == FP_SUBNORMAL) {
         b = 0;
     }
 
@@ -149,7 +131,7 @@ bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
         return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (signbit(a) == signbit(b)) {
+    if (std::signbit(a) == std::signbit(b)) {
         return detail::float_distance(a, b) <= maxUlpsDiff;
     }
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
@@ -24,10 +17,12 @@ namespace eckit::sql {
 class SQLSimpleOutput : public SQLOutput {
 
 public:  // methods
+
     SQLSimpleOutput(const SQLOutputConfig& config, std::ostream& out);
     ~SQLSimpleOutput() override;
 
 private:  // methods
+
     template <typename T>
     void outputValue(double x, bool missing);
 
@@ -36,6 +31,7 @@ private:  // methods
     void printHeader(SQLSelect&);
 
 private:  // methods (overrides)
+
     void print(std::ostream&) const override;
 
     void reset() override;
@@ -54,10 +50,11 @@ private:  // methods (overrides)
     void outputBitfield(double, bool) override;
 
 private:  // members
+
     std::ostream& out_;
     unsigned long long count_;
     std::vector<size_t> columnWidths_;
-    typedef std::ios_base& (*manipulator)(std::ios_base&);
+    using manipulator = std::ios_base& (*)(std::ios_base&);
     std::vector<manipulator> columnAlignments_;
     size_t currentColumn_;
 

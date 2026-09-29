@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <csignal>
 
@@ -23,8 +16,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class Request>
-PipeHandler<Request>::PipeHandler() :
-    ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
+PipeHandler<Request>::PipeHandler() : ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
     Monitor::instance().show(false);
 }
 
@@ -126,7 +118,7 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
         Log::error() << "** Exception is ignored" << std::endl;
     }
 
-    last_ = ::time(0);
+    last_ = ::time(nullptr);
     busy_ = false;
     Log::status() << "-" << std::endl;
 }

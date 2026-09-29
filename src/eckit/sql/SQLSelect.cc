@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLSelect.h"
 
@@ -36,7 +29,7 @@ SQLSelect::SQLSelect(const Expressions& columns, const std::vector<std::referenc
                      std::vector<std::unique_ptr<SQLOutput>>&& ownedOutputs) :
     select_(columns),
     where_(where),
-    simplifiedWhere_(0),
+    simplifiedWhere_{nullptr},
     ownedOutputs_(std::move(ownedOutputs)),
     output_(output),
     aggregatedResultsIterator_(aggregatedResults_.end()),
@@ -145,7 +138,7 @@ std::shared_ptr<SQLExpression> SQLSelect::findAliasedExpression(const std::strin
             return select_[i];
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void SQLSelect::prepareExecute() {
@@ -242,7 +235,7 @@ void SQLSelect::prepareExecute() {
             bool missing = false;
             if (where->eval(missing)) {
                 Log::debug<LibEcKit>() << "WHERE condition always true" << std::endl;
-                where = 0;
+                where = nullptr;
             }
             else {
                 Log::debug<LibEcKit>() << "WHERE condition always false" << std::endl;
@@ -270,7 +263,8 @@ void SQLSelect::prepareExecute() {
                                    << "->" << x.table2_->fullName() << std::endl;
                     continue;
                 }
-                Log::debug<LibEcKit>() << "Using link " << table1->fullName() << "->" << table2->fullName() << std::endl;
+                Log::debug<LibEcKit>() << "Using link " << table1->fullName() << "->" << table2->fullName()
+                                       << std::endl;
 
                 //
                 std::string o      = name2 + ".offset";
@@ -286,7 +280,7 @@ void SQLSelect::prepareExecute() {
                 //				ASSERT(x.length_ == 0);
                 ASSERT(x.offset_.first == 0);
                 ASSERT(x.length_.second == 0);
-                ASSERT(x.column_ == 0);
+                ASSERT(x.column_ == nullptr);
 
                 x.offset_ = offset;
                 x.length_ = length;
@@ -380,14 +374,14 @@ void SQLSelect::prepareExecute() {
 
                         if (ok) {
                             (*k)->check_.push_back(e[i]);
-                            Log::debug<LibEcKit>() << "WHERE multi-table quick check for " << table->fullName() << " " << (*e[i])
-                                                   << std::endl;
+                            Log::debug<LibEcKit>() << "WHERE multi-table quick check for " << table->fullName() << " "
+                                                   << (*e[i]) << std::endl;
 
-                            e[i] = 0;
+                            e[i] = nullptr;
                         }
                     }
                     else {
-                        e[i] = 0;
+                        e[i] = nullptr;
                     }
                 }
             }
@@ -399,7 +393,7 @@ void SQLSelect::prepareExecute() {
                 sortedTables_.back()->check_.push_back(e[i]);
             }
         }
-        where = 0;
+        where = nullptr;
     }
 
     // Debug output

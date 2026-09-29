@@ -1,11 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. In applying
- * this licence, ECMWF does not waive the privileges and immunities granted to it by virtue
- * of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file test_streamable.cc
 /// @date Jan 2015
@@ -34,11 +28,10 @@ template <typename T>
 class TestItem : public Streamable {
 
 public:
-    TestItem(const T& s) :
-        payload_(s) {}
 
-    TestItem(Stream& s) :
-        Streamable(s), payload_() { s >> payload_; }
+    TestItem(const T& s) : payload_(s) {}
+
+    TestItem(Stream& s) : Streamable(s), payload_() { s >> payload_; }
 
     // From Streamble
     virtual void encode(eckit::Stream& s) const {
@@ -53,9 +46,11 @@ public:
     T payload_;
 
 protected:
+
     virtual void print(std::ostream& s) const { s << "TestItem " << payload_; }
 
 private:
+
     // -- Class members
     static eckit::ClassSpec classSpec_;
 
@@ -72,12 +67,12 @@ const ReanimatorBase& TestItem<T>::reanimator() const {
     return reanimator;
 }
 
-typedef unsigned char uchar;
-typedef long long llong;
+using uchar = unsigned char;
+using llong = long long;
 #ifndef ulong
-typedef unsigned long ulong;
+using ulong = unsigned long;
 #endif
-typedef unsigned long long ullong;
+using ullong = unsigned long long;
 
 /// Partially specialise ClassSpecs since they must have unique names
 template <>

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // Disable warnings: warning #550-D: variable "__d0" was set but never used [set_but_not_used] in FD_ZERO(&r);
 #if defined(__NVCOMPILER)
@@ -25,19 +18,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Select::Select() :
-    last_(-1) {
+Select::Select() : last_(-1) {
     FD_ZERO(&files_);
 }
 
-Select::Select(net::TCPSocket& p) :
-    last_(-1) {
+Select::Select(net::TCPSocket& p) : last_(-1) {
     FD_ZERO(&files_);
     add(p);
 }
 
-Select::Select(int fd) :
-    last_(-1) {
+Select::Select(int fd) : last_(-1) {
     FD_ZERO(&files_);
     add(fd);
 }
@@ -119,7 +109,7 @@ bool Select::ready(long sec) {
             set_         = files_;
             fd_set excep = files_;
 
-            switch (::select(size, &set_, 0, &excep, &timeout)) {
+            switch (::select(size, &set_, nullptr, &excep, &timeout)) {
                 case -1:
                     if (errno != EINTR) {
                         throw FailedSystemCall("select");

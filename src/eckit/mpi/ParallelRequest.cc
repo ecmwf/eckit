@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <string_view>
 
-#include "eckit/mpi/ParallelRequest.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
+#include "eckit/mpi/ParallelRequest.h"
 
 namespace eckit {
 namespace mpi {
@@ -25,8 +18,7 @@ void MPICall(int code, std::string_view mpifunc, const eckit::CodeLocation& loc)
 
 ParallelRequest::ParallelRequest() {}
 
-ParallelRequest::ParallelRequest(MPI_Request request) :
-    request_(request) {}
+ParallelRequest::ParallelRequest(MPI_Request request) : request_(request) {}
 
 void ParallelRequest::print(std::ostream& os) const {
     os << "ParallelRequest("

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -17,7 +10,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
@@ -28,10 +20,16 @@ namespace eckit {
 class Configurable;
 class Url;
 
-class ResourceBase : private NonCopyable {
+class ResourceBase {
 
 public:  // methods
+
     ResourceBase(Configurable* owner, const std::string& str);
+
+    ResourceBase(const ResourceBase&)            = delete;
+    ResourceBase& operator=(const ResourceBase&) = delete;
+    ResourceBase(ResourceBase&&)                 = delete;
+    ResourceBase& operator=(ResourceBase&&)      = delete;
 
     virtual ~ResourceBase();
 
@@ -42,11 +40,13 @@ public:  // methods
     std::string name() const;
 
 protected:  // methods
+
     void init();
 
     virtual bool setFromConfigFile();
 
 private:  // members
+
     Configurable* owner_;
 
     std::string name_;         // In the config file
@@ -56,6 +56,7 @@ private:  // members
     bool inited_;
 
 private:  // methods
+
     virtual void setValue(const std::string&) = 0;
     virtual std::string getValue() const      = 0;
 };

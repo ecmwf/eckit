@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -18,22 +11,30 @@
 #include <set>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StreamParser : private NonCopyable {
+class StreamParser {
 
 public:  // types
+
     class Error : public Exception {
     public:
+
         Error(const std::string& what, size_t line = 0);
     };
 
 public:  // methods
+
     StreamParser(std::istream& in, bool comments = false, const char* comment = "#");
+
+    StreamParser(const StreamParser&)            = delete;
+    StreamParser& operator=(const StreamParser&) = delete;
+    StreamParser(StreamParser&&)                 = delete;
+    StreamParser& operator=(StreamParser&&)      = delete;
+
     virtual ~StreamParser() = default;
 
     char peek(bool spaces = false);
@@ -45,12 +46,16 @@ public:  // methods
     void expect(const char*);
     void putback(char);
 
+    size_t line() const { return line_; };
+
 protected:  // members
+
     size_t line_;
     size_t pos_;
     bool comments_;
 
 private:  // members
+
     std::istream& in_;
 
     std::set<char> comment_;

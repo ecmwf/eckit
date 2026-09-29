@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   NoTransport.h
 /// @author Baudouin Raoult
@@ -23,7 +16,7 @@
 namespace eckit::option {
 class Option;
 class CmdArgs;
-}
+}  // namespace eckit::option
 
 namespace eckit::distributed {
 
@@ -32,17 +25,17 @@ class Message;
 //----------------------------------------------------------------------------------------------------------------------
 
 class NoTransport : public Transport {
-public: // methods
+public:  // methods
 
-    NoTransport(const eckit::option::CmdArgs &args);
+    NoTransport(const eckit::option::CmdArgs& args);
     virtual ~NoTransport() override;
 
-protected: // methods
+protected:  // methods
 
 
-    virtual void sendMessageToNextWorker(const Message &message) override;
-    virtual void getNextWorkMessage(Message &message) override;
-    virtual void sendStatisticsToProducer(const Message &message) override;
+    virtual void sendMessageToNextWorker(const Message& message) override;
+    virtual void getNextWorkMessage(Message& message) override;
+    virtual void sendStatisticsToProducer(const Message& message) override;
     virtual void sendShutDownMessage(const Actor&) override;
 
     virtual bool producer() const override;
@@ -52,19 +45,17 @@ protected: // methods
     virtual void synchronise() override;
     virtual bool writer() const override;
 
-    virtual void sendToWriter(size_t writer, const Message &message) override;
-    virtual void getNextWriteMessage(Message &message) override;
+    virtual void sendToWriter(size_t writer, const Message& message) override;
+    virtual void getNextWriteMessage(Message& message) override;
 
     void print(std::ostream& out) const override;
 
 
-protected: // members
-
-
+protected:  // members
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

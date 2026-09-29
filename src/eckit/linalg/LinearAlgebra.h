@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -14,7 +7,6 @@
 #include <ostream>
 #include <string>
 
-#include "eckit/deprecated.h"
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
 #include "eckit/linalg/types.h"
@@ -25,21 +17,11 @@ namespace eckit::linalg {
 
 class LinearAlgebra {
 public:
+
     // - Static methods
-
-    /// Get the currently selected backend (instance)
-    static const LinearAlgebra& backend();
-
-    /// Select specific backend by name (re-setting default)
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
-    static void backend(const std::string& name);
 
     /// List all available backends
     static std::ostream& list(std::ostream&);
-
-    /// Get specific backend by name
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::getBackend() instead")
-    static const LinearAlgebra& getBackend(const std::string& name);
 
     /// Check if a backend is available
     static bool hasBackend(const std::string& name);
@@ -62,26 +44,16 @@ public:
     /// Check if a LinearAlgebraSparse backend is available
     static bool hasSparseBackend(const std::string& name);
 
-    /// Return active backend name
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::name() instead")
-    static std::string name();
-
     /// Compute the inner product of vectors x and y
-    static Scalar dot(const Vector& x, const Vector& y) {
-        return LinearAlgebraDense::backend().dot(x, y);
-    }
+    static Scalar dot(const Vector& x, const Vector& y) { return LinearAlgebraDense::backend().dot(x, y); }
 
     /// Compute the product of a dense matrix A and vector x
     /// @note y must be allocated and sized correctly
-    static void gemv(const Matrix& A, const Vector& x, Vector& y) {
-        LinearAlgebraDense::backend().gemv(A, x, y);
-    }
+    static void gemv(const Matrix& A, const Vector& x, Vector& y) { LinearAlgebraDense::backend().gemv(A, x, y); }
 
     /// Compute the product of dense matrices A and X
     /// @note Y must be allocated and sized correctly
-    static void gemm(const Matrix& A, const Matrix& X, Matrix& Y) {
-        LinearAlgebraDense::backend().gemm(A, X, Y);
-    }
+    static void gemm(const Matrix& A, const Matrix& X, Matrix& Y) { LinearAlgebraDense::backend().gemm(A, X, Y); }
 
     /// Compute the product of a sparse matrix A and vector x
     /// @note y must be allocated and sized correctly
@@ -103,14 +75,17 @@ public:
     }
 
 protected:
+
     LinearAlgebra() = default;
 
 private:
+
     LinearAlgebra(const LinearAlgebra&)            = delete;
     LinearAlgebra& operator=(const LinearAlgebra&) = delete;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra&) {
-        return s << "LinearAlgebra[LinearAlgebraDense=[" << LinearAlgebraDense::backend() << "],LinearAlgebraSparse=[" << LinearAlgebraSparse::backend() << "]]";
+        return s << "LinearAlgebra[LinearAlgebraDense=[" << LinearAlgebraDense::backend() << "],LinearAlgebraSparse=["
+                 << LinearAlgebraSparse::backend() << "]]";
     }
 };
 

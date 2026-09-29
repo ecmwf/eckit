@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   ObjectParser.h
 /// @author Baudouin Raoult
@@ -83,8 +76,7 @@ Value ObjectParser::parseNumber() {
         s += next();
         c = next();
         if (!isdigit(c)) {
-            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '")
-                                      + c + "'");
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
         }
         s += c;
         while (isdigit(peek())) {
@@ -105,8 +97,7 @@ Value ObjectParser::parseNumber() {
         }
 
         if (!isdigit(c)) {
-            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c
-                                      + "'");
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
         }
         s += c;
         while (isdigit(peek())) {
@@ -212,7 +203,8 @@ Value ObjectParser::parseString(char quote) {
                     }
                     else {
                         comments_ = save;
-                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c + "'");
+                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
+                                                  "'");
                     }
                     break;
             }
@@ -358,8 +350,7 @@ Value ObjectParser::parseJSON() {
 }
 
 
-ObjectParser::ObjectParser(std::istream& in, bool comments, bool yaml) :
-    StreamParser(in, comments), yaml_(yaml) {}
+ObjectParser::ObjectParser(std::istream& in, bool comments, bool yaml) : StreamParser(in, comments), yaml_(yaml) {}
 
 Value ObjectParser::parse() {
     Value v = parseValue();

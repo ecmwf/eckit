@@ -1,17 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/net/ProxiedTCPClient.h"
 
-#include "eckit/config/Resource.h"
 #include "eckit/net/HttpHeader.h"
 
 
@@ -24,10 +16,10 @@ ProxiedTCPClient::ProxiedTCPClient(const std::string& proxyHost, int proxyPort, 
 
 ProxiedTCPClient::~ProxiedTCPClient() {}
 
-net::TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
-    net::TCPSocket& socket = TCPClient::connect(proxy_.hostname(), proxy_.port(), retries, timeout);
+net::TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout, int retryDelay) {
+    net::TCPSocket& socket = TCPClient::connect(proxy_.hostname(), proxy_.port(), retries, timeout, retryDelay);
 
-    socket.debug(debug_);
+    socket.debug(debug_.on);
 
     const char* CRLF = "\r\n";
 
@@ -43,9 +35,7 @@ net::TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int
 
     // Strip http-header
     HttpHeader header(socket);
-    std::cout << std::endl
-              << header << std::endl
-              << std::endl;
+    std::cout << std::endl << header << std::endl << std::endl;
     header.checkForStatus();
 
     return socket;

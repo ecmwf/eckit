@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 
@@ -14,6 +7,7 @@
 #define eckit_log_CodeLocation_h
 
 #include <iosfwd>
+#include <ostream>
 #include <string>
 
 namespace eckit {
@@ -23,18 +17,17 @@ namespace eckit {
 class CodeLocation {
 
 public:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const CodeLocation& loc) {
         loc.print(s);
         return s;
     }
 
     /// Empty contructor
-    CodeLocation() :
-        line_(0), file_(nullptr), func_(nullptr) {}
+    CodeLocation() : line_(0), file_{nullptr}, func_{nullptr} {}
 
     /// Full Contructor
-    CodeLocation(const char* file, int line, const char* func) :
-        line_(line), file_(file), func_(func) {}
+    CodeLocation(const char* file, int line, const char* func) : line_(line), file_(file), func_(func) {}
 
     /// @return as std::string
     std::string asString() const;
@@ -53,11 +46,13 @@ public:  // methods
     const char* func() const { return func_; }
 
 private:  // members
+
     int line_;
     const char* file_;
     const char* func_;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 };
 

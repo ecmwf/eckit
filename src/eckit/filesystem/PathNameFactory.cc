@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/filesystem/PathNameFactory.h"
 
@@ -22,16 +15,27 @@ static PathNameBuilder<LocalPathName> localBuilder("local");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class PathNameFactoryImpl : private eckit::NonCopyable {
+class PathNameFactoryImpl {
 public:  // methods
+
     static PathNameFactoryImpl& instance();
+
+    PathNameFactoryImpl() = default;
+
+    PathNameFactoryImpl(const PathNameFactoryImpl&)            = delete;
+    PathNameFactoryImpl& operator=(const PathNameFactoryImpl&) = delete;
+    PathNameFactoryImpl(PathNameFactoryImpl&&)                 = delete;
+    PathNameFactoryImpl& operator=(PathNameFactoryImpl&&)      = delete;
+
+    ~PathNameFactoryImpl() = default;
 
     void enregister(const std::string& name, const PathNameBuilderBase* builder);
     void deregister(const PathNameBuilderBase* builder);
 
     BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false);
 
-private:                        // methods
+private:  // methods
+
     StaticMutex static_mutex_;  //< must be StaticMutex, so it is registered to be clean on fork
     std::vector<std::string> names_;
     std::map<std::string, const PathNameBuilderBase*> builders_;

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Nov 2020
@@ -32,6 +25,7 @@ class Length;
 
 class Metrics {
 public:  // methods
+
     static void set(const std::string& name, const Value& value, bool overrideOk = false);
 
     static void set(const std::string& name, const std::vector<std::string>& value, bool overrideOk = false);
@@ -59,6 +53,7 @@ public:  // methods
 
 
 private:
+
     Metrics();
     ~Metrics();
 };
@@ -72,6 +67,7 @@ class CollectMetrics {
     void print(std::ostream& s) const;
 
 public:
+
     CollectMetrics();
     ~CollectMetrics();
 
@@ -84,8 +80,27 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class MetricsGroup {
+public:
+
+    MetricsGroup(const std::string& prefix);
+    ~MetricsGroup();
+};
+
+/// add MetricsGroupItem to separate items inside a MetricsGroup
+/// MetricsGroupItem is not required before the first item or after the last one
+/// MetricsGroupItem is idempotent (no effect if called multiple times in succession)
+class MetricsGroupItem {
+public:
+
+    MetricsGroupItem();
+    ~MetricsGroupItem();
+};
+//----------------------------------------------------------------------------------------------------------------------
+
 class MetricsPrefix {
 public:
+
     MetricsPrefix(const std::string& prefix);
     ~MetricsPrefix();
 };

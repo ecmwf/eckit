@@ -1,10 +1,5 @@
-# (C) Copyright 1996- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation
-# nor does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 ecbuild_add_test( TARGET    eckit_test_linalg_factory
                   ARGS      --log_level=message
@@ -41,13 +36,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_generic
                   COMMAND   eckit_test_linalg_mixed_backend
                   ARGS      --log_level=message -linearAlgebraBackend generic )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_armadillo
-                  COMMAND   eckit_test_linalg_mixed_backend
-                  CONDITION eckit_HAVE_ARMADILLO
-                  ARGS      --log_level=message -linearAlgebraBackend armadillo )
-
-# This test seems to have a system call exit with 1 even though tests pass.
-# Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
 ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_cuda
                   COMMAND   eckit_test_linalg_mixed_backend
                   CONDITION eckit_HAVE_CUDA
@@ -68,11 +56,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_mkl
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraBackend mkl )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_viennacl
-                  COMMAND   eckit_test_linalg_mixed_backend
-                  CONDITION eckit_HAVE_VIENNACL
-                  ARGS      --log_level=message -linearAlgebraBackend viennacl )
-
 ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_openmp
                   COMMAND   eckit_test_linalg_mixed_backend
                   CONDITION eckit_HAVE_OMP
@@ -83,11 +66,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_openmp
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_generic
                   COMMAND   eckit_test_linalg_dense_backend
                   ARGS      --log_level=message -linearAlgebraDenseBackend generic )
-
-ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_armadillo
-                  COMMAND   eckit_test_linalg_dense_backend
-                  CONDITION eckit_HAVE_ARMADILLO
-                  ARGS      --log_level=message -linearAlgebraDenseBackend armadillo )
 
 # This test seems to have a system call exit with 1 even though tests pass.
 # Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
@@ -111,10 +89,10 @@ ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_mkl
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraDenseBackend mkl )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_viennacl
+ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_torch
                   COMMAND   eckit_test_linalg_dense_backend
-                  CONDITION eckit_HAVE_VIENNACL
-                  ARGS      --log_level=message -linearAlgebraDenseBackend viennacl )
+                  CONDITION eckit_HAVE_TORCH
+                  ARGS      --log_level=message -linearAlgebraDenseBackend torch )
 
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_openmp
                   COMMAND   eckit_test_linalg_dense_backend
@@ -134,6 +112,11 @@ ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_cuda
                   CONDITION eckit_HAVE_CUDA
                   ARGS      --log_level=message -linearAlgebraSparseBackend cuda --catch_system_errors=no )
 
+ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_hip
+                  COMMAND   eckit_test_linalg_sparse_backend
+                  CONDITION eckit_HAVE_HIP
+                  ARGS      --log_level=message -linearAlgebraSparseBackend hip )
+
 ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_eigen
                   COMMAND   eckit_test_linalg_sparse_backend
                   CONDITION eckit_HAVE_EIGEN
@@ -144,15 +127,15 @@ ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_mkl
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraSparseBackend mkl )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_viennacl
-                  COMMAND   eckit_test_linalg_sparse_backend
-                  CONDITION eckit_HAVE_VIENNACL
-                  ARGS      --log_level=message -linearAlgebraSparseBackend viennacl )
-
 ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_openmp
                   COMMAND   eckit_test_linalg_sparse_backend
                   CONDITION eckit_HAVE_OMP
                   ARGS      --log_level=message -linearAlgebraSparseBackend openmp )
+
+ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_torch
+                  COMMAND   eckit_test_linalg_sparse_backend
+                  CONDITION eckit_HAVE_TORCH
+                  ARGS      --log_level=message -linearAlgebraSparseBackend torch )
 
 #
 

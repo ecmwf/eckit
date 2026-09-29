@@ -1,20 +1,11 @@
-/*
- * (C) Copyright 1996-2017 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_net_UDPClient_h
 #define eckit_net_UDPClient_h
 
 #include <iosfwd>
 #include <string>
-
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -25,17 +16,24 @@ class Configuration;
 namespace net {
 
 
-class UDPClient : private NonCopyable {
+class UDPClient {
 
 public:  // methods
+
     explicit UDPClient(const Configuration& cfg);
     UDPClient(const std::string& hostname, int port);
+
+    UDPClient(const UDPClient&)            = delete;
+    UDPClient& operator=(const UDPClient&) = delete;
+    UDPClient(UDPClient&&)                 = delete;
+    UDPClient& operator=(UDPClient&&)      = delete;
 
     ~UDPClient();
 
     void send(const void* buf, size_t length);
 
 protected:  // methods
+
     void print(std::ostream& s) const;
 
     friend std::ostream& operator<<(std::ostream& s, const UDPClient& socket) {
@@ -44,6 +42,7 @@ protected:  // methods
     }
 
 private:  // members
+
     std::string hostname_;
 
     int port_;

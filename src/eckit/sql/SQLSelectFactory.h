@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_sql_SQLSelectFactory_H
 #define eckit_sql_SQLSelectFactory_H
@@ -39,6 +32,7 @@ namespace eckit::sql {
 
 class SQLSelectFactory {
 public:
+
     SQLSelectFactory(SQLSession& session);
 
     SQLSelect* create(bool distinct, const expression::Expressions& select_list, const std::string& into,
@@ -58,6 +52,7 @@ public:
     //    static odb::MetaData toODAColumns(odb::sql::SQLSession&, const odb::sql::TableDef&);
 
 private:  // methods
+
     // No copy allowed
     SQLSelectFactory(const SQLSelectFactory&);
     SQLSelectFactory& operator=(const SQLSelectFactory&);
@@ -65,6 +60,7 @@ private:  // methods
     std::string index(const std::string& columnName, const expression::SQLExpression* index);
 
 private:  // members
+
     SQLSession& session_;
 
     // SchemaAnalyzer& analyzer();

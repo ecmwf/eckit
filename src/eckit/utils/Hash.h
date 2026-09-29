@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_utils_Hash_H
 #define eckit_utils_Hash_H
@@ -19,20 +12,26 @@
 #include <map>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Hash : private eckit::NonCopyable {
+class Hash {
 
 public:  // types
-    typedef std::string digest_t;
+
+    using digest_t = std::string;
 
 public:  // methods
+
     Hash();
+
+    Hash(const Hash&)            = delete;
+    Hash& operator=(const Hash&) = delete;
+    Hash(Hash&&)                 = delete;
+    Hash& operator=(Hash&&)      = delete;
 
     virtual ~Hash();
 
@@ -77,10 +76,12 @@ public:  // methods
     operator std::string() { return digest(); }
 
 protected:  // methods
+
     // for incremental hashing
     virtual void update(const void*, long) = 0;
 
 private:  // types
+
     // Make sure this is not called with a pointer
     template <class T>
     void add(const T* x);
@@ -89,7 +90,8 @@ private:  // types
     /// Double hashing
     void add(const Hash& hash) { add(hash.digest()); }
 
-protected:                     // members
+protected:  // members
+
     mutable digest_t digest_;  ///< cached digest
 };
 
@@ -99,6 +101,7 @@ class HashBuilderBase {
     std::string name_;
 
 public:
+
     HashBuilderBase(const std::string&);
     virtual ~HashBuilderBase();
     virtual Hash* make()                         = 0;
@@ -111,13 +114,14 @@ class HashBuilder : public HashBuilderBase {
     Hash* make(const std::string& param) override { return new T(param); }
 
 public:
-    HashBuilder(const std::string& name) :
-        HashBuilderBase(name) {}
+
+    HashBuilder(const std::string& name) : HashBuilderBase(name) {}
     ~HashBuilder() override = default;
 };
 
 class HashFactory {
 public:
+
     static HashFactory& instance();
 
     void add(const std::string& name, HashBuilderBase* builder);
@@ -143,6 +147,7 @@ public:
     Hash* build(const std::string& name, const std::string& param);
 
 private:
+
     HashFactory();
 
     std::map<std::string, HashBuilderBase*> builders_;

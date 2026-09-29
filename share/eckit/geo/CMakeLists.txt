@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
+set(_files
+    "area.yaml"
+
+    "grid.yaml"
+    "FESOM.yaml"
+    "ICON-CH.yaml"
+    "ICON-DWD.yaml"
+    "ICON-MPIM.yaml"
+    "ORCA.yaml"
+    "hydro.yaml")
+
+if(eckit_HAVE_GEO_AREA_SHAPEFILE)
+    list(APPEND _files "shapefile.yaml")
+endif()
+
+set(_destination "share/eckit/geo")
+
+install(FILES ${_files} DESTINATION ${_destination} PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+
+foreach(_file ${_files})
+    configure_file(${_file} "${CMAKE_BINARY_DIR}/${_destination}/${_file}" COPYONLY)
+endforeach()

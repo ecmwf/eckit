@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_Main_h
 #define eckit_Main_h
@@ -14,7 +7,6 @@
 #include <map>
 
 #include "eckit/log/Channel.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -23,13 +15,20 @@ namespace eckit {
 class LogStream;
 class PathName;
 
-class Main : private NonCopyable {
+class Main {
 protected:
+
     Main(int argc, char** argv, const char* homeenv = nullptr);
+
+    Main(const Main&)            = delete;
+    Main& operator=(const Main&) = delete;
+    Main(Main&&)                 = delete;
+    Main& operator=(Main&&)      = delete;
 
     virtual ~Main();
 
 public:  // methods
+
     static Main& instance();
 
     int argc() const;
@@ -63,6 +62,9 @@ public:  // methods
     // To be used before main() to check if the instance is ready
     static bool ready();
 
+    // A path, conceptually ~/run, which can be used for mutable runtime state
+    virtual const eckit::PathName& rundir() const;
+
     // Check if debugging was set to on (either through environment variable "DEBUG=1",
     // or command-line argument "--debug" or "-debug".
     virtual bool debug() const;
@@ -76,6 +78,7 @@ public:  // methods
     virtual LogTarget* createMetricsLogTarget() const;
 
 protected:
+
     std::string name_;
     std::string displayName_;  ///< name to be displayed of running application
     long taskID_;
@@ -85,6 +88,7 @@ protected:
     virtual LogTarget* createDefaultLogTarget() const;
 
 private:  // members
+
     int argc_;
     char** argv_;
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/mpi/Group.h"
 
@@ -18,6 +11,7 @@ namespace eckit::mpi {
 
 class NullGroupContent : public GroupContent {
 public:
+
     virtual ~NullGroupContent() {}
 
     virtual void print(std::ostream& os) const { os << "NullGroup()"; }
@@ -40,27 +34,30 @@ public:
 
     virtual NullGroupContent* incl(const std::vector<int>& ranks) const { return new NullGroupContent(); };
 
-    virtual NullGroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const { return new NullGroupContent(); };
+    virtual NullGroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const {
+        return new NullGroupContent();
+    };
 
-    virtual NullGroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const { return new NullGroupContent(); };
+    virtual NullGroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const {
+        return new NullGroupContent();
+    };
 
-    virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const { return std::unordered_map<int, int>{}; };
+    virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const {
+        return std::unordered_map<int, int>{};
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Group::Group() :
-    content_(new NullGroupContent()) {
+Group::Group() : content_(new NullGroupContent()) {
     content_->attach();
 }
 
-Group::Group(int group) :
-    content_(0) {
+Group::Group(int group) : content_{nullptr} {
     *this = eckit::mpi::comm().group(group);
 }
 
-Group::Group(GroupContent* p) :
-    content_(p) {
+Group::Group(GroupContent* p) : content_(p) {
     content_->attach();
 }
 
@@ -68,12 +65,15 @@ Group::~Group() {
     content_->detach();
 }
 
-Group::Group(const Group& s) :
-    content_(s.content_) {
+Group::Group(const Group& s) : content_(s.content_) {
     content_->attach();
 }
 
 Group& Group::operator=(const Group& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     if (content_) {
         content_->detach();
     }

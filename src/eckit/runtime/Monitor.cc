@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <pthread.h>
 #include <csignal>
@@ -47,8 +40,8 @@ class MemoryMappedTaskArray : public Monitor::TaskArray {
     MappedArray<TaskInfo> map_;
 
 public:
-    MemoryMappedTaskArray(const PathName& path, unsigned long size) :
-        TaskArray(), map_(path, size) {}
+
+    MemoryMappedTaskArray(const PathName& path, unsigned long size) : TaskArray(), map_(path, size) {}
 };
 
 class SharedMemoryTaskArray : public Monitor::TaskArray {
@@ -69,6 +62,7 @@ class SharedMemoryTaskArray : public Monitor::TaskArray {
     SharedMemArray<TaskInfo> map_;
 
 public:
+
     SharedMemoryTaskArray(const PathName& path, const std::string& name, unsigned long size) :
         TaskArray(), map_(path, name, size) {}
 };
@@ -82,7 +76,10 @@ static pthread_once_t once          = PTHREAD_ONCE_INIT;
 
 static void taskarray_init(void) {
 
-    LocalPathName monitorPath(Resource<std::string>("monitorPath", "~/etc/monitor"));
+    LocalPathName monitorPath(Resource<std::string>("monitorPath", ""));
+    if (monitorPath == "") {
+        monitorPath = Main::instance().rundir() / "monitor";
+    }
     size_t size = Resource<size_t>("monitorSize", 1000);
 
     std::string monitorArrayType = Resource<std::string>("monitorArrayType", "MemoryMapped");
@@ -127,8 +124,7 @@ Monitor& Monitor::instance() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Monitor::Monitor() :
-    slot_(0), ready_(false), check_(false) {}
+Monitor::Monitor() : slot_(0), ready_(false), check_(false) {}
 
 void Monitor::init() {
     if (ready_) {

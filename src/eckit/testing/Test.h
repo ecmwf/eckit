@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Simon Smart
 /// @author Tiago Quintino
@@ -15,9 +8,12 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <cerrno>
 #include <cstdlib>  // for setenv
+#include <cstring>  // for strerror
 
 #include <functional>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -36,45 +32,68 @@ namespace eckit::testing {
 
 class TestException : public Exception {
 public:
-    TestException(const std::string& w, const CodeLocation& l) :
-        Exception(w, l) {}
+
+    TestException(const std::string& w, const CodeLocation& l) : Exception(w, l) {}
 };
 
-enum TestVerbosity
-{
+enum TestVerbosity {
     Silent      = 0,
     Summary     = 1,
     AllFailures = 2
 };
-enum InitEckitMain
-{
+enum InitEckitMain {
     NoInitEckitMain = 0,
     DoInitEckitMain = 1
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// RAII guard that sets an environment variable and restores its original state on destruction.
+///
+/// On construction, saves the current value of the named environment variable (if any) and sets it
+/// to the given value. On destruction, restores the original value or unsets the variable if it was
+/// not previously defined.
+///
+/// @warning Per man 3 setenv: "Modifications of environment variables are not allowed in
+///          multi-threaded programs." Do not use `SetEnv` concurrently from multiple threads.
 class SetEnv {
 public:
-    SetEnv(const char* key, const char* val) :
-        key_(key), value_(val) {
-        oldValue_ = ::getenv(key_);
-        ::setenv(key_, value_, true);
+
+    /// @param key  Name of the environment variable to set.
+    /// @param val  Value to assign to the environment variable.
+    /// @throws eckit::SyscallException if setenv() fails.
+    SetEnv(std::string key, std::string val) : key_(std::move(key)), value_(std::move(val)) {
+        if (const char* p = ::getenv(key_.c_str())) {
+            oldValue_ = std::string(p);
+        }
+        SYSCALL(::setenv(key_.c_str(), value_.c_str(), 1));
     }
 
+    // Destructor must not throw (implicitly noexcept), so we log errors
+    // instead of using SYSCALL which would call std::terminate.
     ~SetEnv() {
-        if (not oldValue_) {
-            ::unsetenv(key_);
+        if (!oldValue_) {
+            if (::unsetenv(key_.c_str()) != 0) {
+                eckit::Log::error() << "unsetenv failed for " << key_ << ": " << std::strerror(errno) << std::endl;
+            }
         }
         else {
-            ::setenv(key_, oldValue_, true);
+            if (::setenv(key_.c_str(), oldValue_->c_str(), 1) != 0) {
+                eckit::Log::error() << "setenv failed for " << key_ << ": " << std::strerror(errno) << std::endl;
+            }
         }
     }
 
+    SetEnv(const SetEnv&)            = delete;
+    SetEnv& operator=(const SetEnv&) = delete;
+    SetEnv(SetEnv&&)                 = delete;
+    SetEnv& operator=(SetEnv&&)      = delete;
+
 private:
-    const char* key_;
-    const char* value_;
-    const char* oldValue_;
+
+    std::string key_;
+    std::string value_;
+    std::optional<std::string> oldValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -84,6 +103,7 @@ private:
 class Test {
 
 public:  // methods
+
     Test(const std::string& description, std::function<void(std::string&, int&, int)> testFn) :
         description_(description), testFn_(std::move(testFn)) {}
 
@@ -155,11 +175,10 @@ public:  // methods
         return description_;
     }
 
-    const std::string& descriptionNoSection() const {
-        return description_;
-    }
+    const std::string& descriptionNoSection() const { return description_; }
 
 private:  // members
+
     std::string description_;
     std::string subsection_;
 
@@ -177,6 +196,7 @@ std::vector<Test>& specification() {
 
 class TestRegister {
 public:
+
     TestRegister(const std::string& description, void (*testFn)(std::string&, int&, int)) {
         specification().push_back(Test(description, testFn));
     }
@@ -190,13 +210,11 @@ public:
 template <typename T>
 class ArrayView {
 public:
+
     // -- Constructors
-    ArrayView(const T* data, size_t size) :
-        data_(data), size_(size) {}
-    ArrayView(const T* begin, const T* end) :
-        data_(begin), size_(end - begin) {}
-    explicit ArrayView(const std::vector<T>& vec) :
-        data_(&vec[0]), size_(vec.size()) {}
+    ArrayView(const T* data, size_t size) : data_(data), size_(size) {}
+    ArrayView(const T* begin, const T* end) : data_(begin), size_(end - begin) {}
+    explicit ArrayView(const std::vector<T>& vec) : data_(&vec[0]), size_(vec.size()) {}
 
     // -- Accessors
     const T& operator[](int i) const { return data_[i]; }
@@ -235,6 +253,7 @@ public:
     }
 
 private:
+
     // -- Private Methods
     template <typename U>
     bool compareEqual_(const U* data, const size_t size) const {
@@ -335,32 +354,33 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     // force colour output unless explicitly deactivated
     // this is useful for test harness ctest that redirects output and is not attached to a tty
-    if (not ::getenv("ECKIT_COLOUR_OUTPUT")) {
-        ::setenv("ECKIT_COLOUR_OUTPUT", "1", true);
+    if (not::getenv("ECKIT_COLOUR_OUTPUT")) {
+        SYSCALL(::setenv("ECKIT_COLOUR_OUTPUT", "1", 1));
     }
 
     // Suppress noisy exceptions in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
-        ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
+    if (not::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+        SYSCALL(::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", 1));
     }
 
     // Suppress noisy ASSERT in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not ::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
-        ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
+    if (not::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+        SYSCALL(::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", 1));
     }
 
     // Suppress noisy SeriousBug exception in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not ::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
-        ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
+    if (not::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
+        SYSCALL(::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", 1));
     }
 
     bool run_all = true;
     std::set<long> runTests;
-    if (::getenv("ECKIT_TEST_TESTS")) {
-        auto tsts = eckit::Translator<std::string, std::vector<long>>()(::getenv("ECKIT_TEST_TESTS"));
+    const char* ECKIT_TEST_TESTS = ::getenv("ECKIT_TEST_TESTS");
+    if (ECKIT_TEST_TESTS != nullptr) {
+        auto tsts = eckit::Translator<std::string, std::vector<long>>()(ECKIT_TEST_TESTS);
         runTests.insert(tsts.begin(), tsts.end());
         run_all = false;
     }
@@ -391,7 +411,7 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 int run_tests_main(std::vector<Test>& tests, int argc, char* argv[], bool initEckitMain = true) {
 
     // deactivate loading of plugins not to influence some tests
-    ::setenv("AUTO_LOAD_PLUGINS", "false", true);
+    SYSCALL(::setenv("AUTO_LOAD_PLUGINS", "false", 1));
 
     if (initEckitMain) {
         eckit::Main::initialise(argc, argv);
@@ -427,10 +447,10 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 #if ECKIT_TESTING_SELF_REGISTER_CASES
 
-#define CASE(description)                                                                                                 \
-    void UNIQUE_NAME2(test_, __LINE__)(std::string&, int&, int);                                                          \
-    static const eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description,                     \
-                                                                                         &UNIQUE_NAME2(test_, __LINE__)); \
+#define CASE(description)                                                                 \
+    void UNIQUE_NAME2(test_, __LINE__)(std::string&, int&, int);                          \
+    static const eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)( \
+        description, &UNIQUE_NAME2(test_, __LINE__));                                     \
     void UNIQUE_NAME2(test_, __LINE__)(std::string & _test_subsection, int& _num_subsections, int _subsection)
 
 #else  // ECKIT_TESTING_SELF_REGISTER_CASES

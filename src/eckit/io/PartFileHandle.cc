@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <numeric>
@@ -17,8 +10,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PartFileHandle.h"
 
-#include "eckit/io/PooledHandle.h"
 #include "eckit/io/MoverTransferSelection.h"
+#include "eckit/io/PooledHandle.h"
 
 namespace eckit {
 
@@ -35,8 +28,7 @@ void PartFileHandle::print(std::ostream& s) const {
         s << "PartFileHandle";
     }
     else {
-        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_
-          << ']';
+        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_ << ']';
     }
 }
 
@@ -47,8 +39,7 @@ void PartFileHandle::encode(Stream& s) const {
     s << length_;
 }
 
-PartFileHandle::PartFileHandle(Stream& s) :
-    DataHandle(s), pos_(0), index_(0) {
+PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
     s >> path_;
     s >> offset_;
     s >> length_;

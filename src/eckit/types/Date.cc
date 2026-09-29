@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iomanip>
 
@@ -22,6 +15,7 @@ namespace eckit {
 
 class BadDate : public BadValue {
 public:
+
     BadDate(const std::string& t);
 };
 
@@ -42,15 +36,13 @@ static void check(const Date& date, long value) {
 }
 
 
-Date::Date(long date) :
-    julian_(dateToJulian(date)) {
+Date::Date(long date) : julian_(dateToJulian(date)) {
     if (date > 0) {
         check(*this, date);
     }
 }
 
-Date::Date(long year, long month, long day) :
-    julian_(dateToJulian(year * 10000 + month * 100 + day)) {
+Date::Date(long year, long month, long day) : julian_(dateToJulian(year * 10000 + month * 100 + day)) {
     check(*this, year * 10000 + month * 100 + day);
 }
 
@@ -316,8 +308,7 @@ std::string Date::monthName() const {
     return months[n - 1];
 }
 
-BadDate::BadDate(const std::string& s) :
-    BadValue(s) {}
+BadDate::BadDate(const std::string& s) : BadValue(s) {}
 
 void Date::dump(DumpLoad& a) const {
     a.dump(julian_);

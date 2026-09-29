@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
@@ -23,6 +16,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionExpression : public SQLExpression {
 public:
+
     FunctionExpression(const std::string&, const expression::Expressions&);
     FunctionExpression(const FunctionExpression&);
     ~FunctionExpression();
@@ -48,6 +42,7 @@ public:
     static const char* help() { return ""; }
 
 protected:
+
     std::string name_;
     expression::Expressions args_;
     // void print(std::ostream&) const override;
@@ -57,6 +52,7 @@ protected:
     void tables(std::set<const SQLTable*>&) override;
 
 private:
+
     FunctionExpression& operator=(const FunctionExpression&);
 
     // For use inside reshift()

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ### test data files
 list( APPEND test_data_files
 2t_sfc.grib
@@ -37,12 +40,12 @@ ecbuild_add_test( TARGET      eckit_test_utils_rendezvoushash
                   SOURCES     test_rendezvoushash.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_compressor
-                  SOURCES     test_compressor.cc
+ecbuild_add_test( TARGET      eckit_test_utils_rle
+                  SOURCES     test_rle.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_optional
-                  SOURCES     test_optional.cc
+ecbuild_add_test( TARGET      eckit_test_utils_compressor
+                  SOURCES     test_compressor.cc
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_utils_hashing
@@ -62,11 +65,15 @@ ecbuild_add_test( TARGET      eckit_test_utils_compression_performance
                   SOURCES     compression-performance.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_rsync
-                  CONDITION   HAVE_RSYNC
-                  SOURCES     test_rsync.cc
-                  LIBS        eckit rsync )
-
 ecbuild_add_test( TARGET      eckit_test_regex
                   SOURCES     test_regex.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_literals
+                  SOURCES     test_literals.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_safe_casts
+                  SOURCES     test_safe_casts.cc
+                  LIBS        eckit )
+

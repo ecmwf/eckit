@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 unset( eckit_la_pincludes )
 unset( eckit_la_plibs )
 list( APPEND eckit_la_srcs
@@ -18,19 +21,19 @@ list( APPEND eckit_la_srcs
       Triplet.h
       Vector.cc
       Vector.h
+      allocator/BufferAllocator.cc
+      allocator/BufferAllocator.h
+      allocator/NonOwningAllocator.cc
+      allocator/NonOwningAllocator.h
+      allocator/StandardAllocator.cc
+      allocator/StandardAllocator.h
+      allocator/StandardContainerAllocator.cc
+      allocator/StandardContainerAllocator.h
       dense/LinearAlgebraGeneric.cc
       dense/LinearAlgebraGeneric.h
       sparse/LinearAlgebraGeneric.cc
       sparse/LinearAlgebraGeneric.h
       types.h )
-
-if( eckit_HAVE_ARMADILLO )
-    list( APPEND eckit_la_srcs
-          dense/LinearAlgebraArmadillo.cc
-          dense/LinearAlgebraArmadillo.h )
-    list( APPEND eckit_la_pincludes "${ARMADILLO_INCLUDE_DIRS}" )
-    list( APPEND eckit_la_plibs "${ARMADILLO_LIBRARIES}" )
-endif()
 
 if( eckit_HAVE_CUDA )
     list( APPEND eckit_la_srcs
@@ -39,9 +42,16 @@ if( eckit_HAVE_CUDA )
           detail/CUDA.h
           sparse/LinearAlgebraCUDA.cc
           sparse/LinearAlgebraCUDA.h )
-    list( APPEND eckit_la_pincludes "${CUDA_INCLUDE_DIRS}" )
-    list( APPEND eckit_la_plibs "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}" )
+    list( APPEND eckit_la_plibs CUDA::cudart CUDA::cusparse CUDA::cublas )
 endif()
+
+if( eckit_HAVE_HIP )
+    list( APPEND eckit_la_srcs
+          sparse/LinearAlgebraHIP.cc
+          sparse/LinearAlgebraHIP.h )
+    list( APPEND eckit_la_plibs hip::host roc::hipsparse )
+endif()
+
 
 if( eckit_HAVE_EIGEN )
     list( APPEND eckit_la_srcs
@@ -68,13 +78,16 @@ if( eckit_HAVE_MKL )
     list( APPEND eckit_la_plibs "${MKL_LIBRARIES}" )
 endif()
 
-if( eckit_HAVE_VIENNACL )
+if( eckit_HAVE_TORCH )
     list( APPEND eckit_la_srcs
-          dense/LinearAlgebraViennaCL.cc
-          dense/LinearAlgebraViennaCL.h
-          sparse/LinearAlgebraViennaCL.cc
-          sparse/LinearAlgebraViennaCL.h )
-    list( APPEND eckit_la_pincludes "${VIENNACL_INCLUDE_DIRS}" )
+          dense/LinearAlgebraTorch.cc
+          dense/LinearAlgebraTorch.h
+          detail/Torch.cc
+          detail/Torch.h
+          sparse/LinearAlgebraTorch.cc
+          sparse/LinearAlgebraTorch.h )
+    list( APPEND eckit_la_pincludes torch )
+    list( APPEND eckit_la_plibs torch )
 endif()
 
 if( eckit_HAVE_OMP )
@@ -97,9 +110,3 @@ if( eckit_HAVE_EIGEN )
     # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
     target_include_directories( eckit_linalg SYSTEM PRIVATE ${EIGEN3_INCLUDE_DIRS} )
 endif()
-
-if( CUDA_FOUND )
-  set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
-  cuda_add_cublas_to_target( eckit_linalg )
-endif()
-

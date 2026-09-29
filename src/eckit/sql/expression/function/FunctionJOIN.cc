@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/function/FunctionJOIN.h"
 #include "eckit/sql/expression/ColumnExpression.h"
@@ -21,8 +14,7 @@ static FunctionBuilder<FunctionJOIN> joinFunctionBuilder("join");
 FunctionJOIN::FunctionJOIN(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionJOIN::FunctionJOIN(const FunctionJOIN& other) :
-    FunctionExpression(other.name_, other.args_) {}
+FunctionJOIN::FunctionJOIN(const FunctionJOIN& other) : FunctionExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionJOIN::clone() const {
     return std::make_shared<FunctionJOIN>(*this);

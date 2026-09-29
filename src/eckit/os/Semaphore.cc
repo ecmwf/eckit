@@ -1,15 +1,8 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
-#include <cerrno>
 #include <sys/sem.h>
+#include <cerrno>
 #include <cstdio>
 
 #include "eckit/eckit.h"
@@ -34,8 +27,7 @@ struct sembuf _unlock[] = {
     {0, -1, SEM_UNDO}, /* ulck */
 };
 
-Semaphore::Semaphore(const PathName& name, int count) :
-    semaphore_(-1), count_(count), level_(0) {
+Semaphore::Semaphore(const PathName& name, int count) : semaphore_(-1), count_(count), level_(0) {
     key_t key = ftok(name.localPath(), 1);
 
     if (key == key_t(-1) && errno == ENOENT) {

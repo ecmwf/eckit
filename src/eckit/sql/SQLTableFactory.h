@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Simon Smart
 /// @date Aug 2018
@@ -38,15 +31,17 @@ class SQLDatabase;
 class SQLTableFactory {
 
     // n.b. we currently have no use for a name, but we may well in the future.
-    // typedef std::map<std::string, const SQLTableFactoryBase*> factory_map;
-    typedef std::vector<const SQLTableFactoryBase*> factory_map;
+    // using factory_map = std::map<std::string, const SQLTableFactoryBase*>;
+    using factory_map = std::vector<const SQLTableFactoryBase*>;
 
 private:  // methods
+
     // Can only be constructed by instance()
     SQLTableFactory()  = default;
     ~SQLTableFactory() = default;
 
 public:  // methods
+
     static SQLTableFactory& instance();
 
     /// Build an SQLTable from a give name. Location is optional - if it is not supplied
@@ -58,6 +53,7 @@ public:  // methods
     void deregister(SQLTableFactoryBase* f);
 
 private:  // methods
+
     factory_map factories_;
     std::mutex mutex_;
 };
@@ -67,6 +63,7 @@ private:  // methods
 class SQLTableFactoryBase {
 
 public:  // methods
+
     SQLTableFactoryBase();
     virtual ~SQLTableFactoryBase();
 

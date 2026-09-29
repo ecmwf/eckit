@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/linalg/LinearAlgebra.h"
@@ -20,33 +13,6 @@
 namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
-
-///@note __backend supports the deprecated functionality, to remove
-static const struct LinearAlgebraInstance : public LinearAlgebra {
-    LinearAlgebraInstance() = default;
-} __backend;
-
-
-//-----------------------------------------------------------------------------
-
-
-const LinearAlgebra& LinearAlgebra::backend() {
-    return __backend;
-}
-
-
-void LinearAlgebra::backend(const std::string& name) {
-    ASSERT(LinearAlgebraDense::hasBackend(name) || LinearAlgebraSparse::hasBackend(name));
-
-    if (LinearAlgebraDense::hasBackend(name)) {
-        LinearAlgebraDense::backend(name);
-    }
-
-    if (LinearAlgebraSparse::hasBackend(name)) {
-        LinearAlgebraSparse::backend(name);
-    }
-}
-
 
 std::ostream& LinearAlgebra::list(std::ostream& out) {
     const auto* delimiter = ", ";
@@ -64,12 +30,6 @@ std::ostream& LinearAlgebra::list(std::ostream& out) {
     }
 
     return out;
-}
-
-
-const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
-    backend(name);
-    return __backend;
 }
 
 
@@ -105,13 +65,6 @@ bool LinearAlgebra::hasDenseBackend(const std::string& name) {
 
 bool LinearAlgebra::hasSparseBackend(const std::string& name) {
     return LinearAlgebraSparse::hasBackend(name);
-}
-
-
-std::string LinearAlgebra::name() {
-    const auto dense  = LinearAlgebraDense::name();
-    const auto sparse = LinearAlgebraSparse::name();
-    return dense == sparse ? dense : (dense + "/" + sparse);
 }
 
 

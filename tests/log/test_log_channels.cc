@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
 #include <csignal>
@@ -55,10 +48,11 @@ namespace eckit::test {
 
 class CapitalizerTarget : public WrapperTarget {
 public:
-    CapitalizerTarget(LogTarget* target) :
-        WrapperTarget(target) {}
+
+    CapitalizerTarget(LogTarget* target) : WrapperTarget(target) {}
 
 private:
+
     virtual void write(const char* start, const char* end) {
 
         std::string::size_type length = std::distance(start, end);
@@ -126,7 +120,7 @@ CASE("test_multi_targets") {
 
     mychannel << "testing [" << t++ << "]" << std::endl;
 
-    mychannel.addCallback(&callback_noctxt, 0);
+    mychannel.addCallback(&callback_noctxt, nullptr);
     mychannel.addCallback(&callback_ctxt, &t);
 
     mychannel << "testing [" << t++ << "]" << std::endl;

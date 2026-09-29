@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -18,7 +11,6 @@
 #include <cstdio>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -28,9 +20,15 @@ class PathName;
 /// Wrapper around a stdio FILE*
 /// Use this for class members
 
-class StdFile : private NonCopyable {
+class StdFile {
 public:
+
     StdFile(const PathName& name, const std::string& mode = "r");
+
+    StdFile(const StdFile&)            = delete;
+    StdFile& operator=(const StdFile&) = delete;
+    StdFile(StdFile&&)                 = delete;
+    StdFile& operator=(StdFile&&)      = delete;
 
     /// @pre must have been closed
     ~StdFile();
@@ -44,6 +42,7 @@ public:
     void close() noexcept(false);
 
 private:  // members
+
     FILE* file_;
 };
 
@@ -55,8 +54,8 @@ class AutoStdFile : public StdFile {
     void close() { StdFile::close(); }
 
 public:
-    AutoStdFile(const PathName& name, const std::string& mode = "r") :
-        StdFile(name, mode) {}
+
+    AutoStdFile(const PathName& name, const std::string& mode = "r") : StdFile(name, mode) {}
     ~AutoStdFile() noexcept(false) { close(); }
 };
 

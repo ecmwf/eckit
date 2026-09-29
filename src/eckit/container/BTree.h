@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File BTree.h
 // Baudouin Raoult - (c) ECMWF Feb 12
@@ -16,13 +9,13 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <algorithm>
 #include <cstring>
 
 #include "eckit/container/BTree.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/PooledFileDescriptor.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/Padded.h"
 #include "eckit/os/Stat.h"
 #include "eckit/thread/AutoLock.h"
@@ -33,6 +26,7 @@ namespace eckit {
 
 class BTreeLock {
 public:
+
     static void lockRange(int fd, off_t start, off_t len, int cmd, int type) {
         struct flock lock;
 
@@ -47,6 +41,7 @@ public:
 
 class BTreeNoLock {
 public:
+
     static void lockRange(int fd, off_t start, off_t len, int cmd, int type) {}
 };
 
@@ -61,15 +56,21 @@ public:
 /// @invariant L implements locking policy
 ///
 template <class K, class V, int S, class L = BTreeNoLock>
-class BTree : private NonCopyable {
+class BTree {
 public:
-    typedef K key_type;
-    typedef V value_type;
-    typedef std::pair<K, V> result_type;
+
+    using key_type    = K;
+    using value_type  = V;
+    using result_type = std::pair<K, V>;
 
     // -- Contructors
 
     BTree(const PathName&, bool readOnly = false, off_t offset = 0);
+
+    BTree(const BTree&)            = delete;
+    BTree& operator=(const BTree&) = delete;
+    BTree(BTree&&)                 = delete;
+    BTree& operator=(BTree&&)      = delete;
 
     // -- Destructor
 
@@ -109,11 +110,13 @@ public:
     const PathName& path() const { return path_; }
 
 private:  // methods
+
     void dump(std::ostream&, unsigned long page, int depth) const;
 
     void print(std::ostream& o) const { dump(o); }
 
 private:
+
     struct _Header {};
 
     struct NodeEntry {
@@ -234,11 +237,10 @@ private:
         time_t last_;
         bool dirty_;
 
-        _PageInfo(Page* page = 0) :
-            page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
+        _PageInfo(Page* page = 0) : page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
     };
 
-    typedef std::map<unsigned long, _PageInfo> Cache;
+    using Cache = std::map<unsigned long, _PageInfo>;
     Cache cache_;
 
     void lockRange(off_t start, off_t len, int cmd, int type);

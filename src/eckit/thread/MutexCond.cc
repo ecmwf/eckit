@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/thread/MutexCond.h"
@@ -18,8 +11,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MutexCond::MutexCond(char tag) :
-    tag_(tag) {
+MutexCond::MutexCond(char tag) : tag_(tag) {
     pthread_mutexattr_t attr;
     pthread_condattr_t cattr;
 
@@ -61,7 +53,7 @@ void MutexCond::wait() {
 bool MutexCond::wait(int sec) {
     ASSERT(inited_);
     //	AutoState x(':');
-    timespec timeout = {::time(0) + sec, 0};
+    timespec timeout = {::time(nullptr) + sec, 0};
     int n            = pthread_cond_timedwait(&cond_, &mutex_, &timeout);
     if (n && n != ETIMEDOUT) {
         THRCALL(n);

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
@@ -24,7 +17,6 @@ class DataHandle;
 
 #include <memory>
 
-#include "eckit/memory/OnlyMovable.h"
 #include "eckit/sql/SQLSelectFactory.h"
 // #include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -40,15 +32,21 @@ class SQLStatement;
 class SQLTable;
 class SQLOutputConfig;
 
-class SQLSession : private eckit::OnlyMovable {
+class SQLSession {
 public:
+
     // Constructors
 
-    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = 0,
+    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = nullptr,
                const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
     SQLSession(const std::string& csvDelimiter = ",");
+
+    SQLSession(const SQLSession&)            = delete;
+    SQLSession& operator=(const SQLSession&) = delete;
+    SQLSession(SQLSession&&)                 = delete;
+    SQLSession& operator=(SQLSession&&)      = delete;
 
     virtual ~SQLSession();
 
@@ -83,9 +81,11 @@ public:
     static std::string readIncludeFile(const std::string&);
 
 protected:
+
     void loadDefaultSchema();
 
 private:
+
     static std::string schemaFile();
     static std::vector<std::string> includePaths();
 

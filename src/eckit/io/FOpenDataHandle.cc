@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 #include <cstring>
@@ -36,6 +29,7 @@ class FOpenDataHandle {
     off_t position_;  // Keep track of position to cater for
 
 public:
+
     FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close, bool open_close);
     ~FOpenDataHandle();
 
@@ -257,7 +251,7 @@ static FILE* open(DataHandle* handle, const char* mode, bool delete_on_close, bo
         setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
     }
     else {
-        setvbuf(f, 0, _IONBF, 0);
+        setvbuf(f, nullptr, _IONBF, 0);
     }
     return f;
 }

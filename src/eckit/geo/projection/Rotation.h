@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -23,27 +15,16 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Rotation : public Projection {
 public:
+
     // -- Constructors
 
-    explicit Rotation(const Spec& spec) : Rotation(*std::unique_ptr<Rotation>(make_from_spec(spec))) {}
-
-    Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
-    Rotation(double south_pole_lon, double south_pole_lat, double angle = 0);
-
-    Rotation(const Rotation&) = default;
-    Rotation(Rotation&&)      = default;
-
-    // -- Destructor
-
-    ~Rotation() override = default;
-
-    // -- Operators
-
-    Rotation& operator=(const Rotation&) = default;
-    Rotation& operator=(Rotation&&)      = default;
+    explicit Rotation(const Spec&);
+    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
 
     // -- Methods
 
+    PointLonLat south_pole() const { return south_pole_; }
+    double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
 
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
@@ -51,19 +32,26 @@ public:
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
+
+    /// NOTE: a rotated grid's (x, y) are (lon, lat) on the rotated sphere, which fwd() un-rotates
+    inline Point from_grid_xy(double x, double y) const override { return fwd(PointLonLat{x, y}); }
 
     // -- Class methods
 
     [[nodiscard]] static Rotation* make_from_spec(const Spec&);
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Types
 
     struct Implementation {

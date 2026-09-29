@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date   November 2020
@@ -15,7 +8,7 @@
 #include <cctype>
 #include <map>
 
-#include <dlfcn.h>   // for dlopen
+#include <dlfcn.h>  // for dlopen
 #include <climits>  // for PATH_MAX
 
 #include "eckit/system/LibraryManager.h"
@@ -64,9 +57,10 @@ static std::string path_from_libhandle(const std::string& libname, void* handle)
 ///
 class LibraryRegistry {
 
-    typedef std::map<std::string, Library*> LibraryMap;
+    using LibraryMap = std::map<std::string, Library*>;
 
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static LibraryRegistry& instance() {
@@ -154,17 +148,15 @@ public:  // methods
         return *(j->second);
     }
 
-    const std::vector<std::string>& pluginSearchPaths() {
-        return plugin_search_paths_;
-    }
+    const std::vector<std::string>& pluginSearchPaths() { return plugin_search_paths_; }
 
     std::vector<std::string> dynamicLibraryPaths() {
         std::vector<std::string> libPaths(Resource<std::vector<std::string>>(
             "dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
 
-        for( auto& p: pluginSearchPaths() ) {
-            libPaths.push_back(p+"/lib");
-            libPaths.push_back(p+"/lib64");
+        for (auto& p : pluginSearchPaths()) {
+            libPaths.push_back(p + "/lib");
+            libPaths.push_back(p + "/lib64");
         }
         return libPaths;
     }
@@ -209,8 +201,7 @@ public:  // methods
             return plib;
         }
 
-        Log::warning() << "Failed to load library " << dynamicLibraryName
-                       << " dlerror: " << ::dlerror() << std::endl;
+        Log::warning() << "Failed to load library " << dynamicLibraryName << " dlerror: " << ::dlerror() << std::endl;
 
         return nullptr;
     }
@@ -253,8 +244,7 @@ public:  // methods
             // If the plugin library still doesn't exist after a successful call of dlopen, then
             // we have managed to load something other than a (self-registering) eckit Plugin library
             std::ostringstream ss;
-            ss << "Plugin library " << lib << " loaded but Plugin object " << name
-               << " not registered";
+            ss << "Plugin library " << lib << " loaded but Plugin object " << name << " not registered";
             throw UnexpectedState(ss.str(), Here());
         }
 
@@ -305,8 +295,8 @@ public:  // methods
         static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "");
         tokenize(pluginManifestPath, scanPaths);
 
-        for( const auto& p: pluginSearchPaths()) {
-            scanPaths.push_back(p+"/share/plugins");
+        for (const auto& p : pluginSearchPaths()) {
+            scanPaths.push_back(p + "/share/plugins");
         }
 
         // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
@@ -427,6 +417,7 @@ public:  // methods
     }
 
 private:  // members
+
     std::vector<std::string> plugin_search_paths_;
     LibraryMap libs_;
     std::map<std::string, std::string> plugins_;  //< map plugin name to library

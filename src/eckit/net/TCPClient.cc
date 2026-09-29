@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/net/TCPClient.h"
@@ -15,10 +8,8 @@
 
 namespace eckit::net {
 
-TCPClient::TCPClient(const SocketOptions& options) :
-    TCPSocket(), port_(0), options_(options) {}
-TCPClient::TCPClient(int port, const SocketOptions& options) :
-    TCPSocket(), port_(port), options_(options) {}
+TCPClient::TCPClient(const SocketOptions& options) : TCPSocket(), port_(0), options_(options) {}
+TCPClient::TCPClient(int port, const SocketOptions& options) : TCPSocket(), port_(port), options_(options) {}
 
 TCPClient::~TCPClient() {}
 
@@ -36,8 +27,8 @@ void TCPClient::print(std::ostream& s) const {
 }
 
 /// @note TCPClient::connect(host, port, retries, timeout) is found in TCPSocket.cc
-TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int timeout) {
-    return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
+TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int timeout, int retryDelay) {
+    return connect(endpoint.hostname(), endpoint.port(), retries, timeout, retryDelay);
 }
 
 }  // namespace eckit::net

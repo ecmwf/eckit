@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fstream>
 
@@ -30,6 +23,7 @@ static StaticMutex local_mutex;
 
 class RotationOutputStream {
 public:
+
     static RotationOutputStream& instance(const std::string& name) {
         AutoLock<StaticMutex> lock(local_mutex);
 
@@ -44,7 +38,8 @@ public:
     }
 
     void write(const char* start, const char* end) {
-        if(start >= end) return;
+        if (start >= end)
+            return;
         AutoLock<StaticMutex> lock(local_mutex);
         rotout().write(start, end - start);
     }
@@ -57,6 +52,7 @@ public:
     }
 
 private:
+
     RotationOutputStream(const std::string& name) :
         name_(name),
         logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")),
@@ -65,7 +61,7 @@ private:
 
     std::ostream& rotout() {
 
-        time_t now = ::time(nullptr) / 86400;
+        time_t now = ::time(nullptr) / Time::secondsInDay;
 
         if (now != lastTime_ || last_ == nullptr) {
 
@@ -105,6 +101,7 @@ private:
 
 
 private:  // members
+
     std::ofstream* last_ = nullptr;
     time_t lastTime_     = 0;
 
@@ -116,8 +113,7 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RotationTarget::RotationTarget(const std::string& name) :
-    name_(name) {
+RotationTarget::RotationTarget(const std::string& name) : name_(name) {
     if (name_.empty()) {
         name_ = Main::instance().name();
     }
@@ -126,7 +122,8 @@ RotationTarget::RotationTarget(const std::string& name) :
 RotationTarget::~RotationTarget() {}
 
 void RotationTarget::write(const char* start, const char* end) {
-    if(start >= end) return;
+    if (start >= end)
+        return;
     RotationOutputStream::instance(name_).write(start, end);
 }
 void RotationTarget::flush() {

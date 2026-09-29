@@ -1,42 +1,33 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/geometry/OblateSpheroid.h"
-#include "eckit/geo/geometry/Sphere.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LonLatToXYZ> PROJECTION("ll_to_xyz");
+static const std::string TYPE("ll-to-xyz");
+static ProjectionRegisterType<LonLatToXYZ> PROJECTION(TYPE);
 
 
-LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
+LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : Projection(figure_ptr) {
     struct LonLatToSphereXYZ final : Implementation {
         const double R;
 
         explicit LonLatToSphereXYZ(double _R) : R(_R) {}
-        Point3 operator()(const PointLonLat& p) const override {
-            return geometry::Sphere::convertSphericalToCartesian(R, p, 0.);
+        PointXYZ operator()(const PointLonLat& p) const override {
+            return figure::Sphere::convertSphericalToCartesian(R, p, 0.);
         }
-        PointLonLat operator()(const Point3& q) const override {
-            return geometry::Sphere::convertCartesianToSpherical(R, q);
+        PointLonLat operator()(const PointXYZ& q) const override {
+            return figure::Sphere::convertCartesianToSpherical(R, q);
         }
     };
 
@@ -45,10 +36,10 @@ LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
         const double b;
 
         explicit LonLatToSpheroidXYZ(double _a, double _b) : a(_a), b(_b) {}
-        Point3 operator()(const PointLonLat& p) const override {
-            return geometry::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
+        PointXYZ operator()(const PointLonLat& p) const override {
+            return figure::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
         }
-        PointLonLat operator()(const Point3& q) const override { NOTIMP; }
+        PointLonLat operator()(const PointXYZ& q) const override { NOTIMP; }
     };
 
     impl_.reset(types::is_approximately_equal(figure().eccentricity(), 0.)
@@ -68,10 +59,16 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) :
 LonLatToXYZ::LonLatToXYZ(const Spec& spec) : LonLatToXYZ(FigureFactory::build(spec)) {}
 
 
-void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+const std::string& LonLatToXYZ::type() const {
+    static const std::string type{TYPE};
+    return type;
+}
 
-    custom.set("projection", "ll_to_xyz");
+
+void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
+    Projection::fill_spec(custom);
+
+    custom.set("type", TYPE);
 }
 
 

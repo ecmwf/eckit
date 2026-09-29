@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef Sphere_H
 #define Sphere_H
@@ -24,9 +17,7 @@ class Point3;
 
 struct Sphere {
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
-    static double centralAngle(const Point2& Alonlat,
-                               const Point2& Blonlat,
-                               bool normalise_angle = false);
+    static double centralAngle(const Point2& Alonlat, const Point2& Blonlat, bool normalise_angle = false);
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
     static double centralAngle(const double& radius, const Point3& A, const Point3& B);
@@ -54,10 +45,7 @@ struct Sphere {
                                                   double& Clon1, double& Clon2);
 
     // Convert spherical coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radius,
-                                            const Point2& Alonlat,
-                                            Point3& B,
-                                            double height        = 0.,
+    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.,
                                             bool normalise_angle = false);
 
     // Convert Cartesian coordinates to spherical

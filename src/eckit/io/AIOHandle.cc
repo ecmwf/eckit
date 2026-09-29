@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/eckit.h"
 
 #include <fcntl.h>
-#include <climits>
 #include <unistd.h>
+#include <climits>
 
 #include <algorithm>
 
@@ -34,10 +27,17 @@ namespace eckit {
 
 #if eckit_HAVE_AIO
 
-struct AIOBuffer : private eckit::NonCopyable {
+struct AIOBuffer {
 
 public:  // methods
+
     explicit AIOBuffer() { eckit::zero(aio_); }
+
+    AIOBuffer(const AIOBuffer&)            = delete;
+    AIOBuffer& operator=(const AIOBuffer&) = delete;
+    AIOBuffer(AIOBuffer&&)                 = delete;
+    AIOBuffer& operator=(AIOBuffer&&)      = delete;
+
     ~AIOBuffer() { delete buff_; }
 
     void resize(size_t sz) {
@@ -70,9 +70,7 @@ public:  // methods
         active_ = true;
     }
 
-    struct aiocb* aioptr() {
-        return &aio_;
-    }
+    struct aiocb* aioptr() { return &aio_; }
 
     const struct aiocb* caioptr() const { return caioptr_; }
 
@@ -81,6 +79,7 @@ public:  // methods
     size_t length() const { return len_; }
 
 private:  // members
+
     aiocb aio_;
     const aiocb* caioptr_ = nullptr;
     eckit::Buffer* buff_  = nullptr;
@@ -249,7 +248,12 @@ void AIOHandle::flush() {
 
 #else  // NO eckit_HAVE_AIO
 
-struct AIOBuffer : private eckit::NonCopyable {};
+struct AIOBuffer {
+    AIOBuffer()                            = default;
+    AIOBuffer(const AIOBuffer&)            = delete;
+    AIOBuffer& operator=(const AIOBuffer&) = delete;
+    ~AIOBuffer()                           = default;
+};
 
 AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync) {
     NOTIMP;

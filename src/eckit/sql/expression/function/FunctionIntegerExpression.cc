@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 
@@ -15,13 +8,12 @@
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/utils/Translator.h"
 
-#define ftrunc(x) ((x)-fmod((x), 1))
-#define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x)-0.5))
+#define ftrunc(x) ((x) - fmod((x), 1))
+#define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x) - 0.5))
 
 namespace eckit::sql::expression::function {
 
-FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name,
-                                                     const expression::Expressions& args) :
+FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
 FunctionIntegerExpression::~FunctionIntegerExpression() {}
@@ -46,12 +38,14 @@ template <double (*FN)(double)>
 class MathFunctionIntegerExpression_1 : public FunctionIntegerExpression {
 
 public:  // methods
+
     MathFunctionIntegerExpression_1(const std::string& name, const expression::Expressions& args) :
         FunctionIntegerExpression(name, args) {
         this->missingValue_ = DEFAULT_MDI;
     }
 
 private:  // methods
+
     using FunctionIntegerExpression::eval;
     double eval(bool& m) const {
         bool missing = false;

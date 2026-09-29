@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Configurable.h
 // Baudouin Raoult - ECMWF May 96
@@ -29,6 +22,7 @@ class ResourceBase;
 
 class Configurable : public ClassExtent<Configurable> {
 public:
+
     // -- Contructors
 
     Configurable();
@@ -48,17 +42,19 @@ public:
     virtual std::string name() const { return "Unknown"; }
 
 protected:
+
     // -- Methods
 
     virtual void reconfigure() = 0;
 
 
 private:
+
     friend class ResourceBase;
 
     // -- Members
 
-    typedef std::set<ResourceBase*> Set;
+    using Set = std::set<ResourceBase*>;
     Mutex mutex_;
     Set resources_;
 

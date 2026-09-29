@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 2017- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Aug 2017
@@ -19,7 +12,6 @@
 #include <memory>
 
 #include "eckit/io/PeekHandle.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/message/Message.h"
 
 
@@ -34,12 +26,18 @@ namespace eckit::message {
 class Message;
 class Splitter;
 
-class Reader : public eckit::NonCopyable {
+class Reader {
 public:
+
     Reader(eckit::DataHandle*, bool opened = false);
     Reader(eckit::DataHandle&, bool opened = false);
 
     Reader(const eckit::PathName&);
+
+    Reader(const Reader&)            = delete;
+    Reader& operator=(const Reader&) = delete;
+    Reader(Reader&&)                 = delete;
+    Reader& operator=(Reader&&)      = delete;
 
     ~Reader();
 
@@ -47,6 +45,7 @@ public:
     eckit::Offset position();
 
 private:
+
     std::unique_ptr<Splitter> splitter_;
     eckit::PeekHandle handle_;
 

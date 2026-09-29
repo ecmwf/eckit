@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstring>
 #include <fstream>
@@ -34,6 +27,7 @@ class MemStream : public eckit::Stream {
     virtual std::string name() const { return "MemStream"; }
 
 public:
+
     MemStream(const char* p, long len);
 
     long length() const { return length_; }
@@ -41,8 +35,7 @@ public:
 };
 
 
-MemStream::MemStream(const char* p, long len) :
-    in_(p, len), out_(10240), pos_(0), length_(0) {}
+MemStream::MemStream(const char* p, long len) : in_(p, len), out_(10240), pos_(0), length_(0) {}
 
 long MemStream::write(const void* buf, long len) {
     if (out_.size() - length_ < static_cast<size_t>(len)) {
@@ -68,8 +61,7 @@ long MemStream::read(void* buf, long len) {
     return size;
 }
 
-AgentResource::AgentResource() :
-    HtmlResource("/agent") {}
+AgentResource::AgentResource() : HtmlResource("/agent") {}
 
 AgentResource::~AgentResource() {}
 

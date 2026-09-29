@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fstream>
 #include <memory>
@@ -35,15 +28,21 @@ const char* defaultHashType = "xxh64";
 
 class HashTool : public eckit::Tool {
 public:
-    HashTool(int argc, char** argv) :
-        Tool(argc, argv) {
-        options_.push_back(new eckit::option::SimpleOption<std::string>("type", "hash type, default=" + std::string(defaultHashType)));
-        options_.push_back(new eckit::option::SimpleOption<bool>("quiet", "silent mode with less output, only errors on check, default false"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons, default true"));
+
+    HashTool(int argc, char** argv) : Tool(argc, argv) {
+        options_.push_back(
+            new eckit::option::SimpleOption<std::string>("type", "hash type, default=" + std::string(defaultHashType)));
+        options_.push_back(new eckit::option::SimpleOption<bool>(
+            "quiet", "silent mode with less output, only errors on check, default false"));
+        options_.push_back(
+            new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons, default true"));
         options_.push_back(new eckit::option::SimpleOption<bool>("recurse", "recurse into sub-dirs, default true"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("check", "compare hash of all files found, default true"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("generate", "generate a hash for all files found, default false"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("clean", "cleans hash files for original files that no longer exist, default false"));
+        options_.push_back(
+            new eckit::option::SimpleOption<bool>("check", "compare hash of all files found, default true"));
+        options_.push_back(
+            new eckit::option::SimpleOption<bool>("generate", "generate a hash for all files found, default false"));
+        options_.push_back(new eckit::option::SimpleOption<bool>(
+            "clean", "cleans hash files for original files that no longer exist, default false"));
     }
 
     virtual void run();

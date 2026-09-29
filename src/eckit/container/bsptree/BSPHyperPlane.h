@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef BSPHyperPlane_H
 #define BSPHyperPlane_H
@@ -22,8 +15,8 @@ class BSPHyperPlane {
     double d_;
 
 public:
-    BSPHyperPlane() :
-        normal_(), d_() {}
+
+    BSPHyperPlane() : normal_(), d_() {}
 
     BSPHyperPlane(const Point& normal, const Point& point) :
         normal_(Point::normalize(normal)), d_(-Point::dot(normal_, point)) {}

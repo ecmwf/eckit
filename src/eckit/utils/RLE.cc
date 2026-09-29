@@ -1,15 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstddef>
 #include <iterator>
+#include <optional>
 #include <vector>
 
 #include "eckit/log/Log.h"
@@ -25,6 +19,7 @@ namespace eckit {
 template <class T>
 class dummy_iterator {
 public:
+
     using iterator_category = std::output_iterator_tag;
     using value_type        = T;
     using difference_type   = std::ptrdiff_t;
@@ -43,9 +38,10 @@ dummy_iterator<T> make_dummy(T*) {
     return dummy_iterator<T>();
 }
 
-
 template <class T, class U>
-long long RLEencode2(T first, T last, U output, long long maxLoop) {
+long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
+                            std::optional<EncodingClock::time_point> deadline, std::optional<size_t> maxDepth) {
+
     long long x    = 0;
     long long m    = 0;
     long long j    = 0;
@@ -77,15 +73,20 @@ long long RLEencode2(T first, T last, U output, long long maxLoop) {
                 m = a;
                 x = n;
                 j = i;
-                if (m > enough)
+                if (m > enough || (maxDepth && maxDepth.value() == 0) ||
+                    (deadline && EncodingClock::now() > deadline.value()))
                     goto stop;
             }
+        }
+
+        if ((maxDepth && maxDepth.value() == 0) || (deadline && EncodingClock::now() > deadline.value())) {
+            goto stop;
         }
     }
 stop:
 
-    if (m == 0) {
-        copy(first, last, output);
+    if (m == 0 || (maxDepth && maxDepth.value() == 0)) {
+        std::copy(first, last, output);
         return last - first;
     }
     else {
@@ -97,12 +98,16 @@ stop:
             other += x;
         }
 
-        long long n = RLEencode2(first, from, output, maxLoop);
+        if (maxDepth) {
+            maxDepth.value()--;
+        }
+        long long n = RLEencode2timeout(first, from, output, maxLoop, deadline, maxDepth);
 
         if (k > 1) {
             *output++ = -k;
             n++;
-            int m = RLEencode2(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)), maxLoop);
+            int m = RLEencode2timeout(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)),
+                                      maxLoop, deadline, maxDepth);
 
             if (m > 1) {
                 *output++ = -m;
@@ -110,12 +115,33 @@ stop:
             }
         }
 
-        n += RLEencode2(from, from + x, output, maxLoop);
-        n += RLEencode2(from + k * x, last, output, maxLoop);
+        n += RLEencode2timeout(from, from + x, output, maxLoop, deadline, maxDepth);
+        n += RLEencode2timeout(from + k * x, last, output, maxLoop, deadline, maxDepth);
 
         return n;
     }
 }
+
+template <class T, class U>
+long long RLEencode2(T first, T last, U output, long long maxLoop) {
+    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{},
+                             std::optional<size_t>{});
+}
+
+template <class T, class U>
+long long RLEencode2(T first, T last, U output, long long maxLoop, const EncodingClock::duration timelimit,
+                     long maxDepth) {
+    return RLEencode2timeout(first, last, output, maxLoop,
+                             std::optional<EncodingClock::time_point>{EncodingClock::now() + timelimit},
+                             std::optional<size_t>{maxDepth});
+}
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
+                     const EncodingClock::duration timelimit, size_t maxDepth);
 
 template <class T, class U>
 void RLEdecode2(T first, T last, U output) {

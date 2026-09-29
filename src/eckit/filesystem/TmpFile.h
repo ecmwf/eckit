@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -16,20 +9,26 @@
 #define eckit_TmpFile_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TmpFile : public PathName, private NonCopyable {
+class TmpFile : public PathName {
 public:
+
     TmpFile(bool verbose = true);
+
+    TmpFile(const TmpFile&)            = delete;
+    TmpFile& operator=(const TmpFile&) = delete;
+    TmpFile(TmpFile&& rhs)             = delete;
+    TmpFile& operator=(TmpFile&& rhs)  = delete;
 
     ~TmpFile();
 
 private:
+
     bool verbose_;
 };
 

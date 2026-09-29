@@ -1,34 +1,44 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/iterator/Regular.h"
 
-#include "eckit/exception/Exceptions.h"
+#include <memory>
+
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit::geo::iterator {
 
 
+struct Instance {
+    explicit Instance(const Grid::Spec& spec) : grid(dynamic_cast<const grid::Regular*>(GridFactory::build(spec))) {
+        ASSERT(grid);
+    }
+
+    std::unique_ptr<const grid::Regular> grid;
+};
+
+
+struct RegularInstance : Instance, Regular {
+    explicit RegularInstance(const Grid::Spec& spec) : Instance(spec), Regular(*grid) {}
+};
+
+
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    grid_(grid),
-    x_(grid.x().values()),
-    y_(grid.y().values()),
-    i_(0),
-    j_(0),
+    projection_(grid.projection()),
+    xy_(grid.scan().is_scan_i_then_j()),
+    x_((xy_ ? grid.x() : grid.y()).values()),
+    y_((xy_ ? grid.y() : grid.x()).values()),
+    ix_(0),
+    iy_(0),
     index_(index),
     nx_(x_.size()),
     ny_(y_.size()),
-    size_(nx_ * nx_) {}
+    size_(nx_ * ny_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {
@@ -38,10 +48,10 @@ bool Regular::operator==(const Iterator& other) const {
 
 
 bool Regular::operator++() {
-    if (index_++, i_++; index_ < size_) {
-        if (i_ >= nx_) {
-            i_ = 0;
-            j_++;
+    if (index_++, ix_++; index_ < size_) {
+        if (ix_ >= nx_) {
+            ix_ = 0;
+            iy_++;
         }
 
         return true;
@@ -53,7 +63,15 @@ bool Regular::operator++() {
 
 
 bool Regular::operator+=(difference_type d) {
-    NOTIMP;
+    if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(size_)) {
+        index_ = static_cast<size_t>(di + d);
+        ix_    = index_ % nx_;
+        iy_    = index_ / nx_;
+        return true;
+    }
+
+    index_ = size_;  // ensure it's invalid
+    return false;
 }
 
 
@@ -63,13 +81,11 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return PointLonLat{x_.at(i_), y_.at(j_)};
+    return xy_ ? projection_.from_grid_xy(x_.at(ix_), y_.at(iy_)) : projection_.from_grid_xy(y_.at(iy_), x_.at(ix_));
 }
 
 
-void Regular::fill_spec(spec::Custom&) const {
-    // FIXME implement
-}
+static const IteratorRegisterType<RegularInstance> ITERATOR_TYPE("regular");
 
 
 }  // namespace eckit::geo::iterator

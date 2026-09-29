@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fcntl.h>
+#include <unistd.h>
 #include <cstdint>
 #include <cstring>
-#include <unistd.h>
 
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -29,7 +22,7 @@ SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmNa
 
     AutoLock<Semaphore> lock(sem_);
 
-    typedef Padded<typename SharedMemArray<T>::Header, 4096> PaddedHeader;
+    using PaddedHeader = Padded<typename SharedMemArray<T>::Header, 4096>;
 
     fd_ = ::shm_open(shmName_.c_str(), O_RDWR | O_CREAT, 0777);
     if (fd_ < 0) {

@@ -1,17 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <algorithm>
+#include <array>
 
 #include "eckit/maths/ConvexHull.h"
 
@@ -22,6 +16,7 @@ namespace eckit::maths {
 template <size_t N>
 class ConvexHullN : public ConvexHull {
 public:
+
     explicit ConvexHullN(const ConvexHull::coord_t& coord, const std::string& qhull_command = Qhull::COMMAND_DEFAULT) :
         qhull_(N, coord, qhull_command) {}
 
@@ -40,6 +35,7 @@ public:
     std::vector<size_t> facets(size_t n) const override { return qhull_.facets(n); }
 
 private:
+
     static coord_t convert_vector_v(const std::vector<std::vector<double>>& coord_v) {
         coord_t coord;
         coord.reserve(N * coord_v.size());

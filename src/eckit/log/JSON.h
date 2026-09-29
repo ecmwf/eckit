@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -24,7 +17,6 @@
 #include <vector>
 
 #include "eckit/eckit.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -34,13 +26,14 @@ class DateTime;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSON : private NonCopyable {
+class JSON {
 
 public:
+
     class Formatting {
     public:  // types
-        enum BitFlags
-        {
+
+        enum BitFlags {
             COMPACT     = 0,
             INDENT_DICT = (1 << 1),
             INDENT_LIST = (1 << 2),
@@ -48,6 +41,7 @@ public:
         };
 
     public:  // constructors
+
         /// Create compact formatting
         static Formatting compact();
 
@@ -63,6 +57,7 @@ public:
         Formatting(int flags, int indentation = 2);
 
     public:  // methods
+
         /// @return Number of spaces used for indentation
         int indentation() const;
 
@@ -70,13 +65,20 @@ public:
         int flags() const;
 
     private:  // data
+
         int flags_{COMPACT};
         int indentation_{2};
     };
 
 public:  // methods
+
     JSON(std::ostream&, bool null = true);
     JSON(std::ostream&, Formatting);
+
+    JSON(const JSON&)            = delete;
+    JSON& operator=(const JSON&) = delete;
+    JSON(JSON&&)                 = delete;
+    JSON& operator=(JSON&&)      = delete;
 
     ~JSON();
 
@@ -125,6 +127,7 @@ public:  // methods
     void raw(const char*, long);
 
 private:  // members
+
     std::ostream& out_;
     std::vector<std::string> sep_;
     std::vector<bool> state_;
@@ -134,6 +137,7 @@ private:  // members
     Formatting formatting_;
 
 private:  // methods
+
     void sep();
     bool inlist() { return !state_.back(); }
     bool indict() { return state_.back(); }

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // @author Simon Smart
 // @date January 2019
@@ -32,6 +25,7 @@ class FunctionBuilderBase;
 class FunctionFactory {
 
 public:  // types
+
     struct FuncInfo {
         std::string name;
         int arity;
@@ -39,6 +33,7 @@ public:  // types
     };
 
 public:  // methods
+
     static FunctionFactory& instance();
 
     void enregister(const std::string& name, int arity_, const FunctionBuilderBase* builder);
@@ -54,10 +49,12 @@ public:  // methods
                                               std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
 
 private:  // methods
+
     FunctionFactory();
     ~FunctionFactory();
 
 private:  // members
+
     mutable std::mutex m_;
 
     std::map<std::pair<std::string, int>, const FunctionBuilderBase*> builders_;
@@ -72,12 +69,12 @@ class FunctionBuilderBase {
     std::string help_;
 
 public:  // methods
+
     FunctionBuilderBase(const std::string& name, int arity, const char* help);
     virtual ~FunctionBuilderBase();
 
     virtual std::shared_ptr<FunctionExpression> make(const std::string& name,
-                                                     const expression::Expressions& args) const
-        = 0;
+                                                     const expression::Expressions& args) const = 0;
     int arity() const;
     std::string help() const;
 };
@@ -92,7 +89,8 @@ class FunctionBuilder : public FunctionBuilderBase {
     }
 
 public:  // methods
-    FunctionBuilder(const std::string& name, const char* help = 0) :
+
+    FunctionBuilder(const std::string& name, const char* help = nullptr) :
         FunctionBuilderBase(name, FunctionType::arity(), help ? help : FunctionType::help()) {}
 
     ~FunctionBuilder() override {}
@@ -126,7 +124,7 @@ public:
 	FunctionFactory(); // : FunctionFactoryBase("FunctionFactory", -1) {}
     ~FunctionFactory() override {}
 
-    typedef std::vector<std::pair<std::pair<std::string, int>, std::string> > FunctionInfo;
+    using FunctionInfo = std::vector<std::pair<std::pair<std::string, int>, std::string>>;
 
 	FunctionInfo& functionsInfo();
 

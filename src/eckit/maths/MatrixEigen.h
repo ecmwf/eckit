@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_maths_Matrix_h
 #error Include "eckit/maths/Matrix.h" instead of "eckit/maths/MatrixEigen.h"
@@ -35,14 +28,13 @@ class Matrix : public Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eige
     using Base = Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
 public:
+
     // Default constructor
-    Matrix(void) :
-        Base() {}
+    Matrix(void) : Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T0, typename T1>
-    Matrix(const T0& x, const T1& y) :
-        Base(x, y) {}
+    Matrix(const T0& x, const T1& y) : Base(x, y) {}
 
     // Constructor that allocates matrix and infers sizes from initializer list
     Matrix(const std::initializer_list<std::initializer_list<scalar>>& list) :
@@ -72,8 +64,7 @@ public:
 
     // This constructor allows you to construct Matrix from Eigen expressions
     template <typename OtherDerived>
-    Matrix(const Eigen::MatrixBase<OtherDerived>& other) :
-        Base(other) {}
+    Matrix(const Eigen::MatrixBase<OtherDerived>& other) : Base(other) {}
 
     // This method allows you to assign Eigen expressions to Matrix
     template <typename OtherDerived>
@@ -93,19 +84,17 @@ class RowVector : public Eigen::Matrix<scalar, 1, Eigen::Dynamic> {
     using Base = Eigen::Matrix<scalar, 1, Eigen::Dynamic>;
 
 public:
+
     // Default constructor
-    RowVector(void) :
-        Base() {}
+    RowVector(void) : Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T>
-    RowVector(const T& x) :
-        Base(x) {}
+    RowVector(const T& x) : Base(x) {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
     template <typename OtherDerived>
-    RowVector(const Eigen::MatrixBase<OtherDerived>& other) :
-        Base(other) {}
+    RowVector(const Eigen::MatrixBase<OtherDerived>& other) : Base(other) {}
 
     // This method allows you to assign Eigen expressions to Matrix
     template <typename OtherDerived>
@@ -125,19 +114,17 @@ class ColVector : public Eigen::Matrix<scalar, Eigen::Dynamic, 1> {
     using Base = Eigen::Matrix<scalar, Eigen::Dynamic, 1>;
 
 public:
+
     // Default constructor
-    ColVector(void) :
-        Base() {}
+    ColVector(void) : Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T>
-    ColVector(const T& x) :
-        Base(x) {}
+    ColVector(const T& x) : Base(x) {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
     template <typename OtherDerived>
-    ColVector(const Eigen::MatrixBase<OtherDerived>& other) :
-        Base(other) {}
+    ColVector(const Eigen::MatrixBase<OtherDerived>& other) : Base(other) {}
 
     // This method allows you to assign Eigen expressions to Matrix
     template <typename OtherDerived>

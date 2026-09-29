@@ -1,27 +1,21 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "eckit/geo/grid/ReducedGaussian.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-using ReducedGaussian = grid::ReducedGaussian;
+using grid::reduced::ReducedGaussian;
 
 
 CASE("gridspec") {
@@ -35,15 +29,49 @@ CASE("gridspec") {
         auto n1 = grid1->size();
 
         EXPECT_EQUAL(n1, 88);
+        EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"O2"})");
 
-        spec::Custom hemisphere(spec.container());
-        hemisphere.set("south", 0);
+        spec::Custom nhemisphere(spec.container());
+        nhemisphere.set("south", 0);
 
-        std::unique_ptr<const Grid> grid2(GridFactory::build(hemisphere));
+        std::unique_ptr<const Grid> grid2(GridFactory::build(nhemisphere));
         auto n2 = grid2->size();
 
         EXPECT_EQUAL(n2, n1 / 2);
+        EXPECT_EQUAL(grid2->spec_str(), R"({"area":[90,0,19.8757191474409,360],"grid":"O2"})");
+
+        spec::Custom shemisphere(spec.container());
+        shemisphere.set("north", 0);
+
+        std::unique_ptr<const Grid> grid3(GridFactory::build(shemisphere));
+        auto n3 = grid3->size();
+
+        EXPECT_EQUAL(n3, n2);
+        EXPECT_EQUAL(grid3->spec_str(), R"({"area":[-19.8757191474409,0,-90,360],"grid":"O2"})");
     }
+}
+
+
+CASE("name") {
+    struct test_t {
+        const std::string spec;
+        const std::string name;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{grid: o2}", "O2"},
+             {"{N: 2}", "O2"},
+             {"{pl: [20, 24, 24, 20]}", "O2"},
+             {"{grid: n32}", "N32"},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec));
+
+        EXPECT_EQUAL(grid->name(), test.name);
+        EXPECT(grid->arrangement().empty());
+    }
+
+    EXPECT(ReducedGaussian(3).octahedral());
+    EXPECT_EQUAL(ReducedGaussian(3).name(), "O3");
 }
 
 
@@ -123,12 +151,12 @@ CASE("crop") {
     EXPECT_EQUAL(n3, n1);
 
     EXPECT(grid3->boundingBox().periodic());
+    EXPECT(grid3->boundingBox().spec_str() == R"({"area":[90,-180,-90,180]})");
 
     // (exclude Greenwhich meridian)
     std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.e-6)));
 
     auto n4 = grid4->size();
-
     EXPECT_EQUAL(n4, n3 / 4);
 
     const std::vector<PointLonLat> ref{

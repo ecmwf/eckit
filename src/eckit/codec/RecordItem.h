@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -26,6 +18,7 @@ namespace eckit::codec {
 
 struct RecordItem {
 public:
+
     struct URI {
         explicit URI(const std::string& uri);
         URI(const std::string& _path, std::uint64_t _offset, const std::string& _key);
@@ -37,6 +30,7 @@ public:
     };
 
 public:
+
     RecordItem() = default;
 
     template <typename T>
@@ -67,6 +61,7 @@ public:
 
 
 private:
+
     std::unique_ptr<Metadata> metadata_{new Metadata()};
     Data data_;
 };

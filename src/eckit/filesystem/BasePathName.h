@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -20,14 +13,19 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 
-class BasePathName : protected NonCopyable {
+class BasePathName {
 public:
+
     BasePathName() {}
+
+    BasePathName(const BasePathName&)            = delete;
+    BasePathName& operator=(const BasePathName&) = delete;
+    BasePathName(BasePathName&&)                 = delete;
+    BasePathName& operator=(BasePathName&&)      = delete;
 
     virtual ~BasePathName();
 
@@ -83,9 +81,11 @@ public:
     virtual const std::string& path() const = 0;
 
 protected:
+
     virtual void print(std::ostream&) const = 0;
 
 private:
+
     friend std::ostream& operator<<(std::ostream& s, const BasePathName& p) {
         p.print(s);
         return s;

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
@@ -19,7 +12,6 @@
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
@@ -33,6 +25,7 @@ class SQLDatabase;
 
 class SQLTableIterator {
 public:
+
     virtual ~SQLTableIterator() {}
     virtual void rewind()                                = 0;
     virtual bool next()                                  = 0;
@@ -43,11 +36,18 @@ public:
     virtual std::vector<double> missingValues() const    = 0;
 };
 
-typedef std::vector<std::string> ColumnNames;
+using ColumnNames = std::vector<std::string>;
 
-class SQLTable : private eckit::NonCopyable {
+class SQLTable {
 public:
+
     SQLTable(SQLDatabase&, const std::string&, const std::string&);
+
+    SQLTable(const SQLTable&)            = delete;
+    SQLTable& operator=(const SQLTable&) = delete;
+    SQLTable(SQLTable&&)                 = delete;
+    SQLTable& operator=(SQLTable&&)      = delete;
+
     virtual ~SQLTable();
 
     void loadIOMAP(std::istream&);
@@ -84,10 +84,10 @@ public:
     virtual void print(std::ostream& s) const;
 
     virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const SQLColumn>>&,
-                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const
-        = 0;
+                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const = 0;
 
 protected:
+
     std::string path_;
     std::string name_;
 
@@ -112,6 +112,7 @@ protected:
                                        bool hasMissingValue, double missingValue, const BitfieldDef& d = BitfieldDef());
 
 private:
+
     SQLDatabase& owner_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLTable& p) {

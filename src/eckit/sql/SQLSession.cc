@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <libgen.h>
 #include <cstring>
@@ -45,13 +38,12 @@ SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutput
 }
 
 SQLSession::SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter) :
-    SQLSession(0, std::move(config), csvDelimiter) {}
+    SQLSession(nullptr, std::move(config), csvDelimiter) {}
 
 SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter) :
-    SQLSession(std::move(out), 0, csvDelimiter) {}
+    SQLSession(std::move(out), nullptr, csvDelimiter) {}
 
-SQLSession::SQLSession(const std::string& csvDelimiter) :
-    SQLSession(0, 0, csvDelimiter) {}
+SQLSession::SQLSession(const std::string& csvDelimiter) : SQLSession(nullptr, nullptr, csvDelimiter) {}
 
 SQLSession::~SQLSession() {}
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/Arg.h"
 
@@ -18,6 +11,7 @@ namespace eckit {
 
 class ArgContent {
 public:
+
     virtual ~ArgContent() {}
     virtual void print(std::ostream&, bool) const                                       = 0;
     virtual ArgContent* clone() const                                                   = 0;
@@ -65,8 +59,8 @@ class ArgContentOption : public ArgContent {
     }
 
 public:
-    ArgContentOption(const std::string& name, Arg::Type type) :
-        name_(name), type_(type) {}
+
+    ArgContentOption(const std::string& name, Arg::Type type) : name_(name), type_(type) {}
 };
 
 class ArgContentParam : public ArgContent {
@@ -81,8 +75,8 @@ class ArgContentParam : public ArgContent {
     virtual void consume(std::vector<std::string>&) {}
 
 public:
-    ArgContentParam(const std::string& name, Arg::Type type) :
-        name_(name), type_(type) {}
+
+    ArgContentParam(const std::string& name, Arg::Type type) : name_(name), type_(type) {}
 };
 
 class ArgContentOptional : public ArgContent {
@@ -103,8 +97,8 @@ class ArgContentOptional : public ArgContent {
     virtual void consume(std::vector<std::string>& s) { content_->consume(s); }
 
 public:
-    ArgContentOptional(ArgContent* c) :
-        content_(c->clone()) {}
+
+    ArgContentOptional(ArgContent* c) : content_(c->clone()) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -112,6 +106,7 @@ public:
 template <class T>
 class ArgContentList : public ArgContent {
 protected:
+
     std::vector<ArgContent*> list_;
 
     virtual ArgContent* clone() const;
@@ -120,6 +115,7 @@ protected:
     virtual void consume(std::vector<std::string>& s);
 
 public:
+
     ArgContentList(ArgContent*, ArgContent*);
     ArgContentList(const std::vector<ArgContent*>&);
     ~ArgContentList();
@@ -153,8 +149,7 @@ ArgContentList<T>::~ArgContentList() {
 }
 
 template <class T>
-ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list) :
-    list_(list) {
+ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list) : list_(list) {
     for (size_t i = 0; i < list_.size(); i++) {
         list_[i] = list_[i]->clone();
     }
@@ -199,10 +194,9 @@ class ArgContentExclusive : public ArgContentList<ArgContentExclusive> {
     }
 
 public:
-    ArgContentExclusive(ArgContent* a1, ArgContent* a2) :
-        ArgContentList<ArgContentExclusive>(a1, a2) {}
-    ArgContentExclusive(const std::vector<ArgContent*>& a) :
-        ArgContentList<ArgContentExclusive>(a) {}
+
+    ArgContentExclusive(ArgContent* a1, ArgContent* a2) : ArgContentList<ArgContentExclusive>(a1, a2) {}
+    ArgContentExclusive(const std::vector<ArgContent*>& a) : ArgContentList<ArgContentExclusive>(a) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -219,26 +213,22 @@ class ArgContentInclusive : public ArgContentList<ArgContentInclusive> {
     }
 
 public:
-    ArgContentInclusive(ArgContent* a1, ArgContent* a2) :
-        ArgContentList<ArgContentInclusive>(a1, a2) {}
-    ArgContentInclusive(const std::vector<ArgContent*>& a) :
-        ArgContentList<ArgContentInclusive>(a) {}
+
+    ArgContentInclusive(ArgContent* a1, ArgContent* a2) : ArgContentList<ArgContentInclusive>(a1, a2) {}
+    ArgContentInclusive(const std::vector<ArgContent*>& a) : ArgContentList<ArgContentInclusive>(a) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Arg::Arg() :
-    content_(new ArgContentEmpty()) {}
+Arg::Arg() : content_(new ArgContentEmpty()) {}
 
-Arg::Arg(ArgContent* c) :
-    content_(c) {}
+Arg::Arg(ArgContent* c) : content_(c) {}
 
 Arg::Arg(const std::string& name, Type type) :
     content_(name[0] == '-' ? (ArgContent*)new ArgContentOption(name, type)
                             : (ArgContent*)new ArgContentParam(name, type)) {}
 
-Arg::Arg(const Arg& other) :
-    content_(other.content_->clone()) {}
+Arg::Arg(const Arg& other) : content_(other.content_->clone()) {}
 
 Arg::~Arg() {}
 
@@ -259,6 +249,10 @@ Arg operator+(const Arg& a1, const Arg& a2) {
 }
 
 Arg& Arg::operator=(const Arg& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     content_.reset(other.content_->clone());
     return *this;
 }

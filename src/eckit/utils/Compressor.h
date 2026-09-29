@@ -1,20 +1,13 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_utils_Compressor_H
 #define eckit_utils_Compressor_H
 
 #include <map>
 #include <string>
+#include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -23,12 +16,19 @@ class Buffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Compressor : private eckit::NonCopyable {
+class Compressor {
 
 public:  // methods
-    Compressor();
 
-    virtual ~Compressor();
+    Compressor() = default;
+
+    Compressor(const Compressor&) = delete;
+    Compressor(Compressor&&)      = delete;
+
+    void operator=(const Compressor&) = delete;
+    void operator=(Compressor&&)      = delete;
+
+    virtual ~Compressor() = default;
 
     /// Compresses the bytestream within the in buffer
     /// @param in input buffer that holds the uncompressed bytesteam.
@@ -58,9 +58,8 @@ public:  // methods
 class NoCompressor : public Compressor {
 
 public:  // types
-    NoCompressor();
 
-    ~NoCompressor() override = default;
+    NoCompressor();
 
     size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
     void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
@@ -72,8 +71,17 @@ class CompressorBuilderBase {
     std::string name_;
 
 public:
-    CompressorBuilderBase(const std::string&);
+
+    explicit CompressorBuilderBase(const std::string&);
+
+    CompressorBuilderBase(const CompressorBuilderBase&) = delete;
+    CompressorBuilderBase(CompressorBuilderBase&&)      = delete;
+
+    void operator=(const CompressorBuilderBase&) = delete;
+    void operator=(CompressorBuilderBase&&)      = delete;
+
     virtual ~CompressorBuilderBase();
+
     virtual Compressor* make() = 0;
 };
 
@@ -82,19 +90,21 @@ class CompressorBuilder : public CompressorBuilderBase {
     Compressor* make() override { return new T(); }
 
 public:
-    CompressorBuilder(const std::string& name) :
-        CompressorBuilderBase(name) {}
-    ~CompressorBuilder() override = default;
+
+    explicit CompressorBuilder(const std::string& name) : CompressorBuilderBase(name) {}
 };
 
 class CompressorFactory {
 public:
+
     static CompressorFactory& instance();
 
     void add(const std::string& name, CompressorBuilderBase* builder);
     void remove(const std::string& name);
 
     bool has(const std::string& name);
+    std::vector<std::string> keys() const;
+
     void list(std::ostream&);
 
     /// @returns default compressor
@@ -107,10 +117,11 @@ public:
     Compressor* build(const std::string&);
 
 private:
+
     CompressorFactory();
 
     std::map<std::string, CompressorBuilderBase*> builders_;
-    eckit::Mutex mutex_;
+    mutable eckit::Mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef KDNode_H
 #define KDNode_H
@@ -17,25 +10,28 @@ namespace eckit {
 
 
 template <class Traits>
-class KDNode : public SPNode<Traits, KDNode<Traits> > {
+class KDNode : public SPNode<Traits, KDNode<Traits>> {
 public:
-    typedef SPNode<Traits, KDNode<Traits> >
-        SPNodeType;  // cannot redefine as SPNode since some compilers in-class redefinitions
 
-    typedef typename SPNodeType::Value Value;
-    typedef typename SPNodeType::Alloc Alloc;
-    typedef typename SPNodeType::Point Point;
-    typedef typename SPNodeType::NodeList NodeList;
-    typedef typename SPNodeType::NodeQueue NodeQueue;
-    typedef typename SPNodeType::NodeInfo NodeInfo;
+    using SPNodeType = SPNode<Traits, KDNode<Traits>>;
+    // cannot redefine as SPNode since some compilers in-class redefinitions
+
+    using Value     = typename SPNodeType::Value;
+    using Alloc     = typename SPNodeType::Alloc;
+    using Point     = typename SPNodeType::Point;
+    using NodeList  = typename SPNodeType::NodeList;
+    using NodeQueue = typename SPNodeType::NodeQueue;
+    using NodeInfo  = typename SPNodeType::NodeInfo;
 
 
-    typedef KDNode<Traits> Node;
+    using Node = KDNode<Traits>;
 
 private:
+
     size_t axis_;
 
 public:
+
     KDNode(const Value& value, size_t axis);
     ~KDNode() {}
 
@@ -48,6 +44,7 @@ public:
     size_t axis() const { return axis_; }
 
 public:
+
     void nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
     void findInSphereX(Alloc& a, const Point& p, double radius, NodeList& result, int depth);
     void kNearestNeighboursX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);

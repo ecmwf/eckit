@@ -1,0 +1,70 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#include <memory>
+#include <sstream>
+#include <string>
+
+#include "eckit/geo/Grid.h"
+#include "eckit/log/Log.h"
+#include "eckit/option/CmdArgs.h"
+#include "eckit/option/EckitTool.h"
+#include "eckit/option/SimpleOption.h"
+#include "eckit/parser/YAMLParser.h"
+
+
+namespace eckit {
+
+class EckitGeoGridSpec final : public EckitTool {
+public:
+
+    EckitGeoGridSpec(int argc, char** argv) : EckitTool(argc, argv) {
+        options_.push_back(new option::SimpleOption<bool>("shape", "Grid shape"));
+    }
+
+private:
+
+    void execute(const option::CmdArgs& args) override {
+        auto shape = args.getBool("shape", false);
+
+        std::string user;
+
+        if (args.count() == 0) {
+            std::ostringstream out;
+            YAMLParser(std::cin).parse().dump(out);
+            user = out.str();
+        }
+        else {
+            for (const auto& arg : args) {
+                user += " " + arg;
+            }
+        }
+
+        std::unique_ptr<const geo::Grid> grid(geo::GridFactory::make_from_string(user));
+
+        if (shape) {
+            Log::info() << grid->shape() << std::endl;
+            return;
+        }
+
+        Log::info() << grid->spec_str() << std::endl;
+    }
+
+    void usage(const std::string& tool) const override {
+        Log::info() << "\n"
+                       "Usage: \n"
+                    << tool << " <YAML-like>\n"
+                    << "echo <YAML-like> | " << tool << std::endl;
+    }
+
+    int minimumPositionalArguments() const override { return 0; }
+};
+
+}  // namespace eckit
+
+
+int main(int argc, char** argv) {
+    eckit::EckitGeoGridSpec app(argc, argv);
+    return app.start();
+}

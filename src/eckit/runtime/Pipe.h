@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_Pipe_h
 #define eckit_Pipe_h
@@ -15,7 +8,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/MutexCond.h"
@@ -33,13 +25,19 @@ template <class PAYLOAD>
 struct OnePayload;
 
 template <class PAYLOAD>
-class Pipe : private NonCopyable {
+class Pipe {
 public:
-    typedef void (*Proc)(Pipe<PAYLOAD>&);
+
+    using Proc = void (*)(Pipe<PAYLOAD>&);
 
     // -- Contructors
 
     Pipe(long count = 2);
+
+    Pipe(const Pipe&)            = delete;
+    Pipe& operator=(const Pipe&) = delete;
+    Pipe(Pipe&&)                 = delete;
+    Pipe& operator=(Pipe&&)      = delete;
 
     // -- Destructor
 
@@ -57,6 +55,7 @@ public:
     void send();
 
 private:
+
     bool error();
     void error(const std::string&);
 
@@ -93,8 +92,7 @@ struct OnePayload {
     bool ready_;
     bool done_;
     PAYLOAD payload_;
-    OnePayload() :
-        ready_(false), done_(false), payload_() {}
+    OnePayload() : ready_(false), done_(false), payload_() {}
 };
 
 template <class PAYLOAD>
@@ -103,13 +101,14 @@ class Pipe;
 template <class PAYLOAD>
 class PipeTask : public Thread {
 
-    typedef typename Pipe<PAYLOAD>::Proc Proc;
+    using Proc = typename Pipe<PAYLOAD>::Proc;
 
     Pipe<PAYLOAD>& owner_;
     Proc& consumer_;
     OnePayload<PAYLOAD>* payloads_;
 
 public:
+
     PipeTask(Proc&, Pipe<PAYLOAD>&, OnePayload<PAYLOAD>*);
     void run() override;
 };

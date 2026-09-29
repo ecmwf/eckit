@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 #include <cstring>
@@ -60,8 +53,7 @@ Reanimator<DataHandle> DataHandle::reanimator_;
 
 DataHandle::DataHandle() {}
 
-DataHandle::DataHandle(Stream& s) :
-    Streamable(s) {}
+DataHandle::DataHandle(Stream& s) : Streamable(s) {}
 
 void DataHandle::encode(Stream& s) const {
     Streamable::encode(s);
@@ -100,12 +92,11 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
         return buf.copy(*this, other);
     }
 
-    static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE",
-                                               64 * 1024 * 1024);
+    static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
 
     Buffer buffer(bufsize);
 
-    watcher.watch(0, 0);
+    watcher.watch(nullptr, 0);
 
     Length estimate = openForRead();
     AutoClose closer1(*this);
@@ -151,8 +142,8 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
             }
         }
         catch (RestartTransfer& retry) {
-            Log::warning() << "Retrying transfer from " << retry.from() << " ("
-                           << Bytes(retry.from()) << ")" << std::endl;
+            Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
+                           << std::endl;
 
             restartReadFrom(retry.from());
             other.restartWriteFrom(retry.from());
@@ -174,7 +165,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
         throw ReadError(name() + " into " + other.name());
     }
 
-    if (estimate != 0 && estimate != total) {
+    if (estimate != Length(0) && estimate != total) {
         std::ostringstream os;
         os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
         throw ReadError(name() + " into " + other.name() + " " + os.str());
@@ -207,7 +198,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     watcher.fromHandleOpened();
     AutoClose closer1(*this);
 
-    Length toRead = ((maxsize != -1) ? std::min(estimate, maxsize) : estimate);
+    Length toRead = ((maxsize != Length(-1)) ? std::min(estimate, maxsize) : estimate);
 
     other.openForWrite(toRead);
     watcher.toHandleOpened();
@@ -216,7 +207,8 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     Length total = 0;
     long length  = -1;
 
-    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long)(toRead - total)))) > 0) {
+    while ((toRead <= Length(0) || total < toRead) &&
+           (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long)(toRead - total)))) > 0) {
 
         if (other.write((const char*)buffer, length) != length) {
             throw WriteError(name() + " into " + other.name());
@@ -230,7 +222,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
         throw ReadError(name() + " into " + other.name());
     }
 
-    if (toRead != 0 && toRead != total) {
+    if (toRead != Length(0) && toRead != total) {
         std::ostringstream os;
         os << "DataHandle::copyTo got " << total << " bytes out of " << toRead;
         throw ReadError(name() + " into " + other.name() + " " + os.str());
@@ -412,9 +404,7 @@ void DataHandle::toRemote(Stream& s) const {
     s << *this;
 }
 
-void DataHandle::selectMover(MoverTransferSelection&, bool) const {
-    
-}
+void DataHandle::selectMover(MoverTransferSelection&, bool) const {}
 
 DataHandle* DataHandle::clone() const {
     std::ostringstream os;

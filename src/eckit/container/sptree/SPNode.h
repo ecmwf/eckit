@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef SPNode_H
 #define SPNode_H
@@ -23,21 +16,23 @@ namespace eckit {
 template <class Traits, class NodeType>
 class SPNode {
 public:
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
 
-    typedef SPNodeInfo<Traits, NodeType> NodeInfo;
-    typedef typename NodeInfo::NodeList NodeList;
-    typedef SPValue<Traits> Value;
-    typedef SPNodeQueue<Traits, NodeType> NodeQueue;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef NodeType Node;
+    using NodeInfo  = SPNodeInfo<Traits, NodeType>;
+    using NodeList  = typename NodeInfo::NodeList;
+    using Value     = SPValue<Traits>;
+    using NodeQueue = SPNodeQueue<Traits, NodeType>;
+
+    using Node = NodeType;
 
 protected:
+
     Value value_;
 
-    typedef typename Alloc::Ptr Ptr;
+    using Ptr = typename Alloc::Ptr;
     Ptr left_;
     Ptr right_;
     Ptr next_;  // For fast transversal
@@ -46,6 +41,7 @@ protected:
 
 
 public:
+
     // SPNode(const Value& value);
 
     template <class V>
@@ -82,6 +78,7 @@ public:
     Node* asNode() { return static_cast<Node*>(this); }
 
 public:  // because of a clang bug. Should be protected
+
     // void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth) = 0;
     void nearestNeighbourBruteForceX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
     // void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) = 0;
@@ -90,7 +87,9 @@ public:  // because of a clang bug. Should be protected
     void kNearestNeighboursBruteForceX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);
 
     //==========================
+
 public:
+
     Node* left(Alloc& a) const { return a.convert(left_, (Node*)0); }
     Node* right(Alloc& a) const { return a.convert(right_, (Node*)0); }
     Node* next(Alloc& a) const { return a.convert(next_, (Node*)0); }

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_persist_Isa_h
 #define eckit_persist_Isa_h
@@ -19,16 +12,17 @@ namespace eckit {
 
 class Isa {
 public:
+
     Isa* next_;
     TypeInfo* type_;
-    Isa(TypeInfo* t, Isa* n) :
-        next_(n), type_(t) {}
+    Isa(TypeInfo* t, Isa* n) : next_(n), type_(t) {}
     static void add(TypeInfo* t, const std::string&);
     static Isa* get(const std::string&);
 };
 
 class Schema {
 public:
+
     virtual ~Schema() {}
     virtual void start(const std::string&, size_t size)                                          = 0;
     virtual void member(const std::string&, size_t size, size_t offset, const std::string& type) = 0;

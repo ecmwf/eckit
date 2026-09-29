@@ -1,87 +1,44 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/iterator/Unstructured.h"
 
-#include <utility>
+#include <vector>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Grid.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
 namespace eckit::geo::iterator {
 
 
-namespace {
-
-
-struct LonLatReference : Unstructured::Container {
-    explicit LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
-        longitudes(longitudes), latitudes(latitudes) {
-        ASSERT(longitudes.size() == latitudes.size());
+struct Instance {
+    explicit Instance(const Iterator::Spec& spec) :
+        grid(dynamic_cast<const grid::Unstructured*>(GridFactory::build(spec))) {
+        ASSERT(grid);
     }
 
-    Point get(size_t index) const override { return PointLonLat{longitudes.at(index), latitudes.at(index)}; }
-    size_t size() const override { return longitudes.size(); }
-
-    const std::vector<double>& longitudes;
-    const std::vector<double>& latitudes;
+    std::unique_ptr<const grid::Unstructured> grid;
 };
 
 
-struct PointsReference : Unstructured::Container {
-    explicit PointsReference(const std::vector<Point>& points) : points(points) {}
-
-    Point get(size_t index) const override { return points.at(index); }
-    size_t size() const override { return points.size(); }
-
-    const std::vector<Point>& points;
+struct UnstructuredInstance : Instance, Unstructured {
+    explicit UnstructuredInstance(const Iterator::Spec& spec) : Instance(spec), Unstructured(*grid) {}
 };
-
-
-struct PointsMove : Unstructured::Container {
-    explicit PointsMove(std::vector<Point>&& points) : points(points) {}
-
-    Point get(size_t index) const override { return points.at(index); }
-    size_t size() const override { return points.size(); }
-
-    const std::vector<Point> points;
-};
-
-
-}  // namespace
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<double>& longitudes,
                            const std::vector<double>& latitudes) :
-    container_(new LonLatReference(longitudes, latitudes)), index_(index), size_(container_->size()), uid_(grid.uid()) {
-    ASSERT(container_->size() == grid.size());
+    longitudes_(&longitudes), latitudes_(&latitudes), index_(index), size_(longitudes.size()), uid_(grid.uid()) {
+    ASSERT(longitudes.size() == latitudes.size());
+    ASSERT(size_ == grid.size());
 }
 
 
-Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<Point>& points) :
-    container_(new PointsReference(points)), index_(index), size_(container_->size()), uid_(grid.uid()) {
-    ASSERT(container_->size() == grid.size());
-}
-
-
-Unstructured::Unstructured(const Grid& grid, size_t index, std::vector<Point>&& points) :
-    container_(new PointsMove(std::move(points))), index_(index), size_(container_->size()), uid_(grid.uid()) {
-    ASSERT(container_->size() == grid.size());
-}
-
-
-Unstructured::Unstructured(const Grid& grid) : index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
+Unstructured::Unstructured(const Grid& grid) :
+    longitudes_(nullptr), latitudes_(nullptr), index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
 
 
 bool Unstructured::operator==(const geo::Iterator& other) const {
@@ -117,14 +74,13 @@ Unstructured::operator bool() const {
 
 
 Point Unstructured::operator*() const {
-    ASSERT(container_);
-    return container_->get(index_);
+    ASSERT(longitudes_ != nullptr);
+    ASSERT(latitudes_ != nullptr);
+    return PointLonLat{longitudes_->at(index_), latitudes_->at(index_)};
 }
 
 
-void Unstructured::fill_spec(spec::Custom&) const {
-    // FIXME implement
-}
+static const IteratorRegisterType<UnstructuredInstance> ITERATOR_TYPE("unstructured");
 
 
 }  // namespace eckit::geo::iterator

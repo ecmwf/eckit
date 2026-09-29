@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file Channel.h
 /// @author Tiago Quintino
@@ -16,23 +9,27 @@
 
 #include <ostream>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 class ChannelBuffer;
 class LogTarget;
 
-typedef void (*channel_callback_t)(void* data, const char* msg);
+using channel_callback_t = void (*)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Output channel that is an std::ostream but more functional
 
-class Channel : public std::ostream, private NonCopyable {
+class Channel : public std::ostream {
 
 public:  // methods
-    Channel(LogTarget* = 0);
+
+    Channel(LogTarget* = nullptr);
+
+    Channel(const Channel&)            = delete;
+    Channel& operator=(const Channel&) = delete;
+    Channel(Channel&&)                 = delete;
+    Channel& operator=(Channel&&)      = delete;
 
     ~Channel() override;
 
@@ -48,8 +45,8 @@ public:  // methods
     void setFile(const std::string& path);
     void addFile(const std::string& path);
 
-    void setCallback(channel_callback_t cb, void* data = 0);
-    void addCallback(channel_callback_t cb, void* data = 0);
+    void setCallback(channel_callback_t cb, void* data = nullptr);
+    void addCallback(channel_callback_t cb, void* data = nullptr);
 
     void setTarget(LogTarget*);
     void addTarget(LogTarget*);
@@ -57,6 +54,7 @@ public:  // methods
     void reset();
 
 private:  // members
+
     friend std::ostream& operator<<(std::ostream& os, const Channel& c) {
         c.print(os);
         return os;
@@ -78,8 +76,8 @@ class AutoIndent {
     Channel& channel_;
 
 public:
-    AutoIndent(Channel& channel, const char* prefix = "") :
-        channel_(channel) { channel_.indent(prefix); }
+
+    AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
 };
 

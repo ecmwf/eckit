@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef SPTree_H
 #define SPTree_H
@@ -22,33 +15,34 @@ namespace eckit {
 template <class Traits, class NodeType>
 class SPTree {
 public:
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
 
-    typedef typename Alloc::Ptr Ptr;
-    typedef typename Alloc::Ptr ID;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef NodeType Node;
-    typedef SPMetadata<Traits> Metadata;
+    using Ptr = typename Alloc::Ptr;
+    using ID  = typename Alloc::Ptr;
 
-    typedef Point PointType;
-    typedef Payload PayloadType;
-    typedef typename Node::NodeList NodeList;
-    typedef SPNodeInfo<Traits, NodeType> NodeInfo;
-    typedef typename Node::Value Value;
+    using Node     = NodeType;
+    using Metadata = SPMetadata<Traits>;
+
+    using PointType   = Point;
+    using PayloadType = Payload;
+    using NodeList    = typename Node::NodeList;
+    using NodeInfo    = SPNodeInfo<Traits, NodeType>;
+    using Value       = typename Node::Value;
 
     Alloc& alloc_;
     Ptr root_;
     Metadata meta_;
 
-    typedef SPIterator<Traits, NodeType> iterator;
+    using iterator = SPIterator<Traits, NodeType>;
 
-    typedef std::pair<Point, Payload> value_type;
+    using value_type = std::pair<Point, Payload>;
 
 public:
-    SPTree(Alloc& alloc) :
-        alloc_(alloc), root_(0) {}
+
+    SPTree(Alloc& alloc) : alloc_(alloc), root_(0) {}
 
     ~SPTree() { alloc_.deleteNode(root_, (Node*)0); }
 

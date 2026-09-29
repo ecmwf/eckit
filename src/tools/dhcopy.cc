@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <memory>
 #include <string>
@@ -25,8 +18,8 @@ using eckit::URI;
 
 class DHCopy : public eckit::Tool {
 public:
-    DHCopy(int argc, char** argv) :
-        Tool(argc, argv, "DHSHOME") {
+
+    DHCopy(int argc, char** argv) : Tool(argc, argv, "DHSHOME") {
         options_.push_back(new eckit::option::SimpleOption<std::string>("from", "copy from this URI"));
         options_.push_back(new eckit::option::SimpleOption<std::string>("to", "copy to this URI"));
         options_.push_back(new eckit::option::SimpleOption<bool>("compare", "compare output"));
@@ -39,8 +32,7 @@ public:
 
 static void usage(const std::string& tool) {
 
-    Log::info() << "Usage: " << tool << " -from [URI1] -to [URI2]" << std::endl
-                << std::endl;
+    Log::info() << "Usage: " << tool << " -from [URI1] -to [URI2]" << std::endl << std::endl;
 }
 
 

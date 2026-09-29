@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_TransportHandle_h
 #define eckit_TransportHandle_h
@@ -17,7 +10,6 @@
 #include "eckit/io/DataHandle.h"
 
 
-
 namespace eckit::distributed {
 
 class Transport;
@@ -26,15 +18,12 @@ class Transport;
 
 class TransportHandle : public eckit::DataHandle {
 
-public: // methods
+public:  // methods
 
 
     /// Contructor
 
-    TransportHandle(Transport& transport,
-                    const std::string& path,
-                    size_t writers,
-                    bool exclusive);
+    TransportHandle(Transport& transport, const std::string& path, size_t writers, bool exclusive);
 
     /// Destructor
 
@@ -56,26 +45,25 @@ public: // methods
     virtual eckit::Length estimate() override;
     virtual eckit::Offset position() override;
 
-private: // members
+private:  // members
 
-    Transport&  transport_;
+    Transport& transport_;
     std::string path_;
-    size_t      writer_;
+    size_t writer_;
 
-    bool        opened_;
-    bool        append_;
-    size_t      position_;
+    bool opened_;
+    bool append_;
+    size_t position_;
 
     virtual std::string title() const override;
 
-    void send(const void *buffer, size_t length);
-
+    void send(const void* buffer, size_t length);
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date   Dec 2015
@@ -20,26 +13,25 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename K, typename V>
-class CacheLRU : private NonCopyable {
+class CacheLRU {
 
 public:  // types
-    typedef K key_type;
-    typedef V value_type;
+
+    using key_type   = K;
+    using value_type = V;
 
     struct Entry {
 
         key_type key_;
         value_type value_;
 
-        Entry(const key_type& k, const value_type& v) :
-            key_(k), value_(v) {}
+        Entry(const key_type& k, const value_type& v) : key_(k), value_(v) {}
 
         friend std::ostream& operator<<(std::ostream& s, const Entry& e) {
             s << "key=" << e.key_;
@@ -47,16 +39,22 @@ public:  // types
         }
     };
 
-    typedef Entry entry_type;
+    using entry_type = Entry;
 
-    typedef std::list<entry_type> storage_type;
-    typedef typename storage_type::iterator storage_iterator;
-    typedef std::map<key_type, storage_iterator> map_type;
+    using storage_type     = std::list<entry_type>;
+    using storage_iterator = typename storage_type::iterator;
+    using map_type         = std::map<key_type, storage_iterator>;
 
-    typedef void (*purge_handler_type)(key_type&, value_type&);
+    using purge_handler_type = void (*)(key_type&, value_type&);
 
 public:  // methods
+
     CacheLRU(size_t capacity, purge_handler_type purge = 0);
+
+    CacheLRU(const CacheLRU&)            = delete;
+    CacheLRU& operator=(const CacheLRU&) = delete;
+    CacheLRU(CacheLRU&&)                 = delete;
+    CacheLRU& operator=(CacheLRU&&)      = delete;
 
     ~CacheLRU();
 
@@ -102,6 +100,7 @@ public:  // methods
     }
 
 private:  // methods
+
     void erase(typename map_type::iterator itr);
 
     void trim();
@@ -113,6 +112,7 @@ private:  // methods
     void purge(key_type& key, value_type& value) const;
 
 private:  // members
+
     storage_type storage_;
 
     map_type map_;

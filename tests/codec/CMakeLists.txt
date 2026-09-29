@@ -1,10 +1,5 @@
-# (C) Copyright 1996- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 ecbuild_add_test(
     TARGET  eckit_test_codec_encoding
@@ -25,7 +20,7 @@ ecbuild_add_executable(
     NOINSTALL
 )
 
-foreach( algorithm none bzip2 aec lz4 snappy )
+function( add_codec_test algorithm )
     string( TOUPPER ${algorithm} feature )
     if( eckit_HAVE_${feature} OR algorithm MATCHES "none" )
         ecbuild_add_test(
@@ -35,5 +30,10 @@ foreach( algorithm none bzip2 aec lz4 snappy )
             ENVIRONMENT ECKIT_CODEC_COMPRESSION=${algorithm}
         )
     endif()
-endforeach()
+endfunction()
 
+add_codec_test(none)
+add_codec_test(aec)
+add_codec_test(bzip2)
+add_codec_test(lz4)
+add_codec_test(snappy)

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/utils/Regex.h"
@@ -20,8 +13,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Regex::Regex(const std::string& s, bool shell, bool extended) :
-    str_(s), extended_(extended) {
+Regex::Regex(const std::string& s, bool shell, bool extended) : str_(s), extended_(extended) {
     // Log::debug() << "Regex " << str_ << std::endl;
     if (shell) {
         long len = s.length() * 3 + 1;
@@ -101,8 +93,7 @@ void Regex::compile(const char* p) {
     }
 }
 
-Regex::Regex(const Regex& other) :
-    str_(other.str_), extended_(other.extended_) {
+Regex::Regex(const Regex& other) : str_(other.str_), extended_(other.extended_) {
     compile(str_.c_str());
 }
 
@@ -117,10 +108,10 @@ Regex& Regex::operator=(const Regex& other) {
 std::string Regex::escape(std::string_view str) {
     std::string ret;
     // Reserve twice the size of str for worst-case
-    ret.reserve(str.size()*2);
+    ret.reserve(str.size() * 2);
 
-    for (const char& c: str) {
-        switch(c) {
+    for (const char& c : str) {
+        switch (c) {
             case '.':
             case '^':
             case '$':

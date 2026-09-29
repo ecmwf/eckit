@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/UpTimeCmd.h"
 #include "eckit/log/Seconds.h"
@@ -19,8 +12,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-UpTimeCmd::UpTimeCmd() :
-    CmdResource("uptime") {}
+UpTimeCmd::UpTimeCmd() : CmdResource("uptime") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -29,13 +21,13 @@ UpTimeCmd::~UpTimeCmd() {}
 //----------------------------------------------------------------------------------------------------------------------
 
 void UpTimeCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
-    time_t now = ::time(0);
+    time_t now = ::time(nullptr);
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
     for (unsigned long j = 0; j < info.size(); j++) {
         if (info[j].busy(true) && (info[j].parent() == -1)) {
-            out << TimeStamp(info[j].start()) << " " << info[j].application() << " "
-                << Seconds(now - info[j].start()) << std::endl;
+            out << TimeStamp(info[j].start()) << " " << info[j].application() << " " << Seconds(now - info[j].start())
+                << std::endl;
         }
     }
 }

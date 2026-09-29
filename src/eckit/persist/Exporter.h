@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Exporter.h
 // Baudouin Raoult - (c) ECMWF Oct 10
@@ -18,8 +11,6 @@
 #include <map>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
@@ -27,7 +18,7 @@ namespace eckit {
 
 class DataHandle;
 
-class Exporter : private NonCopyable {
+class Exporter {
 
     class Datatype {
         char type_;
@@ -37,6 +28,7 @@ class Exporter : private NonCopyable {
         unsigned long long unsigned_;
 
     public:
+
         Datatype();
         Datatype(double d);
         Datatype(long long d);
@@ -58,12 +50,18 @@ class Exporter : private NonCopyable {
     };
 
 public:
+
     // -- Exceptions
     // None
 
     // -- Contructors
 
     Exporter(DataHandle&);
+
+    Exporter(const Exporter&)            = delete;
+    Exporter& operator=(const Exporter&) = delete;
+    Exporter(Exporter&&)                 = delete;
+    Exporter& operator=(Exporter&&)      = delete;
 
     // -- Destructor
 
@@ -142,6 +140,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -159,6 +158,7 @@ protected:
     // None
 
 private:  // members
+
     DataHandle& handle_;
     unsigned long long type_;
     unsigned long long location_;

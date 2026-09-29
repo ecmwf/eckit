@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -18,18 +11,23 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/TransferWatcher.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 
 namespace eckit {
 
 
-class DblBuffer : private NonCopyable {
+class DblBuffer {
 public:
+
     // -- Contructors
 
     DblBuffer(long count = 5, long size = 1024 * 1024, TransferWatcher& = TransferWatcher::dummy());
+
+    DblBuffer(const DblBuffer&)            = delete;
+    DblBuffer& operator=(const DblBuffer&) = delete;
+    DblBuffer(DblBuffer&&)                 = delete;
+    DblBuffer& operator=(DblBuffer&&)      = delete;
 
     // -- Destructor
 
@@ -44,9 +42,11 @@ public:
     void restart(RestartTransfer&);
 
 private:  // methods
+
     Length copy(DataHandle&, DataHandle&, const Length&);
 
 private:  // members
+
     Mutex mutex_;
 
     long count_;

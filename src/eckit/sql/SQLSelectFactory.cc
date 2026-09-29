@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/types/Types.h"
 #include "eckit/utils/Translator.h"
@@ -39,7 +32,7 @@ SQLSelectFactory::SQLSelectFactory(SQLSession& session) :
 */
 
 std::string SQLSelectFactory::index(const std::string& columnName, const SQLExpression* index) {
-    if (index == 0) {
+    if (index == nullptr) {
         return columnName;
     }
 
@@ -74,10 +67,10 @@ std::shared_ptr<SQLExpression> SQLSelectFactory::createColumn(const std::string&
     return bitfieldName.size()
                ? (shift == 0 ? std::make_shared<BitColumnExpression>(expandedColumnName, bitfieldName, tableReference)
                              : std::make_shared<ShiftedColumnExpression<BitColumnExpression>>(
-                                 expandedColumnName, bitfieldName, tableReference, shift, -shift))
+                                   expandedColumnName, bitfieldName, tableReference, shift, -shift))
                : (shift == 0 ? std::make_shared<ColumnExpression>(expandedColumnName + tableReference, tableReference)
                              : std::make_shared<ShiftedColumnExpression<ColumnExpression>>(
-                                 expandedColumnName + tableReference, tableReference, shift, -shift));
+                                   expandedColumnName + tableReference, tableReference, shift, -shift));
 }
 
 /*
@@ -105,7 +98,7 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
         L << "SQLSelectFactory::create: where = " << *where << std::endl;
     }
 
-    SQLSelect* r(0);
+    SQLSelect* r = nullptr;
 
     // Which tables are we selecting from?
 
@@ -133,18 +126,14 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
     ASSERT(minColumnShift_ <= 0);
     if (minColumnShift_ < 0) {
 
-        L << std::endl
-          << "SELECT_LIST before reshifting:" << select << std::endl;
+        L << std::endl << "SELECT_LIST before reshifting:" << select << std::endl;
         select = select.reshift_expressions(minColumnShift_);
-        L << std::endl
-          << "SELECT_LIST after reshifting:" << select << std::endl;
+        L << std::endl << "SELECT_LIST after reshifting:" << select << std::endl;
 
         if (where) {
-            L << std::endl
-              << "WHERE before reshifting:" << *where << std::endl;
+            L << std::endl << "WHERE before reshifting:" << *where << std::endl;
             where = where->reshift(minColumnShift_);
-            L << std::endl
-              << "WHERE after reshifting:" << *where << std::endl;
+            L << std::endl << "WHERE after reshifting:" << *where << std::endl;
         }
 
         if (!order_by.first.empty()) {
@@ -161,7 +150,7 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
                     << std::endl;
     }
 
-    SQLOutput* outputEndpoint = 0;
+    SQLOutput* outputEndpoint = nullptr;
     std::vector<std::unique_ptr<SQLOutput>> newOutputs;
 
     if (!into.empty()) {

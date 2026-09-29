@@ -1,21 +1,14 @@
-/*
- * (C) Copyright 1996-2017 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <arpa/inet.h>
-#include <cerrno>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <cstdlib>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
+#include <cstdlib>
 
 #include <cstring>
 #include <iostream>
@@ -35,8 +28,7 @@ static void* get_sockaddr(struct sockaddr* sa) {
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-UDPServer::UDPServer(int port) :
-    port_(port), socketfd_(0) {
+UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
     struct addrinfo hints;
     struct addrinfo* servinfo;
     struct addrinfo* addr;
@@ -49,7 +41,7 @@ UDPServer::UDPServer(int port) :
     Translator<int, std::string> toStr;
 
     int err = 0;
-    if ((err = ::getaddrinfo(NULL, toStr(port_).c_str(), &hints, &servinfo)) != 0) {
+    if ((err = ::getaddrinfo(nullptr, toStr(port_).c_str(), &hints, &servinfo)) != 0) {
         std::ostringstream msg;
         msg << "getaddrinfo failed in UDPServer with "
             << " port=" << port << " --  " << ::gai_strerror(err);
@@ -57,7 +49,7 @@ UDPServer::UDPServer(int port) :
     }
 
     // loop through all the addrinfo results and make a socket and then bind()
-    for (addr = servinfo; addr != NULL; addr = addr->ai_next) {
+    for (addr = servinfo; addr != nullptr; addr = addr->ai_next) {
         if ((socketfd_ = ::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)) == -1) {
             continue;
         }
@@ -71,7 +63,7 @@ UDPServer::UDPServer(int port) :
         break;
     }
 
-    if (addr == NULL) {
+    if (addr == nullptr) {
         std::ostringstream msg;
         msg << "UDPServer failed to create a socket";
         throw FailedSystemCall(msg.str(), Here());
@@ -114,7 +106,8 @@ void UDPServer::print(std::ostream& s) const {
 
 std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
     char inet6[INET6_ADDRSTRLEN];
-    std::string r = ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
+    std::string r =
+        ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
     return r;
 }
 

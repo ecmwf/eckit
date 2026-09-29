@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLColumn.h"
 
@@ -17,14 +10,22 @@ using namespace eckit;
 
 namespace eckit::sql {
 
-SQLColumn::SQLColumn(const type::SQLType& type,
-                     SQLTable& owner,
-                     const std::string& name,
-                     size_t index,
-                     bool hasMissingValue,
-                     double missingValue,
-                     const BitfieldDef& bitfieldDef) :
-    SQLIterator(type), noRows_(0), owner_(owner), name_(name), index_(index), current_(0), last_(0), position_(0), iterator_(0), hasMissingValue_(hasMissingValue), missingValue_(missingValue), isBitfield_(true), bitfieldDef_(bitfieldDef), sizeDoubles_(type.size() / 8) {
+SQLColumn::SQLColumn(const type::SQLType& type, SQLTable& owner, const std::string& name, size_t index,
+                     bool hasMissingValue, double missingValue, const BitfieldDef& bitfieldDef) :
+    SQLIterator(type),
+    noRows_(0),
+    owner_(owner),
+    name_(name),
+    index_(index),
+    current_(0),
+    last_(0),
+    position_(0),
+    iterator_{nullptr},
+    hasMissingValue_(hasMissingValue),
+    missingValue_(missingValue),
+    isBitfield_(true),
+    bitfieldDef_(bitfieldDef),
+    sizeDoubles_(type.size() / 8) {
     ASSERT(type.size() % 8 == 0);
 }
 
@@ -37,7 +38,7 @@ SQLColumn::SQLColumn(const SQLColumn& other) :
     current_(0),
     last_(0),
     position_(0),
-    iterator_(0),
+    iterator_{nullptr},
     hasMissingValue_(other.hasMissingValue_),
     missingValue_(other.missingValue_),
     isBitfield_(other.isBitfield_),

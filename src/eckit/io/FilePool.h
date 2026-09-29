@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date Dec 2015
@@ -16,7 +9,6 @@
 #define eckit_io_FilePool_h
 
 #include "eckit/container/CacheLRU.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/MutexCond.h"
 
 namespace eckit {
@@ -37,10 +29,16 @@ namespace eckit {
 ///
 /// @note this class is thread-safe
 ///
-class FilePool : private eckit::NonCopyable {
+class FilePool {
 
 public:
+
     FilePool(size_t capacity);
+
+    FilePool(const FilePool&)            = delete;
+    FilePool& operator=(const FilePool&) = delete;
+    FilePool(FilePool&&)                 = delete;
+    FilePool& operator=(FilePool&&)      = delete;
 
     ~FilePool();
 
@@ -80,6 +78,7 @@ public:
     }
 
 private:
+
     std::map<PathName, DataHandle*> inUse_;
 
     eckit::CacheLRU<PathName, DataHandle*> cache_;

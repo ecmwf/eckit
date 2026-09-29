@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 _/
 .tags*
 CMakeLists.txt.user*
@@ -10,4 +13,11 @@ doc/latex
 .vscode
 .idea
 build/
+tests/geo/eckit_geo_cache
+_build
 *.ccls-cache
+compile_commands.json
+
+# Rust
+rust/target/
+rust/Cargo.lock

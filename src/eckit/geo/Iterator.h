@@ -1,28 +1,21 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 
 #include "eckit/geo/Point.h"
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo {
 class Grid;
-namespace spec {
-class Custom;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -30,14 +23,23 @@ namespace eckit::geo {
 
 class Iterator {
 public:
+
     // -- Types
 
-    using difference_type = std::ptrdiff_t;
+    using builder_t = BuilderT1<Iterator>;
+    using Spec      = spec::Spec;
+    using ARG1      = const Spec&;
+
+    using iterator_category = std::input_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = Point;
+    using pointer           = value_type*;
+    using reference         = value_type&;
 
     // -- Constructors
 
-    Iterator(const Iterator&) = delete;
-    Iterator(Iterator&&)      = delete;
+    Iterator(const Iterator&) = default;
+    Iterator(Iterator&&)      = default;
 
     // -- Destructor
 
@@ -45,8 +47,8 @@ public:
 
     // -- Operators
 
-    void operator=(const Iterator&) = delete;
-    void operator=(Iterator&&)      = delete;
+    Iterator& operator=(const Iterator&) = default;
+    Iterator& operator=(Iterator&&)      = default;
 
     virtual bool operator==(const Iterator&) const = 0;
     bool operator!=(const Iterator& other) const { return !operator==(other); }
@@ -58,26 +60,52 @@ public:
     virtual bool operator-=(difference_type diff) { return operator+=(-diff); }
 
     virtual explicit operator bool() const = 0;
-    virtual Point operator*() const        = 0;
+    virtual value_type operator*() const   = 0;
 
     // -- Methods
 
     virtual size_t index() const = 0;
 
-    [[nodiscard]] spec::Custom* spec() const;
+    [[nodiscard]] virtual Iterator* clone() const = 0;
+
+    // -- Class methods
+
+    static std::string className() { return "iterator"; }
 
 protected:
+
     // -- Constructors
 
     Iterator() = default;
 
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const = 0;
+private:
 
     // -- Friends
 
     friend class Grid;
+};
+
+
+using IteratorFactoryType = Factory<Iterator>;
+
+
+template <typename T>
+using IteratorRegisterType = ConcreteBuilderT1<Iterator, T>;
+
+
+struct IteratorFactory {
+    [[nodiscard]] static Iterator* build(const Iterator::Spec& spec) { return instance().build_(spec); }
+    [[nodiscard]] static Iterator::Spec* make_spec(const Iterator::Spec& spec) { return instance().make_spec_(spec); }
+
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
+
+private:
+
+    static IteratorFactory& instance();
+
+    [[nodiscard]] Iterator* build_(const Iterator::Spec&) const;
+    [[nodiscard]] Iterator::Spec* make_spec_(const Iterator::Spec&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

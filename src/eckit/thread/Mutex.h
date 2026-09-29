@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -17,8 +10,6 @@
 
 #include <pthread.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -27,9 +18,15 @@ namespace eckit {
 /// In addition to std::reentrant_mutex this checks valida construction before usage
 /// and add an optional tag, both of which can be useful when debugging,
 /// especially when dealing with construction before main() execution (eg self-registration classes)
-class Mutex : private NonCopyable {
+class Mutex {
 public:  // methods
+
     Mutex(char tag = ' ');
+
+    Mutex(const Mutex&)            = delete;
+    Mutex& operator=(const Mutex&) = delete;
+    Mutex(Mutex&&)                 = delete;
+    Mutex& operator=(Mutex&&)      = delete;
 
     ~Mutex();
 
@@ -39,6 +36,7 @@ public:  // methods
     char tag() const { return tag_; }
 
 protected:  // members
+
     pthread_mutex_t mutex_;
     bool exists_;
     char tag_;

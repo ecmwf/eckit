@@ -1,17 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iomanip>
 #include <string>
 
 #include "eckit/log/JSON.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/types/DateTime.h"
 
 namespace eckit {
@@ -20,8 +14,7 @@ namespace eckit {
 
 static void print_indent(std::ostream& out, int indent) {
     indent = std::max(0, indent);
-    out << "\n"
-        << std::string(size_t(indent), ' ');
+    out << "\n" << std::string(size_t(indent), ' ');
 }
 
 static bool check(const JSON::Formatting& formatting, int flag) {
@@ -39,8 +32,7 @@ JSON::Formatting JSON::Formatting::indent(int indentation) {
     return Formatting(INDENT_DICT, indentation);
 }
 
-JSON::Formatting::Formatting(int formatting, int indentation) :
-    flags_{formatting}, indentation_{indentation} {}
+JSON::Formatting::Formatting(int formatting, int indentation) : flags_{formatting}, indentation_{indentation} {}
 
 int JSON::Formatting::indentation() const {
     return indentation_;
@@ -52,14 +44,12 @@ int JSON::Formatting::flags() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSON::JSON(std::ostream& out, bool null) :
-    out_(out), null_(null) {
+JSON::JSON(std::ostream& out, bool null) : out_(out), null_(null) {
     sep_.push_back("");
     state_.push_back(true);
 }
 
-JSON::JSON(std::ostream& out, JSON::Formatting formatting) :
-    JSON(out, true) {
+JSON::JSON(std::ostream& out, JSON::Formatting formatting) : JSON(out, true) {
     formatting_ = formatting;
 }
 
@@ -300,7 +290,7 @@ JSON& JSON::operator<<(const DateTime& datetime) {
 }
 
 JSON& JSON::operator<<(const ::timeval& t) {
-    *this << double(t.tv_sec + t.tv_usec / 1000000.0);
+    *this << double(t.tv_sec + (t.tv_usec / Seconds::usec_per_sec));
     return *this;
 }
 

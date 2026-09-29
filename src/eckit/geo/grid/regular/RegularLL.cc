@@ -1,0 +1,237 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#include "eckit/geo/grid/regular/RegularLL.h"
+
+#include <cmath>
+#include <memory>
+#include <vector>
+
+#include "eckit/geo/Arrangement.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/range/Regular.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
+#include "eckit/types/FloatCompare.h"
+
+
+namespace eckit::geo::grid::regular {
+
+
+#define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)(e[-+][0-9]+)?"
+static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
+#undef POSITIVE_REAL
+
+
+RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {
+    if (dlon < 0 || dlat < 0) {
+        throw exception::GridError("'grid' = ['dlon', 'dlat'] must be positive", Here());
+    }
+}
+
+
+bool RegularLL::Increments::operator==(const Increments& other) const {
+    return types::is_approximately_equal(dlon(), other.dlon()) && types::is_approximately_equal(dlat(), other.dlat());
+}
+
+RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
+    std::vector<RegularLL::Increments::value_type> grid(2);
+
+    if (spec.get("dlon", grid[0]) && spec.get("dlat", grid[1])) {
+        return {grid[0], grid[1]};
+    }
+
+    if (spec.get("grid", grid) && grid.size() == 2) {
+        return {grid[0], grid[1]};
+    }
+
+    throw exception::GridError("'grid' = ['dlon', 'dlat'] expected", Here());
+}
+
+
+RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
+    if (spec.has("reference")) {
+        return PointLonLat::make_from_spec(spec, "reference", RegularLL::reference_default());
+    }
+
+    if (spec.has("area") || spec.has("south") || spec.has("west")) {
+        Grid::BoundingBox bbox{spec};
+        return {bbox.west(), bbox.south()};
+    }
+
+    return RegularLL::reference_default();
+}
+
+
+RegularLL::RegularLL(const Spec& spec) :
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec},
+              Projection::make_from_spec(spec)) {}
+
+
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, Projection* p) :
+    Regular(s, p),
+    x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
+       s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},
+    y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(), s.is_scan_j_positive() ? bbox.south() : bbox.north(),
+       s.is_scan_j_positive() ? bbox.north() : bbox.south(), ref.lat()} {
+    ASSERT(!empty());
+}
+
+
+Grid::Spec* RegularLL::spec(const std::string& name) {
+    std::smatch match;
+    std::regex_match(name, match, std::regex(REGULAR_LL_PATTERN));
+    ASSERT(match.size() == 9);
+
+    return new spec::Custom(
+        {{"type", "regular_ll"}, {"grid", std::vector<double>{std::stod(match[1].str()), std::stod(match[5].str())}}});
+}
+
+
+void RegularLL::fill_spec(spec::Custom& custom) const {
+    Regular::fill_spec(custom);
+
+    custom.set("grid", std::vector<double>{std::abs(dx()), std::abs(dy())});
+
+    // NOTE: the spec describes the grid in its own (possibly rotated) frame, unlike boundingBox()
+    if (std::unique_ptr<const BoundingBox> bbox(calculate_bbox_xy()); *bbox != BoundingBox::bounding_box_default()) {
+        auto [n, w, s, e] = bbox->deconstruct();
+        custom.set("area", std::vector<double>{n, w, s, e});
+    }
+
+    if (const auto ref{reference()}; !points_equal(ref, reference_default())) {
+        custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
+    }
+}
+
+
+const std::string& RegularLL::type() const {
+    static const std::string type{"regular_ll"};
+    return type;
+}
+
+
+Point RegularLL::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().values().front(), y().values().front()};  // First longitude and first latitude
+}
+
+
+Point RegularLL::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().values().back(), y().values().back()};
+}
+
+
+Grid* RegularLL::make_grid_cropped(const Area& crop) const {
+    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
+        return new RegularLL({dx(), dy()}, cropped);
+    }
+
+    throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());
+}
+
+
+RegularLL::Reference RegularLL::reference_default() {
+    static const PointLonLat REFERENCE{0, 0};
+    return REFERENCE;
+}
+
+
+Grid::BoundingBox* RegularLL::calculate_bbox() const {
+    if (const auto* rotation = dynamic_cast<const projection::Rotation*>(&projection()); rotation != nullptr) {
+        return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()},
+                                                       *rotation)
+            .release();
+    }
+
+    return calculate_bbox_xy();
+}
+
+
+Grid::BoundingBox* RegularLL::calculate_bbox_xy() const {
+    auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
+    auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
+    auto w = x_.min();
+    auto e = x_.max();
+
+    if (x_.periodic()) {
+        if (const auto ref = reference(); types::is_approximately_equal(ref.lon(), w, PointLonLat::EPS)) {
+            w = 0;
+        }
+        e = w + PointLonLat::FULL_ANGLE;
+    }
+
+    return new BoundingBox{n, w, s, e};
+}
+
+
+struct ArakawaC : RegularLL {
+    explicit ArakawaC(const Spec& spec) :
+        RegularLL(*std::unique_ptr<Spec>([](const Spec& spec) {
+            auto a = [](const std::string& str) {
+                return str == "T" || str == "t"   ? Arrangement::ARAKAWA_C_T
+                       : str == "U" || str == "u" ? Arrangement::ARAKAWA_C_U
+                       : str == "V" || str == "v"
+                           ? Arrangement::ARAKAWA_C_V
+                           : throw exception::GridError("ArakawaC: unsupported arrangement '" + str + "'", Here());
+            }(spec.get_string("arrangement", "T"));
+
+            auto N = spec.get_unsigned("n");
+            if (N == 0) {
+                throw exception::GridError("ArakawaC: 'n' must be a positive integer", Here());
+            }
+
+            auto grid_factor = spec.get_double_vector("grid_factor", {1., 1.});
+            if (grid_factor.size() != 2 || types::is_approximately_lesser_or_equal(grid_factor[0], 0.) ||
+                types::is_approximately_lesser_or_equal(grid_factor[1], 0.)) {
+                throw exception::GridError(
+                    "ArakawaC: 'grid_factor' = ['dlon-factor', 'dlat-factor'] must be a vector of two positive "
+                    "real numbers",
+                    Here());
+            }
+
+            auto dlon = grid_factor[0] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);
+            auto dlat = grid_factor[1] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);
+
+            auto extended = std::make_unique<spec::Layered>(spec);
+            extended->push_back(new spec::Custom{
+                {"grid", std::vector<double>{dlon, dlat}},
+                {"reference", std::vector<double>{a == Arrangement::ARAKAWA_C_U ? 0. : 0.5 * dlon,
+                                                  a == Arrangement::ARAKAWA_C_V ? 0. : 0.5 * dlat}},
+            });
+
+            return extended.release();
+        }(spec))) {}
+};
+
+
+struct ArakawaCUnifiedModel : ArakawaC {
+    explicit ArakawaCUnifiedModel(const Spec& spec) :
+        ArakawaC(*std::unique_ptr<Spec>([](const Spec& spec) {
+            auto extended = std::make_unique<spec::Layered>(spec);
+            extended->push_back(new spec::Custom{
+                {"grid_factor", std::vector<double>{2., 4. / 3.}},
+                {"order", "i+j+"},
+            });
+
+            return extended.release();
+        }(spec))) {}
+};
+
+
+static const GridRegisterName<RegularLL> GRIDNAME(REGULAR_LL_PATTERN);
+
+static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
+static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");
+
+static const GridRegisterType<ArakawaC> GRIDTYPE3("arakawa_c");
+static const GridRegisterType<ArakawaCUnifiedModel> GRIDTYPE4("arakawa_c_um");
+
+
+}  // namespace eckit::geo::grid::regular

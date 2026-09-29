@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -19,7 +12,6 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::system {
 
@@ -27,16 +19,25 @@ struct MemoryInfo;
 
 //--------------------------------------------------------------------------------------------------
 
-class SystemInfo : private eckit::NonCopyable {
+class SystemInfo {
 public:  // methods
+
     static bool isBigEndian();
     static bool isLittleEndian();
+
+    SystemInfo() = default;
+
+    SystemInfo(const SystemInfo&)            = delete;
+    SystemInfo& operator=(const SystemInfo&) = delete;
+    SystemInfo(SystemInfo&&)                 = delete;
+    SystemInfo& operator=(SystemInfo&&)      = delete;
 
     virtual ~SystemInfo();
 
     static const SystemInfo& instance();
 
     virtual std::string userName() const;
+    virtual std::string groupName() const;
 
     virtual eckit::LocalPathName executablePath() const = 0;
 
@@ -48,6 +49,7 @@ public:  // methods
     virtual void dumpSysMemInfo(std::ostream&, const char* prepend = nullptr) const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const SystemInfo& p) {
@@ -58,12 +60,12 @@ protected:  // methods
 private:  // members
 };
 
-
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
 class TraceProcMemInfo {
 public:
+
     explicit TraceProcMemInfo(const char* name) {
         SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name);
     }

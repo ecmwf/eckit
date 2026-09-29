@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef SPIterator_H
 #define SPIterator_H
@@ -18,23 +11,23 @@ namespace eckit {
 template <class Traits, class NodeType>
 class SPIterator {
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef SPValue<Traits> Value;
+    using Value = SPValue<Traits>;
 
-    typedef typename Alloc::Ptr Ptr;
-    typedef typename Alloc::Ptr ID;
-    typedef NodeType Node;
+    using Ptr  = typename Alloc::Ptr;
+    using ID   = typename Alloc::Ptr;
+    using Node = NodeType;
 
     Alloc& alloc_;
     Ptr ptr_;
 
 
 public:
-    SPIterator(Alloc& alloc, Ptr ptr) :
-        alloc_(alloc), ptr_(ptr) {
+
+    SPIterator(Alloc& alloc, Ptr ptr) : alloc_(alloc), ptr_(ptr) {
         // std::cout << "SPIterator " << ptr << std::endl;
         Node* node = alloc_.convert(ptr_, (Node*)0);
         if (node) {

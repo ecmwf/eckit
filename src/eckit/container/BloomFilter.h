@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file trie.h
 /// @author Baudouin Raoult
@@ -17,8 +10,6 @@
 #ifndef eckit_containers_BloomFilter_H
 #define eckit_containers_BloomFilter_H
 
-#include "eckit/memory/NonCopyable.h"
-
 #include <ostream>
 #include <vector>
 
@@ -28,13 +19,21 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-class BloomFilter : private NonCopyable {
+class BloomFilter {
 
 public:  // types
-    typedef unsigned long long data_type;
+
+    using data_type = unsigned long long;
 
 public:  // methods
+
     BloomFilter(size_t size);
+
+    BloomFilter(const BloomFilter&)            = delete;
+    BloomFilter& operator=(const BloomFilter&) = delete;
+    BloomFilter(BloomFilter&&)                 = delete;
+    BloomFilter& operator=(BloomFilter&&)      = delete;
+
     ~BloomFilter();
 
     bool empty() const;
@@ -42,15 +41,18 @@ public:  // methods
     bool contains(const T& value) const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     static size_t elementCount(size_t nbits);
 
     /// Which bit should we be considering?
     size_t index(const T& value) const;
 
 private:  // members
+
     size_t size_;
     size_t entries_;
 
@@ -60,6 +62,7 @@ private:  // members
     std::vector<data_type> data_;
 
 private:  // friends
+
     friend std::ostream& operator<<(std::ostream& s, const BloomFilter<T>& p) {
         p.print(s);
         return s;

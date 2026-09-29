@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 /*
 
 FEATURE ECKIT-221
@@ -21,8 +24,8 @@ using namespace eckit;
 
 class MyTool : public Tool {
 public:
-    MyTool(int argc, char** argv) :
-        Tool(argc, argv) {}
+
+    MyTool(int argc, char** argv) : Tool(argc, argv) {}
 
     virtual ~MyTool() { mpi::finaliseAllComms(); }
 

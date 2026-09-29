@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -18,8 +11,6 @@
 #include <limits>
 
 #include "eckit/eckit.h"
-
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -27,10 +18,16 @@ namespace eckit {
 
 // A simple class to implement buffers
 
-class CircularBuffer : public eckit::NonCopyable {
+class CircularBuffer {
 
 public:  // methods
+
     CircularBuffer(size_t size = 64 * 1024, size_t capactity = std::numeric_limits<size_t>::max());
+
+    CircularBuffer(const CircularBuffer&)            = delete;
+    CircularBuffer& operator=(const CircularBuffer&) = delete;
+    CircularBuffer(CircularBuffer&&)                 = delete;
+    CircularBuffer& operator=(CircularBuffer&&)      = delete;
 
     ~CircularBuffer();
 
@@ -44,6 +41,7 @@ public:  // methods
     void clear();
 
 private:  // members
+
     mutable Mutex mutex_;
 
     char* buffer_;

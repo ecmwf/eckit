@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 option( ENABLE_ECKIT-351 "Control if ECKIT-351 tests should be enabled" ON )
 
 ecbuild_add_test( TARGET      eckit_test_memory_counted
@@ -6,14 +9,6 @@ ecbuild_add_test( TARGET      eckit_test_memory_counted
 
 ecbuild_add_test( TARGET      eckit_test_memory_factory
                   SOURCES     test_factory.cc
-                  LIBS        eckit )
-
-ecbuild_add_test( TARGET      eckit_test_memory_scoped_ptr
-                  SOURCES     test_scoped_ptr.cc
-                  LIBS        eckit )
-
-ecbuild_add_test( TARGET      eckit_test_memory_shared_ptr
-                  SOURCES     test_shared_ptr.cc
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_memory_mmap

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Piotr Kuchta
 /// @author Simon Smart
@@ -33,6 +26,7 @@ class ConstantExpression : public SQLExpression {
     struct PrivateKey {};  // This is just to allow make_shared to access private constructor.
 
 public:
+
     ConstantExpression(double, bool, const type::SQLType*);
     ConstantExpression(const ConstantExpression&, const PrivateKey&);
     ConstantExpression& operator=(const ConstantExpression&) = delete;
@@ -80,6 +74,7 @@ public:
     double missingValue() const { return missingValue_; }
 
 protected:
+
     void print(std::ostream&) const override { NOTIMP; }
 
     bool isBitfield_;

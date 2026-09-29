@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -17,9 +10,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -31,9 +22,15 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Library : private eckit::NonCopyable {
+class Library {
 public:  // methods
+
     Library(const std::string& name);
+
+    Library(const Library&)            = delete;
+    Library& operator=(const Library&) = delete;
+    Library(Library&&)                 = delete;
+    Library& operator=(Library&&)      = delete;
 
     virtual ~Library();
 
@@ -51,9 +48,7 @@ public:  // methods
 
     virtual std::string version() const = 0;
 
-    virtual std::string versionExtended() const {
-        return version();
-    }
+    virtual std::string versionExtended() const { return version(); }
 
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
@@ -64,19 +59,12 @@ public:  // methods
     virtual const Configuration& configuration() const;
 
 public:  // methods
-    /// @deprecated Use LibraryManager instead
-    static std::vector<std::string> list();
-    /// @deprecated Use LibraryManager instead
-    static void list(std::ostream& s);
-    /// @deprecated Use LibraryManager instead
-    static bool exists(const std::string& name);
-    /// @deprecated Use LibraryManager instead
-    static const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
 protected:  // methods
+
     virtual std::string home() const;
 
     virtual const void* addr() const;
@@ -89,9 +77,11 @@ protected:  // methods
     }
 
 private:  // methods
+
     std::string location() const;
 
 private:  // members
+
     std::string name_;
     std::string prefix_;
     std::string home_;  // if not set explicitly, will be empty

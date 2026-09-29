@@ -1,26 +1,23 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdlib>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
+#include <type_traits>
+#include <utility>
 
 #include "eckit/io/EasyCURL.h"
-#include "eckit/value/Value.h"
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
+using eckit::EasyCURL;
+using eckit::SeriousBug;
 
 /*
  *
@@ -35,6 +32,7 @@ const std::string BASE_URL = "http://127.0.0.1:49111";
 
 class MockREST {
 public:
+
     MockREST() {
         // Launch REST API in a (detached) thread
         std::thread api(MockREST::launch_rest_api);
@@ -52,9 +50,8 @@ public:
     }
 
 private:
-    static void launch_rest_api() {
-        std::system("MockREST.launcher.sh");
-    }
+
+    static void launch_rest_api() { std::system("MockREST.launcher.sh"); }
 
     static void wait_for_running_api() {
         auto curl = EasyCURL();
@@ -120,8 +117,7 @@ std::string make_blob(std::string_view key, std::string_view value) {
 
 }  // namespace
 
-namespace eckit {
-namespace test {
+namespace eckit::tests::io {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -200,13 +196,81 @@ CASE("EasyCURL PUT (REST API, Create+Update+Delete new entity)") {
     }
 }
 
+CASE("SSL failure on plain-HTTP server throws SeriousBug") {
+    // Requesting https:// to the plain-HTTP MockREST server triggers CURLE_SSL_WRONG_VERSION_NUMBER.
+
+    SECTION("stream=false") {
+        // direct: curl_easy_perform with SSL handshake failure throws SeriousBug
+        EasyCURL curl;
+        EXPECT_THROWS_AS(curl.GET("https://" + BASE_URL.substr(7), /*stream=*/false), SeriousBug);
+    }
+
+    SECTION("stream=true") {
+        // stream: curl_multi_info_read with SSL handshake failure throws SeriousBug (avoid ASSERT(code_))
+        EasyCURL curl;
+        EXPECT_THROWS_AS(curl.GET("https://" + BASE_URL.substr(7), /*stream=*/true), SeriousBug);
+    }
+}
+
+CASE("CURL option handling and SSL CA failure") {
+    SECTION("Unknown option throws SeriousBug") {
+        EasyCURL curl;
+        EXPECT_THROWS_AS(curl.setopt("NOT_A_REAL_OPTION", 1L), SeriousBug);
+    }
+
+    SECTION("Set CAINFO to bad path and fail SSL") {
+        EasyCURL curl;
+        curl.setopt("CURLOPT_CAINFO", "does/not/exist");
+        curl.setopt("CURLOPT_VERBOSE", true);
+
+        std::string bad_ssl_url = "https://expired.badssl.com/robots.txt";
+        EXPECT_THROWS_AS(curl.GET(bad_ssl_url), SeriousBug);
+    }
+}
+
+CASE("Follow redirects") {
+    easycurl_clear_options();
+    easycurl_setopt_long("CURLOPT_CONNECTTIMEOUT_MS", 5000L);
+    easycurl_setopt_string("CURLOPT_USERAGENT", "eckit-easycurl-test");
+
+    EasyCURL ec;
+    ec.followLocation(false);
+    ec.verbose(false);
+    ec.sslVerifyPeer(false);
+    ec.sslVerifyHost(false);
+    ec.failOnError(false);
+
+    SECTION("Without following redirects") {
+        auto response = ec.GET("https://www.wikipedia.net");
+        EXPECT(response.code() == 200);
+        EXPECT(!response.body().empty());
+    }
+
+    SECTION("With following redirects") {
+        auto response = ec.HEAD(BASE_URL + "/ping");
+        EXPECT(response.code() == 200);
+        EXPECT(response.body().empty());
+    }
+
+    SECTION("With following redirects (streaming)") {
+        auto response = ec.GET(BASE_URL + "/ping", true);
+        EXPECT(response.code() == 200);
+        EXPECT(response.contentLength() == 3);
+
+        std::array<char, 3> buffer{' ', ' ', ' '};
+        EXPECT(response.read(buffer.data(), buffer.size()) == buffer.size());
+        EXPECT(std::string(buffer.data(), buffer.size()) == "Hi!");
+    }
+
+    easycurl_clear_options();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::tests::io
 
 int main(int argc, char** argv) {
     MockREST mock_rest_api_running_in_background;
 
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

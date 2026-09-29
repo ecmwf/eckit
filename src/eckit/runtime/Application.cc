@@ -1,16 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <new>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"
@@ -65,8 +60,7 @@ Application& Application::instance() {
     return static_cast<Application&>(Main::instance());
 }
 
-Application::Application(int argc, char** argv, const char* homeenv) :
-    Main(argc, argv, homeenv), running_(false) {
+Application::Application(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv), running_(false) {
     reserve_ = new char[20 * 1024];  // reserve in case we runout of memory
 
     std::set_new_handler(&catch_new_handler);
@@ -166,7 +160,7 @@ time_t Application::uptime() {
 
     TaskInfo& info = Monitor::instance().task(taskID_);
     time_t uptime  = info.start();
-    time_t now     = ::time(0);
+    time_t now     = ::time(nullptr);
 
     return now - uptime;
 }

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <list>
 
@@ -25,8 +18,8 @@ namespace eckit::test {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct TestTreeTrait {
-    typedef Point2 Point;
-    typedef double Payload;
+    using Point   = Point2;
+    using Payload = double;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -36,14 +29,17 @@ struct TestTreeTrait {
 template <typename TreeTrait>
 class PointInBoxInteriorFinder {
 public:
-    typedef eckit::KDTreeX<TreeTrait> KDTree;
-    typedef typename KDTree::Point Point;
+
+    using KDTree = eckit::KDTreeX<TreeTrait>;
+    using Point  = typename KDTree::Point;
 
 private:
-    typedef typename KDTree::Alloc Alloc;
-    typedef typename KDTree::Node Node;
+
+    using Alloc = typename KDTree::Alloc;
+    using Node  = typename KDTree::Node;
 
 public:
+
     /// \brief Returns true if any point in \p tree lies in the interior of the specified
     /// axis-aligned box.
     ///
@@ -64,6 +60,7 @@ public:
     }
 
 private:
+
     /// \brief Returns true if the point stored in \p node or any of its descendants lies in the
     /// interior of the axis-aligned box with bottom-left and top-right corners at
     /// \p lbound and \p ubound.
@@ -121,10 +118,10 @@ bool isAnyPointInBoxInterior(const eckit::KDTreeX<TreeTraits>& tree,
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_eckit_container_kdtree_constructor") {
-    typedef KDTreeMemory<TestTreeTrait> Tree;
+    using Tree = KDTreeMemory<TestTreeTrait>;
 
     Tree kd;
-    typedef Tree::PointType Point;
+    using Point = Tree::PointType;
 
     std::vector<Tree::Value> points;
 
@@ -216,10 +213,10 @@ CASE("test_eckit_container_kdtree_constructor") {
 }
 
 CASE("test_eckit_container_kdtree_insert") {
-    typedef KDTreeMemory<TestTreeTrait> Tree;
+    using Tree = KDTreeMemory<TestTreeTrait>;
 
     Tree kd;
-    typedef Tree::PointType Point;
+    using Point = Tree::PointType;
 
     std::vector<Tree::Value> points;
 

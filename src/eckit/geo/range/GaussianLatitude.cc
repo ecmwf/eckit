@@ -1,24 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/range/GaussianLatitude.h"
 
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -27,42 +19,58 @@ namespace eckit::geo::range {
 static util::recursive_mutex MUTEX;
 
 
-GaussianLatitude::GaussianLatitude(size_t N, bool increasing, double eps) :
-    Range(2 * N, increasing ? -90. : 90., increasing ? 90. : -90., eps), N_(N) {}
-
-
-Range* GaussianLatitude::make_range_flipped() const {
-    std::vector<double> flipped(size());
-    const auto& v = values();
-    std::reverse_copy(v.begin(), v.end(), flipped.begin());
-
-    return new GaussianLatitude(N_, std::move(flipped), eps());
+inline bool is_equal(double a, double b) {
+    return types::is_approximately_equal(a, b, PointLonLat::EPS);
 }
 
 
-Range* GaussianLatitude::make_range_cropped(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
-           || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+inline bool is_less(double a, double b) {
+    return a < b && !is_equal(a, b);
+}
 
+
+GaussianLatitude::GaussianLatitude(size_t N, bool increasing) :
+    GaussianLatitude(N, std::vector<double>(util::gaussian_latitudes(N, increasing))) {}
+
+
+bool GaussianLatitude::includesNorthPole() const {
+    const auto increasing = a() < b();
+    const auto& lats(util::gaussian_latitudes(N_, increasing));
+    return increasing ? is_equal(b(), lats.back()) : is_equal(a(), lats.front());
+}
+
+
+bool GaussianLatitude::includesSouthPole() const {
+    const auto increasing = a() < b();
+    const auto& lats(util::gaussian_latitudes(N_, increasing));
+    return !increasing ? is_equal(b(), lats.back()) : is_equal(a(), lats.front());
+}
+
+
+GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double crop_b) const {
     auto v = values();
 
-    if ((a() < b()) && (a() < crop_a || crop_b < b())) {
-        auto [from, to] = util::monotonic_crop(v, crop_a, crop_b, eps());
-        v.erase(v.begin() + to, v.end());
-        v.erase(v.begin(), v.begin() + from);
+    if (is_equal(a(), b())) {
+        ASSERT(is_equal(crop_a, crop_b));
     }
-    else if ((b() < a()) && (b() < crop_b || crop_a < a())) {
-        auto [from, to] = util::monotonic_crop(v, crop_b, crop_a, eps());
-        v.erase(v.begin() + to, v.end());
-        v.erase(v.begin(), v.begin() + from);
+    else if (a() < b()) {
+        ASSERT(crop_a <= crop_b);
+        if (is_less(a(), crop_a) || is_less(crop_b, b())) {
+            auto [from, to] = util::monotonic_crop(v, crop_a, crop_b);
+            v.erase(v.begin() + to, v.end());
+            v.erase(v.begin(), v.begin() + from);
+        }
+    }
+    else {
+        ASSERT(crop_a >= crop_b);
+        if (is_less(b(), crop_b) || is_less(crop_a, a())) {
+            auto [from, to] = util::monotonic_crop(v, crop_b, crop_a);
+            v.erase(v.begin() + to, v.end());
+            v.erase(v.begin(), v.begin() + from);
+        }
     }
 
-    return new GaussianLatitude(N_, std::move(v), eps());
-}
-
-
-Fraction GaussianLatitude::increment() const {
-    NOTIMP;
+    return new GaussianLatitude(N_, std::move(v));
 }
 
 

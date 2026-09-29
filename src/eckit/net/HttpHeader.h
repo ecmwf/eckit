@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -18,7 +11,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MemoryHandle.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -33,8 +25,8 @@ class HttpError : public Exception {
     int status_;
 
 public:
-    enum
-    {
+
+    enum {
         OK                    = 200,
         CREATED               = 201,
         ACCEPTED              = 202,
@@ -43,23 +35,30 @@ public:
         BAD_REQUEST           = 400,
         UNAUTHORIZED          = 401,
         NOT_FOUND             = 404,
+        CONTENT_TOO_LARGE     = 413,
         NOT_IMPLEMENTED       = 501,
         INTERNAL_SERVER_ERROR = 500,
     };
 
 public:
-    HttpError(int status, const std::string& msg = "HttpError") :
-        Exception(msg), status_(status) {}
+
+    HttpError(int status, const std::string& msg = "HttpError") : Exception(msg), status_(status) {}
 
     int status() const { return status_; }
 };
 
 
-class HttpHeader : private eckit::NonCopyable {
+class HttpHeader {
 
 public:  // methods
+
     HttpHeader();
     HttpHeader(net::TCPSocket&);
+
+    HttpHeader(const HttpHeader&)            = delete;
+    HttpHeader& operator=(const HttpHeader&) = delete;
+    HttpHeader(HttpHeader&&)                 = delete;
+    HttpHeader& operator=(HttpHeader&&)      = delete;
 
     ~HttpHeader();
 
@@ -86,9 +85,11 @@ public:  // methods
     void checkForStatus() const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     std::string version_;
     long statusCode_;
     long contentLength_;
@@ -99,12 +100,13 @@ private:  // members
         bool operator()(const std::string&, const std::string&) const;
     };
 
-    typedef std::map<std::string, std::string, HttpHeader::compare> Map;
+    using Map = std::map<std::string, std::string, HttpHeader::compare>;
 
     Map header_;
     eckit::MemoryHandle content_;
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const HttpHeader& p) {
         p.print(s);
         return s;

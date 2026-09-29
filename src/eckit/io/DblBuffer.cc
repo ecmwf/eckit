@@ -1,15 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/io/DblBuffer.h"
+#include "eckit/config/Resource.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
@@ -30,6 +24,7 @@ namespace eckit {
 
 class DblBufferError : public Exception {
 public:
+
     DblBufferError(const std::string& what) { reason(std::string("Double buffer error: ") + what); }
 };
 
@@ -39,8 +34,7 @@ struct OneBuffer {
     bool full_;
     long length_;
     char* buffer_;
-    OneBuffer() :
-        full_(false), length_(0), buffer_(0) {}
+    OneBuffer() : full_(false), length_(0), buffer_{nullptr} {}
 };
 
 class DblBufferTask : public Thread {
@@ -51,6 +45,7 @@ class DblBufferTask : public Thread {
     long parent_;
 
 public:
+
     DblBufferTask(DataHandle&, DblBuffer&, OneBuffer*, const Length&, long parent);
     virtual void run();
 };
@@ -98,6 +93,9 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
     Length total  = estimate;
     Length copied = 0;
 
+    static Resource<long> maxRetriesResource("dblBufferMaxRetries", 5);
+    long maxRetries = maxRetriesResource;
+
     bool more = true;
     while (more) {
         more = false;
@@ -114,8 +112,14 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
             }
         }
         catch (RestartTransfer& retry) {
+            if (maxRetries-- <= 0) {
+                Log::error() << "DblBuffer::copy() failed after maximum retries" << std::endl;
+                throw DblBufferError("Maximum retry attempts reached");
+            }
+
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
                            << std::endl;
+            watcher_.restartFrom(retry.from());
             in.restartReadFrom(retry.from());
             out.restartWriteFrom(retry.from());
             estimate = total - retry.from();
@@ -220,8 +224,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     Log::info() << "Read done " << Bytes(inBytes_) << std::endl;
     Log::info() << "Read rate " << Bytes(inBytes_ / rate) << "/s" << std::endl;
     if (first != rate) {
-        Log::info() << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s"
-                    << std::endl;
+        Log::info() << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s" << std::endl;
     }
 
     thread.wait();
@@ -326,8 +329,7 @@ void DblBufferTask::run() {
     Log::info() << "Write done " << Bytes(owner_.outBytes_) << std::endl;
     Log::info() << "Write rate " << Bytes(owner_.outBytes_ / rate) << "/s" << std::endl;
     if (rate != first) {
-        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s"
-                    << std::endl;
+        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
     }
 
     Metrics::set("write_time", rate);

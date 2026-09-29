@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/net/NetService.h"
@@ -22,9 +15,11 @@ namespace eckit::net {
 
 class NetServiceProcessControler : public ProcessControler {
 public:
+
     NetServiceProcessControler(const std::string& name, NetUser* user, TCPServer& server, long parent, bool visible);
 
 private:
+
     std::string name_;
     std::unique_ptr<NetUser> user_;
     TCPServer& server_;
@@ -73,11 +68,7 @@ void NetService::run() {
         NetUser* user = newUser(server_.accept(oss.str()));
 
         if (runAsProcess()) {
-            NetServiceProcessControler t(name(),
-                                         user,
-                                         server_,
-                                         Monitor::instance().self(),
-                                         visible_);
+            NetServiceProcessControler t(name(), user, server_, Monitor::instance().self(), visible_);
             t.start();
         }
         else {

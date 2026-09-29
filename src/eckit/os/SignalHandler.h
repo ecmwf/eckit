@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_SignalHandler_h
 #define eckit_SignalHandler_h
@@ -17,7 +10,6 @@
 #include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -26,11 +18,11 @@ namespace eckit {
 /// @warning This class has not been widely tested, and we don't
 //           know if they delete objects properly when the signal is caugth
 
-class SignalHandler : private NonCopyable {
+class SignalHandler {
 
 public:  // methods
-    enum Signal
-    {
+
+    enum Signal {
         SigInt  = 2,
         SigQuit = 3
     };
@@ -39,6 +31,11 @@ public:  // methods
 
     SignalHandler(void (*)(int) = interrupt, Signal = SigInt);
 
+    SignalHandler(const SignalHandler&)            = delete;
+    SignalHandler& operator=(const SignalHandler&) = delete;
+    SignalHandler(SignalHandler&&)                 = delete;
+    SignalHandler& operator=(SignalHandler&&)      = delete;
+
     // -- Destructor
 
     ~SignalHandler();
@@ -46,9 +43,11 @@ public:  // methods
     static void checkInterrupt();
 
 private:  // methods
+
     static void interrupt(int);
 
 private:  // members
+
     int signal_;
 
     // unused // sigjmp_buf       buf_;

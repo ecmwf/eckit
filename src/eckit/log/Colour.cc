@@ -1,15 +1,8 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
-#include <cerrno>
 #include <unistd.h>
+#include <cerrno>
 
 #include <iostream>
 
@@ -23,8 +16,7 @@ namespace eckit {
 
 static int xindex = std::ios::xalloc();
 
-enum
-{
+enum {
     RESET     = 0,
     BOLD      = 1,
     UNDERLINE = 4,
@@ -32,8 +24,7 @@ enum
     REVERSE   = 7,
     HIDDEN    = 8
 };
-enum
-{
+enum {
     BLACK   = 0,
     RED     = 1,
     GREEN   = 2,

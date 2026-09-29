@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 add_subdirectory( config )
 add_subdirectory( container )
 add_subdirectory( exception )
@@ -27,6 +30,10 @@ endif()
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
+endif()
+
+if( eckit_HAVE_ECKIT_SPEC )
+    add_subdirectory( spec )
 endif()
 
 if( eckit_HAVE_ECKIT_GEO )

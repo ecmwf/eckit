@@ -1,14 +1,6 @@
-/*
- * (C) Copyright 1996- ECMWF.
- * (C) Crown Copyright 2023 Met Office.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-FileCopyrightText: 2023 Crown Copyright, Met Office
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <cmath>
@@ -33,8 +25,8 @@ CASE("great circle intersections") {
     using types::is_approximately_equal;
     using types::is_approximately_greater_or_equal;
 
-    auto is_approximately_equal_longitude
-        = [](double lon1, double lon2, double epsilon = std::numeric_limits<double>::epsilon()) -> bool {
+    auto is_approximately_equal_longitude = [](double lon1, double lon2,
+                                               double epsilon = std::numeric_limits<double>::epsilon()) -> bool {
         while (lon2 < lon1) {
             lon2 += 360;
         }
@@ -71,13 +63,13 @@ CASE("great circle intersections") {
 
         const PointLonLat mid(-159.18, -6.81);
 
-        auto lats = gc.latitude(mid.lon);
-        EXPECT(lats.size() == 1 && is_approximately_equal(lats[0], mid.lat, 0.01));
+        auto lats = gc.latitude(mid.lon());
+        EXPECT(lats.size() == 1 && is_approximately_equal(lats[0], mid.lat(), 0.01));
 
-        auto lons = gc.longitude(mid.lat);
+        auto lons = gc.longitude(mid.lat());
         EXPECT(lons.size() == 2);
-        EXPECT(is_approximately_equal_longitude(lons[0], mid.lon, 0.01)
-               || is_approximately_equal_longitude(lons[1], mid.lon, 0.01));
+        EXPECT(is_approximately_equal_longitude(lons[0], mid.lon(), 0.01) ||
+               is_approximately_equal_longitude(lons[1], mid.lon(), 0.01));
     }
 
     SECTION("mal-formed great circle") {
@@ -90,11 +82,11 @@ CASE("great circle intersections") {
 
             EXPECT_THROWS_AS(GreatCircle(A, B), BadValue);
 
-            if (is_approximately_pole(A.lat)) {
+            if (is_approximately_pole(A.lat())) {
                 for (double lon1_gc : longitudes) {
                     for (double lon2_gc : longitudes) {
-                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, A.lat}, {lon2_gc, A.lat}), BadValue);
-                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, B.lat}, {lon2_gc, B.lat}), BadValue);
+                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, A.lat()}, {lon2_gc, A.lat()}), BadValue);
+                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, B.lat()}, {lon2_gc, B.lat()}), BadValue);
                     }
                 }
             }
@@ -111,17 +103,17 @@ CASE("great circle intersections") {
 
                     auto lon_at_equator = gc.longitude(0);
                     EXPECT(lon_at_equator.size() == 2);
-                    EXPECT((is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[0])
-                            && is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[1]))
-                           || (is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[0])
-                               && is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[1])));
+                    EXPECT((is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[0]) &&
+                            is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[1])) ||
+                           (is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[0]) &&
+                            is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[1])));
 
                     auto lon_extrema1 = gc.longitude(lat_gc);
                     EXPECT(lon_extrema1.size() == 1 && is_approximately_equal_longitude(lon_extrema1[0], lon_gc, 0.01));
 
                     auto lon_extrema2 = gc.longitude(-lat_gc);
-                    EXPECT(lon_extrema2.size() == 1
-                           && is_approximately_equal_longitude(lon_extrema2[0], lon_gc + 180, 0.01));
+                    EXPECT(lon_extrema2.size() == 1 &&
+                           is_approximately_equal_longitude(lon_extrema2[0], lon_gc + 180, 0.01));
                 }
             }
         }
@@ -144,8 +136,8 @@ CASE("great circle intersections") {
                     }
                     else {
                         EXPECT(is_approximately_equal_longitude(lons[0] + 180, lons[1]));
-                        EXPECT(is_approximately_equal_longitude(lons[0], lon)
-                               || is_approximately_equal_longitude(lons[1], lon));
+                        EXPECT(is_approximately_equal_longitude(lons[0], lon) ||
+                               is_approximately_equal_longitude(lons[1], lon));
                     }
                 }
 
@@ -157,8 +149,8 @@ CASE("great circle intersections") {
                     EXPECT(lons.size() == 2);
 
                     EXPECT(is_approximately_equal_longitude(lons[0] + 180, lons[1]));
-                    EXPECT(is_approximately_equal_longitude(lons[0], lon)
-                           || is_approximately_equal_longitude(lons[1], lon));
+                    EXPECT(is_approximately_equal_longitude(lons[0], lon) ||
+                           is_approximately_equal_longitude(lons[1], lon));
                 }
             }
         }

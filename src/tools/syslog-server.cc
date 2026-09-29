@@ -1,17 +1,20 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 /*
 ** syslog-server.c -- a datagram sockets "server" demo
 */
 
 #include <arpa/inet.h>
-#include <cerrno>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "eckit/eckit.h"
 
@@ -30,21 +33,23 @@ namespace eckit {
 
 class SysLogServer : public Application {
 public:
+
     SysLogServer(int argc, char** argv);
     ~SysLogServer();
 
 private:
+
     SysLogServer(const SysLogServer&);
     SysLogServer& operator=(const SysLogServer&);
 
     virtual void run();
 
 private:  // members
+
     eckit::net::Port port_;
 };
 
-SysLogServer::SysLogServer(int argc, char** argv) :
-    Application(argc, argv), port_("syslog", 6512) {}
+SysLogServer::SysLogServer(int argc, char** argv) : Application(argc, argv), port_("syslog", 6512) {}
 
 SysLogServer::~SysLogServer() {}
 

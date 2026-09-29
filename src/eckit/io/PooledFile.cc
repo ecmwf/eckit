@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/io/PooledFile.h"
 
@@ -14,8 +7,9 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <string>
+#include <ostream>
 #include <sstream>
+#include <string>
 #include <utility>
 
 #include "eckit/config/LibEcKit.h"
@@ -24,6 +18,8 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 class PoolFileEntry;
@@ -34,20 +30,25 @@ namespace {
 class Pool {
 
 private:
+
     Pool() {}
     std::map<eckit::PathName, std::unique_ptr<eckit::PoolFileEntry>> filePool_;
     std::mutex filePoolMutex_;
 
 public:
+
     static Pool& instance() {
         static Pool pool;
         return pool;
     }
-    eckit::PoolFileEntry* get(const eckit::PathName& name);
-    void erase(const eckit::PathName& name);
+    // Acquire the entry for `name` and register `file` as a user.
+    // The returned pointer is valid until the matching release(name, file).
+    eckit::PoolFileEntry* get(const eckit::PathName& name, const eckit::PooledFile* file);
+    // Unregister `file`; close and erase the entry when the last user releases it.
+    void release(const eckit::PathName& name, const eckit::PooledFile* file);
 };
 
-}
+}  // namespace
 
 namespace eckit {
 
@@ -56,12 +57,12 @@ struct PoolFileEntryStatus {
     off_t position_;
     bool opened_;
 
-    PoolFileEntryStatus() :
-        position_(0), opened_(false) {}
+    PoolFileEntryStatus() : position_(0), opened_(false) {}
 };
 
 class PoolFileEntry {
 public:
+
     std::string name_;
     FILE* file_;
     size_t count_;
@@ -70,19 +71,22 @@ public:
 
     std::map<const PooledFile*, PoolFileEntryStatus> statuses_;
 
+    mutable std::mutex mutex_;
+
     size_t nbOpens_ = 0;
     size_t nbReads_ = 0;
     size_t nbSeeks_ = 0;
 
 public:
-    PoolFileEntry(const std::string& name) :
-        name_(name), file_(nullptr), count_(0) {}
 
-    void doClose() {
+    PoolFileEntry(const std::string& name) : name_(name), file_{nullptr}, count_(0) {}
+
+    void doClose() noexcept {
         if (file_) {
             Log::debug<LibEcKit>() << "Closing from file " << name_ << std::endl;
+            // log and swallow rather than throw (a throwing destructor would terminate!)
             if (::fclose(file_) != 0) {
-                throw PooledFileError(name_, "Failed to close", Here());
+                Log::error() << "PooledFile: failed to close " << name_ << " (" << Log::syserr << ")" << std::endl;
             }
             file_ = nullptr;
             buffer_.reset();
@@ -90,23 +94,25 @@ public:
     }
 
     void add(const PooledFile* file) {
+        std::lock_guard lock(mutex_);
         ASSERT(statuses_.find(file) == statuses_.end());
         statuses_[file] = PoolFileEntryStatus();
     }
 
-    void remove(const PooledFile* file) {
+    /// Detach @p file. Called by Pool::release while holding the Pool lock.
+    /// @returns true if this was the last user, in which case the caller must close and destroy the
+    ///          entry (still under the Pool lock, so no new user can attach in between).
+    bool remove(const PooledFile* file) {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
 
         statuses_.erase(s);
-        if (statuses_.size() == 0) {
-            doClose();
-            Pool::instance().erase(name_);
-            // No code after !!!
-        }
+        return statuses_.empty();
     }
 
     void open(const PooledFile* file) {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
         ASSERT(!s->second.opened_);
@@ -120,7 +126,8 @@ public:
 
             Log::debug<LibEcKit>() << "PooledFile::openForRead " << name_ << std::endl;
 
-            static size_t bufferSize = Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+            static size_t bufferSize =
+                Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
 
             if (bufferSize) {
                 Log::debug<LibEcKit>() << "PooledFile using " << Bytes(bufferSize) << std::endl;
@@ -135,6 +142,7 @@ public:
     }
 
     void close(const PooledFile* file) {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
 
@@ -143,6 +151,7 @@ public:
     }
 
     int fileno(const PooledFile* file) const {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
@@ -150,6 +159,7 @@ public:
     }
 
     long read(const PooledFile* file, void* buffer, long len) {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
@@ -176,6 +186,7 @@ public:
     }
 
     long seek(const PooledFile* file, off_t position) {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
@@ -196,6 +207,7 @@ public:
     }
 
     long seekEnd(const PooledFile* file) {
+        std::lock_guard lock(mutex_);
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
@@ -215,15 +227,10 @@ public:
 };
 
 
-PooledFile::PooledFile(const PathName& name) :
-    name_(name), entry_(Pool::instance().get(name)) {
-
-    entry_->add(this);
-}
+PooledFile::PooledFile(const PathName& name) : name_(name), entry_(Pool::instance().get(name, this)) {}
 
 PooledFile::~PooledFile() {
-    ASSERT(entry_);
-    entry_->remove(this);
+    Pool::instance().release(name_, this);
 }
 
 void PooledFile::open() {
@@ -280,20 +287,33 @@ PooledFileError::PooledFileError(const std::string& file, const std::string& msg
 
 }  // namespace eckit
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace {
 
-eckit::PoolFileEntry* Pool::get(const eckit::PathName& name) {
-    std::lock_guard<std::mutex> lock(filePoolMutex_);
-    auto j = filePool_.find(name);
-    if (j == filePool_.end()) {
-        filePool_.emplace(name, new eckit::PoolFileEntry(name));
-        j = filePool_.find(name);
+eckit::PoolFileEntry* Pool::get(const eckit::PathName& name, const eckit::PooledFile* file) {
+    std::lock_guard lock(filePoolMutex_);
+    auto iter = filePool_.find(name);
+    if (iter == filePool_.end()) {
+        iter = filePool_.emplace(name, new eckit::PoolFileEntry(name)).first;
     }
-    return (*j).second.get();
-}
-void Pool::erase(const eckit::PathName& name) {
-    std::lock_guard<std::mutex> lock(filePoolMutex_);
-    filePool_.erase(name);
+    auto* entry = iter->second.get();
+    entry->add(file);
+    return entry;
 }
 
+void Pool::release(const eckit::PathName& name, const eckit::PooledFile* file) {
+    std::lock_guard lock(filePoolMutex_);
+    auto iter = filePool_.find(name);
+    ASSERT(iter != filePool_.end());
+    auto* entry        = iter->second.get();
+    auto last_user_out = entry->remove(file);
+    if (last_user_out) {
+        entry->doClose();
+        filePool_.erase(iter);
+    }
 }
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------

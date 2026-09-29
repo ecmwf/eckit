@@ -1,57 +1,79 @@
-﻿/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
-#include <cstddef>
-
 #include "eckit/geo/Grid.h"
 
 
-namespace eckit::geo::iterator {
+namespace eckit::geo {
+namespace cache {
+class LatitudeLongitude;
+}
+namespace iterator {
 class Unstructured;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
 
 
-class Unstructured final : public Grid {
+class Unstructured : public Grid {
 public:
+
     // -- Constructors
 
-    explicit Unstructured(std::vector<Point>&&);
+    explicit Unstructured(const Spec&);
+    explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
+                          const std::string& name = "");
+
+    using Grid::Grid;
+
+    // -- Methods
+
+    std::string name() const override { return name_; }
+    std::string arrangement() const override { return arrangement_; }
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t size() const override { return points_.size(); }
+    std::vector<size_t> shape() const override;
 
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
+    BoundingBox* calculate_bbox() const override;
 
-    std::vector<Point> to_points() const override { return points_; }
+    [[nodiscard]] std::vector<Point> to_points() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+
+    uid_type calculate_uid() const override;
+    const std::string& type() const override;
+    void cache() const override;
 
     // -- Class methods
 
-    [[nodiscard]] static Spec* spec(const std::string& name);
+    [[nodiscard]] static uid_type uid_from_latlons(const std::vector<double>&, const std::vector<double>&);
+
+protected:
+
+    // -- Constructors
+
+    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
+                          BoundingBox* = nullptr, Projection* = nullptr);
+
+    // -- Methods
+
+    [[nodiscard]] const cache::LatitudeLongitude& record() const;
 
 private:
+
     // -- Members
 
-    const std::vector<Point> points_;
+    std::string name_;
+    std::string arrangement_;
 
     // -- Overridden methods
 

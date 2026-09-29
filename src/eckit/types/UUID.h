@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date Dec 2014
@@ -25,18 +18,21 @@ namespace eckit {
 class UUID {
 
 public:  // types
-    typedef uint8_t value_type;
 
-    typedef uint8_t* iterator;
-    typedef uint8_t const* const_iterator;
+    using value_type = uint8_t;
+
+    using iterator       = uint8_t*;
+    using const_iterator = const uint8_t*;
 
 public:
+
     UUID();
     UUID(const std::string&);
 
     ~UUID();
 
 public:  // methods
+
     iterator begin() { return data_; }
     const_iterator begin() const { return data_; }
     iterator end() { return data_ + size(); }
@@ -53,9 +49,11 @@ public:  // methods
     void fromString(const std::string&);
 
 protected:  // methods
+
     void print(std::ostream& s) const;
 
 private:  // members
+
     uint8_t data_[16];
 
     friend std::ostream& operator<<(std::ostream& os, const UUID& u) {

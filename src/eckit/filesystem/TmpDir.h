@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Simon Smart
 /// @date   Dec 2018
@@ -15,18 +8,22 @@
 #define eckit_TmpDir_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TmpDir : public PathName, private NonCopyable {
+class TmpDir : public PathName {
 public:
+
     TmpDir(const char* base = nullptr);
 
+    TmpDir(const TmpDir&)            = delete;
+    TmpDir& operator=(const TmpDir&) = delete;
+
     TmpDir(TmpDir&& rhs);
+    TmpDir& operator=(TmpDir&& rhs) = delete;
 
     ~TmpDir() noexcept(false);
 };

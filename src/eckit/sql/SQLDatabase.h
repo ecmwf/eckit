@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 /// @author Simon Smart
@@ -34,14 +27,15 @@ namespace expression {
 class SQLExpression;
 }
 
-typedef std::map<std::string, std::set<std::string>> Links;
-typedef std::map<std::string, std::shared_ptr<expression::SQLExpression>> Variables;
+using Links     = std::map<std::string, std::set<std::string>>;
+using Variables = std::map<std::string, std::shared_ptr<expression::SQLExpression>>;
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SQLDatabase {
 public:
+
     SQLDatabase(const std::string& name = "default");
     virtual ~SQLDatabase();
 
@@ -86,6 +80,7 @@ public:
     const std::vector<eckit::PathName>& includePath() const { return includePath_; }
 
 protected:
+
     Links links_;
     std::map<std::string, std::unique_ptr<SQLTable>> tablesByName_;
     std::vector<std::unique_ptr<SQLTable>> implicitTables_;
@@ -97,6 +92,7 @@ protected:
     SchemaAnalyzer schemaAnalyzer_;
 
 private:
+
     // No copy allowed
 
     void loadIOMAP();

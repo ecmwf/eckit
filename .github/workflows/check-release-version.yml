@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 name: Check VERSION file
 
 on:
@@ -8,4 +11,4 @@ on:
 
 jobs:
   check_version:
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/check-release-version.yml@v2
+    uses: ecmwf/reusable-workflows/.github/workflows/check-release-version.yml@v2

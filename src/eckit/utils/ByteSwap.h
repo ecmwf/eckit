@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 2020- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date October 2020
@@ -39,7 +32,9 @@ inline uint32_t bitswap32(uint32_t a) {
 }
 
 inline uint64_t bitswap64(uint64_t a) {
-    a = ((a & 0x00000000000000FFULL) << 56) | ((a & 0x000000000000FF00ULL) << 40) | ((a & 0x0000000000FF0000ULL) << 24) | ((a & 0x00000000FF000000ULL) << 8) | ((a & 0x000000FF00000000ULL) >> 8) | ((a & 0x0000FF0000000000ULL) >> 24) | ((a & 0x00FF000000000000ULL) >> 40) | ((a & 0xFF00000000000000ULL) >> 56);
+    a = ((a & 0x00000000000000FFULL) << 56) | ((a & 0x000000000000FF00ULL) << 40) |
+        ((a & 0x0000000000FF0000ULL) << 24) | ((a & 0x00000000FF000000ULL) << 8) | ((a & 0x000000FF00000000ULL) >> 8) |
+        ((a & 0x0000FF0000000000ULL) >> 24) | ((a & 0x00FF000000000000ULL) >> 40) | ((a & 0xFF00000000000000ULL) >> 56);
     return a;
 }
 
@@ -52,19 +47,19 @@ struct ByteSwap {};
 
 template <>
 struct ByteSwap<8> {
-    typedef uint64_t inter_t;
+    using inter_t = uint64_t;
     static void bitswap(uint64_t& i) { i = eckit::bitswap64(i); }
 };
 
 template <>
 struct ByteSwap<4> {
-    typedef uint32_t inter_t;
+    using inter_t = uint32_t;
     static void bitswap(uint32_t& i) { i = eckit::bitswap32(i); }
 };
 
 template <>
 struct ByteSwap<2> {
-    typedef uint16_t inter_t;
+    using inter_t = uint16_t;
     static void bitswap(uint16_t& i) { i = eckit::bitswap16(i); }
 };
 

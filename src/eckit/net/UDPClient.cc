@@ -1,21 +1,14 @@
-/*
- * (C) Copyright 1996-2017 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <arpa/inet.h>
-#include <cerrno>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <cstdlib>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
+#include <cstdlib>
 
 #include <cstring>
 #include <iostream>
@@ -29,12 +22,12 @@
 namespace eckit::net {
 
 UDPClient::UDPClient(const Configuration& cfg) :
-    hostname_(cfg.getString("host")), port_(cfg.getInt("port")), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
+    hostname_(cfg.getString("host")), port_(cfg.getInt("port")), socketfd_(0), servinfo_{nullptr}, addr_{nullptr} {
     init();
 }
 
 UDPClient::UDPClient(const std::string& hostname, int port) :
-    hostname_(hostname), port_(port), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
+    hostname_(hostname), port_(port), socketfd_(0), servinfo_{nullptr}, addr_{nullptr} {
     init();
 }
 
@@ -56,14 +49,14 @@ void UDPClient::init() {
     }
 
     // loop through all the addrinfo results and make a socket
-    for (addr_ = servinfo_; addr_ != NULL; addr_ = addr_->ai_next) {
+    for (addr_ = servinfo_; addr_ != nullptr; addr_ = addr_->ai_next) {
         if ((socketfd_ = ::socket(addr_->ai_family, addr_->ai_socktype, addr_->ai_protocol)) == -1) {
             continue;
         }
         break;
     }
 
-    if (addr_ == NULL) {
+    if (addr_ == nullptr) {
         std::ostringstream msg;
         msg << "UDPClient failed to create a socket";
         throw FailedSystemCall(msg.str());

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cstddef>
 #include <cstring>
@@ -32,6 +25,7 @@ class HttpBuf : public std::streambuf {
     HttpStream& owner_;
 
 public:
+
     explicit HttpBuf(HttpStream& s);
     virtual ~HttpBuf();
 
@@ -41,6 +35,7 @@ public:
     void print(std::ostream&) const;
 
 private:
+
     std::vector<char> buffer_;
 };
 
@@ -50,7 +45,7 @@ private:
 static int xindex = std::ios::xalloc();
 
 
-typedef std::vector<char> VC;
+using VC = std::vector<char>;
 
 class back_encoder_iterator {
     VC& container;
@@ -61,6 +56,7 @@ class back_encoder_iterator {
     }
 
 public:
+
     using iterator_category = std::output_iterator_tag;
     using value_type        = VC::value_type;
     using difference_type   = std::ptrdiff_t;
@@ -103,8 +99,7 @@ inline back_encoder_iterator back_encoder(VC& x) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpBuf::HttpBuf(HttpStream& s) :
-    owner_(s) {
+HttpBuf::HttpBuf(HttpStream& s) : owner_(s) {
     setp(out_, out_ + sizeof(out_));
 }
 
@@ -192,8 +187,7 @@ void HttpBuf::print(std::ostream& os) const {
     os << "HttpBuf[buffer=" << buffer_ << "]";
 }
 
-HttpStream::HttpStream() :
-    std::ostream(new HttpBuf(*this)) {
+HttpStream::HttpStream() : std::ostream(new HttpBuf(*this)) {
     buf_          = (HttpBuf*)rdbuf();
     iword(xindex) = 1;  // encode
 }

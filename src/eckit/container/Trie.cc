@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/container/Trie.h"
@@ -18,8 +11,7 @@ namespace eckit {
 
 
 template <class T>
-Trie<T>::Trie() :
-    from_(0), set_(0), kids_(0) {}
+Trie<T>::Trie() : from_(0), set_(0), kids_(0) {}
 
 
 template <class T>

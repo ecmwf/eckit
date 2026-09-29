@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File MutexCond.h
 // Baudouin Raoult - ECMWF Jun 96
@@ -15,8 +8,6 @@
 #define eckit_MutexCond_h
 
 #include <pthread.h>
-
-#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,11 +18,17 @@ namespace eckit {
 // A mutex and a condition variable
 // for Producer/Consumer architectures
 
-class MutexCond : private NonCopyable {
+class MutexCond {
 public:
+
     // -- Contructors
 
     MutexCond(char tag = ' ');
+
+    MutexCond(const MutexCond&)            = delete;
+    MutexCond& operator=(const MutexCond&) = delete;
+    MutexCond(MutexCond&&)                 = delete;
+    MutexCond& operator=(MutexCond&&)      = delete;
 
     // -- Destructor
 
@@ -48,6 +45,7 @@ public:
     char tag() const { return tag_; }
 
 private:
+
     // -- Members
 
     pthread_mutex_t mutex_;

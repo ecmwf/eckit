@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Timer.h
 // Baudouin Raoult - ECMWF May 96
@@ -18,14 +11,14 @@
 #include <ctime>
 
 #include "eckit/log/Log.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Timer : private NonCopyable {
+class Timer {
 public:
+
     explicit Timer();
 
     /// @param name of the timer, used for output
@@ -35,6 +28,11 @@ public:
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
     explicit Timer(const char* name, std::ostream& o = Log::info());
+
+    Timer(const Timer&)            = delete;
+    Timer& operator=(const Timer&) = delete;
+    Timer(Timer&&)                 = delete;
+    Timer& operator=(Timer&&)      = delete;
 
     ~Timer();
 
@@ -52,11 +50,13 @@ public:
     void reset(const std::string& message = "");
 
 protected:  // methods
+
     void takeTime();
 
     std::ostream& output() { return out_ << name_ << ": "; }
 
 private:  // members
+
     std::string name_;
 
     bool stopped_;

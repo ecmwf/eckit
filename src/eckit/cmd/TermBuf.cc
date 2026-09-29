@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iomanip>
 #include <iostream>
@@ -22,7 +15,7 @@ void TermClearEOL();
 void TermClearEOS();
 }
 
-static std::ostream* os = 0;
+static std::ostream* os = nullptr;
 
 int TermPutChar(int c) {
     *os << char(c);
@@ -35,8 +28,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TermBuf::TermBuf(std::ostream& o) :
-    out_(o) {
+TermBuf::TermBuf(std::ostream& o) : out_(o) {
     setp(buffer_, buffer_ + sizeof(buffer_));
 }
 

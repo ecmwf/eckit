@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_cmd_CmdResource_H
 #define eckit_cmd_CmdResource_H
@@ -14,20 +7,25 @@
 #include "eckit/cmd/Arg.h"
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/eckit.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 
-class CmdResource : private eckit::NonCopyable {
+class CmdResource {
 
-    typedef void (*Proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
+    using Proc = void (*)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
 
 public:
+
     // -- Contructors
 
     CmdResource(const std::string&);
+
+    CmdResource(const CmdResource&)            = delete;
+    CmdResource& operator=(const CmdResource&) = delete;
+    CmdResource(CmdResource&&)                 = delete;
+    CmdResource& operator=(CmdResource&&)      = delete;
 
     // -- Destructor
 
@@ -49,6 +47,7 @@ public:
     static bool completion(const char*, int pos, char*, int);
 
 protected:  // methods
+
     virtual void execute(std::istream&, std::ostream&, CmdArg&) = 0;
 
     virtual Arg usage(const std::string& cmd) const = 0;
@@ -61,11 +60,13 @@ protected:  // methods
     static void help(std::ostream&, const std::string&);
 
 private:  // members
-    typedef std::map<std::string, CmdResource*, std::less<std::string> > Map;
+
+    using Map = std::map<std::string, CmdResource*, std::less<std::string>>;
 
     static Map* resources_;
 
 private:  // friends
+
     friend std::ostream& operator<<(std::ostream& o, const CmdResource& cmd) {
         cmd.print(o);
         return o;

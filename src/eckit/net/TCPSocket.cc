@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // Disable warnings: warning #550-D: variable "__d0" was set but never used [set_but_not_used] in FD_ZERO(&r);
 #if defined(__NVCOMPILER)
@@ -21,10 +14,10 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <setjmp.h>
-#include <csignal>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 
 #include <cstring>
 
@@ -48,19 +41,10 @@ static in_addr none = {INADDR_NONE};
 
 static StaticMutex local_mutex;
 
-TCPSocket::UnknownHost::UnknownHost(const std::string& host) :
-    Exception(std::string("Unknown host ") + host) {}
+TCPSocket::UnknownHost::UnknownHost(const std::string& host) : Exception(std::string("Unknown host ") + host) {}
 
 
-TCPSocket::TCPSocket() :
-    socket_(-1),
-    localPort_(-1),
-    remotePort_(-1),
-    remoteAddr_(none),
-    localAddr_(none),
-    debug_(false),
-    newline_(true),
-    mode_(0) {}
+TCPSocket::TCPSocket() : socket_(-1), localPort_(-1), remotePort_(-1), remoteAddr_(none), localAddr_(none) {}
 
 // This contructor performs a change of ownership of the socket
 TCPSocket::TCPSocket(net::TCPSocket& other) :
@@ -70,10 +54,7 @@ TCPSocket::TCPSocket(net::TCPSocket& other) :
     remoteHost_(other.remoteHost_),
     remoteAddr_(other.remoteAddr_),
     localHost_(other.localHost_),
-    localAddr_(other.localAddr_),
-    debug_(false),
-    newline_(true),
-    mode_(0) {
+    localAddr_(other.localAddr_) {
     other.socket_     = -1;  // Detach socket from other
     other.remoteAddr_ = none;
     other.remoteHost_ = std::string();
@@ -95,9 +76,7 @@ TCPSocket& TCPSocket::operator=(net::TCPSocket& other) {
     remoteHost_ = other.remoteHost_;
     remotePort_ = other.remotePort_;
 
-    debug_   = other.debug_;
-    newline_ = other.newline_;
-    mode_    = other.mode_;
+    debug_ = other.debug_;
 
     other.socket_ = -1;  // Detach socket from other
 
@@ -116,7 +95,7 @@ void TCPSocket::closeInput() {
     SYSCALL(::shutdown(socket_, SHUT_RD));
 }
 
-long TCPSocket::write(const void* buf, long length) {
+long TCPSocket::write(const void* buf, long length) const {
 
     // Allow zero length packets
     if (length == 0) {
@@ -125,29 +104,27 @@ long TCPSocket::write(const void* buf, long length) {
 
     long requested = length;
 
-    if (debug_) {
+    if (debug_.on) {
 
-        if (mode_ != 'w') {
-            newline_ = true;
-            std::cout << std::endl
-                      << std::endl;
-            mode_ = 'w';
+        if (debug_.mode != 'w') {
+            debug_.newline = true;
+            std::cout << std::endl << std::endl;
+            debug_.mode = 'w';
         }
 
         const char* p = reinterpret_cast<const char*>(buf);
         for (long i = 0; i < std::min(length, 512L); i++) {
-            if (newline_) {
+            if (debug_.newline) {
                 std::cout << ">>> ";
-                newline_ = false;
+                debug_.newline = false;
             }
 
             if (p[i] == '\r') {
                 std::cout << "\\r";
             }
             else if (p[i] == '\n') {
-                std::cout << "\\n"
-                          << std::endl;
-                newline_ = true;
+                std::cout << "\\n" << std::endl;
+                debug_.newline = true;
             }
             else {
                 std::cout << (isprint(p[i]) ? p[i] : '.');
@@ -156,7 +133,7 @@ long TCPSocket::write(const void* buf, long length) {
 
         if (length > 512) {
             std::cout << "..." << std::endl;
-            newline_ = true;
+            debug_.newline = true;
         }
     }
 
@@ -206,7 +183,7 @@ long TCPSocket::write(const void* buf, long length) {
     return sent;
 }
 
-long TCPSocket::read(void* buf, long length) {
+long TCPSocket::read(void* buf, long length) const {
     if (length <= 0) {
         return length;
     }
@@ -270,28 +247,26 @@ long TCPSocket::read(void* buf, long length) {
             return received;
         }
 
-        if (debug_) {
+        if (debug_.on) {
 
-            if (mode_ != 'r') {
-                newline_ = true;
-                std::cout << std::endl
-                          << std::endl;
-                mode_ = 'r';
+            if (debug_.mode != 'r') {
+                debug_.newline = true;
+                std::cout << std::endl << std::endl;
+                debug_.mode = 'r';
             }
 
             for (long i = 0; i < std::min(len, 512L); i++) {
-                if (newline_) {
+                if (debug_.newline) {
                     std::cout << "<<< ";
-                    newline_ = false;
+                    debug_.newline = false;
                 }
 
                 if (p[i] == '\r') {
                     std::cout << "\\r";
                 }
                 else if (p[i] == '\n') {
-                    std::cout << "\\n"
-                              << std::endl;
-                    newline_ = true;
+                    std::cout << "\\n" << std::endl;
+                    debug_.newline = true;
                 }
                 else {
                     std::cout << (isprint(p[i]) ? p[i] : '.');
@@ -300,10 +275,9 @@ long TCPSocket::read(void* buf, long length) {
 
             if (len > 512) {
                 std::cout << "..." << std::endl;
-                newline_ = true;
+                debug_.newline = true;
             }
         }
-
 
         received += len;
         length -= len;
@@ -333,7 +307,7 @@ static void catch_alarm(int) {
 // This should be in the TCPClient.cc, but I want to reuse the Mutex
 // to lock any call to NIS with the same one
 
-TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, int timeout) {
+TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, int timeout, int retryDelay) {
     std::string host = hostName(remote);
 
     in_addr_t addr;
@@ -430,7 +404,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
                             throw TooManyRetries(tries);
                         }
                     }
-                    ::sleep(5);
+                    ::sleep(retryDelay);
                     break;
 
                 case EINPROGRESS:
@@ -517,8 +491,8 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
         warn &= !(flg == 2 * size);
 #endif
         if (warn) {
-            Log::warning() << "Attempt to set " << stype << " buffer size to " << size
-                           << " but kernel set size to " << flg << std::endl;
+            Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to "
+                           << flg << std::endl;
         }
     }
 }
@@ -689,7 +663,7 @@ std::string TCPSocket::addrToHost(in_addr addr) {
     else
         h = &host;
 #else
-    h             = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
+    h = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
 #endif
 
     std::string s      = h ? std::string(h->h_name) : IPAddress(addr).asString();
@@ -810,9 +784,9 @@ bool TCPSocket::stillConnected() const {
 }
 
 void TCPSocket::debug(bool on) {
-    debug_   = on;
-    newline_ = true;
-    mode_    = 0;
+    debug_.on      = on;
+    debug_.newline = true;
+    debug_.mode    = 0;
 }
 
 void TCPSocket::print(std::ostream& s) const {

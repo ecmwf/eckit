@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #pragma once
 
@@ -23,13 +16,13 @@ namespace eckit::geometry::polygon {
 
 class Polygon : protected std::deque<Point2> {
 public:
+
     using container_type = std::deque<value_type>;
     using container_type::value_type;
 
     Polygon() = default;
 
-    Polygon(std::initializer_list<value_type> l) :
-        container_type(l) {}
+    Polygon(std::initializer_list<value_type> l) : container_type(l) {}
 
     using container_type::push_back;
     using container_type::push_front;

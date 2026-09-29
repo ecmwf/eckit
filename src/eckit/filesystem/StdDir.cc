@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/filesystem/StdDir.h"
 
@@ -48,7 +41,7 @@ struct dirent* StdDir::dirent() {
 #if eckit_HAVE_READDIR_R
 // Disable deprecation warning of using readdir_r
 #if defined(__INTEL_COMPILER)
-#pragma warning ( disable:1478 )
+#pragma warning(disable : 1478)
 #elif defined(__NVCOMPILER)
 #pragma diag_suppress 1216
 #elif defined(__GNUC__)

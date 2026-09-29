@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/io/SockBuf.h"
@@ -17,8 +10,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-SockBuf::SockBuf(net::TCPSocket& proto) :
-    protocol_(proto) {
+SockBuf::SockBuf(net::TCPSocket& proto) : protocol_(proto) {
 #ifndef OLD_STREAMBUF
     /* setg(in_,  in_,  in_  + sizeof(in_) );  */
     setg(in_, in_, in_);

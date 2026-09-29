@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_cmd_CmdArg_H
 #define eckit_cmd_CmdArg_H
@@ -23,6 +16,7 @@ namespace eckit {
 
 class CmdArg : public eckit::Streamable {
 public:
+
     // -- Contructors
 
     CmdArg();
@@ -77,6 +71,7 @@ public:
     }
 
 protected:
+
     // -- Methods
 
     void print(std::ostream&) const;
@@ -86,9 +81,10 @@ protected:
     void set(const std::string&, const eckit::Value&);
 
 private:
+
     // -- Members
 
-    typedef std::map<std::string, eckit::Value, std::less<std::string> > CmdMap;
+    using CmdMap = std::map<std::string, eckit::Value, std::less<std::string>>;
 
     CmdMap args_;
 

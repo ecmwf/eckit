@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <iomanip>
@@ -25,8 +18,7 @@ namespace eckit {
 static PsCmd ps;
 
 
-PsCmd::PsCmd() :
-    CmdResource("ps") {}
+PsCmd::PsCmd() : CmdResource("ps") {}
 
 
 PsCmd::~PsCmd() {}
@@ -78,7 +70,7 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     }
 
     // Idle column
-    long age = ::time(0) - info.last();
+    long age = ::time(nullptr) - info.last();
 
     long s = age % 60;
     age /= 60;
@@ -169,7 +161,8 @@ static bool isParent(Monitor::TaskArray& info, int taskid, int task) {
         return true;
     }
 
-    return ((parenttask != -1) && isParent(info, taskid, parenttask)) || ((parentid != -1) && isParent(info, parentid, task));
+    return ((parenttask != -1) && isParent(info, taskid, parenttask)) ||
+           ((parentid != -1) && isParent(info, parentid, task));
 }
 
 

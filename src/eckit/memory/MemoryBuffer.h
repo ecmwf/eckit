@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -19,20 +12,24 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // A simple class to implement buffers
 
-class MemoryBuffer : private NonCopyable {
+class MemoryBuffer {
 
 public:  // methods
+
     MemoryBuffer(size_t size);
     MemoryBuffer(const std::string& s);
     MemoryBuffer(const char*, size_t size);
+
+    MemoryBuffer(const MemoryBuffer&)            = delete;
+    MemoryBuffer& operator=(const MemoryBuffer&) = delete;
+    MemoryBuffer(MemoryBuffer&&)                 = delete;
+    MemoryBuffer& operator=(MemoryBuffer&&)      = delete;
 
     ~MemoryBuffer();
 
@@ -52,6 +49,7 @@ public:  // methods
     void swap(MemoryBuffer& rhs);
 
 protected:  // methods
+
     void create();
     void destroy();
 
@@ -59,6 +57,7 @@ protected:  // methods
     void copy(const char*, size_t size);
 
 private:  // members
+
     void* buffer_;
     size_t size_;
 };

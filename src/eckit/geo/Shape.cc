@@ -1,25 +1,17 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Shape.h"
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Spec.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo {
 
 
-Shape Shape::make_from_spec(const Spec& spec) {
+Shape Shape::make_from_spec(const spec::Spec& spec) {
     if (std::vector<value_type> shape; spec.get("shape", shape) && shape.size() == 2) {
         return {shape[0], shape[1]};
     }
@@ -29,7 +21,7 @@ Shape Shape::make_from_spec(const Spec& spec) {
         return {nx, ny};
     }
 
-    throw SpecNotFound("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
+    throw exception::SpecError("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
 }
 
 

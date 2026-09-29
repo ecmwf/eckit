@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -25,6 +18,7 @@ namespace eckit {
 
 class ConfigurationNotFound : public Exception {
 public:
+
     ConfigurationNotFound(const std::string& name) {
         std::ostringstream s;
         s << "ConfigurationNotFound: [" << name << "]";
@@ -50,6 +44,10 @@ Configuration::Configuration(const eckit::Value& root, char separator) :
     root_(new Value(root)), separator_(separator) {}
 
 Configuration& Configuration::operator=(const Configuration& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     *root_     = *other.root_;
     separator_ = other.separator_;
     return *this;
@@ -188,9 +186,25 @@ bool Configuration::get(const std::string& name, double& value) const {
     return found;
 }
 
+bool Configuration::get(const std::string& name, std::vector<bool>& value) const {
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        if (v.size() != 0 && !v[0].isBool()) {
+            return false;
+        }
+        value.clear();
+        for (int i = 0; v.contains(i); ++i) {
+            value.push_back(static_cast<bool>(v[i]));
+        }
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string& name, std::vector<int>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -206,8 +220,8 @@ bool Configuration::get(const std::string& name, std::vector<int>& value) const 
 }
 
 bool Configuration::get(const std::string& name, std::vector<long>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -221,8 +235,8 @@ bool Configuration::get(const std::string& name, std::vector<long>& value) const
 }
 
 bool Configuration::get(const std::string& name, std::vector<long long>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -236,8 +250,8 @@ bool Configuration::get(const std::string& name, std::vector<long long>& value) 
 }
 
 bool Configuration::get(const std::string& name, std::vector<size_t>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -251,8 +265,8 @@ bool Configuration::get(const std::string& name, std::vector<size_t>& value) con
 }
 
 bool Configuration::get(const std::string& name, std::vector<float>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -266,8 +280,8 @@ bool Configuration::get(const std::string& name, std::vector<float>& value) cons
 }
 
 bool Configuration::get(const std::string& name, std::vector<double>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -281,8 +295,8 @@ bool Configuration::get(const std::string& name, std::vector<double>& value) con
 }
 
 bool Configuration::get(const std::string& name, std::vector<std::string>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -312,8 +326,8 @@ void Configuration::hash(Hash& h) const {
 }
 
 bool Configuration::get(const std::string& name, std::vector<LocalConfiguration>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -389,6 +403,11 @@ std::string Configuration::getString(const std::string& name) const {
     return result;
 }
 
+std::vector<bool> Configuration::getBoolVector(const std::string& name) const {
+    std::vector<bool> result;
+    _get(name, result);
+    return result;
+}
 
 std::vector<int> Configuration::getIntVector(const std::string& name) const {
     std::vector<int> result;
@@ -465,31 +484,31 @@ LocalConfiguration Configuration::getSubConfiguration(const std::string& name) c
 }
 
 bool Configuration::isIntegral(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isNumber();
 }
 
 bool Configuration::isBoolean(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isBool();
 }
 
 bool Configuration::isFloatingPoint(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isDouble();
 }
 
 bool Configuration::isString(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isString();
 }
 
 bool Configuration::isList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isList();
 }
@@ -507,7 +526,7 @@ bool Configuration::isNull(const std::string& name) const {
 }
 
 bool Configuration::isIntegralList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -520,7 +539,7 @@ bool Configuration::isIntegralList(const std::string& name) const {
 }
 
 bool Configuration::isBooleanList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -533,7 +552,7 @@ bool Configuration::isBooleanList(const std::string& name) const {
 }
 
 bool Configuration::isFloatingPointList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -546,7 +565,7 @@ bool Configuration::isFloatingPointList(const std::string& name) const {
 }
 
 bool Configuration::isStringList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -559,7 +578,7 @@ bool Configuration::isStringList(const std::string& name) const {
 }
 
 bool Configuration::isSubConfigurationList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -629,6 +648,12 @@ double Configuration::getDouble(const std::string& name, const double& defaultVa
 std::string Configuration::getString(const std::string& name, const std::string& defaultVal) const {
     std::string result;
     _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+std::vector<bool> Configuration::getBoolVector(const std::string& name, const std::vector<bool>& defaultValue) const {
+    std::vector<bool> result;
+    _getWithDefault(name, result, defaultValue);
     return result;
 }
 

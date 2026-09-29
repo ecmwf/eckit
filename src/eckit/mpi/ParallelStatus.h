@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_mpi_ParallelStatus_h
 #define eckit_mpi_ParallelStatus_h
@@ -28,6 +21,7 @@ class Parallel;
 
 class ParallelStatus : public StatusContent {
 private:  // methods
+
     int source() const override { return status_.MPI_SOURCE; }
     int tag() const override { return status_.MPI_TAG; }
     int error() const override { return status_.MPI_ERROR; }
@@ -35,6 +29,7 @@ private:  // methods
     void print(std::ostream&) const override;
 
 private:  // members
+
     friend class Parallel;
 
     MPI_Status status_;

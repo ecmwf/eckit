@@ -1,10 +1,13 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+#include <termios.h>
+#include <unistd.h>
 #include <climits>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <termios.h>
-#include <unistd.h>
 
 #include "eckit/cmd/UserInput.h"
 
@@ -15,8 +18,7 @@ struct termios save;
 static bool inited = false;
 
 
-enum
-{
+enum {
     ESC       = 0x1B,
     BACKSPACE = 0x7F,
     TAB       = 0x9,
@@ -99,17 +101,17 @@ static void enterRaw() {
     }
 }
 
-typedef struct entry {
+struct entry {
     struct entry* next;
     struct entry* prev;
     char* line;
     char* edit;
     int len;
-} entry;
+};
 
-static entry* history = NULL;
+static entry* history = nullptr;
 
-typedef struct context {
+struct context {
     const char* prompt;
     char* clipboard;
     entry* curr;
@@ -119,14 +121,14 @@ typedef struct context {
     bool eof;
     bool tab;
     UserInput::completion_proc completion;
-} context;
+};
 
 static bool processCode(int c, context* s);
 
 static void output(const context* s) {
     const size_t numBytes = strlen(s->prompt) + strlen(s->curr->edit) + 20;
-    char* buffer = (char*)malloc(numBytes);
-    snprintf(buffer, numBytes,"\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
+    char* buffer          = (char*)malloc(numBytes);
+    snprintf(buffer, numBytes, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
     write(1, buffer, strlen(buffer));
     free(buffer);
 }
@@ -503,7 +505,7 @@ static bool processCode(int c, context* s) {
 }
 
 void UserInput::printHistory(int max) {
-    entry* last = NULL;
+    entry* last = nullptr;
     entry* e;
 
     if (max == 0) {
@@ -524,7 +526,7 @@ void UserInput::printHistory(int max) {
 
 void UserInput::saveHistory(const char* path, int max) {
 
-    entry* last = NULL;
+    entry* last = nullptr;
     entry* e;
 
     FILE* f = ::fopen(path, "w");
@@ -565,7 +567,7 @@ void UserInput::loadHistory(const char* path) {
     memset(line, 0, sizeof(line));
     while (fgets(line, sizeof(line) - 1, f)) {
 
-        entry* h = (entry*)calloc(sizeof(entry), 1);
+        entry* h = (entry*)calloc(1, sizeof(entry));
 
         int len = strlen(line);
         while (len) {
@@ -597,7 +599,7 @@ void UserInput::loadHistory(const char* path) {
 
 static void cleanup_history() {
     entry* h = history;
-    entry* n = NULL;
+    entry* n = nullptr;
 
     char* prev = strdup("");
 
@@ -605,7 +607,7 @@ static void cleanup_history() {
         n = h->prev;
         if (h->edit) {
             free(h->edit);
-            h->edit = NULL;
+            h->edit = nullptr;
         }
 
         if (strlen(h->line) == 0 /*|| strcmp(h->line, prev) == 0*/) {
@@ -640,7 +642,7 @@ const char* UserInput::getUserInput(const char* prompt, completion_proc completi
 
     bool done = false;
     context s;
-    entry* h = (entry*)calloc(sizeof(entry), 1);
+    entry* h = (entry*)calloc(1, sizeof(entry));
     h->len   = 80;
     h->line  = (char*)calloc(h->len, 1);
     h->prev  = history;
@@ -680,12 +682,12 @@ const char* UserInput::getUserInput(const char* prompt, completion_proc completi
 
     if (strlen(history->line) == 0) {
         cleanup_history();
-        return s.eof ? NULL : "";
+        return s.eof ? nullptr : "";
     }
 
     cleanup_history();
 
-    return s.eof ? NULL : (history ? history->line : "");
+    return s.eof ? nullptr : (history ? history->line : "");
 }
 
 }  // namespace eckit

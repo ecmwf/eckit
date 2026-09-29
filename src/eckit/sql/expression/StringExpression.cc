@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/StringExpression.h"
 
@@ -51,8 +44,7 @@ const eckit::sql::type::SQLType* StringExpression::type() const {
     return type_;
 }
 
-StringExpression::StringExpression(const std::string& name) :
-    name_(name) {
+StringExpression::StringExpression(const std::string& name) : name_(name) {
     size_t len        = name.length();
     size_t lenDoubles = (len == 0) ? 1 : ((len - 1) / sizeof(double)) + 1;
     size_t lenChars   = lenDoubles * sizeof(double);
@@ -69,8 +61,7 @@ StringExpression::StringExpression(const std::string& name) :
     type_ = &type::SQLType::lookup("string", lenDoubles);
 }
 
-StringExpression::StringExpression(const StringExpression& o) :
-    name_(o.name_), value_(o.value_) {}
+StringExpression::StringExpression(const StringExpression& o) : name_(o.name_), value_(o.value_) {}
 
 void StringExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables,
                                    expression::Expressions& e) {

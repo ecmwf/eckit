@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Florian Rathgeber
 /// @author Pedro Maciel
@@ -31,6 +24,7 @@ namespace eckit::linalg {
 class Vector {
 
 public:  // methods
+
     // -- Constructors
 
     /// Default constructor (empty vector)
@@ -102,7 +96,8 @@ public:  // methods
     /// @returns const iterator to end of the data
     const Scalar* end() const { return array_ + length_; }
 
-protected:           // member variables
+protected:  // member variables
+
     Scalar* array_;  ///< Container
     Size length_;    ///< Vector length/size
     bool own_;       ///< do we own the memory allocated in the container ?

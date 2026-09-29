@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef SPNodeInfo_H
 #define SPNodeInfo_H
@@ -29,30 +22,29 @@ class SPValue;
 template <class Traits, class NodeType>
 struct SPNodeInfo {
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
-    typedef SPValue<Traits> Value;
-    typedef typename Alloc::Ptr ID;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
+    using Value   = SPValue<Traits>;
+    using ID      = typename Alloc::Ptr;
 
-    typedef NodeType Node;
+    using Node = NodeType;
 
     const Node* node_;
     ID id_;
     double distance_;
 
 public:
-    SPNodeInfo() :
-        node_(0), id_(0), distance_(0) {}
 
-    SPNodeInfo(const Node* node, ID id, double distance) :
-        node_(node), id_(id), distance_(distance) {}
+    SPNodeInfo() : node_(0), id_(0), distance_(0) {}
+
+    SPNodeInfo(const Node* node, ID id, double distance) : node_(node), id_(id), distance_(distance) {}
 
     ID id() const { return id_; }
 
     bool operator<(const SPNodeInfo& other) const { return distance_ < other.distance_; }
 
-    typedef std::vector<SPNodeInfo> NodeList;
+    using NodeList = std::vector<SPNodeInfo>;
 
     const Point& point() const { return node_->point(); }
     const Payload& payload() const { return node_->payload(); }

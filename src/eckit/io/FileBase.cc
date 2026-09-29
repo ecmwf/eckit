@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -21,8 +14,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-FileBase<T>::FileBase(const PathName& path) :
-    fd_(-1), path_(path), pos_(0) {
+FileBase<T>::FileBase(const PathName& path) : fd_(-1), path_(path), pos_(0) {
     SYSCALL2(fd_ = ::open(path.localPath(), O_RDWR | O_CREAT, 0777), path.localPath());
 }
 

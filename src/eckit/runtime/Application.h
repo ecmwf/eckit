@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   Application.h
 /// @date   May 1996
@@ -26,6 +19,7 @@ namespace eckit {
 
 class Application : public Task, public Main {
 public:
+
     static Application& instance();
 
     Application(int argc, char** argv, const char* homeenv = nullptr);
@@ -56,6 +50,7 @@ public:
     time_t uptime();
 
 private:  // methods
+
     LogTarget* createInfoLogTarget() const override;
     LogTarget* createWarningLogTarget() const override;
     LogTarget* createErrorLogTarget() const override;
@@ -66,6 +61,7 @@ private:  // methods
     virtual std::string kind() const { return "Application"; }
 
 private:  // members
+
     bool running_;
 };
 

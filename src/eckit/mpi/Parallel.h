@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_mpi_Parallel_h
 #define eckit_mpi_Parallel_h
@@ -26,6 +19,7 @@ namespace mpi {
 class Parallel : public eckit::mpi::Comm {
 
 protected:  // methods
+
     template <class T>
     friend class CommBuilder;
 
@@ -81,11 +75,11 @@ protected:  // methods
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
                           size_t recvcount, Data::Code type, size_t root) const override;
 
-    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
-                        Operation::Code op, size_t root) const override;
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op,
+                        size_t root) const override;
 
-    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
-                               Operation::Code op, size_t root) const override;
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op,
+                               size_t root) const override;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
@@ -114,8 +108,8 @@ protected:  // methods
 
     Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
-    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-                                      int dest, int sendtag, int source, int recvtag) const override;
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type, int dest, int sendtag, int source,
+                                      int recvtag) const override;
 
     eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const override;
 
@@ -142,6 +136,7 @@ protected:  // methods
     int communicator() const override;
 
 public:  // static methods
+
     static Status createStatus();
 
     static MPI_Status* toStatus(Status&);
@@ -149,12 +144,15 @@ public:  // static methods
     static MPI_Request* toRequest(Request&);
 
 public:
+
     /// Access internal MPI_Comm.
     /// Warning! Do not use the return value to free or modify the MPI communicator!
     MPI_Comm MPIComm() const;
 
-private:                         // methods
-    friend class ParallelGroup;  // Groups should not call free if mpi has been finalized. Hence PrallelGroup needs to query finalized()
+private:  // methods
+
+    friend class ParallelGroup;  // Groups should not call free if mpi has been finalized. Hence PrallelGroup needs to
+                                 // query finalized()
 
     static void initialize();
 
@@ -165,6 +163,7 @@ private:                         // methods
     static bool finalized();
 
 private:  // members
+
     MPI_Comm comm_;
 };
 

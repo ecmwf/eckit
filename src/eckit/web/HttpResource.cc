@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <map>
 
@@ -29,9 +22,10 @@ namespace eckit {
 ///
 class HttpResourceRegistry {
 
-    typedef std::map<std::string, HttpResource*> HttpResourceMap;
+    using HttpResourceMap = std::map<std::string, HttpResource*>;
 
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static HttpResourceRegistry& instance() {
@@ -44,7 +38,8 @@ public:  // methods
     /// @param obj pointer must be valid
     void enregister(const std::string& name, HttpResource* obj) {
         AutoLock<Mutex> lockme(mutex_);
-        Log::debug() << "Registering http resource [" << name << "] to registry with address [" << obj << "]" << std::endl;
+        Log::debug() << "Registering http resource [" << name << "] to registry with address [" << obj << "]"
+                     << std::endl;
         ASSERT(obj);
         ASSERT(map_.find(name) == map_.end());
         map_[name] = obj;
@@ -107,20 +102,21 @@ public:  // methods
     }
 
 protected:
+
     friend std::ostream& operator<<(std::ostream& s, const HttpResourceRegistry& r) {
         r.print(s);
         return s;
     }
 
 private:  // members
+
     HttpResourceMap map_;
     mutable Mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpResource::HttpResource(const std::string& s) :
-    resourceUrl_(s) {
+HttpResource::HttpResource(const std::string& s) : resourceUrl_(s) {
     HttpResourceRegistry::instance().enregister(resourceUrl_, this);
 }
 
@@ -229,7 +225,7 @@ void HttpResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url&
 
                 std::ostringstream oss;
                 oss << "Unsupported HTTP method " << method << " url=" << url;
-                throw eckit::NotImplemented(oss.str());
+                throw eckit::NotImplemented(oss.str(), Here());
             }
             catch (eckit::HttpError& e) {
                 error(url, out, e, e.status());

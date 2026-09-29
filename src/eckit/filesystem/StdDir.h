@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date   Feb 2021
@@ -16,23 +9,28 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 class LocalPathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StdDir : private NonCopyable {
+class StdDir {
 
 private:  // members
+
     DIR* d_;
     struct dirent buf;
 
 public:  // methods
+
     StdDir(const char* d);
     StdDir(const eckit::LocalPathName& p);
+
+    StdDir(const StdDir&)            = delete;
+    StdDir& operator=(const StdDir&) = delete;
+    StdDir(StdDir&&)                 = delete;
+    StdDir& operator=(StdDir&&)      = delete;
 
     ~StdDir(); /* noexcept(false) */
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Manuel Fuentes
@@ -15,6 +8,8 @@
 
 #ifndef eckit_Time_h
 #define eckit_Time_h
+
+#include <cstdint>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/persist/Bless.h"
@@ -31,9 +26,19 @@ using Second = double;
 
 class Time {
 
+public:  // types
+
+    static constexpr std::uint64_t secondsInMinute = 60;
+    static constexpr std::uint64_t secondsInHour   = 60 * secondsInMinute;  // 3600
+    static constexpr std::uint64_t secondsInDay    = 24 * secondsInHour;    // 86400
+    static constexpr std::uint64_t secondsInWeek   = 7 * secondsInDay;      // 604800
+
 public:  // methods
+
     Time(long hours, long minutes, long seconds, bool extended = false);
-    Time(long seconds = 0, bool extended = false);
+    Time(Second seconds = Second{0}, bool extended = false);
+    Time(long seconds, bool extended = false);
+    Time(int seconds, bool extended = false);
     Time(const std::string& time, bool extended = false);
 
 #include "eckit/types/Time.b"
@@ -88,9 +93,11 @@ public:  // methods
     static Time now();
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     Second seconds_;
 
     friend std::ostream& operator<<(std::ostream& s, const Time& t) {
@@ -103,6 +110,7 @@ private:  // members
 
 class BadTime : public BadValue {
 public:
+
     BadTime(const std::string& t);
 };
 

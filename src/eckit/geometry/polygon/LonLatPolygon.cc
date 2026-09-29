@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/geometry/polygon/LonLatPolygon.h"
 
@@ -38,24 +31,22 @@ inline double cross_product_analog(const Point2& A, const Point2& B, const Point
 }
 
 inline int on_direction(double a, double b, double c) {
-    return a <= b && b <= c ? 1 : c <= b && b <= a ? -1
-                                                   : 0;
+    return a <= b && b <= c ? 1 : c <= b && b <= a ? -1 : 0;
 };
 
 inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
     const auto p = cross_product_analog(P, A, B);
-    return is_approximately_equal(p, 0) ? 0 : p > 0 ? 1
-                                                    : -1;
+    return is_approximately_equal(p, 0) ? 0 : p > 0 ? 1 : -1;
 }
 
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) :
-    container_type(points) {
+LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) : container_type(points) {
     ASSERT(points.size() > 1);
-    ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON]) && is_approximately_equal(points.front()[LAT], points.back()[LAT]));
+    ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON]) &&
+           is_approximately_equal(points.front()[LAT], points.back()[LAT]));
 
     if (points.size() > 2) {
         clear();  // assumes reserved size is kept
@@ -143,7 +134,8 @@ bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const 
             const auto& A = operator[](i - 1);
             const auto& B = operator[](i);
 
-            // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
+            // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge,
+            // by:
             // - intersecting "up" on forward crossing & P above edge, or
             // - intersecting "down" on backward crossing & P below edge
             const auto direction = on_direction(A[LAT], lat, B[LAT]);

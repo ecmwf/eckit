@@ -1,0 +1,66 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#pragma once
+
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/util.h"
+
+
+namespace eckit::spec {
+class Spec;
+}
+
+
+namespace eckit::geo::order {
+
+
+class Scan {
+public:
+
+    // -- Types
+
+    using order_type    = Grid::order_type;
+    using renumber_type = Grid::renumber_type;
+    using Spec          = spec::Spec;
+
+    // -- Constructors
+
+    explicit Scan(const order_type& = order_default());
+    explicit Scan(const Spec&);
+
+    Scan(const Scan&) = default;
+    Scan(Scan&&)      = default;
+
+    // -- Operators
+
+    Scan& operator=(const Scan&) = default;
+    Scan& operator=(Scan&&)      = default;
+
+    // -- Methods
+
+    void order(const order_type& to) { operator=(Scan{to}); }
+
+    const order_type& order() const { return order_; }
+    renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
+    renumber_type reorder(const order_type& to, const pl_type&) const;
+
+    bool is_scan_i_then_j() const;
+    bool is_scan_i_positive() const;
+    bool is_scan_j_positive() const;
+    bool is_scan_alternating() const;
+
+    // -- Class methods
+
+    static const order_type& order_default();
+
+private:
+
+    // -- Members
+
+    order_type order_;
+};
+
+
+}  // namespace eckit::geo::order

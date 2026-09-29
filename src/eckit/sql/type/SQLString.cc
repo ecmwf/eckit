@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/type/SQLString.h"
 
@@ -17,8 +10,7 @@
 
 namespace eckit::sql::type {
 
-SQLString::SQLString(const std::string& name, size_t maxLen) :
-    SQLType(name), maxLen_(maxLen) {
+SQLString::SQLString(const std::string& name, size_t maxLen) : SQLType(name), maxLen_(maxLen) {
     ASSERT(maxLen_ % 8 == 0);
 }
 
@@ -34,7 +26,7 @@ void SQLString::output(SQLOutput& o, double d, bool missing) const {
 
 void SQLString::output(SQLOutput& o, const double* d, bool missing) const {
     if (missing) {
-        o.outputString(0, 0, missing);
+        o.outputString(nullptr, 0, missing);
     }
     else {
         const char* c(reinterpret_cast<const char*>(d));

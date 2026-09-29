@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
@@ -29,6 +22,7 @@ namespace expression {
 
 class ColumnExpression : public SQLExpression {
 public:
+
     ColumnExpression(const std::string&, const SQLTable*, int begin = -1, int end = -1);
     ColumnExpression(const std::string&, const std::string& tableReference, int begin = -1, int end = -1);
     ColumnExpression(const ColumnExpression&) = default;
@@ -45,6 +39,7 @@ public:
     }
 
 protected:
+
     const type::SQLType* type_;  // non-owning
     std::pair<const double*, bool>* value_;
     std::string columnName_;
@@ -74,6 +69,7 @@ protected:
     virtual std::string tableColumnToFullname(const SQLColumn& column) const;
 
 private:
+
     ColumnExpression& operator=(const ColumnExpression&);
 
     // -- Overridden methods

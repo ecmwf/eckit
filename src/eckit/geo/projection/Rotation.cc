@@ -1,38 +1,50 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/Rotation.h"
 
 #include <cmath>
-#include <utility>
 
-#include "eckit/geo/geometry/UnitSphere.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Rotation> PROJECTION("rotation");
+static ProjectionRegisterType<Rotation> PROJECTION("rotation");
 
 
-Rotation::Rotation(const PointLonLat& p, double angle) : Rotation(p.lon, p.lat, angle) {}
+Rotation::Rotation(const Spec& spec) :
+    Rotation(
+        [](const auto& spec) -> PointLonLat {
+            if (std::vector<double> p; spec.get("south_pole", p) || spec.get("rotation", p)) {
+                ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+                return {p[0], p[1]};
+            }
+
+            if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
+                spec.has("south_pole_lon") || spec.has("south_pole_lat")) {
+                ASSERT_MSG(spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat),
+                           "Rotation: 'south_pole_lon' and 'south_pole_lat' are required together");
+                return {lon, lat};
+            }
+
+            return SOUTH_POLE;
+        }(spec),
+        [](const auto& spec) -> double {
+            double angle = 0.;
+            spec.get("rotation_angle", angle);
+            return angle;
+        }(spec)) {}
 
 
-Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
-    south_pole_(PointLonLat::make(south_pole_lon, south_pole_lat)), angle_(angle), rotated_(true) {
+Rotation::Rotation(const PointLonLat& south_pole, double angle) :
+    south_pole_(south_pole), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
 
     struct NonRotated final : Implementation {
@@ -41,29 +53,29 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
-        PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
+        PointLonLat operator()(const PointLonLat& p) const override { return {p.lon() + angle_, p.lat()}; }
         const double angle_;
     };
 
     struct RotationMatrix final : Implementation {
         explicit RotationMatrix(M&& R) : R_(R) {}
         PointLonLat operator()(const PointLonLat& p) const override {
-            return geometry::UnitSphere::convertCartesianToSpherical(
-                R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
+            return figure::UnitSphere::_convertCartesianToSpherical(
+                R_ * figure::UnitSphere::_convertSphericalToCartesian(p));
         }
         const M R_;
     };
 
     const auto alpha = util::DEGREE_TO_RADIAN * angle;
-    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_lat + 90.);
-    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_lon;
+    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_.lat() + 90.);
+    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_.lon();
 
     const auto ca = std::cos(alpha);
     const auto ct = std::cos(theta);
     const auto cp = std::cos(phi);
 
     if (types::is_approximately_equal(ct, 1., PointLonLat::EPS * util::DEGREE_TO_RADIAN)) {
-        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_lon, -PointLonLat::FLAT_ANGLE);
+        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon(), -PointLonLat::FLAT_ANGLE);
         rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
         fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
@@ -102,23 +114,29 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 }
 
 
+const std::string& Rotation::type() const {
+    static const std::string type{"rotation"};
+    return type;
+}
+
+
 Rotation* Rotation::make_from_spec(const Spec& spec) {
     double angle = 0.;
     spec.get("rotation_angle", angle);
 
-    auto lon = SOUTH_POLE.lon;
-    auto lat = SOUTH_POLE.lat;
-    if (std::vector<double> r{lon, lat}; spec.get("rotation", r)) {
-        ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
-        lon = r[0];
-        lat = r[1];
+    auto lon = SOUTH_POLE.lon();
+    auto lat = SOUTH_POLE.lat();
+    if (std::vector<double> p{lon, lat}; spec.get("south_pole", p) || spec.get("rotation", p)) {
+        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+        lon = p[0];
+        lat = p[1];
     }
     else {
         ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),
                    "Rotation: expected 'south_pole_lon' and 'south_pole_lat'");
     }
 
-    auto* r = new Rotation{lon, lat, angle};
+    auto* r = new Rotation{{lon, lat}, angle};
     if (!r->rotated()) {
         delete r;
         r = nullptr;
@@ -129,13 +147,21 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
 
 
 void Rotation::fill_spec(spec::Custom& custom) const {
+    bool projection = false;
+
     if (!points_equal(SOUTH_POLE, south_pole_)) {
-        custom.set("rotation", std::vector<double>{south_pole_.lon, south_pole_.lat});
+        custom.set("south_pole", std::vector<double>{south_pole_.lon(), south_pole_.lat()});
+        projection = true;
     }
+
     if (!types::is_approximately_equal(angle_, 0., PointLonLat::EPS)) {
         custom.set("rotation_angle", angle_);
+        projection = true;
     }
-    // custom.set("projection", "rotation");  // it's a common projection (?)
+
+    if (projection) {
+        custom.set("type", type());
+    }
 }
 
 

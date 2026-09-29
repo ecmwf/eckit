@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// \file FunctionJULIAN_SECONDS.h
 /// ECMWF February 2014
@@ -20,6 +13,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionJULIAN_SECONDS : public FunctionExpression {
 public:
+
     FunctionJULIAN_SECONDS(const std::string&, const expression::Expressions&);
     FunctionJULIAN_SECONDS(const FunctionJULIAN_SECONDS&);
     ~FunctionJULIAN_SECONDS();  // Change to virtual if base class
@@ -30,6 +24,7 @@ public:
     static const char* help() { return "Returns time in Julian calendar expressed in seconds"; }
 
 private:
+
     // No copy allowed
     FunctionJULIAN_SECONDS& operator=(const FunctionJULIAN_SECONDS&);
 

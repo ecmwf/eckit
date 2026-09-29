@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/mpi/Request.h"
 
@@ -18,6 +11,7 @@ namespace eckit::mpi {
 
 class NullRequestContent : public RequestContent {
 public:
+
     virtual ~NullRequestContent() {}
 
     virtual void print(std::ostream& os) const { os << "NullRequest()"; }
@@ -29,18 +23,15 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Request::Request() :
-    content_(new NullRequestContent()) {
+Request::Request() : content_(new NullRequestContent()) {
     content_->attach();
 }
 
-Request::Request(int request) :
-    content_(0) {
+Request::Request(int request) : content_{nullptr} {
     *this = eckit::mpi::comm().request(request);
 }
 
-Request::Request(RequestContent* p) :
-    content_(p) {
+Request::Request(RequestContent* p) : content_(p) {
     content_->attach();
 }
 
@@ -48,12 +39,15 @@ Request::~Request() {
     content_->detach();
 }
 
-Request::Request(const Request& s) :
-    content_(s.content_) {
+Request::Request(const Request& s) : content_(s.content_) {
     content_->attach();
 }
 
 Request& Request::operator=(const Request& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     if (content_) {
         content_->detach();
     }

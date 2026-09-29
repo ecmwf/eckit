@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file ThreadSingleton.h
 /// @author Baudouin Raoult
@@ -17,7 +10,6 @@
 #include <pthread.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -31,8 +23,7 @@ struct NewAlloc0 {
 
 template <typename TYPE, typename P1>
 struct NewAlloc1 {
-    NewAlloc1(const P1& p1) :
-        p1_(p1) {}
+    NewAlloc1(const P1& p1) : p1_(p1) {}
     TYPE* operator()() { return new TYPE(p1_); }
     P1 p1_;
 };
@@ -40,23 +31,32 @@ struct NewAlloc1 {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T, typename A = NewAlloc0<T> >
-class ThreadSingleton : private NonCopyable {
+class ThreadSingleton {
 public:
+
     ThreadSingleton();
     ThreadSingleton(const A& alloc);
+
+    ThreadSingleton(const ThreadSingleton&)            = delete;
+    ThreadSingleton& operator=(const ThreadSingleton&) = delete;
+    ThreadSingleton(ThreadSingleton&&)                 = delete;
+    ThreadSingleton& operator=(ThreadSingleton&&)      = delete;
 
     ~ThreadSingleton();
 
     T& instance();
 
 private:  // members
+
     A alloc_;
 
 private:  // class members
+
     static pthread_once_t once_;
     static pthread_key_t key_;
 
 private:  // class methods
+
     static void init(void);
     static void cleanUp(void*);
 };
@@ -69,12 +69,10 @@ template <typename T, typename A>
 pthread_key_t ThreadSingleton<T, A>::key_;
 
 template <typename T, typename A>
-ThreadSingleton<T, A>::ThreadSingleton() :
-    alloc_(A()) {}
+ThreadSingleton<T, A>::ThreadSingleton() : alloc_(A()) {}
 
 template <typename T, typename A>
-ThreadSingleton<T, A>::ThreadSingleton(const A& alloc) :
-    alloc_(alloc) {}
+ThreadSingleton<T, A>::ThreadSingleton(const A& alloc) : alloc_(alloc) {}
 
 template <typename T, typename A>
 ThreadSingleton<T, A>::~ThreadSingleton() {
@@ -104,7 +102,7 @@ T& ThreadSingleton<T, A>::instance() {
 template <typename T, typename A>
 void ThreadSingleton<T, A>::cleanUp(void* data) {
     delete (T*)data;
-    ::pthread_setspecific(key_, 0);
+    ::pthread_setspecific(key_, nullptr);
 }
 
 template <typename T, typename A>

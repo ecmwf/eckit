@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file Properties.h
 /// @author Tiago Quintino
@@ -30,10 +23,12 @@ class MD5;
 class Properties {
 
 public:  // types
-    typedef Value property_t;
-    typedef std::string key_t;
+
+    using property_t = Value;
+    using key_t      = std::string;
 
 public:  // methods
+
     Properties();
     Properties(const property_t&);
 
@@ -72,15 +67,19 @@ public:  // methods
     void hash(eckit::MD5&) const;
 
 protected:
+
     void print(std::ostream& s) const;
 
 private:  // types
-    typedef std::map<key_t, property_t> PropertyMap;
 
-private:                 // members
+    using PropertyMap = std::map<key_t, property_t>;
+
+private:  // members
+
     PropertyMap props_;  //< storage of values
 
 protected:  // methods
+
     void json(JSON& s) const;
     void encode(Stream& s) const;
 

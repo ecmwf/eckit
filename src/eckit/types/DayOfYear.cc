@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iomanip>
 #include <ostream>
@@ -34,11 +27,9 @@ static long date2Value(const Date& date) {
     return value;
 }
 
-DayOfYear::DayOfYear(const Date& date) :
-    value_(date2Value(date)) {}
+DayOfYear::DayOfYear(const Date& date) : value_(date2Value(date)) {}
 
-DayOfYear::DayOfYear(const std::string& s) :
-    value_(date2Value(Date(s))) {}
+DayOfYear::DayOfYear(const std::string& s) : value_(date2Value(Date(s))) {}
 
 DayOfYear::operator std::string() const {
     std::ostringstream os;

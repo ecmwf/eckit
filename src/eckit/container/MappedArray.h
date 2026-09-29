@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File MappedArray.h
 // Baudouin Raoult - ECMWF Nov 96
@@ -18,7 +11,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"
 
 
@@ -29,16 +21,20 @@ namespace eckit {
 // Used to std::map an array to a file
 
 template <class T>
-class MappedArray : private NonCopyable {
+class MappedArray {
 public:
+
     // stl compatibility
 
-    typedef T* iterator;
-    typedef const T* const_iterator;
+    using iterator       = T*;
+    using const_iterator = const T*;
 
     // -- Contructors
 
     MappedArray(const PathName&, unsigned long);
+
+    MappedArray(const MappedArray&)            = delete;
+    MappedArray& operator=(const MappedArray&) = delete;
 
     // -- Destructor
 
@@ -61,6 +57,7 @@ public:
     T& operator[](unsigned long n) { return array_[n]; }
 
 private:  // members
+
     Semaphore sem_;
     void* map_;
     int fd_;
@@ -74,8 +71,7 @@ private:  // members
         uint32_t version_;
         uint32_t headerSize_;
         uint32_t elemSize_;
-        Header() :
-            version_(mapped_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
+        Header() : version_(mapped_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
         void validate() {
             ASSERT(version_ == mapped_array_version());
             ASSERT(headerSize_ == sizeof(Header));

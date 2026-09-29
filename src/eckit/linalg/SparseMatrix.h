@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Florian Rathgeber
 /// @author Pedro Maciel
@@ -37,6 +30,7 @@ namespace eckit::linalg {
 /// Sparse matrix in CRS (compressed row storage) format
 class SparseMatrix {
 public:
+
     using UIndex = std::make_unsigned_t<Index>;
 
 
@@ -103,6 +97,7 @@ public:
 
     class Allocator {
     public:
+
         virtual ~Allocator();
 
         /// @note that shape may be modified by the allocator, e.g. loading of pre-computed matrices
@@ -122,6 +117,7 @@ public:
     };
 
 public:
+
     // -- Constructors
 
     /// Default constructor, empty matrix
@@ -155,6 +151,7 @@ public:
     SparseMatrix& operator=(SparseMatrix&&);
 
 public:
+
     /// Prune entries with exactly the given value
     SparseMatrix& prune(Scalar = 0);
 
@@ -227,6 +224,7 @@ public:
     }
 
 public:  // iterators
+
     struct iterator;
 
     struct const_iterator {
@@ -259,6 +257,7 @@ public:  // iterators
         bool lastOfRow() const { return ((index_ + 1) == static_cast<Size>(matrix_->spm_.outer_[row_ + 1])); }
 
     private:
+
         friend struct iterator;
 
         SparseMatrix* matrix_;
@@ -288,6 +287,7 @@ public:  // iterators
     iterator end() { return {*this, rows()}; }
 
 private:
+
     /// Resets the matrix to a deallocated state
     void reset();
 
@@ -298,6 +298,7 @@ private:
     void decode(Stream&);
 
 private:
+
     Layout spm_;  ///< Matrix layout
 
     Shape shape_;  ///< Matrix shape

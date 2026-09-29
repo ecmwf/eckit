@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date Dec 2015
@@ -28,7 +21,7 @@ static void closeDataHandle(PathName&, DataHandle*& handle) {
     if (handle) {
         handle->close();
         delete handle;
-        handle = 0;
+        handle = nullptr;
     }
 }
 
@@ -38,8 +31,7 @@ static bool inUse(const std::map<PathName, DataHandle*>& store, const PathName& 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FilePool::FilePool(size_t size) :
-    cache_(size, &closeDataHandle) {}
+FilePool::FilePool(size_t size) : cache_(size, &closeDataHandle) {}
 
 FilePool::~FilePool() {}
 
@@ -75,7 +67,7 @@ DataHandle* FilePool::checkout(const PathName& path) {
 void FilePool::checkin(DataHandle* handle) {
     AutoLock<MutexCond> lock(cond_);
 
-    typedef std::map<PathName, DataHandle*>::iterator iterator_type;
+    using iterator_type = std::map<PathName, DataHandle*>::iterator;
     for (iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
         if (itr->second == handle) {
             cache_.insert(itr->first, itr->second);

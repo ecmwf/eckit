@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <string_view>
 
-#include "eckit/mpi/ParallelGroup.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
+#include "eckit/mpi/ParallelGroup.h"
 
 namespace eckit {
 namespace mpi {
@@ -29,12 +22,9 @@ ParallelGroup::~ParallelGroup() {
     }
 }
 
-ParallelGroup::ParallelGroup() :
-    valid_{false} {}
+ParallelGroup::ParallelGroup() : valid_{false} {}
 
-ParallelGroup::ParallelGroup(MPI_Group group) :
-    valid_{true},
-    group_(group) {}
+ParallelGroup::ParallelGroup(MPI_Group group) : valid_{true}, group_(group) {}
 
 void ParallelGroup::print(std::ostream& os) const {
     os << "ParallelGroup()";
@@ -151,7 +141,8 @@ GroupContent* ParallelGroup::range_incl(const std::vector<std::array<int, 3>>& r
     return new ParallelGroup(newGroup);
 }
 
-std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& ranks, const ParallelGroup& other) const {
+std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& ranks,
+                                                       const ParallelGroup& other) const {
     std::vector<int> newVector(ranks.size());
     MPI_CALL(MPI_Group_translate_ranks(group_, ranks.size(), ranks.data(), other.group_, newVector.data()));
     return newVector;
@@ -161,7 +152,8 @@ std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& r
     return translate_ranks_native(ranks, dynamic_cast<const ParallelGroup&>(other));
 }
 
-std::unordered_map<int, int> ParallelGroup::translate_ranks(const std::vector<int>& ranks, const GroupContent& other) const {
+std::unordered_map<int, int> ParallelGroup::translate_ranks(const std::vector<int>& ranks,
+                                                            const GroupContent& other) const {
     std::unordered_map<int, int> map;
     std::vector<int> translated = translate_ranks_native(ranks, other);
 

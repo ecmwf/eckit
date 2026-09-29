@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -31,6 +23,7 @@ namespace eckit::codec {
 /// on construction an destruction.
 class Stream {
 public:
+
     /// Default constructor
     /// @post Stream is not usable but can be assigned to become valid
     Stream() = default;
@@ -47,10 +40,10 @@ public:
     Stream(DataHandle&);
 
     /// Assignment/Copy constructor sharing datahandle with other Stream
-    Stream(const Stream&) = default;
-    Stream(Stream&&) = default;
+    Stream(const Stream&)            = default;
+    Stream(Stream&&)                 = default;
     Stream& operator=(const Stream&) = default;
-    Stream& operator=(Stream&&) = default;
+    Stream& operator=(Stream&&)      = default;
 
     /// Access internal DataHandle
     DataHandle& datahandle();
@@ -75,6 +68,7 @@ public:
     explicit operator bool() const { return ptr_ != nullptr; }
 
 private:
+
     std::shared_ptr<DataHandle> shared_;
     DataHandle* ptr_{nullptr};
 };

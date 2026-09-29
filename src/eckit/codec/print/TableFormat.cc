@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/codec/print/TableFormat.h"
@@ -39,6 +31,7 @@ std::string MetadataPrettyPrintBase::str() const {
 
 class DefaultMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
+
     explicit DefaultMetadataPrettyPrint(const Metadata&) {}
     void print(std::ostream&) const override {}
 };
@@ -59,6 +52,7 @@ class ArrayMetadataPrettyPrint : public MetadataPrettyPrintBase {
     }
 
 public:
+
     explicit ArrayMetadataPrettyPrint(const Metadata& m) : metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
@@ -97,11 +91,13 @@ public:
     }
 
 private:
+
     Metadata metadata_;
 };
 
 class StringMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
+
     explicit StringMetadataPrettyPrint(const Metadata& m) : metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
@@ -116,11 +112,13 @@ public:
     }
 
 private:
+
     Metadata metadata_;
 };
 
 class ScalarMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
+
     explicit ScalarMetadataPrettyPrint(const Metadata& m) : metadata_(m) {}
     template <typename T>
     T decode() const {
@@ -152,6 +150,7 @@ public:
     }
 
 private:
+
     Metadata metadata_;
 };
 

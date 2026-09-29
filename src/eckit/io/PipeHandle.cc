@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/io/PipeHandle.h"
 #include "eckit/exception/Exceptions.h"
@@ -33,13 +26,11 @@ void PipeHandle::encode(Stream& s) const {
     s << name_;
 }
 
-PipeHandle::PipeHandle(Stream& s) :
-    DataHandle(s), file_(nullptr), read_(false) {
+PipeHandle::PipeHandle(Stream& s) : DataHandle(s), file_{nullptr}, read_(false) {
     s >> name_;
 }
 
-PipeHandle::PipeHandle(const std::string& name) :
-    name_(name), file_(0), read_(false) {}
+PipeHandle::PipeHandle(const std::string& name) : name_(name), file_{nullptr}, read_(false) {}
 
 PipeHandle::~PipeHandle() {}
 
@@ -73,7 +64,7 @@ long PipeHandle::write(const void* buffer, long length) {
 }
 
 void PipeHandle::close() {
-    if (file_ == 0) {
+    if (file_ == nullptr) {
         return;
     }
 

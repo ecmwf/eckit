@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Thread.h"
@@ -23,8 +16,8 @@ namespace eckit::test {
 
 class Locker : public eckit::Thread {
 public:
-    Locker(Mutex* m, bool& v) :
-        m_(m), v_(v) {}
+
+    Locker(Mutex* m, bool& v) : m_(m), v_(v) {}
     Mutex* m_;
     bool& v_;
     void run() { v_ = m_->tryLock(); }

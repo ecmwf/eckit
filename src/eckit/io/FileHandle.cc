@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -17,12 +10,12 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/io/MoverTransferSelection.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
 #include "eckit/utils/MD5.h"
-#include "eckit/io/MoverTransferSelection.h"
 
 
 namespace eckit {
@@ -44,14 +37,13 @@ void FileHandle::encode(Stream& s) const {
     s << overwrite_;
 }
 
-FileHandle::FileHandle(Stream& s) :
-    DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
+FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_{nullptr}, read_(false) {
     s >> name_;
     s >> overwrite_;
 }
 
 FileHandle::FileHandle(const std::string& name, bool overwrite) :
-    name_(name), overwrite_(overwrite), file_(nullptr), read_(false) {}
+    name_(name), overwrite_(overwrite), file_{nullptr}, read_(false) {}
 
 FileHandle::~FileHandle() {}
 
@@ -67,11 +59,12 @@ void FileHandle::open(const char* mode) {
     // this class is used with large buffers anyway
 
     if (!(::strcmp(mode, "r") == 0)) {
-        setbuf(file_, 0);
+        setbuf(file_, nullptr);
     }
     else {
-        static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
-        long size           = bufSize;
+        static long bufSize =
+            Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+        long size = bufSize;
         if (size) {
             Log::debug() << "FileHandle using " << Bytes(size) << std::endl;
             buffer_.reset(new Buffer(size));

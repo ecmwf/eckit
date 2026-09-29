@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/ColumnExpression.h"
 
@@ -24,8 +17,8 @@ namespace eckit::sql::expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end) :
-    type_(0),
-    value_(0),
+    type_{nullptr},
+    value_{nullptr},
     columnName_(name),
     table_(table),
     tableReference_(),
@@ -34,10 +27,10 @@ ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* tabl
     nominalShift_(0) {}
 
 ColumnExpression::ColumnExpression(const std::string& name, const std::string& tableReference, int begin, int end) :
-    type_(0),
-    value_(0),
+    type_{nullptr},
+    value_{nullptr},
     columnName_(name),
-    table_(0),
+    table_{nullptr},
     tableReference_(tableReference),
     beginIndex_(begin),
     endIndex_(end),
@@ -132,8 +125,8 @@ void ColumnExpression::updateType(SQLSelect& sql) {
 }
 
 void ColumnExpression::cleanup(SQLSelect& sql) {
-    value_ = 0;
-    type_  = 0;
+    value_ = nullptr;
+    type_  = nullptr;
 }
 
 
@@ -157,8 +150,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
     if (beginIndex_ != -1 && endIndex_ != -1) {
         ASSERT(beginIndex_ <= endIndex_);
         for (int i = beginIndex_; i <= endIndex_; i++) {
-            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_"
-                                                               + Translator<int, std::string>()(i),
+            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_" + Translator<int, std::string>()(i),
                                                            this->table()));
         }
         return;
@@ -178,7 +170,9 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
         std::vector<std::string> names = table.columnNames();
 
         for (size_t i = 0; i < names.size(); i++) {
-            if ((tableReference_.size()) && ((names[i].rfind(tableReference_) == std::string::npos) || (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
+            if ((tableReference_.size()) &&
+                ((names[i].rfind(tableReference_) == std::string::npos) ||
+                 (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
                 L << "ColumnExpression::expandStars: skip '" << names[i] << "'" << std::endl;
                 continue;
             }
@@ -189,8 +183,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
         }
     }
     if (!matched) {
-        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_
-                               + " found.");
+        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_ + " found.");
     }
 
     L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;

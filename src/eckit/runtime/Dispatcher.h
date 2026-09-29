@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Dispatcher.h
 // Baudouin Raoult - ECMWF Jul 96
@@ -67,8 +60,9 @@ struct DequeuePicker {
 template <class Traits>
 class Dispatcher : public Configurable {
 public:
-    typedef typename Traits::Request Request;
-    typedef typename Traits::Handler Handler;
+
+    using Request = typename Traits::Request;
+    using Handler = typename Traits::Handler;
 
     // -- Contructors
 
@@ -119,6 +113,7 @@ public:
     virtual std::string name() const { return name_; }
 
 protected:
+
     // -- Members
 
     // Request queue
@@ -144,6 +139,7 @@ protected:
     mutable Mutex lock_;
 
 private:
+
     // No copy allowed
 
     Dispatcher(const Dispatcher<Traits>&);
@@ -173,8 +169,9 @@ private:
 template <class Traits>
 class DispatchTask : public Thread, public Monitorable {
 public:
-    typedef typename Traits::Handler Handler;
-    typedef typename Traits::Request Request;
+
+    using Handler = typename Traits::Handler;
+    using Request = typename Traits::Request;
 
     // -- Contructors
 
@@ -184,6 +181,7 @@ public:
         id_(id) {}
 
 private:
+
     // -- Members
 
     // Dispatcher owning this thread
@@ -209,7 +207,7 @@ private:
 
     // No copy
 
-    typedef class DispatchTask<Traits> DT;
+    using DT = DispatchTask<Traits>;
     DispatchTask(const DT&);
     void operator=(const DT&);
 };
@@ -225,8 +223,8 @@ class DispatchInfo : public Thread {
     void run() override;
 
 public:
-    DispatchInfo(Dispatcher<Traits>& owner) :
-        owner_(owner) {}
+
+    DispatchInfo(Dispatcher<Traits>& owner) : owner_(owner) {}
 };
 
 //=================================================================
@@ -345,7 +343,7 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads) :
     grow_(numberOfThreads_ == 0),
     running_(0) {
     // For some reason xlC require that
-    typedef class DispatchInfo<Traits> DI;
+    using DI = DispatchInfo<Traits>;
 
     ThreadControler c(new DI(*this));
     c.start();
@@ -506,7 +504,7 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p) {
 template <class Traits>
 void Dispatcher<Traits>::changeThreadCount(int delta) {
     // We do not take a lock, to avoid dead-locks
-    typedef class DispatchTask<Traits> DT;
+    using DT = DispatchTask<Traits>;
 
     // Increase number of threads by starting some more
     if (delta > 0) {

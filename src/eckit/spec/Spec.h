@@ -1,0 +1,74 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#pragma once
+
+#include <ostream>
+
+#include "eckit/config/Parametrisation.h"
+
+
+namespace eckit {
+class JSON;
+}
+
+
+namespace eckit::spec {
+
+
+class Spec : public Parametrisation {
+public:
+
+    Spec()           = default;
+    ~Spec() override = default;
+
+    Spec(const Spec&) = delete;
+    Spec(Spec&&)      = delete;
+
+    Spec& operator=(const Spec&) = delete;
+    Spec& operator=(Spec&&)      = delete;
+
+    bool operator==(const Spec& other) const { return str() == other.str(); }
+    bool operator!=(const Spec& other) const { return !operator==(other); }
+
+    std::string get_string(const std::string& name) const;
+    bool get_bool(const std::string& name) const;
+    int get_int(const std::string& name) const;
+    long get_long(const std::string& name) const;
+    size_t get_unsigned(const std::string& name) const;
+    double get_double(const std::string& name) const;
+
+    std::vector<long> get_long_vector(const std::string& name) const;
+    std::vector<size_t> get_unsigned_vector(const std::string& name) const;
+    std::vector<double> get_double_vector(const std::string& name) const;
+
+    std::string get_string(const std::string& name, const std::string&) const;
+    bool get_bool(const std::string& name, const bool&) const;
+    int get_int(const std::string& name, const int&) const;
+    long get_long(const std::string& name, const long&) const;
+    size_t get_unsigned(const std::string& name, const size_t&) const;
+    double get_double(const std::string& name, const double&) const;
+
+    std::vector<long> get_long_vector(const std::string& name, const std::vector<long>&) const;
+    std::vector<size_t> get_unsigned_vector(const std::string& name, const std::vector<size_t>&) const;
+    std::vector<double> get_double_vector(const std::string& name, const std::vector<double>&) const;
+
+    std::string str() const;
+
+    virtual bool only(const std::string& name) const { return false; }
+    virtual void json(JSON& name) const = 0;
+    virtual const Spec& spec(const std::string& name) const;
+
+private:
+
+    virtual void print(std::ostream&) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const Spec& spec) {
+        spec.print(out);
+        return out;
+    }
+};
+
+
+}  // namespace eckit::spec

@@ -1,21 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/net/Connector.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/cluster/ClusterNodes.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
-#include "eckit/log/Seconds.h"
 
 namespace eckit::net {
 
@@ -30,7 +23,15 @@ static void offLine(const std::string& host, int port) {
 }
 
 Connector::Connector(const std::string& host, int port, const std::string& node) :
-    host_(host), node_(node), port_(port), locked_(false), last_(::time(0)), memoize_(false), sent_(false), life_(0), autoclose_(false) {
+    host_(host),
+    node_(node),
+    port_(port),
+    locked_(false),
+    last_(::time(nullptr)),
+    memoize_(false),
+    sent_(false),
+    life_(0),
+    autoclose_(false) {
     Log::info() << "Connector::Connector(" << node << "," << host << ":" << port << ")" << std::endl;
 }
 
@@ -52,10 +53,11 @@ Connector::~Connector() {
 TCPSocket& Connector::socket() {
 
     static int connectorTimeout = Resource<int>("connectorTimeout", 0);
-    if(connectorTimeout != 0) {
-        time_t now = ::time(0);
-        if(now - last_ > connectorTimeout) {
-            Log::info() << "Connector::socket() opened for " << Seconds(now - last_) << " seconds, reopening connection" << std::endl;
+    if (connectorTimeout != 0) {
+        time_t now = ::time(nullptr);
+        if (now - last_ > connectorTimeout) {
+            Log::info() << "Connector::socket() opened for " << Seconds(now - last_) << " seconds, reopening connection"
+                        << std::endl;
             socket_.close();
         }
     }
@@ -116,10 +118,11 @@ void Connector::print(std::ostream& os) const {
 
 class ConnectorCache {
 
-    typedef std::multimap<std::pair<std::string, int>, Connector*> Cache;
+    using Cache = std::multimap<std::pair<std::string, int>, Connector*>;
     Cache cache_;
 
 public:
+
     /// @note Lazy construction of singleton.
     ///       This is required to ensure correct and portable order of initialisation and destruction
     ///       across multiple architectures.
@@ -162,10 +165,11 @@ public:
 
 class NodeInfoCache {
 
-    typedef std::map<std::pair<std::string, std::string>, NodeInfo> Cache;
+    using Cache = std::map<std::pair<std::string, std::string>, NodeInfo>;
     Cache cache_;
 
 public:
+
     /// @note Lazy construction of singleton.
     ///       This is required to ensure correct and portable order of initialisation and destruction
     ///       across multiple architectures.
@@ -265,7 +269,7 @@ std::string Connector::name() const {
 template <class T, class F>
 long Connector::socketIo(F proc, T buf, long len, const char* msg, time_t& last) {
     TCPSocket& s = socket();
-    last = ::time(0);
+    last         = ::time(nullptr);
     long l       = (s.*proc)(buf, len);
     if (l != len) {
         reset();
@@ -304,7 +308,7 @@ long Connector::read(void* buf, long len) {
             bool useCache                                  = false;
             if (j != cache_.end()) {
                 //               cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
-                if ((::time(0) - (*j).second.updated()) > long(life_)) {
+                if ((::time(nullptr) - (*j).second.updated()) > long(life_)) {
                     // cout << "  CACHE IS STALE" << (*j).first << std::endl;
                 }
                 else {
@@ -317,9 +321,10 @@ long Connector::read(void* buf, long len) {
             }
 
             if (!useCache) {
-                cached_.buffer_ = 0;
+                cached_.buffer_ = nullptr;
                 try {
-                    ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written", last_) == out_.count());
+                    ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written", last_) ==
+                           out_.count());
                 }
                 catch (...) {
                     reset();
@@ -375,7 +380,7 @@ void Connector::memoize(bool on, unsigned long life) {
         ASSERT(out_.count() == 0);
         sent_ = false;
 
-        cached_.buffer_ = 0;
+        cached_.buffer_ = nullptr;
 
         if (cache_.size() > 10000) {
             // Log::info() << "Clear memoize cache" << std::endl;

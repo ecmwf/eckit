@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <algorithm>
@@ -46,9 +38,9 @@ constexpr double EPS = 1e-9;
 
 
 CASE("eckit::geo::util::linspace") {
-    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 1, false), std::vector<double>{1.}, EPS));
-    EXPECT(is_approximately_equal_vector(util::linspace(1, 1, 2, true), std::vector<double>{1., 1.}, EPS));
-    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 2, true), std::vector<double>{1., 2.}, EPS));
+    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 1), std::vector<double>{1.}, EPS));
+    EXPECT(is_approximately_equal_vector(util::linspace(1, 1, 2), std::vector<double>{1.}, EPS));
+    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 2), std::vector<double>{1., 2.}, EPS));
 }
 
 
@@ -77,6 +69,25 @@ CASE("eckit::geo::util::gaussian_latitudes") {
 
     EXPECT(is_approximately_equal_vector(util::gaussian_latitudes(64, false), lats_decreasing, 1e-4));
     EXPECT(is_approximately_equal_vector(util::gaussian_latitudes(64, true), lats_increasing, 1e-4));
+}
+
+
+CASE("eckit::geo::util::gaussian_quadrature_weights") {
+    std::vector<double> weights{
+        0.000225, 0.000523, 0.000821, 0.001119, 0.001416, 0.001713, 0.002008, 0.002302, 0.002595, 0.002886, 0.003176,
+        0.003463, 0.003749, 0.004032, 0.004313, 0.004592, 0.004867, 0.005140, 0.005409, 0.005676, 0.005939, 0.006198,
+        0.006454, 0.006706, 0.006953, 0.007197, 0.007437, 0.007672, 0.007902, 0.008128, 0.008348, 0.008564, 0.008775,
+        0.008980, 0.009180, 0.009375, 0.009564, 0.009747, 0.009924, 0.010096, 0.010261, 0.010421, 0.010574, 0.010721,
+        0.010861, 0.010995, 0.011122, 0.011243, 0.011357, 0.011464, 0.011564, 0.011658, 0.011744, 0.011823, 0.011896,
+        0.011961, 0.012019, 0.012070, 0.012114, 0.012150, 0.012179, 0.012201, 0.012216, 0.012223, 0.012223, 0.012216,
+        0.012201, 0.012179, 0.012150, 0.012114, 0.012070, 0.012019, 0.011961, 0.011896, 0.011823, 0.011744, 0.011658,
+        0.011564, 0.011464, 0.011357, 0.011243, 0.011122, 0.010995, 0.010861, 0.010721, 0.010574, 0.010421, 0.010261,
+        0.010096, 0.009924, 0.009747, 0.009564, 0.009375, 0.009180, 0.008980, 0.008775, 0.008564, 0.008348, 0.008128,
+        0.007902, 0.007672, 0.007437, 0.007197, 0.006953, 0.006706, 0.006454, 0.006198, 0.005939, 0.005676, 0.005409,
+        0.005140, 0.004867, 0.004592, 0.004313, 0.004032, 0.003749, 0.003463, 0.003176, 0.002886, 0.002595, 0.002302,
+        0.002008, 0.001713, 0.001416, 0.001119, 0.000821, 0.000523, 0.000225};
+
+    EXPECT(is_approximately_equal_vector(util::gaussian_quadrature_weights(64), weights, 1e-4));
 }
 
 
@@ -111,7 +122,7 @@ CASE("eckit::geo::util::monotonic_crop") {
     };
 
     for (const auto& test : tests) {
-        auto [from, to] = util::monotonic_crop(test.values, test.min, test.max, 0.);
+        auto [from, to] = util::monotonic_crop(test.values, test.min, test.max);
 
         EXPECT(from == test.expected.first);
         EXPECT(to == test.expected.second);

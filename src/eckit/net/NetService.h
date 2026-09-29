@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Jun 96
@@ -24,6 +17,7 @@ class NetUser;
 class NetService : public Thread {
 
 public:
+
     /// @param[in]  port     TCP port to listen on
     /// @param[in]  visible  Make the thread this service is running in visible on the Monitor (defaults to false)
     NetService(int port, bool visible = true, const SocketOptions& options = SocketOptions::server());
@@ -38,10 +32,12 @@ public:
     void run() override;
 
 private:
+
     TCPServer server_;
     bool visible_;  ///< Visible on the Monitor?
 
 private:
+
     virtual NetUser* newUser(net::TCPSocket&) const = 0;
     virtual std::string name() const                = 0;
 

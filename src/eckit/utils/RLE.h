@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File RLE.h
 // Baudouin Raoult - ECMWF Jun 96
@@ -14,19 +7,25 @@
 #ifndef eckit_RLE_h
 #define eckit_RLE_h
 
-
+#include <chrono>
 #include <iosfwd>
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
+using EncodingClock = std::chrono::steady_clock;
+
 //-----------------------------------------------------------------------------
 
 class Stream;
 
 template <class InputIterator, class OutputIterator>
-long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxLoop);
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxLoop,
+                     const EncodingClock::duration timeLimit, size_t maxDepth = 1000);
 
 template <class InputIterator, class OutputIterator>
 void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);

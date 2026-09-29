@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_DenseMap_h
 #define eckit_DenseMap_h
@@ -27,21 +20,22 @@ namespace eckit {
 
 template <typename K, typename V>
 class DenseMap {
-public:                    // types
-    typedef K key_type;    ///< key type
-    typedef V value_type;  ///< value type
+public:  // types
 
-    typedef std::pair<K, V> item_type;  ///< (key, value) item type
+    using key_type   = K;                ///< key type
+    using value_type = V;                ///< value type
+    using item_type  = std::pair<K, V>;  ///< (key, value) item type
 
 private:  // types
-    typedef std::deque<item_type> store_t;
+
+    using store_t = std::deque<item_type>;
 
 public:  // methods
-    typedef typename store_t::iterator iterator;
-    typedef typename store_t::const_iterator const_iterator;
 
-    DenseMap() :
-        sorted_(true) {}
+    using iterator       = typename store_t::iterator;
+    using const_iterator = typename store_t::const_iterator;
+
+    DenseMap() : sorted_(true) {}
 
     ~DenseMap() {}
 
@@ -157,13 +151,16 @@ public:  // methods
     }
 
 private:  // types
+
     class LessThan {
     public:
+
         bool operator()(const item_type& e1, const item_type& e2) const { return (e1.first < e2.first) ? true : false; }
     };
 
     class Equals {
     public:
+
         bool operator()(const item_type& e1, const item_type& e2) const {
             return (e1.first == e2.first) ? true : false;
         }
@@ -171,11 +168,13 @@ private:  // types
 
     class Compare {
     public:
+
         bool operator()(const item_type& e, const K& k) const { return (e.first < k) ? true : false; }
         bool operator()(const K& k, const item_type& e) const { return (e.first > k) ? true : false; }
     };
 
-private:             // members
+private:  // members
+
     store_t items_;  ///< storage of the items
 
     bool sorted_;

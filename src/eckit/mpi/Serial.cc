@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/mpi/Serial.h"
 
-#include <cerrno>
 #include <unistd.h>
+#include <cerrno>
 
 #include <cstring>
 #include <deque>
@@ -34,12 +27,18 @@ namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SerialRequestPool : private NonCopyable {
+class SerialRequestPool {
 public:
+
     static SerialRequestPool& instance() {
         static SerialRequestPool request_pool;
         return request_pool;
     }
+
+    SerialRequestPool(const SerialRequestPool&)            = delete;
+    SerialRequestPool& operator=(const SerialRequestPool&) = delete;
+    SerialRequestPool(SerialRequestPool&&)                 = delete;
+    SerialRequestPool& operator=(SerialRequestPool&&)      = delete;
 
     Request createSendRequest(const void* buffer, size_t count, Data::Code type, int tag) {
         Request r = registerRequest(new SendRequest(buffer, count, type, tag));
@@ -105,6 +104,7 @@ public:
     static constexpr int anyTag() { return Serial::Constants::anyTag(); }
 
 private:
+
     Request registerRequest(SerialRequest* request) {
         ++n_;
         if (size_t(n_) == requests_.size()) {
@@ -134,14 +134,12 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial(std::string_view name) :
-    Comm(name) {
+Serial::Serial(std::string_view name) : Comm(name) {
     rank_ = 0;
     size_ = 1;
 }
 
-Serial::Serial(std::string_view name, int) :
-    Comm(name) {
+Serial::Serial(std::string_view name, int) : Comm(name) {
     rank_ = 0;
     size_ = 1;
 }
@@ -333,7 +331,8 @@ void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvb
     }
 }
 
-void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
+void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code,
+                    size_t root) const {
     if (recvbuf != sendbuf && count > 0) {
         memcpy(recvbuf, sendbuf, count * dataSize[type]);
     }
@@ -400,8 +399,8 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
     return Status(st);
 }
 
-Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-                                  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
+Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type, int /*dest*/, int sendtag,
+                                  int /*source*/, int recvtag) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     SerialRequestPool::instance().createSendRequest(sendrecv, count, type, sendtag);
     ReceiveRequest recv_request(sendrecv, count, type, recvtag);

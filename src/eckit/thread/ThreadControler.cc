@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <csignal>
 
@@ -23,9 +16,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
 ThreadControler::ThreadControler(Thread* proc, bool detached, size_t stack) :
-    detached_(detached), thread_(0), proc_(proc), stack_(stack), running_(false) {
+    detached_(detached), thread_{}, proc_(proc), stack_(stack), running_(false) {
+
+    // Note: the initialisation of `thread_` uses aggregate initialisation, because a pthread_t value cannot be
+    // systematically initialized using nullptr, as pthread_t is technically an opaque type and known to be different
+    // depending on platform (i.e. not a pointer on all platforms).
+
     // cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() << std::endl;
 }
 
@@ -108,12 +105,12 @@ void ThreadControler::execute() {
 void* ThreadControler::startThread(void* data) {
     // cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() << std::endl;
     reinterpret_cast<ThreadControler*>(data)->execute();  // static_cast or dynamic_cast ??
-    return 0;
+    return nullptr;
 }
 
 void ThreadControler::start() {
     // cout << "ThreadControler::start(" << this << ")" << " " << hex << pthread_self() << std::endl;
-    ASSERT(thread_ == 0);
+    ASSERT(thread_ == pthread_t{});
 
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -147,7 +144,7 @@ void ThreadControler::kill() {
 void ThreadControler::stop() {
     // Due to legacy code, this stop routine may be called on detached threads. Don't
     // stress about it!
-    if (!detached_ && proc_ != NULL) {
+    if (!detached_ && proc_ != nullptr) {
         proc_->stop();
     }
 }
@@ -155,11 +152,11 @@ void ThreadControler::stop() {
 void ThreadControler::wait() {
     ASSERT(!detached_);
     // if(running_)
-    THRCALL(::pthread_join(thread_, 0));
+    THRCALL(::pthread_join(thread_, nullptr));
 }
 
 bool ThreadControler::active() {
-    if (thread_ != 0) {
+    if (thread_ != pthread_t{}) {
         // Try see if it exists
 
         int policy;
@@ -169,10 +166,10 @@ bool ThreadControler::active() {
 
         // The thread does not exist
         if (n != 0) {
-            thread_ = 0;
+            thread_ = pthread_t{};
         }
     }
-    return thread_ != 0;
+    return thread_ != pthread_t{};
 }
 
 //----------------------------------------------------------------------------------------------------------------------

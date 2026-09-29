@@ -1,0 +1,117 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#include "eckit/geo/grid/SphericalHarmonics.h"
+
+#include <regex>
+
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/area/None.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
+
+
+namespace eckit::geo::grid {
+
+
+static const std::string NOT_SUPPORTED{"SphericalHarmonics does not support gridded functionality"};
+static const std::string PATTERN{"[tT]([1-9][0-9]*)"};
+
+static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
+static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
+
+
+[[nodiscard]] size_t into_unsigned(int value) {
+    // promote exception to contain it
+    try {
+        return static_cast<size_t>(eckit::into_unsigned(value));
+    }
+    catch (const eckit::BadCast& e) {
+        throw exception::SpecError(e.what(), Here());
+    }
+}
+
+
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : SphericalHarmonics(spec.get_int("truncation")) {}
+
+
+SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {
+    if (truncation_ == 0) {
+        throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
+    }
+}
+
+
+SphericalHarmonics::SphericalHarmonics(int T) : SphericalHarmonics(static_cast<size_t>(into_unsigned(T))) {}
+
+
+Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
+    std::smatch match;
+    std::regex_match(name, match, std::regex(PATTERN));
+    ASSERT(match.size() == 2);
+
+    return new spec::Custom({{"type", "sh"}, {"truncation", std::stoul(match[1].str())}});
+}
+
+
+Grid::iterator SphericalHarmonics::cbegin() const {
+    throw exception::GridError(NOT_SUPPORTED, Here());
+}
+
+
+Grid::iterator SphericalHarmonics::cend() const {
+    throw exception::GridError(NOT_SUPPORTED, Here());
+}
+
+
+const std::string& SphericalHarmonics::type() const {
+    static const std::string TYPE{"sh"};
+    return TYPE;
+}
+
+
+std::vector<size_t> SphericalHarmonics::shape() const {
+    return {size()};
+}
+
+
+bool SphericalHarmonics::empty() const {
+    return size() == 0;
+}
+
+
+const Area& SphericalHarmonics::area() const {
+    static const geo::area::None NONE;
+    return NONE;
+}
+
+
+[[nodiscard]] Grid::uid_type SphericalHarmonics::calculate_uid() const {
+    return (MD5{} << type() << truncation()).digest();
+}
+
+
+[[nodiscard]] Grid::BoundingBox* SphericalHarmonics::calculate_bbox() const {
+    return new BoundingBox;
+}
+
+
+void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
+    custom.set("grid", name());
+}
+
+
+size_t SphericalHarmonics::number_of_real_coefficients(size_t truncation) {
+    // for triangular spectral truncation
+    return (truncation + 1) * (truncation + 2);
+}
+
+
+size_t SphericalHarmonics::number_of_complex_coefficients(size_t truncation) {
+    return number_of_real_coefficients(truncation) / 2;
+}
+
+
+}  // namespace eckit::geo::grid

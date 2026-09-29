@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 
@@ -276,22 +269,23 @@ CASE("test_set_bool") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void test_sets(const initializer_list<int> v1,
-               const initializer_list<int> v2,
-               const initializer_list<int> vcompare) {
+void test_sets(const initializer_list<int> v1, const initializer_list<int> v2, const initializer_list<int> vcompare) {
 
     DenseSet<int> s1;
-    for (const auto& v : v1) s1.insert(v);
+    for (const auto& v : v1)
+        s1.insert(v);
     s1.sort();
 
     DenseSet<int> s2;
-    for (const auto& v : v2) s2.insert(v);
+    for (const auto& v : v2)
+        s2.insert(v);
     s2.sort();
 
     s1.merge(s2);
 
     DenseSet<int> scomp;
-    for (const auto& v : vcompare) scomp.insert(v);
+    for (const auto& v : vcompare)
+        scomp.insert(v);
     scomp.sort();
 
     if (s1 != scomp) {
@@ -309,7 +303,6 @@ CASE("test merge") {
     test_sets({2, 3, 4}, {1, 3, 7, 8, 9}, {1, 2, 3, 4, 7, 8, 9});
     test_sets({}, {3, 8, 9}, {3, 8, 9});
 }
-
 
 
 //----------------------------------------------------------------------------------------------------------------------

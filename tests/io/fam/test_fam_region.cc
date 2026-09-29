@@ -1,0 +1,305 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
+
+/// @file   test_fam_region.cc
+/// @author Metin Cakircali
+/// @date   May 2024
+
+#include "test_fam_common.h"
+
+#include <cstddef>
+#include <cstdlib>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamSessionManager.h"
+#include "eckit/io/fam/FamTypes.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/testing/Test.h"
+
+using namespace eckit;
+
+namespace eckit::test {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamRegionName: ctor, lookup, and allocate") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+
+    const FamRegionName region(fam::test_endpoint, region_name);
+
+    EXPECT_EQUAL(region.uri().scheme(), eckit::fam::scheme);
+    EXPECT_EQUAL(region.uri().hostport(), fam::test_endpoint);
+    EXPECT_EQUAL(region.uri().name(), '/' + region_name);
+    EXPECT_EQUAL(region.uri(), URI("fam://" + fam::test_endpoint + '/' + region_name));
+    EXPECT_EQUAL(region.asString(), "fam://" + fam::test_endpoint + '/' + region_name);
+    EXPECT_EQUAL(region.path().regionName(), region_name);
+
+    EXPECT_THROWS_AS(region.lookup(), NotFound);
+
+    EXPECT_NOT(region.exists());
+
+    EXPECT_NO_THROW(region.create(1024, 0640));
+
+    EXPECT(region.exists());
+
+    EXPECT_NO_THROW(region.lookup());
+
+    {
+        auto name = FamRegionName(fam::test_endpoint, "");
+        EXPECT_NO_THROW(name.withRegion(region_name).lookup().destroy());
+    }
+}
+
+CASE("FamRegionName: invalid names are rejected") {
+    // empty name
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, "").create(1024, 0640));
+
+    // name with spaces
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, "has space").create(1024, 0640));
+
+    // name with tab
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, "has\ttab").create(1024, 0640));
+
+    // name with non-printable control character
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, std::string("ctrl\x01char")).create(1024, 0640));
+
+    // name with high UTF-8 byte (previously caused UB with signed char)
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, std::string("caf\xC3\xA9")).create(1024, 0640));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamRegion: lookup, create, validate properties, and destroy") {
+
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto region_size = 1024;
+    const auto region_perm = static_cast<eckit::fam::perm_t>(0640);
+
+    const FamRegionName name{fam::test_endpoint, region_name};
+    {
+        EXPECT_THROWS_AS(name.lookup(), NotFound);
+        EXPECT_NO_THROW(name.create(region_size, region_perm));
+        EXPECT_NO_THROW(name.lookup());
+    }
+
+    auto region = name.lookup();
+
+    EXPECT_EQUAL(region.size(), region_size);
+    EXPECT_EQUAL(region.permissions(), region_perm);
+    EXPECT_EQUAL(region.name(), region_name);
+
+    const FamProperty prop{region_size, region_perm, region_name};
+    EXPECT_EQUAL(region.property(), prop);
+
+    EXPECT_NO_THROW(region.destroy());
+
+    EXPECT_THROWS_AS(FamRegionName(fam::test_endpoint, region_name).lookup(), NotFound);
+}
+
+CASE("FamRegion: print produces meaningful output") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(1024, 0640);
+    auto region = name.lookup();
+
+    std::ostringstream oss;
+    oss << region;
+    const auto str = oss.str();
+    EXPECT(str.find("FamRegion") != std::string::npos);
+    EXPECT(str.find(region_name) != std::string::npos);
+
+    region.destroy();
+}
+
+CASE("FamRegion: proxyObject creates a valid proxy") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(1024, 0640);
+    auto region = name.lookup();
+
+    const std::string data = "proxy_test_data";
+    auto object            = region.allocateObject(data.size(), object_name);
+    object.put(data.data(), 0, data.size());
+
+    // proxyObject wraps an existing object by {regionId, offset}
+    auto proxy = region.proxyObject(object.descriptor());
+
+    // proxy doesn't carry metadata, but can perform data ops
+    Buffer buf(data.size());
+    buf.zero();
+    proxy.get(buf.data(), 0, data.size());
+    EXPECT(buf.view() == data);
+
+    object.deallocate();
+    region.destroy();
+}
+
+CASE("FamRegion: objects are addressed by {regionId, offset}, not offset alone") {
+    // A region striped over several memory servers hands out colliding offsets, and its data items report a region id
+    // that differs from the region descriptor's own. Both are why FamDescriptor carries the pair.
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(4096, 0640);
+    auto region = name.lookup();
+
+    constexpr std::size_t object_count = 8;
+
+    std::vector<FamObject> objects;
+    std::vector<std::string> payloads;
+    objects.reserve(object_count);
+    payloads.reserve(object_count);
+
+    for (std::size_t i = 0; i < object_count; ++i) {
+        payloads.emplace_back("payload_" + std::to_string(i));
+        auto object = region.allocateObject(payloads[i].size(), fam::TestFam::makeRandomText("OBJECT"));
+        object.put(payloads[i].data(), 0, payloads[i].size());
+        objects.push_back(std::move(object));
+    }
+
+    // Every descriptor must round-trip through a single 64-bit word.
+    for (std::size_t i = 0; i < object_count; ++i) {
+        const auto descriptor = objects[i].descriptor();
+        EXPECT(FamDescriptor::unpack(descriptor.pack()) == descriptor);
+    }
+
+    // Descriptors are unique as pairs even where the offsets alone are not.
+    for (std::size_t i = 0; i < object_count; ++i) {
+        for (std::size_t j = i + 1; j < object_count; ++j) {
+            EXPECT(objects[i].descriptor() != objects[j].descriptor());
+        }
+    }
+
+    // A proxy built from the full descriptor reaches the right object; one built from the region's own id need not.
+    for (std::size_t i = 0; i < object_count; ++i) {
+        Buffer buffer(payloads[i].size());
+        buffer.zero();
+        region.proxyObject(objects[i].descriptor()).get(buffer.data(), 0, payloads[i].size());
+        EXPECT(buffer.view() == payloads[i]);
+    }
+
+    for (auto& object : objects) {
+        object.deallocate();
+    }
+    region.destroy();
+}
+
+CASE("FamRegion: set and query permission level") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(1024, 0640);
+    auto region = name.lookup();
+
+    // default is REGION-level
+    EXPECT_NO_THROW(region.setRegionLevelPermissions());
+
+    // switch to OBJECT-level
+    EXPECT_NO_THROW(region.setObjectLevelPermissions());
+
+    // Switch back to region-level
+    EXPECT_NO_THROW(region.setRegionLevelPermissions());
+
+    region.destroy();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamSession: destroyRegion by name") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName rname{fam::test_endpoint, region_name};
+
+    rname.create(1024, 0640);
+    EXPECT(rname.exists());
+
+    // destroyRegion(name) looks up and destroys internally
+    auto session = FamSessionManager::instance().session(fam::test_endpoint);
+    EXPECT_NO_THROW(session->destroyRegion(region_name));
+
+    EXPECT_NOT(rname.exists());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamRegion: idempotent creation from 4 processes") {
+    auto region_name                         = fam::TestFam::makeRandomText("REGION");
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    bool ok = fork_and_exec(4, {
+                                   "--fn=idempotent_create",
+                                   "--region=" + region_name,
+                                   "--region-size=" + std::to_string(region_size),
+                               });
+
+    EXPECT(ok);
+
+    auto name   = FamRegionName(fam::test_endpoint, "").withRegion(region_name);
+    auto region = name.lookup();
+    EXPECT(region.size() > 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit::test
+
+namespace {
+
+int child_worker_main(int argc, char** argv) {
+    auto args = eckit::testing::parse_worker_args(argc, argv);
+    auto fn   = eckit::testing::get_worker_arg(args, "fn");
+    if (fn == "idempotent_create") {
+        auto region_name = eckit::testing::get_worker_arg(args, "region");
+        auto region_size =
+            static_cast<eckit::fam::size_t>(std::stol(eckit::testing::get_worker_arg(args, "region-size")));
+        auto name = eckit::FamRegionName(eckit::test::fam::test_endpoint, "").withRegion(region_name);
+        try {
+            name.create(region_size, 0640);
+        }
+        catch (const eckit::AlreadyExists&) {
+            // Region created by another child — retry lookup (CIS may not have
+            // committed metadata yet when we race).
+            for (int attempt = 0; attempt < 20; ++attempt) {
+                try {
+                    name.lookup();
+                    return 0;
+                }
+                catch (const eckit::NotFound&) {
+                    ::usleep(50000);  // 50 ms
+                }
+            }
+            return 1;  // lookup never succeeded
+        }
+        return 0;
+    }
+    return 1;
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+    auto args = eckit::testing::parse_worker_args(argc, argv);
+    if (!args.empty()) {
+        eckit::Main::initialise(argc, argv);
+        return child_worker_main(argc, argv);
+    }
+    return eckit::testing::run_tests(argc, argv);
+}

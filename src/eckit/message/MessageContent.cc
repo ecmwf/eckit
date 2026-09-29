@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 2017- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @date   Jun 2020
@@ -61,9 +54,21 @@ void MessageContent::getDoubleArray(const std::string& key, std::vector<double>&
     throw eckit::SeriousBug(oss.str());
 }
 
+void MessageContent::getFloatArray(const std::string& key, std::vector<float>&) const {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " getFloatArray(key, vector<float>&)";
+    throw eckit::SeriousBug(oss.str());
+}
+
 void MessageContent::getDoubleArray(const std::string& key, double* data, size_t len) const {
     std::ostringstream oss;
     oss << "Not implemented " << *this << " getDoubleArray(key, double*, len)";
+    throw eckit::SeriousBug(oss.str());
+}
+
+void MessageContent::getFloatArray(const std::string& key, float* data, size_t len) const {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " getFloatArray(key, float*, len)";
     throw eckit::SeriousBug(oss.str());
 }
 
@@ -91,15 +96,15 @@ const void* MessageContent::data() const {
     throw eckit::SeriousBug(oss.str());
 }
 
-MessageContent* MessageContent::transform(const Transformer&) const {
+void MessageContent::transform(const Transformer&) {
     std::ostringstream oss;
     oss << "Not implemented " << *this << " tranform(Transformer)";
     throw eckit::SeriousBug(oss.str());
 }
 
-MessageContent* MessageContent::transform(const StringDict&) const {
+void MessageContent::transform(const OrderedStringDict&) {
     std::ostringstream oss;
-    oss << "Not implemented " << *this << " tranform(StringDict)";
+    oss << "Not implemented " << *this << " tranform(OrderedStringDict)";
     throw eckit::SeriousBug(oss.str());
 }
 

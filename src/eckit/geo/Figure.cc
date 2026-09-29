@@ -1,28 +1,25 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Figure.h"
 
 #include <memory>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/geometry/OblateSpheroid.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/figure/Sun.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#if eckit_HAVE_PROJ
+#include "eckit/geo/projection/PROJ.h"
+#endif
 
 
 namespace eckit::geo {
@@ -51,6 +48,16 @@ double Figure::b() const {
 }
 
 
+double Figure::area() const {
+    NOTIMP;
+}
+
+
+double Figure::area(const area::BoundingBox&) const {
+    NOTIMP;
+}
+
+
 spec::Custom* Figure::spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);
@@ -66,20 +73,40 @@ std::string Figure::spec_str() const {
 }
 
 
+std::string Figure::proj_str() const {
+#if eckit_HAVE_PROJ
+    std::unique_ptr<const spec::Custom> custom(spec());
+    return projection::PROJ::proj_str(*custom);
+#else
+    NOTIMP;
+#endif
+}
+
+
+bool Figure::spherical() const {
+    return types::is_approximately_equal(a(), b());
+}
+
+
 double Figure::eccentricity() const {
-    return geometry::OblateSpheroid::eccentricity(a(), b());
+    return figure::OblateSpheroid::eccentricity(a(), b());
 }
 
 
 double Figure::flattening() const {
-    return geometry::OblateSpheroid::flattening(a(), b());
+    return figure::OblateSpheroid::flattening(a(), b());
 }
 
 
 void Figure::fill_spec(spec::Custom& custom) const {
     static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
-        {std::shared_ptr<Figure>{new figure::GRS80}, "grs80"},
-        {std::shared_ptr<Figure>{new figure::WGS84}, "wgs84"},
+        {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
+        {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
+        {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
+        {std::shared_ptr<Figure>{new figure::EarthIau1965}, "iau1965"},
+        {std::shared_ptr<Figure>{new figure::Sun}, "sun"},
+        {std::shared_ptr<Figure>{new figure::EarthWgs84}, "wgs84"},
+        {std::shared_ptr<Figure>{new figure::EarthWgs84Sphere}, "wgs84_sphere"},
     };
 
     for (const auto& [figure, name] : KNOWN) {
@@ -106,29 +133,36 @@ FigureFactory& FigureFactory::instance() {
 
 
 Figure* FigureFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    std::unique_ptr<Figure::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 
 
-Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
+const Figure* FigureFactory::make_default() {
+    return new figure::Earth;
+}
+
+
+Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
     lock_type lock;
 
-    if (std::string figure; spec.get("figure", figure)) {
-        return Factory<Figure>::instance().get(figure).create(spec);
+    if (spec.has("figure")) {
+        std::string name;
+        return spec.get("figure", name) ? Factory<Figure>::instance().get(name).create()
+                                        : make_from_spec_(spec.spec("figure"));
     }
 
-    if (double a = 0., b = 0.; spec.get("a", a) && spec.get("b", b)) {
+    if (double a = 0., b = 0.;
+        (spec.get("a", a) && spec.get("b", b)) || (spec.get("semi_major_axis", a) && spec.get("semi_minor_axis", b))) {
         return types::is_approximately_equal(a, b) ? static_cast<Figure*>(new figure::Sphere(a))
                                                    : new figure::OblateSpheroid(a, b);
     }
 
-    if (double R = 0.; spec.get("R", R)) {
+    if (double R = 0.; spec.get("R", R) || spec.get("radius", R)) {
         return new figure::Sphere(R);
     }
 
-    Log::error() << "Figure: cannot build figure without 'R' or 'a', 'b'" << std::endl;
-    throw SpecNotFound("Figure: cannot build figure without 'R' or 'a', 'b'", Here());
+    return const_cast<Figure*>(make_default());
 }
 
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File JavaAgent.h
 // Baudouin Raoult - ECMWF Nov 97
@@ -25,8 +18,8 @@ namespace eckit {
 
 class JavaAgent : public eckit::Streamable {
 public:
-    enum
-    {
+
+    enum {
         none,
         user,
         oper,
@@ -62,17 +55,21 @@ public:
     static void serve(eckit::Stream&, std::istream&, std::ostream&);
 
 protected:  // members
+
     eckit::Stream& stream_;
     std::string user_;
 
 protected:  // methods
+
     virtual void print(std::ostream&) const = 0;
 
 private:  // members
+
     static eckit::ClassSpec classSpec_;
     static eckit::Reanimator<JavaAgent> reanimator_;
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const JavaAgent& p) {
         p.print(s);
         return s;

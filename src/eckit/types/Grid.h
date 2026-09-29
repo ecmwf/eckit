@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File Grid.h
 // Baudouin Raoult - ECMWF Dec 97
@@ -28,8 +21,8 @@ class DumpLoad;
 
 class Grid {
 public:
-    enum
-    {
+
+    enum {
         undef = -1
     };
 
@@ -37,6 +30,7 @@ public:
 
     class InvalidGrid : public Exception {
     public:
+
         InvalidGrid(const std::string& s);
     };
 
@@ -44,8 +38,7 @@ public:
 
     Grid(const std::string&);
 
-    Grid(double ns = undef, double ew = undef) :
-        northSouth_(ns), eastWest_(ew) {}
+    Grid(double ns = undef, double ew = undef) : northSouth_(ns), eastWest_(ew) {}
 
     Grid(const std::vector<double>&);
 
@@ -105,6 +98,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -122,6 +116,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     // -- Members

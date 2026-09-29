@@ -1,18 +1,12 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <cassert>
 #include <exception>
 #include <iostream>
 #include <map>
+#include <new>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -21,7 +15,7 @@
 
 struct TestFactory::PImpl {
 
-    typedef std::map<std::string, TestBuilder*> Store;
+    using Store = std::map<std::string, TestBuilder*>;
     Store register_;
 
     ~PImpl() {
@@ -53,8 +47,7 @@ struct TestFactory::PImpl {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TestFactory::TestFactory() :
-    pimpl_(new TestFactory::PImpl()) {}
+TestFactory::TestFactory() : pimpl_(new TestFactory::PImpl()) {}
 
 TestFactory& TestFactory::instance() {
     // autolock mutex

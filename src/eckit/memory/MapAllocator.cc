@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <sys/mman.h>
 #include <unistd.h>
@@ -26,12 +19,10 @@ static size_t whole_page(size_t size) {
     return ((size + page - 1) / page) * page;
 }
 
-MapAllocatorTooSmall::MapAllocatorTooSmall(size_t, size_t) :
-    Exception("MapAllocator too small") {}
+MapAllocatorTooSmall::MapAllocatorTooSmall(size_t, size_t) : Exception("MapAllocator too small") {}
 
-MapAllocator::MapAllocator(size_t length) :
-    fd_(-1), length_(whole_page(length)), count_(0), more_(0) {
-    addr_ = MMap::mmap(0, length_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
+MapAllocator::MapAllocator(size_t length) : fd_(-1), length_(whole_page(length)), count_(0), more_{nullptr} {
+    addr_ = MMap::mmap(nullptr, length_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
 
     if (addr_ == MAP_FAILED) {
         throw FailedSystemCall("mmap", Here());
@@ -102,9 +93,9 @@ void MapAllocator::deallocate(void* addr) {
     else {
         ASSERT(more_);
         more_->deallocate(addr);
-        if (more_->count_ == 0 && more_->more_ == 0) {
+        if (more_->count_ == 0 && more_->more_ == nullptr) {
             delete more_;
-            more_ = 0;
+            more_ = nullptr;
         }
     }
 }

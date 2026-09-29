@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file Log.h
 /// @author Baudouin Raoult
@@ -22,7 +15,7 @@
 
 namespace eckit {
 
-typedef void (*channel_callback_t)(void* data, const char* msg);
+using channel_callback_t = void (*)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,9 +25,9 @@ typedef void (*channel_callback_t)(void* data, const char* msg);
 class Log {
 
 public:  // types
+
     /// Output formats
-    enum
-    {
+    enum {
         compactFormat     = 0,
         normalFormat      = 1,
         fullFormat        = 2,
@@ -43,6 +36,7 @@ public:  // types
     };
 
 public:  // methods
+
     /// Channel for debug output
     static Channel& debug();
 
@@ -104,7 +98,8 @@ public:  // methods
 
     static void print(std::ostream& os);
 
-private:     // methods
+private:  // methods
+
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
 };
@@ -120,17 +115,14 @@ class LogFormatSetter {
     int format_;
 
 public:
-    explicit LogFormatSetter(int f) :
-        format_(f) {}
+
+    explicit LogFormatSetter(int f) : format_(f) {}
 
     friend std::ostream& operator<<(std::ostream& s, const LogFormatSetter& f) {
         format(s, f.format_);
         return s;
     }
 };
-
-DEPRECATED("Use eckit::format() instead")
-std::ostream& setformat(std::ostream& s, int f);
 
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);
@@ -149,6 +141,7 @@ inline std::ostream& newl(std::ostream& out) {
 
 class Voidify {
 public:
+
     Voidify() {}
     void operator&(std::ostream&) {}
 };

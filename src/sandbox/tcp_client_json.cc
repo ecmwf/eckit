@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
 #include <sstream>
@@ -23,8 +16,8 @@ class Client : public Application {
     virtual void run();
 
 public:
-    Client(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 
@@ -36,8 +29,8 @@ class XX {
     long step_;
 
 public:  // methods
-    XX(const std::string& app) :
-        app_(app), step_(0) {}
+
+    XX(const std::string& app) : app_(app), step_(0) {}
 
     void step(long step) { step_ = step; }
     void event(const std::string& e) { event_ = e; }

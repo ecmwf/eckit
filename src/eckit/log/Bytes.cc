@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 #include <limits>
@@ -26,14 +19,11 @@ namespace eckit {
 
 static const char magnitudes[] = {' ', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'};
 
-Bytes::Bytes(double bytes) :
-    bytes_(bytes), rate_(false) {}
+Bytes::Bytes(double bytes) : bytes_(bytes), rate_(false) {}
 
-Bytes::Bytes(double bytes, Timer& timer) :
-    bytes_(rate(bytes, timer.elapsed())), rate_(true) {}
+Bytes::Bytes(double bytes, Timer& timer) : bytes_(rate(bytes, timer.elapsed())), rate_(true) {}
 
-Bytes::Bytes(double bytes, double elapsed) :
-    bytes_(rate(bytes, elapsed)), rate_(true) {}
+Bytes::Bytes(double bytes, double elapsed) : bytes_(rate(bytes, elapsed)), rate_(true) {}
 
 
 int Bytes::sign() const {
@@ -46,8 +36,7 @@ double Bytes::rate(double num, double den) {
     }
 
     if (den == 0.) {
-        return num
-               * std::numeric_limits<double>::infinity();  // must be after, num gives sign to inf
+        return num * std::numeric_limits<double>::infinity();  // must be after, num gives sign to inf
     }
 
     return num / den;

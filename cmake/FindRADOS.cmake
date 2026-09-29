@@ -1,22 +1,17 @@
-# (C) Copyright 2011- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 # - Try to find Rados
 # Once done this will define
 #
-#  RADOS_FOUND         - system has Armadillo
-#  RADOS_INCLUDE_DIRS  - the Armadillo include directory
-#  RADOS_LIBRARIES     - the Armadillo library
+#  RADOS_FOUND         - system has Rados
+#  RADOS_INCLUDE_DIRS  - the Rados include directory
+#  RADOS_LIBRARIES     - the Rados library
 #  RADOS_VERSION - This is set to $major.$minor.$patch (eg. 0.9.8)
 #
 # The following paths will be searched with priority if set in CMake or env
 #
-#  RADOS_PATH          - prefix path of the Armadillo installation
+#  RADOS_PATH          - prefix path of the Rados installation
 #  RADOS_ROOT              - Set this variable to the root installation
 
 # Search with priority for RADOS_PATH if given as CMake or env var

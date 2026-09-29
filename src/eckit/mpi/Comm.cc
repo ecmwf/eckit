@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/mpi/Comm.h"
 
@@ -36,6 +29,7 @@ constexpr bool have_parallel() {
 
 class Environment {
 public:
+
     static std::string_view getDefaultCommType() {
         // Force a given communicator (only required if e.g. running serial applications with MPI)
         if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
@@ -48,7 +42,8 @@ public:
                 ",ALPS_APP_PE"            // Cray aprun
                 ",PMI_SIZE"               // Intel MPI
                 ",SLURM_STEP_NUM_TASKS";  // slurm srun
-            std::string eckitMPIDetectionVars = eckit::LibResource<std::string, LibEcKit>("$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars", defaultMPIDetectionVars);
+            std::string eckitMPIDetectionVars = eckit::LibResource<std::string, LibEcKit>(
+                "$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars", defaultMPIDetectionVars);
             std::vector<std::string> envVars;
             Tokenizer{','}(eckitMPIDetectionVars, envVars);
             for (const auto& env : envVars) {
@@ -125,6 +120,7 @@ public:
             delete itr->second;
         }
         communicators.clear();
+        default_ = nullptr;
     }
 
     Comm& getComm(std::string_view name = {}) {
@@ -163,7 +159,7 @@ public:
             throw SeriousBug("Communicator with name " + std::string{name} + " already exists", Here());
         }
 
-        Comm* pComm         = CommFactory::build(name, getDefaultCommType(), comm);
+        Comm* pComm = CommFactory::build(name, getDefaultCommType(), comm);
         communicators.emplace(name, pComm);
     }
 
@@ -176,7 +172,11 @@ public:
         communicators.emplace(name, comm);
     }
 
-    void deleteComm(std::string_view name) {
+    enum class FreeComm {
+        yes,
+        no
+    };
+    void unregisterComm(std::string_view name, FreeComm free_comm) {
         AutoLock<Mutex> lock(mutex_);
 
         auto itr = communicators.find(name);
@@ -185,35 +185,33 @@ public:
 
             Comm* comm = itr->second;
 
-            // refuse to delete the default communicator
+            // refuse to unregister the default communicator, world communicator and self communicator
             if (default_ == comm) {
-                throw SeriousBug("Trying to delete the default Communicator with name "
-                                     + std::string{name},
+                throw SeriousBug("Trying to unregister the default Communicator with name " + std::string{name},
                                  Here());
             }
-
-            comm->free();
-            delete comm;
-
+            if (name == "world") {
+                throw SeriousBug("Trying to unregister the 'world' Communicator", Here());
+            }
+            if (name == "self") {
+                throw SeriousBug("Trying to unregister the 'self' Communicator", Here());
+            }
+            if (free_comm == FreeComm::yes) {
+                comm->free();
+            }
             communicators.erase(itr);
+            delete comm;
         }
         else {
             throw SeriousBug("Communicator with name " + std::string{name} + " does not exist", Here());
         }
     }
 
+    Environment() = default;
 
-    Environment() :
-        default_(nullptr) {}
+    ~Environment() { finaliseAllComms(); }
 
-    ~Environment() {
-        AutoLock<Mutex> lock(mutex_);
-
-        finaliseAllComms();
-        default_ = nullptr;
-    }
-
-    Comm* default_;
+    Comm* default_{nullptr};
 
     std::map<std::string, Comm*, std::less<>> communicators;
 
@@ -224,6 +222,7 @@ public:
 
 class CommFactories {
 public:
+
     void registFactory(std::string_view builder, CommFactory* f) {
         AutoLock<Mutex> lock(mutex_);
         ASSERT(factories.find(builder) == factories.end());
@@ -259,14 +258,14 @@ public:
     }
 
 private:
+
     CommFactories() {}
 
     std::map<std::string, CommFactory*, std::less<>> factories;
     mutable eckit::Mutex mutex_;
 };
 
-CommFactory::CommFactory(std::string_view builder) :
-    builder_(builder) {
+CommFactory::CommFactory(std::string_view builder) : builder_(builder) {
     CommFactories::instance().registFactory(builder, this);
 }
 
@@ -284,8 +283,7 @@ Comm* CommFactory::build(std::string_view name, std::string_view builder, int co
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm::Comm(std::string_view name) :
-    name_(name) {}
+Comm::Comm(std::string_view name) : name_(name) {}
 
 Comm::~Comm() {}
 
@@ -307,7 +305,11 @@ void addComm(std::string_view name, Comm* comm) {
 }
 
 void deleteComm(std::string_view name) {
-    Environment::instance().deleteComm(name);
+    Environment::instance().unregisterComm(name, Environment::FreeComm::yes);
+}
+
+void unregisterComm(std::string_view name) {
+    Environment::instance().unregisterComm(name, Environment::FreeComm::no);
 }
 
 bool hasComm(std::string_view name) {

@@ -1,19 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <vector>
 
 #include "eckit/container/KDTree.h"
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/testing/Test.h"
 
 
@@ -23,7 +15,7 @@ namespace eckit::geo::test {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct TestTreeTrait {
-    using Point   = geo::Point2;
+    using Point   = geo::PointXY;
     using Payload = double;
 };
 
@@ -60,6 +52,7 @@ struct PointInBoxInteriorFinder {
     }
 
 private:
+
     /// \brief Returns true if the point stored in \p node or any of its descendants lies in the
     /// interior of the axis-aligned box with bottom-left and top-right corners at
     /// \p lbound and \p ubound.
@@ -76,9 +69,8 @@ private:
 
         const size_t axis = node->axis();
 
-        return (lbound.x(axis) < point.x(axis) && isAnyPointInBoxInterior(node->left(alloc), alloc, lbound, ubound))
-               || (ubound.x(axis) > point.x(axis)
-                   && isAnyPointInBoxInterior(node->right(alloc), alloc, lbound, ubound));
+        return (lbound.x(axis) < point.x(axis) && isAnyPointInBoxInterior(node->left(alloc), alloc, lbound, ubound)) ||
+               (ubound.x(axis) > point.x(axis) && isAnyPointInBoxInterior(node->right(alloc), alloc, lbound, ubound));
     }
 
     /// \brief Returns true if \p point is in the interior of the axis-aligned box

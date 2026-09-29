@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosAttributes.h"
@@ -19,6 +12,7 @@ namespace eckit {
 
 class RadosIOCtx {
 public:
+
     rados_ioctx_t io_;
 
     RadosIOCtx(rados_t cluster, const std::string& pool) {
@@ -40,8 +34,7 @@ const RadosCluster& RadosCluster::instance() {
     return instance_;
 }
 
-RadosCluster::RadosCluster() :
-    cluster_(0) {
+RadosCluster::RadosCluster() : cluster_(0) {
 
     static const std::string radosClusterName = Resource<std::string>("radosClusterName", "mars");
     static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.mars");

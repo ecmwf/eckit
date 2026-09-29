@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -15,10 +7,7 @@
 #include <cstddef>
 #include <vector>
 
-
-namespace eckit {
-class Fraction;
-}
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo {
@@ -26,10 +15,13 @@ namespace eckit::geo {
 
 class Range {
 public:
+
     // -- Constructors
 
-    Range(const Range&) = delete;
-    Range(Range&&)      = delete;
+    Range() = default;
+
+    Range(const Range&) = default;
+    Range(Range&&)      = default;
 
     // -- Destructors
 
@@ -37,42 +29,25 @@ public:
 
     // -- Operators
 
-    Range& operator=(const Range&) = delete;
-    Range& operator=(Range&&)      = delete;
+    Range& operator=(const Range&) = default;
+    Range& operator=(Range&&)      = default;
 
     // -- Methods
 
-    size_t size() const { return n_; }
-    double a() const { return a_; }
-    double b() const { return b_; }
-    double eps() const { return eps_; }
+    double min() const;
+    double max() const;
 
-    virtual bool periodic() const { return false; }
+    [[nodiscard]] virtual Range* make_cropped_range(double crop_a, double crop_b) const = 0;
+    [[nodiscard]] virtual const std::vector<double>& values() const                     = 0;
 
-    [[nodiscard]] virtual Range* make_range_flipped() const                             = 0;
-    [[nodiscard]] virtual Range* make_range_cropped(double crop_a, double crop_b) const = 0;
+    virtual size_t size() const = 0;
+    virtual double a() const    = 0;
+    virtual double b() const    = 0;
 
-    virtual Fraction increment() const                = 0;
-    virtual const std::vector<double>& values() const = 0;
-
-protected:
-    // -- Constructors
-
-    explicit Range(size_t n, double a, double b, double eps = 0.);
-
-    // --Methods
-
-    void resize(size_t n);
-    void a(double value) { a_ = value; }
-    void b(double value) { b_ = value; }
-
-private:
-    // -- Members
-
-    size_t n_;
-    double a_;
-    double b_;
-    const double eps_;
+    virtual Fraction increment() const;
+    virtual bool periodic() const;
+    virtual bool includesNorthPole() const;
+    virtual bool includesSouthPole() const;
 };
 
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/option/FactoryOption.h"
@@ -29,6 +22,7 @@ namespace {
 /// A general base type, for objects to be built from.
 class ObjectBase {
 public:
+
     ObjectBase() {}
 };
 
@@ -42,11 +36,12 @@ class ObjectFactory {
     }
 
 protected:
-    ObjectFactory(const std::string& nm) :
-        name_(nm) { factory()[nm] = this; }
+
+    ObjectFactory(const std::string& nm) : name_(nm) { factory()[nm] = this; }
     virtual ~ObjectFactory() { factory().erase(name_); }
 
 public:
+
     static void list(std::ostream& out) {
         const char* sep = "";
         for (std::map<std::string, ObjectFactory*>::const_iterator j = factory().begin(); j != factory().end(); ++j) {
@@ -67,8 +62,8 @@ class ObjectBuilder : public ObjectFactory {
     virtual ObjectBase* make() const { return new T; }
 
 public:
-    ObjectBuilder(const std::string& name) :
-        ObjectFactory(name) {}
+
+    ObjectBuilder(const std::string& name) : ObjectFactory(name) {}
 };
 
 

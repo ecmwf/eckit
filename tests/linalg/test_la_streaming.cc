@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
@@ -30,7 +23,8 @@ void test(const linalg::SparseMatrix& v, const linalg::SparseMatrix& r) {
     EXPECT(v.cols() == r.cols());
     EXPECT(v.nonZeros() == r.nonZeros());
     const auto nnz = v.nonZeros();
-    EXPECT(testing::make_view(v.outer(), v.outer() + v.rows() + 1) == testing::make_view(r.outer(), r.outer() + r.rows() + 1));
+    EXPECT(testing::make_view(v.outer(), v.outer() + v.rows() + 1) ==
+           testing::make_view(r.outer(), r.outer() + r.rows() + 1));
     EXPECT(testing::make_view(v.inner(), v.inner() + nnz) == testing::make_view(r.inner(), r.inner() + nnz));
     EXPECT(testing::make_view(v.data(), v.data() + nnz) == testing::make_view(r.data(), r.data() + nnz));
 }

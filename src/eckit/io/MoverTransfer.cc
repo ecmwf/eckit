@@ -1,28 +1,20 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/io/MoverTransfer.h"
+#include "eckit/io/MoverTransferSelection.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
 #include "eckit/net/Connector.h"
 #include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/io/MoverTransferSelection.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MoverTransfer::MoverTransfer(TransferWatcher& watcher) :
-    watcher_(watcher) {}
+MoverTransfer::MoverTransfer(TransferWatcher& watcher) : watcher_(watcher) {}
 
 MoverTransfer::~MoverTransfer() {}
 
@@ -94,6 +86,12 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         }
         else if (pos == -2) {
             watcher_.toHandleOpened();
+        }
+        else if (pos == -3) {
+            Offset from;
+            s >> from;
+            watcher_.restartFrom(from);
+            progress(from);
         }
         s >> more;
     }

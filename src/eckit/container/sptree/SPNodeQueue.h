@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef SPNodeQueue_H
 #define SPNodeQueue_H
@@ -34,23 +27,25 @@ struct SPNodeInfo;
 template <class Traits, class NodeType>
 class SPNodeQueue {
 public:
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
 
-    typedef typename Alloc::Ptr ID;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef NodeType Node;
-    typedef SPNodeInfo<Traits, NodeType> NodeInfo;
-    typedef typename NodeInfo::NodeList NodeList;
+    using ID = typename Alloc::Ptr;
+
+    using Node     = NodeType;
+    using NodeInfo = SPNodeInfo<Traits, NodeType>;
+    using NodeList = typename NodeInfo::NodeList;
 
 private:
+
     size_t k_;
     std::priority_queue<NodeInfo> queue_;
 
 public:
-    SPNodeQueue(size_t k) :
-        k_(k) {}
+
+    SPNodeQueue(size_t k) : k_(k) {}
 
     void push(Node* n, ID id, double d) {
         NodeInfo info(n, id, d);

@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/serialisation/Stream.h"
 
 #include <netinet/in.h>
-#include <cstdint>
 #include <sys/types.h>
+#include <cstdint>
 
 #include <cassert>
 #include <cstring>
@@ -63,8 +56,7 @@ static const char* tag_names[] = {"0",
 const int tag_count = sizeof(tag_names) / sizeof(tag_names[0]);
 
 
-Stream::Stream() :
-    lastTag_(tag_zero), writeCount_(0) {}
+Stream::Stream() : lastTag_(tag_zero), writeCount_(0) {}
 
 void Stream::print(std::ostream& s) const {
     s << name();
@@ -631,13 +623,8 @@ Stream& Stream::operator>>(double& x) {
 Stream& Stream::operator>>(std::string& s) {
     readTag(tag_string);
     const long length = getLong();
-
-    const long sz = eckit::round(length + 1, 8);  // some padding to avoid zero-length buffer
-    char buf[sz];
-    getBytes(buf, length);
-
     s.resize(length);
-    s.assign(buf, length);
+    getBytes(s.data(), length);
 
     T("r std::string", s);
     return *this;
@@ -654,11 +641,8 @@ bool Stream::next(std::string& s) {
     }
 
     long length = getLong();
-    char buf[length];
-    getBytes(buf, length);
-
     s.resize(length);
-    s.assign(buf, length);
+    getBytes(s.data(), length);
 
     T("r std::string", s);
 
@@ -802,8 +786,8 @@ class StreamDecoder : public Stream {
     virtual std::string name() const { return "StreamDecoder"; }
 
 public:
-    StreamDecoder(const char* buffer) :
-        buffer_(buffer), pos_(0), len_(0) {}
+
+    StreamDecoder(const char* buffer) : buffer_(buffer), pos_(0), len_(0) {}
     size_t len() const { return len_; }
 };
 

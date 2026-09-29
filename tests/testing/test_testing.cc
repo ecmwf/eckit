@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 
@@ -25,7 +18,7 @@ using namespace eckit::testing;
 
 namespace eckit_test {  // Not eckit namespace on purpose to test downstream usage of macros
 
-typedef std::vector<Test> Tests;
+using Tests = std::vector<Test>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -371,7 +364,8 @@ int main(int argc, char* argv[]) {
 
     int retval1 = 0;
 
-    if (global_counters.size() != 5 || std::any_of(global_counters.begin(), global_counters.end(), [](int a) { return a != 0; })) {
+    if (global_counters.size() != 5 ||
+        std::any_of(global_counters.begin(), global_counters.end(), [](int a) { return a != 0; })) {
         eckit::Log::info() << "Global counters incorrectly configured" << std::endl;
         retval1 = 1;
     }
@@ -380,7 +374,8 @@ int main(int argc, char* argv[]) {
     int retval2 = eckit::testing::run_tests(eckit_test::tests, argc, argv);
 
     int retval3 = 0;
-    if (global_counters[0] != 3 || global_counters[1] != 1 || global_counters[2] != 1 || global_counters[3] != 11 || global_counters[4] != 10) {
+    if (global_counters[0] != 3 || global_counters[1] != 1 || global_counters[2] != 1 || global_counters[3] != 11 ||
+        global_counters[4] != 10) {
 
         eckit::Log::info() << "Global counters incorrect. Relevant tests FAILED" << std::endl;
         eckit::Log::info() << "Global counters: " << global_counters << std::endl;

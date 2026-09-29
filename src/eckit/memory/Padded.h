@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+#pragma once
 
 // File Padded.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef eckit_Padded_h
-#define eckit_Padded_h
+#include <cstddef>
 
 //-----------------------------------------------------------------------------
 
@@ -20,25 +13,20 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-// Use this class to pad an object to a given size
-
+/// Allows to pad T to the next smallest multiple of size larger or equal than sizeof(T).
+/// @warning This class is often written to disk! Any change must ensure binary compatibility.
 template <class T, int size>
 class Padded : public T {
 private:
+
+    static constexpr auto align_ = size;
+    static constexpr auto osize_ = sizeof(T);
+
     // Add the padding
-
-    enum
-    {
-        align_ = size,
-        osize_ = sizeof(T)
-    };
-
-    char padding_[((size_t(osize_) + size_t(align_) - 1) / align_) * align_ - osize_];
+    char padding_[((size_t(osize_) + size_t(align_) - 1) / align_) * align_ - osize_]{};
 };
 
 
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/PointLonLat.h"
@@ -16,9 +8,11 @@
 #include <cmath>
 #include <limits>
 #include <sstream>
+#include <vector>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -41,11 +35,28 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
 }
 
 
+bool PointLonLat::pole(value_type eps) const {
+    const auto p = make(lon(), lat());
+    return types::is_approximately_equal(p.lat(), RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.lat(), -RIGHT_ANGLE, eps);
+}
+
+
+bool PointLonLat::north_pole(value_type eps) const {
+    return types::is_approximately_equal(make(lon(), lat()).lat(), RIGHT_ANGLE, eps);
+}
+
+
+bool PointLonLat::south_pole(value_type eps) const {
+    return types::is_approximately_equal(make(lon(), lat()).lat(), -RIGHT_ANGLE, eps);
+}
+
+
 void PointLonLat::assert_latitude_range(const PointLonLat& P) {
-    if (!(-RIGHT_ANGLE <= P.lat && P.lat <= RIGHT_ANGLE)) {
+    if (!(-RIGHT_ANGLE <= P.lat() && P.lat() <= RIGHT_ANGLE)) {
         std::ostringstream oss;
         oss.precision(std::numeric_limits<value_type>::max_digits10);
-        oss << "Invalid latitude [degree] " << P.lat;
+        oss << "Invalid latitude [degree] " << P.lat();
         throw BadValue(oss.str(), Here());
     }
 }
@@ -66,25 +77,39 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
 }
 
 
-PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lonr_minimum) {
-    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, util::RADIAN_TO_DEGREE * lonr_minimum);
+PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum) {
+    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, lon_minimum);
+}
+
+
+PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::string& name) {
+    if (std::vector<value_type> v(DIMS); spec.get(name, v) && v.size() == DIMS) {
+        return {v[0], v[1]};
+    }
+
+    throw exception::SpecError("PointLonLat::make_from_spec: '" + name + "' expected [lon, lat] values", Here());
+}
+
+
+PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::string& name, const PointLonLat& dfault) {
+    return spec.has(name) ? make_from_spec(spec, name) : dfault;
 }
 
 
 PointLonLat PointLonLat::componentsMin(const PointLonLat& p, const PointLonLat& q) {
-    return {std::min(p.lon, q.lon), std::min(p.lat, q.lat)};
+    return {std::min(p.lon(), q.lon()), std::min(p.lat(), q.lat())};
 }
 
 
 PointLonLat PointLonLat::componentsMax(const PointLonLat& p, const PointLonLat& q) {
-    return {std::max(p.lon, q.lon), std::max(p.lat, q.lat)};
+    return {std::max(p.lon(), q.lon()), std::max(p.lat(), q.lat())};
 }
 
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
-    const auto c = PointLonLat::make(a.lon, a.lat, 0., eps);
-    const auto d = PointLonLat::make(b.lon, b.lat, 0., eps);
-    return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);
+    const auto c = PointLonLat::make(a.lon(), a.lat(), 0., eps);
+    const auto d = PointLonLat::make(b.lon(), b.lat(), 0., eps);
+    return types::is_approximately_equal(c.lon(), d.lon(), eps) && types::is_approximately_equal(c.lat(), d.lat(), eps);
 }
 
 

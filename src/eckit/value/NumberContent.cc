@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/value/NumberContent.h"
 #include "eckit/exception/Exceptions.h"
@@ -23,8 +16,8 @@ namespace eckit {
 
 class BadBoolConversion : public Exception {
 public:
-    BadBoolConversion(const std::string& w) :
-        Exception(std::string("Bad Bool Conversion: ") + w) {}
+
+    BadBoolConversion(const std::string& w) : Exception(std::string("Bad Bool Conversion: ") + w) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,11 +28,9 @@ ClassSpec NumberContent::classSpec_ = {
 };
 Reanimator<NumberContent> NumberContent::reanimator_;
 
-NumberContent::NumberContent(long long l) :
-    value_(l) {}
+NumberContent::NumberContent(long long l) : value_(l) {}
 
-NumberContent::NumberContent(Stream& s) :
-    Content(s), value_(0) {
+NumberContent::NumberContent(Stream& s) : Content(s), value_(0) {
     s >> value_;
 }
 

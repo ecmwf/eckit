@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File SQLType.h
 // Baudouin Raoult - ECMWF Dec 03
@@ -16,8 +9,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -26,10 +17,10 @@ class SQLOutput;
 
 namespace type {
 
-class SQLType : private eckit::NonCopyable {
+class SQLType {
 public:
-    enum
-    {
+
+    enum {
         realType    = 0,
         integerType = 1,
         stringType  = 2,
@@ -39,6 +30,11 @@ public:
     };
 
     SQLType(const std::string&);
+
+    SQLType(const SQLType&)            = delete;
+    SQLType& operator=(const SQLType&) = delete;
+    SQLType(SQLType&&)                 = delete;
+    SQLType& operator=(SQLType&&)      = delete;
 
     virtual ~SQLType();
 
@@ -54,7 +50,7 @@ public:
 
     // Formating functions (used by SQLSimpleOutput)
     virtual size_t width() const;
-    typedef std::ios_base& (*manipulator)(std::ios_base&);
+    using manipulator = std::ios_base& (*)(std::ios_base&);
     virtual manipulator format() const;
 
     static const SQLType& lookup(const std::string&, size_t sizeDoubles = 1);
@@ -64,10 +60,12 @@ public:
     static SQLType* registerType(SQLType*);
 
 protected:
+
     virtual void print(std::ostream&) const;
     static bool exists(const std::string&);
 
 private:
+
     std::string name_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLType& p) {
@@ -78,6 +76,7 @@ private:
 
 class DynamicallyCreatedTypesDestroyer {
 public:
+
     static SQLType* registerType(SQLType*);
     ~DynamicallyCreatedTypesDestroyer();
 };

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File ResourceUsage.h
 // Baudouin Raoult - ECMWF Oct 16
@@ -19,7 +12,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/system/MemoryInfo.h"
 
 
@@ -27,8 +19,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class ResourceUsage : private NonCopyable {
+class ResourceUsage {
 public:
+
     explicit ResourceUsage();
 
     /// @param name of the timer, used for output
@@ -39,12 +32,19 @@ public:
     /// @param o output stream to use  for output
     explicit ResourceUsage(const char* name, std::ostream& o = Log::info());
 
+    ResourceUsage(const ResourceUsage&)            = delete;
+    ResourceUsage& operator=(const ResourceUsage&) = delete;
+    ResourceUsage(ResourceUsage&&)                 = delete;
+    ResourceUsage& operator=(ResourceUsage&&)      = delete;
+
     ~ResourceUsage();
 
 protected:  // methods
+
     void init();
 
 private:  // members
+
     std::string name_;
     std::ostream& out_;
 
@@ -59,11 +59,10 @@ private:  // members
 template <class T>
 class TraceResourceUsage : public ResourceUsage {
 public:
-    explicit TraceResourceUsage(const char* name) :
-        ResourceUsage(name, eckit::Log::debug<T>()) {}
 
-    explicit TraceResourceUsage(const std::string& name) :
-        ResourceUsage(name, eckit::Log::debug<T>()) {}
+    explicit TraceResourceUsage(const char* name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
+
+    explicit TraceResourceUsage(const std::string& name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

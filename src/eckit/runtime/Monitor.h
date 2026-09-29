@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @date   Jun 1996
 /// @author Baudouin Raoult
@@ -16,9 +9,7 @@
 #define eckit_Monitor_h
 
 #include "eckit/eckit.h"
-
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
@@ -27,14 +18,23 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Monitor : private NonCopyable {
+class Monitor {
 
 public:  // types
-    class TaskArray : private eckit::NonCopyable {
+
+    class TaskArray {
 
     public:
-        typedef TaskInfo* iterator;
-        typedef const TaskInfo* const_iterator;
+
+        using iterator       = TaskInfo*;
+        using const_iterator = const TaskInfo*;
+
+        TaskArray() = default;
+
+        TaskArray(const TaskArray&)            = delete;
+        TaskArray& operator=(const TaskArray&) = delete;
+        TaskArray(TaskArray&&)                 = delete;
+        TaskArray& operator=(TaskArray&&)      = delete;
 
         virtual ~TaskArray();
 
@@ -54,7 +54,13 @@ public:  // types
     };
 
 public:  // methods
+
     static Monitor& instance();
+
+    Monitor(const Monitor&)            = delete;
+    Monitor& operator=(const Monitor&) = delete;
+    Monitor(Monitor&&)                 = delete;
+    Monitor& operator=(Monitor&&)      = delete;
 
     static bool active();
     static void active(bool a);
@@ -114,12 +120,14 @@ public:  // methods
 
 
 private:  // members
+
     unsigned long slot_;
     bool ready_;
     bool check_;
 
 private:  // methods
           /// Contructors
+
     Monitor();
 
     /// Destructor
@@ -144,8 +152,8 @@ class AutoState {
     char old_;
 
 public:
-    AutoState(char c) :
-        old_(Monitor::instance().state(c)) {}
+
+    AutoState(char c) : old_(Monitor::instance().state(c)) {}
 
     ~AutoState() { Monitor::instance().state(old_); }
 
@@ -160,10 +168,9 @@ class AutoLockTag {
     AutoLock<T> lock_;
 
 public:
-    AutoLockTag(T& t) :
-        state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
-    AutoLockTag(T* t) :
-        state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
+
+    AutoLockTag(T& t) : state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
+    AutoLockTag(T* t) : state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

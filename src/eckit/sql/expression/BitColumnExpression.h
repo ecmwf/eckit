@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996-2012 ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
@@ -23,6 +16,7 @@ namespace eckit::sql::expression {
 
 class BitColumnExpression : public ColumnExpression {
 public:
+
     BitColumnExpression(const std::string&, const std::string&, SQLTable*);
     BitColumnExpression(const std::string&, const std::string&, const std::string&);
     BitColumnExpression(const BitColumnExpression&);
@@ -32,10 +26,12 @@ public:
     std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
 
 private:
+
     // No copy allowed
     BitColumnExpression& operator=(const BitColumnExpression&);
 
 protected:
+
     unsigned long mask_;
     unsigned long bitShift_;
 
@@ -47,9 +43,7 @@ protected:
     void updateType(SQLSelect& sql) override;
 
     // Use SQLExpression's eval rather than ColumnExpression's
-    void eval(double* out, bool& missing) const override {
-        SQLExpression::eval(out, missing);
-    }
+    void eval(double* out, bool& missing) const override { SQLExpression::eval(out, missing); }
 
     double eval(bool& missing) const override;
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,

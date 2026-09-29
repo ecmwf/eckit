@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -19,24 +12,21 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Increments.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/Ordering.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
 
 
 namespace eckit {
 class JSON;
 namespace geo {
 class Area;
+class Range;
 }  // namespace geo
 }  // namespace eckit
 
@@ -46,24 +36,39 @@ namespace eckit::geo {
 
 class Grid {
 public:
+
     // -- Types
 
-    using uid_t     = std::string;
+    using uid_type      = std::string;
+    using order_type    = std::string;
+    using renumber_type = std::vector<size_t>;
+
+    using BoundingBox = area::BoundingBox;
+
     using builder_t = BuilderT1<Grid>;
+    using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
 
-        using difference_type = unique_ptr::element_type::difference_type;
+        Iterator(const Iterator& other) : unique_ptr(other->clone()) {}
+        Iterator(Iterator&&) noexcept = default;
 
-        Iterator(const Iterator&) = delete;
-        Iterator(Iterator&&)      = delete;
+        Iterator& operator=(const Iterator& other) {
+            if (this != &other) {
+                reset(other->clone());
+            }
+            return *this;
+        }
 
-        ~Iterator() = default;
+        Iterator& operator=(Iterator&&) noexcept = default;
 
-        void operator=(const Iterator&) = delete;
-        void operator=(Iterator&&)      = delete;
+        using iterator_category = element_type::iterator_category;
+        using difference_type   = element_type::difference_type;
+        using value_type        = element_type::value_type;
+        using pointer           = element_type::pointer;
+        using reference         = element_type::reference;
 
         bool operator==(const Iterator& other) const { return get()->operator==(*(other.get())); }
         bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
@@ -83,8 +88,6 @@ public:
     using iterator = Iterator;
 
     // -- Constructors
-
-    explicit Grid(const Spec&);
 
     Grid(const Grid&) = delete;
     Grid(Grid&&)      = delete;
@@ -106,62 +109,95 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    const Spec& spec() const;
-    std::string spec_str() const { return spec().str(); }
+    [[nodiscard]] const Spec& spec() const;
+    [[nodiscard]] std::string spec_str() const { return spec().str(); }
 
+    [[nodiscard]] const spec::Spec& catalog() const;
+    [[nodiscard]] std::string catalog_str() const { return catalog().str(); }
+
+    virtual const std::string& type() const   = 0;
+    virtual std::vector<size_t> shape() const = 0;
+
+    /// Name and staggering arrangement, for the grids that are identified by them (eg. ORCA, FESOM, ICON)
+    virtual std::string name() const { return {}; }
+    virtual std::string arrangement() const { return {}; }
+
+    virtual bool empty() const;
     virtual size_t size() const;
+    virtual void cache() const;
 
-    uid_t uid() const;
-    [[nodiscard]] virtual uid_t calculate_uid() const;
+    uid_type uid() const;
+    [[nodiscard]] virtual uid_type calculate_uid() const;
 
-    virtual bool includesNorthPole() const;
-    virtual bool includesSouthPole() const;
-    virtual bool isPeriodicWestEast() const;
-
+    [[nodiscard]] virtual Point first_point() const;
+    [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
-    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
+    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    virtual Ordering ordering() const;
-    virtual Renumber reorder(Ordering) const;
+    [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
+
+    virtual size_t truncation() const;
+
+    virtual const order_type& order() const;
+    virtual renumber_type reorder(const order_type&) const;
 
     virtual const Area& area() const;
-    virtual Renumber crop(const Area&) const;
+    virtual renumber_type crop(const Area&) const;
 
-    virtual const area::BoundingBox& boundingBox() const;
-    [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
+    virtual const Projection& projection() const;
+    virtual const Figure& figure() const { return projection().figure(); }
 
-    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
+    virtual const BoundingBox& boundingBox() const;
+    [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
+
+    [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    double dx() const;
+    double dy() const;
+    virtual size_t nx() const;
+    virtual size_t ny() const;
+    virtual const Range& x() const;
+    virtual const Range& y() const;
+
+    double dlon() const;
+    double dlat() const;
+    size_t nlon() const;
+    size_t nlat() const;
+    virtual const Range& lon() const;
+    virtual const Range& lat() const;
 
     // -- Class methods
 
     static std::string className() { return "grid"; }
+    static bool is_uid(const std::string&);
 
 protected:
+
     // -- Constructors
 
-    explicit Grid(const area::BoundingBox&, Projection* = nullptr, Ordering = Ordering::DEFAULT);
-    explicit Grid(Ordering = Ordering::DEFAULT);
+    explicit Grid(BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
 
-    static Renumber no_reorder(size_t size);
+    void reset_uid(uid_type = {});
 
-    void area(Area* ptr) { area_.reset(ptr); }
     void projection(Projection* ptr) { projection_.reset(ptr); }
+    void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
+
+    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
 
 private:
+
     // -- Members
 
-    mutable std::unique_ptr<Area> area_;
-    mutable std::unique_ptr<area::BoundingBox> bbox_;
-    mutable std::unique_ptr<Projection> projection_;
+    mutable std::unique_ptr<const BoundingBox> bbox_;
+    mutable std::unique_ptr<const Projection> projection_;
+    mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
-    mutable uid_t uid_;
-
-    Ordering ordering_;
+    mutable uid_type uid_;
 
     // -- Friends
 
@@ -170,39 +206,63 @@ private:
 };
 
 
-using GridFactoryType = Factory<Grid>;
-using SpecByName      = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
-using SpecByUID       = spec::GeneratorT<spec::SpecGeneratorT0>;
+struct GridSpecByName {
+    using key_t                = std::string;
+    using generator_t          = spec::GeneratorT<spec::SpecGeneratorT1<const key_t&>>;
+    using concrete_generator_t = generator_t::generator_t;
+
+    static generator_t& instance();
+    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+};
+
+
+struct GridSpecByUID {
+    using key_t                = Grid::uid_type;
+    using generator_t          = spec::GeneratorT<spec::SpecGeneratorT0>;
+    using concrete_generator_t = generator_t::generator_t;
+
+    static generator_t& instance();
+    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+};
 
 
 template <typename T>
 using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
+
 template <typename T>
 using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
 
+
 template <typename T>
-using GridRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
+struct GridRegisterName {
+    explicit GridRegisterName(const std::string& name_or_pattern) {
+        new spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+    }
+};
 
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] static const Grid* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static const Grid* build(const Grid::Spec& spec) { return instance().make_from_spec_(spec); }
 
     // This is 'const' as Grid should always be immutable
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
-    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
-    static void list(std::ostream& out) { return instance().list_(out); }
+    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec& spec) { return instance().make_spec_(spec); }
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
+
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] const Grid* make_from_spec_(const Spec&) const;
+    [[nodiscard]] const Grid* make_from_spec_(const Grid::Spec&) const;
 
-    [[nodiscard]] Spec* make_spec_(const Spec&) const;
-    void list_(std::ostream&) const;
+    [[nodiscard]] Grid::Spec* make_spec_(const Grid::Spec&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

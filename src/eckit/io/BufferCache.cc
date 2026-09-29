@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // File BufferCache.cc
 // Baudouin Raoult - (c) ECMWF Jul 11
@@ -21,11 +14,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BufferCache::BufferCache(size_t size) :
-    count_(0), buffer_(size), updated_(::time(0)) {}
+BufferCache::BufferCache(size_t size) : count_(0), buffer_(size), updated_(::time(nullptr)) {}
 
 BufferCache::BufferCache(const BufferCache& other) :
-    count_(other.count_), buffer_(other.buffer_.size()), updated_(::time(0)) {
+    count_(other.count_), buffer_(other.buffer_.size()), updated_(::time(nullptr)) {
     ::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
 }
 
@@ -36,7 +28,7 @@ BufferCache& BufferCache::operator=(const BufferCache& other) {
         count_ = other.count_;
         buffer_.resize(other.buffer_.size());
         ::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
-        updated_ = ::time(0);
+        updated_ = ::time(nullptr);
     }
     return *this;
 }

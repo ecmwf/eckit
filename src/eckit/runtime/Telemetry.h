@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @date   Jan 2020
@@ -16,8 +9,6 @@
 
 #include <functional>
 #include <string>
-
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -29,8 +20,8 @@ namespace runtime {
 
 class Report {
 public:
-    enum Type
-    {
+
+    enum Type {
         APPSTART = 0,
         APPSTOP,
         INFO,
@@ -41,6 +32,7 @@ public:
     };
 
 public:
+
     virtual ~Report();
 
     virtual void json(JSON& s) const = 0;
@@ -51,8 +43,11 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class Telemetry : public NonCopyable {
+class Telemetry {
 public:
+
+    Telemetry() = delete;
+
     static std::string report(Report::Type);
     static std::string report(Report::Type, const Report&);
     static std::string report(Report::Type, std::function<void(JSON&)>);

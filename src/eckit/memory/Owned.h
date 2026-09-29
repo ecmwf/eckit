@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file Owned.h
 /// @author Tiago Quintino
@@ -26,11 +19,16 @@ namespace eckit {
 /// Subclass from this class to use a SharedPtr class
 
 template <typename LOCK>
-class OwnedT : private NonCopyable, public LOCK {
+class OwnedT : public LOCK {
 
 public:  // methods
-    OwnedT() :
-        count_(0) {}
+
+    OwnedT() : count_(0) {}
+
+    OwnedT(const OwnedT&)            = delete;
+    OwnedT& operator=(const OwnedT&) = delete;
+    OwnedT(OwnedT&&)                 = delete;
+    OwnedT& operator=(OwnedT&&)      = delete;
 
     virtual ~OwnedT() {}
 
@@ -49,20 +47,21 @@ public:  // methods
     size_t owners() const { return count_; }
 
 private:  // members
+
     mutable size_t count_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Owned object without thread lockable resource
-typedef OwnedT<memory::detail::ThreadedLock> OwnedLock;
+using OwnedLock = OwnedT<memory::detail::ThreadedLock>;
 
 /// Owned object with thread lockable resource
-typedef OwnedT<memory::detail::NoLock> OwnedNoLock;
+using OwnedNoLock = OwnedT<memory::detail::NoLock>;
 
 /// Default Owned type
 /// Same as OwnedNoLock
-typedef OwnedNoLock Owned;
+using Owned = OwnedNoLock;
 
 //----------------------------------------------------------------------------------------------------------------------
 

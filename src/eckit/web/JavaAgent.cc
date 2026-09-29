@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/web/JavaAgent.h"
 
@@ -30,8 +23,7 @@ void JavaAgent::encode(eckit::Stream& s) const {
     Streamable::encode(s);
 }
 
-JavaAgent::JavaAgent(eckit::Stream& s) :
-    Streamable(s), stream_(s) {}
+JavaAgent::JavaAgent(eckit::Stream& s) : Streamable(s), stream_(s) {}
 
 JavaAgent::~JavaAgent() {}
 
@@ -79,7 +71,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
 
 template <>
 Streamable* eckit::Reanimator<JavaAgent>::ressucitate(eckit::Stream& s) const {
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

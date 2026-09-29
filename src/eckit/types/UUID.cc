@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <cctype>
@@ -78,7 +71,7 @@ UUID::operator std::string() const {
 }
 
 std::istream& operator>>(std::istream& is, UUID& u) {
-    typedef std::istream::char_type char_type;
+    using char_type = std::istream::char_type;
 
     const std::istream::sentry ok(is);
     if (ok) {

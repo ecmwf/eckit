@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <cctype>
@@ -77,10 +70,6 @@ std::string StringTools::substitute(const std::string& s, const std::map<std::st
     return result;
 }
 
-std::vector<std::string> StringTools::substituteVariables(const std::string& s) {
-    return listVariables(s);
-}
-
 std::vector<std::string> StringTools::listVariables(const std::string& s) {
     std::vector<std::string> result;
     size_t len = s.length();
@@ -92,7 +81,7 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
             case '{':
                 if (var) {
                     std::ostringstream os;
-                    os << "StringTools::substituteVariables: unexpected { found in " << s << " at position " << i;
+                    os << "StringTools::listVariables: unexpected { found in " << s << " at position " << i;
                     throw UserError(os.str());
                 }
                 var  = true;
@@ -102,7 +91,7 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
             case '}':
                 if (!var) {
                     std::ostringstream os;
-                    os << "StringTools::substituteVariables: unexpected } found in " << s << " at position " << i;
+                    os << "StringTools::listVariables: unexpected } found in " << s << " at position " << i;
                     throw UserError(os.str());
                 }
                 var = false;
@@ -118,7 +107,7 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
     }
     if (var) {
         std::ostringstream os;
-        os << "StringTools::substituteVariables: missing } in " << s;
+        os << "StringTools::listVariables: missing } in " << s;
         throw UserError(os.str());
     }
     return result;
@@ -217,7 +206,8 @@ bool StringTools::endsWith(const std::string& str, const std::string& substr) {
 }
 
 bool StringTools::isQuoted(const std::string& value) {
-    return value.size() > 1 && ((value[0] == '"' && value[value.size() - 1] == '"') || (value[0] == '\'' && value[value.size() - 1] == '\''));
+    return value.size() > 1 && ((value[0] == '"' && value[value.size() - 1] == '"') ||
+                                (value[0] == '\'' && value[value.size() - 1] == '\''));
 }
 
 std::string StringTools::unQuote(const std::string& value) {

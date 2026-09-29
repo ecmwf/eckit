@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Tiago Quintino
 /// @author Florian Rathgeber
@@ -27,6 +20,7 @@ template <class Derived>
 class DispatchParams {
 
 public:  // methods
+
     DispatchParams() {}
     DispatchParams(Stream& s) { NOTIMP; }
 
@@ -40,8 +34,9 @@ public:  // methods
     friend void encode(const DispatchParams<T>&, Stream&);
 
 protected:  // members
-    typedef Params::value_t (Derived::*parametrizer_t)(const Params::key_t&) const;
-    typedef std::map<std::string, parametrizer_t> store_t;
+
+    using parametrizer_t = Params::value_t (Derived::*)(const Params::key_t&) const;
+    using store_t        = std::map<std::string, parametrizer_t>;
 
     store_t dispatch_;
 };

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/os/SignalHandler.h"
@@ -17,10 +10,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SignalHandler* SignalHandler::current_ = 0;
+SignalHandler* SignalHandler::current_ = nullptr;
 
-SignalHandler::SignalHandler(void (*handler)(int), SignalHandler::Signal sig) :
-    signal_(sig), next_(current_) {
+SignalHandler::SignalHandler(void (*handler)(int), SignalHandler::Signal sig) : signal_(sig), next_(current_) {
     //	Log::info() << "Installing signal handler " << signal_ << std::endl;
     current_ = this;
 

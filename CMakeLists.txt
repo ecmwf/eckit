@@ -1,15 +1,8 @@
-# (C) Copyright 2011- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 ########################################################################################################################
-
-
-cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
 
@@ -20,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ########################################################################################################################
 ### dependencies and options
+
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
                     DEFAULT ON
@@ -106,6 +100,26 @@ if( NOT TARGET OpenMP::OpenMP_CXX )
     set( eckit_HAVE_OMP 0 )
 endif()
 
+find_package(LibUUID QUIET)
+find_package(LibOPENFAM QUIET)
+
+### OpenFAM Support
+
+ecbuild_add_option( FEATURE OPENFAM_MOCK
+                    DEFAULT ON
+                    CONDITION LibUUID_FOUND AND NOT LibOPENFAM_FOUND
+                    DESCRIPTION "Enables OpenFAM Mock for testing and development." )
+
+ecbuild_add_option( FEATURE OPENFAM
+                    DEFAULT ON
+                    CONDITION LibUUID_FOUND AND ( LibOPENFAM_FOUND OR eckit_HAVE_OPENFAM_MOCK )
+                    DESCRIPTION "Enables OpenFAM support" )
+
+if( eckit_HAVE_OPENFAM_MOCK )
+    add_subdirectory( src/eckit/io/fam/openfam_mock )
+    set( eckit_HAVE_OPENFAM 1 )
+endif()
+
 ### RADOS
 
 ecbuild_add_option( FEATURE RADOS
@@ -123,17 +137,6 @@ ecbuild_add_option( FEATURE AWSSDK_S3
 ecbuild_add_option( FEATURE S3
                     CONDITION HAVE_AWSSDK_S3
                     DESCRIPTION "Enables S3 storage support" )
-
-### Armadillo
-
-ecbuild_add_option( FEATURE ARMADILLO
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Armadillo linear algebra library"
-                    REQUIRED_PACKAGES Armadillo )
-
-set_package_properties( Armadillo PROPERTIES
-                        DESCRIPTION "C++ linear algebra"
-                      )
 
 ### MKL
 
@@ -157,7 +160,11 @@ ecbuild_add_option( FEATURE LZ4
 
 ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
-                    REQUIRED_PACKAGES AEC )
+                    REQUIRED_PACKAGES "NAME libaec VERSION 1.1.4")
+
+ecbuild_add_option( FEATURE ZIP
+                    DESCRIPTION "ZIP support for compression"
+                    REQUIRED_PACKAGES libzip )
 
 ### Hashing options
 
@@ -171,6 +178,12 @@ ecbuild_add_option( FEATURE ECKIT_CODEC
                     DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::spec
+
+ecbuild_add_option( FEATURE ECKIT_SPEC
+                    DEFAULT ON
+                    DESCRIPTION "eckit::spec metadata library" )
 
 ### eckit::maths
 
@@ -193,30 +206,40 @@ endif()
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO
-                    DEFAULT OFF
-                    DESCRIPTION "eckit::geo geometry library" )
-
-ecbuild_add_option( FEATURE GEO_GRID_ORCA
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
+                    CONDITION eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
+                    DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_CACHING
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default caching behaviour" )
 
 ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
 ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
-set( eckit_GEO_CACHE_PATH "/tmp/cache" )
+ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP
+                    REQUIRED_PACKAGES shapelib
+                    DESCRIPTION "eckit::geo geometry library support for shapefiles" )
+
+if( eckit_HAVE_GEO_AREA_SHAPEFILE )
+    if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
+        message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
+    endif()
+endif()
+
+# (keep paths as strings to avoid normalisation/expansion)
+set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
+set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
 ### LAPACK
 
@@ -244,49 +267,32 @@ endif()
 
 ecbuild_add_option( FEATURE CURL
                     DESCRIPTION "Curl library for transfering data with URLs"
-                    REQUIRED_PACKAGES "CURL 7.20" )
+                    REQUIRED_PACKAGES "CURL 7.61" )
 
 if(HAVE_CURL)
   ecbuild_info("Curl version ${CURL_VERSION_STRING} -- libs [${CURL_LIBRARIES}] incs [${CURL_INCLUDE_DIRS}]")
 endif()
 
-#### Jemalloc
-
-ecbuild_add_option( FEATURE JEMALLOC
-                    DEFAULT OFF
-                    DESCRIPTION "Link against jemalloc memory allocator"
-                    REQUIRED_PACKAGES Jemalloc )
-
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA
                     DEFAULT OFF
-                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
-                    REQUIRED_PACKAGES CUDA )
+                    REQUIRED_PACKAGES CUDAToolkit )
 
-### ViennaCL
+#### HIP
 
-ecbuild_add_option( FEATURE VIENNACL
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL OpenCL linear algebra operations"
-                    REQUIRED_PACKAGES ViennaCL )
-
-set_package_properties( ViennaCL PROPERTIES
-                        DESCRIPTION "linear algebra library for computations on many-core architectures"
-                        TYPE RECOMMENDED
-                        PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
-
-### LibRsync
-
-ecbuild_add_option( FEATURE RSYNC
+ecbuild_add_option( FEATURE HIP
                     DEFAULT OFF
-                    DESCRIPTION "librsync implementation of the rsync algorithm"
-                    REQUIRED_PACKAGES LibRsync )
-if( HAVE_RSYNC )
-  set( LIBRSYNC_LIBRARIES rsync )
-endif()
+                    DESCRIPTION "HIP GPU linear algebra operations"
+                    REQUIRED_PACKAGES hip hipsparse )
 
+### Torch
+
+ecbuild_add_option( FEATURE TORCH
+                    DEFAULT OFF
+                    DESCRIPTION "Torch linear algebra operations"
+                    REQUIRED_PACKAGES Torch )
 
 ### Performance tests
 
@@ -316,7 +322,18 @@ ecbuild_add_option( FEATURE AIO
 ecbuild_add_option( FEATURE PROJ
                     DEFAULT OFF
                     DESCRIPTION "support PROJ-based projections"
-                    REQUIRED_PACKAGES "PROJ 9.2" )
+                    REQUIRED_PACKAGES "PROJ 9.1.1" )
+
+ecbuild_add_option( FEATURE DOCS
+                    DEFAULT OFF
+                    DESCRIPTION "Enable documentation generation" )
+
+### Python bindings
+
+ecbuild_add_option( FEATURE PYTHON
+                    DEFAULT OFF
+                    DESCRIPTION "Build Python bindings (Cython)"
+                    REQUIRED_PACKAGES "Python3 COMPONENTS Interpreter Development.Module" )
 
 ### c math library, needed when including "math.h"
 
@@ -329,7 +346,7 @@ if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
         set( RT_LIBRARIES ${RT_LIB} )
     endif()
 else()
-  set( RT_LIBRARIES "" )
+    set( RT_LIBRARIES "" )
 endif()
 
 ### sanity checks
@@ -349,15 +366,25 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-add_subdirectory( bamboo )
-add_subdirectory( doc )
-add_subdirectory( etc )
-add_subdirectory( tests )
-add_subdirectory( regressions )
+
+if( eckit_HAVE_DOCS )
+    add_subdirectory( docs )
+endif()
+
+if( eckit_HAVE_PYTHON )
+    add_subdirectory( python )
+endif()
+
+add_subdirectory( share )
+
+if( eckit_HAVE_TESTS )
+    add_subdirectory( tests )
+    add_subdirectory( regressions )
+endif()
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
                        SOURCES AUTHORS README.md NOTICE LICENSE
-                       INSTALL ChangeLog COPYING )
+                       INSTALL ChangeLog REUSE.toml LICENSES/Apache-2.0.txt )
 
 ############################################################################################
 # finalize

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Manuel Fuentes
@@ -19,17 +12,21 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class Tokenizer : private NonCopyable {
+class Tokenizer {
 
 public:  // methods
+
     Tokenizer(char, bool keepEmpty = false);
     Tokenizer(const std::string&, bool keepEmpty = false);
+
+    Tokenizer(const Tokenizer&)            = delete;
+    Tokenizer& operator=(const Tokenizer&) = delete;
+    Tokenizer(Tokenizer&&)                 = delete;
+    Tokenizer& operator=(Tokenizer&&)      = delete;
 
     ~Tokenizer();
 
@@ -52,10 +49,12 @@ public:  // methods
     static std::vector<std::string> split_at(const std::string& s, char separator);
 
 private:
+
     std::set<char, std::less<char> > separator_;  // To make searching faster
     bool keepEmpty_;
 
 private:
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Tokenizer& p) {

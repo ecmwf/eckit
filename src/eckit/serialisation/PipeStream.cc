@@ -1,16 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <fcntl.h>
-#include <csignal>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/PipeStream.h"
@@ -22,16 +15,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PipeStream::PipeStream() :
-    in_(-1), out_(-1) {
+PipeStream::PipeStream() : in_(-1), out_(-1) {
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 
     SYSCALL(::pipe(toChild_));
     SYSCALL(::pipe(toParent_));
 }
 
-PipeStream::PipeStream(int in, int out) :
-    in_(in), out_(out) {
+PipeStream::PipeStream(int in, int out) : in_(in), out_(out) {
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 }
 

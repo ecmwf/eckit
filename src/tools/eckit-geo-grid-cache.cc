@@ -1,0 +1,71 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#include <memory>
+#include <regex>
+#include <string>
+
+#include "eckit/geo/Grid.h"
+#include "eckit/log/Log.h"
+#include "eckit/option/CmdArgs.h"
+#include "eckit/option/EckitTool.h"
+#include "eckit/option/SimpleOption.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/utils/StringTools.h"
+
+
+namespace eckit::tools {
+
+
+struct EckitGeoGridCache final : EckitTool {
+    EckitGeoGridCache(int argc, char** argv) : EckitTool(argc, argv) {
+        options_.push_back(new option::SimpleOption<std::string>("grid", "grid regular expression (case insensitive)"));
+        options_.push_back(new option::SimpleOption<bool>("match", "match instead of search (default: false)"));
+        options_.push_back(new option::SimpleOption<bool>("dryrun", "dry run (default: false)"));
+    }
+
+    int numberOfPositionalArguments() const override { return 0; }
+    int minimumPositionalArguments() const override { return 0; }
+
+    void usage(const std::string& tool) const override {
+        Log::info() << "\nUsage: " << tool << " [options] ..." << std::endl;
+    }
+
+    void execute(const option::CmdArgs& args) override {
+        const auto match  = args.getBool("match", false);
+        const auto dryrun = args.getBool("dryrun", false);
+
+        auto cache = [dryrun](const spec::Spec& spec) {
+            if (dryrun) {
+                Log::info() << spec << std::endl;
+            }
+            else {
+                std::unique_ptr<const geo::Grid>(geo::GridFactory::build(spec))->cache();
+            }
+        };
+
+        for (const auto& arg : args) {
+            if (const auto uid = StringTools::lower(arg); geo::Grid::is_uid(uid)) {
+                cache(spec::Custom{{"uid", uid}});
+                continue;
+            }
+
+            const std::regex pattern(arg, std::regex::icase);
+            for (auto& [grid, _] : geo::GridSpecByName::instance().store()) {
+                if (match ? std::regex_match(grid, pattern) : std::regex_search(grid, pattern)) {
+                    cache(spec::Custom{{"grid", grid}});
+                }
+            }
+        }
+    }
+};
+
+
+}  // namespace eckit::tools
+
+
+int main(int argc, char** argv) {
+    eckit::tools::EckitGeoGridCache app(argc, argv);
+    return app.start();
+}

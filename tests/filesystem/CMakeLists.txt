@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # aio system calls are know to fail on the Cray
 # see https://sourceware.org/bugzilla/show_bug.cgi?id=11787
 
@@ -42,6 +45,10 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_uri
 
 ecbuild_add_test( TARGET      eckit_test_pathname
                   SOURCES     test_pathname.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_filesystem_filespace_strategies
+                  SOURCES     test_filespace_strategies.cc
                   LIBS        eckit )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmp/foo)

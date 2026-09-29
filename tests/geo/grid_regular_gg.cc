@@ -1,28 +1,20 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/RegularGaussian.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-using RegularGaussian = grid::RegularGaussian;
+using grid::regular::RegularGaussian;
 
 
 CASE("sizes") {
@@ -48,7 +40,7 @@ CASE("points") {
     RegularGaussian grid(1);
 
     const std::vector<PointLonLat> ref{
-        {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},
+        {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},  //
         {0., -35.264389683}, {90., -35.264389683}, {180., -35.264389683}, {270., -35.264389683},
     };
 
@@ -96,7 +88,7 @@ CASE("crop") {
 
     EXPECT(bbox3.periodic());
 
-    bbox3 = {bbox3.north, bbox3.west, bbox3.south, 0.};
+    bbox3 = {bbox3.north(), bbox3.west(), bbox3.south(), 0.};
 
     EXPECT_NOT(bbox3.periodic());
 
@@ -144,6 +136,47 @@ CASE("equals") {
     std::unique_ptr<const Grid> grid2(new RegularGaussian(3));
 
     EXPECT(*grid1 == *grid2);
+}
+
+
+CASE("scan modes") {
+    SECTION("i+j- (default)") {
+        // Default scan: i increasing, j decreasing (north to south)
+        RegularGaussian grid(1);
+
+        EXPECT(grid.order() == "i+j-");
+
+        const std::vector<PointLonLat> ref{
+            {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},   // north row
+            {0., -35.264389683}, {90., -35.264389683}, {180., -35.264389683}, {270., -35.264389683},  // south row
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
+
+    SECTION("i+j+") {
+        // Scan: i increasing, j increasing (south to north)
+        RegularGaussian grid(1, {}, order::Scan{"i+j+"});
+
+        EXPECT(grid.order() == "i+j+");
+
+        const std::vector<PointLonLat> ref{
+            {0., -35.264389683}, {90., -35.264389683}, {180., -35.264389683}, {270., -35.264389683},  // south row first
+            {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},   // north row last
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
 }
 
 

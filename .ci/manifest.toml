@@ -76,5 +76,3 @@ forwarded-deps-outputs = ["cmake-prefix-path"]
 repo = "ecmwf/eccodes"
 ref = "develop"
 
-[downstream-gate]
-label = "run-downstream-CI"

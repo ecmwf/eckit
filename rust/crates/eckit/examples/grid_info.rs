@@ -17,7 +17,7 @@
 use std::process::ExitCode;
 
 use eckit::Grid;
-use eckit::geo::{LonLat, cache_footprint, cache_purge};
+use eckit::geo::{Point, cache_footprint, cache_purge};
 
 /// Grid described when the caller passes no argument.
 const DEFAULT_GRID: &str = "O16";
@@ -159,8 +159,13 @@ const fn yes_no(value: bool) -> &'static str {
     if value { "yes" } else { "no" }
 }
 
-fn point(p: LonLat) -> String {
-    format!("lat {:.4}  lon {:.4}", p.lat, p.lon)
+fn point(p: Point) -> String {
+    match p {
+        Point::Xy { x, y } => format!("x {x:.4}  y {y:.4}"),
+        Point::Xyz { x, y, z } => format!("x {x:.4}  y {y:.4}  z {z:.4}"),
+        Point::LonLat { lon, lat } => format!("lat {lat:.4}  lon {lon:.4}"),
+        Point::LonLatR { lon, lat } => format!("lat {lat:.4} rad  lon {lon:.4} rad"),
+    }
 }
 
 fn pl_summary(pl: &[i64]) -> String {

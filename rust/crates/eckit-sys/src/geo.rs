@@ -14,11 +14,24 @@ mod ffi {
         east: f64,
     }
 
-    /// A geographic point, in degrees.
+    /// Which alternative of the `eckit::geo::Point` variant a [`RawPoint`] holds.
+    #[derive(Debug)]
+    enum PointKind {
+        /// `PointXY` — `coords` is `[x, y, _]`.
+        Xy,
+        /// `PointXYZ` — `coords` is `[x, y, z]`.
+        Xyz,
+        /// `PointLonLat` — `coords` is `[lon, lat, _]`, in degrees.
+        LonLat,
+        /// `PointLonLatR` — `coords` is `[lon, lat, _]`, in radians.
+        LonLatR,
+    }
+
+    /// An `eckit::geo::Point`, flattened for FFI. Unused trailing coordinates are `0`.
     #[derive(Debug, Clone, Copy, PartialEq)]
-    struct LonLat {
-        lon: f64,
-        lat: f64,
+    struct RawPoint {
+        kind: PointKind,
+        coords: [f64; 3],
     }
 
     unsafe extern "C++" {
@@ -57,13 +70,14 @@ mod ffi {
 
         // Geometry
         fn bounding_box(self: &GridWrapper) -> Result<Bbox>;
-        fn first_point(self: &GridWrapper) -> Result<LonLat>;
-        fn last_point(self: &GridWrapper) -> Result<LonLat>;
+        fn first_point(self: &GridWrapper) -> Result<RawPoint>;
+        fn last_point(self: &GridWrapper) -> Result<RawPoint>;
         fn distinct_latitudes(self: &GridWrapper) -> Result<Vec<f64>>;
         fn distinct_longitudes(self: &GridWrapper) -> Result<Vec<f64>>;
 
         /// Fill caller-owned buffers with the grid's latitudes and longitudes.
-        /// Both must hold at least `size()` elements.
+        /// Both must hold at least `size()` elements. A `GridError` if the
+        /// grid's points are not lon/lat.
         fn fill_latlons(self: &GridWrapper, lat: &mut [f64], lon: &mut [f64]) -> Result<()>;
 
         // ==================== Spec ====================

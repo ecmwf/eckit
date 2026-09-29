@@ -13,7 +13,39 @@ use std::str::FromStr;
 
 use crate::error::Result;
 
-pub use eckit_sys::geo::{Bbox, LonLat};
+pub use eckit_sys::geo::Bbox;
+
+/// A grid point, in whichever coordinate system the grid works in.
+///
+/// Mirrors the `eckit::geo::Point` variant: geographic grids yield
+/// [`Point::LonLat`], but projected and Cartesian grids yield planar or 3-D
+/// points.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Point {
+    /// Planar coordinates.
+    Xy { x: f64, y: f64 },
+    /// Cartesian coordinates.
+    Xyz { x: f64, y: f64, z: f64 },
+    /// Geographic coordinates, in degrees.
+    LonLat { lon: f64, lat: f64 },
+    /// Geographic coordinates, in radians.
+    LonLatR { lon: f64, lat: f64 },
+}
+
+impl From<eckit_sys::geo::RawPoint> for Point {
+    fn from(raw: eckit_sys::geo::RawPoint) -> Self {
+        use eckit_sys::geo::PointKind;
+
+        let [a, b, c] = raw.coords;
+        match raw.kind {
+            PointKind::Xy => Self::Xy { x: a, y: b },
+            PointKind::Xyz => Self::Xyz { x: a, y: b, z: c },
+            PointKind::LonLat => Self::LonLat { lon: a, lat: b },
+            PointKind::LonLatR => Self::LonLatR { lon: a, lat: b },
+            kind => unreachable!("unknown eckit::geo::Point kind {}", kind.repr),
+        }
+    }
+}
 
 /// A geospatial grid.
 ///
@@ -140,13 +172,19 @@ impl Grid {
     }
 
     /// First point in iteration order.
-    pub fn first_point(&self) -> Result<LonLat> {
-        self.inner.first_point().map_err(eckit_sys::Error::from)
+    pub fn first_point(&self) -> Result<Point> {
+        self.inner
+            .first_point()
+            .map(Point::from)
+            .map_err(eckit_sys::Error::from)
     }
 
     /// Last point in iteration order.
-    pub fn last_point(&self) -> Result<LonLat> {
-        self.inner.last_point().map_err(eckit_sys::Error::from)
+    pub fn last_point(&self) -> Result<Point> {
+        self.inner
+            .last_point()
+            .map(Point::from)
+            .map_err(eckit_sys::Error::from)
     }
 
     /// Distinct latitudes, north to south.
@@ -168,6 +206,9 @@ impl Grid {
     /// Both slices must hold at least [`Grid::len`] elements. Preferred over
     /// [`Grid::to_latlons`] for large grids, since it lets the caller reuse
     /// buffers — O1280 alone is 6.6 million points per array.
+    ///
+    /// Fails with [`Error::GridError`](crate::Error) if the grid's points are
+    /// not [`Point::LonLat`].
     pub fn fill_latlons(&self, lat: &mut [f64], lon: &mut [f64]) -> Result<()> {
         let n = self.len()?;
         if lat.len() < n || lon.len() < n {

@@ -9,8 +9,8 @@
 #include "RustVec.h"
 #include "eckit-sys/src/geo.rs.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/Regular.h"
@@ -26,9 +26,22 @@ namespace eckit_bridge {
 
 namespace {
 
-LonLat to_lonlat(const eckit::geo::Point& point) {
-    const auto& p = std::get<eckit::geo::PointLonLat>(point);
-    return {p.lon(), p.lat()};
+RawPoint to_raw(const eckit::geo::Point& point) {
+    using namespace eckit::geo;
+
+    if (const auto* p = std::get_if<PointXY>(&point)) {
+        return {PointKind::Xy, {p->X(), p->Y(), 0.}};
+    }
+    if (const auto* p = std::get_if<PointXYZ>(&point)) {
+        return {PointKind::Xyz, {p->X(), p->Y(), p->Z()}};
+    }
+    if (const auto* p = std::get_if<PointLonLat>(&point)) {
+        return {PointKind::LonLat, {p->lon(), p->lat(), 0.}};
+    }
+    if (const auto* p = std::get_if<PointLonLatR>(&point)) {
+        return {PointKind::LonLatR, {p->lonr(), p->latr(), 0.}};
+    }
+    throw exception::GridError("GridWrapper: point holds no value", Here());
 }
 
 /// Calls `f(ny, nx)` with the grid's row structure, where `nx(j)` is the number
@@ -111,12 +124,12 @@ Bbox GridWrapper::bounding_box() const {
     return {bbox.north(), bbox.west(), bbox.south(), bbox.east()};
 }
 
-LonLat GridWrapper::first_point() const {
-    return to_lonlat(grid_->first_point());
+RawPoint GridWrapper::first_point() const {
+    return to_raw(grid_->first_point());
 }
 
-LonLat GridWrapper::last_point() const {
-    return to_lonlat(grid_->last_point());
+RawPoint GridWrapper::last_point() const {
+    return to_raw(grid_->last_point());
 }
 
 // Copied, not borrowed: `Range::values()` may return a reference into the
@@ -139,9 +152,12 @@ void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon)
 
     size_t i = 0;
     std::for_each(grid_->cbegin(), grid_->cend(), [&](const auto& point) {
-        const auto p = to_lonlat(point);
-        lat[i]       = p.lat;
-        lon[i]       = p.lon;
+        const auto* p = std::get_if<eckit::geo::PointLonLat>(&point);
+        if (p == nullptr) {
+            throw eckit::geo::exception::GridError("GridWrapper::fill_latlons: grid points are not lon/lat", Here());
+        }
+        lat[i] = p->lat();
+        lon[i] = p->lon();
         ++i;
     });
 }

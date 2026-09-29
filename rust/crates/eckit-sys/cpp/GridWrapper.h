@@ -17,7 +17,7 @@
 namespace eckit_bridge {
 
 struct Bbox;
-struct LonLat;
+struct RawPoint;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,8 +53,8 @@ public:
 
     // Geometry
     Bbox bounding_box() const;
-    LonLat first_point() const;
-    LonLat last_point() const;
+    RawPoint first_point() const;
+    RawPoint last_point() const;
     rust::Vec<double> distinct_latitudes() const;
     rust::Vec<double> distinct_longitudes() const;
     void fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon) const;

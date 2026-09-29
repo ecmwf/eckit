@@ -80,14 +80,19 @@ jobs:
       - name: Run tests
         run: cargo test --workspace --manifest-path rust/Cargo.toml
 
+      # Packages both crates together so eckit is verified against the local
+      # eckit-sys rather than the one on crates.io.
+      - name: Dry-run publish
+        run: cargo publish --dry-run --workspace --manifest-path rust/Cargo.toml
+
   # The crates are interdependent, so they publish sequentially: eckit
   # resolves eckit-sys from crates.io and must come second.
   publish-eckit-sys:
+    if: github.event_name == 'release' || !inputs.dry-run
     needs: [check-version, checks]
     uses: ecmwf/reusable-workflows/.github/workflows/publish-rust-crate.yml@v2
     with:
       manifest-path: rust/crates/eckit-sys/Cargo.toml
-      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
       run-checks: false
       locked: false
     secrets:
@@ -98,7 +103,6 @@ jobs:
     uses: ecmwf/reusable-workflows/.github/workflows/publish-rust-crate.yml@v2
     with:
       manifest-path: rust/crates/eckit/Cargo.toml
-      dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
       run-checks: false
       locked: false
     secrets:

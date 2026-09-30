@@ -51,39 +51,31 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
     reset_uid(uid);
     name_ = name;
 
-    using custom_map_t = spec::Custom::container_type;
-
-    struct Generator final : GridSpecByUID::concrete_generator_t, GridSpecByName::concrete_generator_t {
-        Generator(const custom_map_t& _custom) : custom(_custom) {}
-        spec::Spec* spec() const override { return new spec::Custom(custom); }
-        spec::Spec* spec(const std::string&) const override { return new spec::Custom(custom); }
-        custom_map_t custom;
-    };
-
-    custom_map_t custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
+    spec::Custom::container_type custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
     if (!name.empty()) {
         custom_map["name"] = name;
     }
 
+    const spec::Custom custom(custom_map);
 
     // register uid and name in memory
     if (GridSpecByUID::instance().exists(uid)) {
         GridSpecByUID::instance().unregist(uid);
     }
-    GridSpecByUID::regist(uid, new Generator(custom_map));
+    GridSpecByUID::regist(uid, custom);
     ASSERT(GridSpecByUID::instance().exists(uid));
 
     if (!name.empty()) {
         if (GridSpecByName::instance().exists(name)) {
             GridSpecByName::instance().unregist(name);
         }
-        GridSpecByName::regist(name, new Generator(custom_map));
+        GridSpecByName::regist(name, custom);
         ASSERT(GridSpecByName::instance().exists(name));
     }
 
 
     // register on disk
-    cache::Grid::save(uid, spec::Custom{custom_map});
+    cache::Grid::save(uid, custom);
 }
 
 

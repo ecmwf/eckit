@@ -111,7 +111,7 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    [[nodiscard]] const Spec& spec() const;
+    [[nodiscard]] const Spec& spec() const { return custom_spec(); }
     [[nodiscard]] std::string spec_str() const { return spec().str(); }
 
     [[nodiscard]] const spec::Spec& catalog() const;
@@ -201,6 +201,10 @@ private:
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;
 
+    // -- Methods
+
+    const spec::Custom& custom_spec() const;
+
     // -- Friends
 
     friend bool operator==(const Grid& a, const Grid& b) { return a.spec_str() == b.spec_str(); }
@@ -215,6 +219,7 @@ struct GridSpecByName {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
 };
 
@@ -226,6 +231,7 @@ struct GridSpecByUID {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
 };
 

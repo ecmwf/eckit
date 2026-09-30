@@ -17,7 +17,7 @@
 namespace eckit::geo::test {
 
 
-CASE("Grid from grid_spec") {
+CASE("Grid from spec/uid") {
     struct {
         const char* grid;
         const char* canonical;
@@ -29,14 +29,19 @@ CASE("Grid from grid_spec") {
         {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
         {"{grid: h2}", R"({"grid":"H2"})", 48},                    //
         {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
+        {R"({"grid":"F48","rotation":[30,30]})",
+         R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})", 48 * 2 * 48 * 4},  //
     };
-
 
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
         EXPECT(grid->size() == test.size);
         EXPECT(grid->spec_str() == test.canonical);
+
+        std::unique_ptr<const Grid> same(GridFactory::build(spec::Custom{{"uid", grid->uid()}}));
+
+        EXPECT(*same == *grid);
 
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 

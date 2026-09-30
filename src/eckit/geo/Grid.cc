@@ -37,6 +37,30 @@ class lock_type {
 };
 
 
+// Generator of a grid spec, by uid
+struct SpecByUID final : GridSpecByUID::concrete_generator_t {
+    explicit SpecByUID(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
+    bool match(const spec::Custom& other) const override { return other == *spec_; }
+
+private:
+
+    std::unique_ptr<const spec::Custom> spec_;
+};
+
+
+// Generator of a grid spec, by name
+struct SpecByName final : GridSpecByName::concrete_generator_t {
+    explicit SpecByName(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
+    bool match(const spec::Custom& other) const override { return other == *spec_; }
+
+private:
+
+    std::unique_ptr<const spec::Custom> spec_;
+};
+
+
 }  // namespace
 
 
@@ -68,12 +92,10 @@ const spec::Spec& Grid::catalog() const {
 }
 
 
-const Grid::Spec& Grid::spec() const {
+const spec::Custom& Grid::custom_spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
-
-        auto& custom = *spec_;
-        fill_spec(custom);
+        fill_spec(*spec_);
     }
 
     return *spec_;
@@ -108,6 +130,11 @@ bool Grid::is_uid(const std::string& str) {
 Grid::uid_type Grid::uid() const {
     if (uid_.empty()) {
         const_cast<Grid*>(this)->reset_uid(calculate_uid());
+
+        lock_type lock;
+        if (!GridSpecByUID::instance().exists(uid_)) {
+            GridSpecByUID::regist(uid_, custom_spec());
+        }
     }
 
     return uid_;
@@ -354,6 +381,14 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
 
+    if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
+        if (!GridSpecByUID::instance().exists(uid)) {
+            throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
+        }
+
+        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
+    }
+
 
     // hardcoded, interpreted options (contributing to spec)
 
@@ -393,14 +428,6 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
         cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
     }
 
-    if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
-        if (!GridSpecByUID::instance().exists(uid)) {
-            throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
-        }
-
-        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
-    }
-
     return cfg;
 }
 
@@ -423,9 +450,19 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 }
 
 
+void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
+    regist(key, new SpecByName(spec));
+}
+
+
 GridSpecByUID::generator_t& GridSpecByUID::instance() {
     share::Grid::instance();  // ensure load of supporting files
     return generator_t::instance();
+}
+
+
+void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
+    regist(key, new SpecByUID(spec));
 }
 
 

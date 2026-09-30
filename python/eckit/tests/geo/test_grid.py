@@ -38,6 +38,11 @@ def test_grid_unstructured_ll():
     assert grid.spec == dict(grid=name)
 
 
+def test_grid_from_uid():
+    grid = Grid({"grid": [0.5, 0.5]})
+    assert Grid({"uid": grid.uid}) == grid
+
+
 def test_grid_unstructured_ll_from_coordinates():
     from eckit.geo._eckit_geo import _spec_str
 

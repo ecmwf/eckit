@@ -3,20 +3,16 @@
 
 
 #include <cstddef>
-#include <fstream>
 #include <memory>
 #include <ostream>
 #include <string>
-#include <vector>
 
-#include "eckit/config/Resource.h"
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
-#include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
@@ -214,75 +210,6 @@ CASE("grid") {
 
     Cache::total_purge();
     EXPECT(Cache::total_footprint() <= footprint_1);
-}
-#endif
-
-
-#if eckit_HAVE_ZIP
-CASE("unzip") {
-    const std::string cacheable_zip = Resource<std::string>("--cacheable_zip", "");
-    if (cacheable_zip.empty()) {
-        Log::info() << "unzip: skipped (no --cacheable_zip)" << std::endl;
-        return;
-    }
-
-    const PathName zip(cacheable_zip);
-    ASSERT(zip.exists());
-
-    const std::vector<std::string> contents{"a", "b/", "b/c"};
-
-
-    SECTION("unzip all") {
-        const PathName dir("eckit_geo_cache/unzip/unzip-all", true);
-
-        cache::Unzip unzip(dir);
-        unzip.rm_cache_root();
-
-        cache::Unzip::to_path(zip, dir);
-
-        for (const auto& content : contents) {
-            EXPECT((dir / content).exists());
-        }
-
-        EXPECT(dir.exists());
-        unzip.rm_cache_root();
-        EXPECT(!dir.exists());
-
-        for (const auto& what : {"a", "b/c"}) {
-            auto cached_path = unzip.to_cached_path(zip, "a");
-            EXPECT(dir.exists() && dir.isDir());
-            EXPECT(cached_path.exists() && !cached_path.isDir());
-        }
-    }
-
-
-    SECTION("unzip one") {
-        const PathName dir("cache.unzip.one", true);
-
-        cache::Unzip unzip(dir);
-        unzip.rm_cache_root();
-
-        cache::Unzip::to_path(zip, dir / (contents.back() + "-y"), contents.back());
-
-        for (const auto& content : contents) {
-            if (content == contents.back()) {
-                const PathName file = dir / (contents.back() + "-y");
-                EXPECT(file.exists());
-
-                std::string d;
-                std::ifstream(file.localPath()) >> d;
-
-                EXPECT(d == "d");
-            }
-            else {
-                PathName path = dir / content;
-                EXPECT(!path.exists() || path.isDir());
-            }
-        }
-
-        unzip.rm_cache_root();
-        ASSERT(!dir.exists());
-    }
 }
 #endif
 

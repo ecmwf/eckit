@@ -38,6 +38,18 @@ def test_grid_unstructured_ll():
     assert grid.spec == dict(grid=name)
 
 
+def test_grid_unstructured_ll_from_coordinates():
+    from eckit.geo._eckit_geo import _spec_str
+
+    lat, lon = Grid(grid="H4", order="nested").to_latlons()
+    grid = Grid(latitudes=lat, longitudes=lon)
+
+    assert grid == Grid(_spec_str(dict(latitudes=lat, longitudes=lon)))
+    assert grid == Grid(uid=grid.uid)
+    assert grid.shape == (len(lat),)
+    assert grid.to_latlons() == (lat, lon)
+
+
 def test_grid_to_unstructured_ll():
     grid = Grid(latitudes=[1, 2, 3], longitudes=[4, 5, 6])
 

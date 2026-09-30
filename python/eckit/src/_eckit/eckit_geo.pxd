@@ -128,6 +128,15 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         const Grid* make_from_string(const string) except +
 
 
+cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
+    cdef cppclass Unstructured(Grid):
+        Unstructured(
+            const vector[double]& longitudes,
+            const vector[double]& latitudes,
+            const string& name,
+        ) except +
+
+
 cdef extern from * namespace "eckit::geo::python":
     """
     #include <vector>

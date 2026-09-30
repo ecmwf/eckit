@@ -457,7 +457,17 @@ cdef class Grid:
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            spec = _spec_str(kwargs if kwargs else spec)
+            spec = kwargs if kwargs else spec
+
+            # coordinates are passed directly avoiding a spec string
+            has_coordinates = "latitudes" in spec and "longitudes" in spec
+            if has_coordinates and set(spec) <= {"latitudes", "longitudes", "name"}:
+                self._grid = new eckit_geo.Unstructured(
+                    spec["longitudes"], spec["latitudes"], spec.get("name", "")
+                )
+                return
+
+            spec = _spec_str(spec)
 
         try:
             assert isinstance(spec, str)

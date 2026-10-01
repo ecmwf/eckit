@@ -134,6 +134,21 @@ impl DataHandle<Closed> {
         Ok(Self::from_raw(inner))
     }
 
+    /// Wrap a Rust `std::io::Write` sink as a `DataHandle`.
+    ///
+    /// The C++ side calls back into the Rust sink on each `write()`; no
+    /// intermediate buffer or temp file is staged. Closing the handle
+    /// flushes the sink, and dropping it drops the sink. The resulting
+    /// handle is write-only; it cannot be read or seeked.
+    pub fn from_writer<W>(writer: W) -> Result<Self>
+    where
+        W: std::io::Write + Send + 'static,
+    {
+        let inner = eckit_sys::DataHandleWrapper::from_writer(eckit_sys::make_writer_box(writer))
+            .map_err(eckit_sys::Error::from)?;
+        Ok(Self::from_raw(inner))
+    }
+
     /// Open for reading. Returns the opened handle and estimated data length.
     pub fn open_for_read(mut self) -> Result<(DataHandle<Reading>, i64)> {
         let mut inner = self

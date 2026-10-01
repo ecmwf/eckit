@@ -39,7 +39,7 @@ namespace eckit::test::s3 {
 
 const net::Endpoint TEST_ENDPOINT {S3_TEST_ENDPOINT};
 
-const S3Config TEST_CONFIG {TEST_ENDPOINT, S3_TEST_REGION};
+const S3Config TEST_CONFIG{TEST_ENDPOINT, S3_TEST_REGION};
 
 const S3Credential TEST_CRED {TEST_ENDPOINT, "minio", "minio1234"};
 

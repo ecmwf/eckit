@@ -103,13 +103,14 @@ void S3ClientAWS::configure() const {
     // setup region
     if (!config().region.empty()) { configAWS.region = config().region; }
 
-    // configuration.scheme    = Aws::Http::Scheme::HTTPS;
+    configAWS.scheme    = config().secure ? Aws::Http::Scheme::HTTPS : Aws::Http::Scheme::HTTP;
     configAWS.verifySSL = false;
 
     // setup endpoint
     if (config().endpoint.host().empty()) { throw UserError("Empty endpoint hostname in configuration!", Here()); }
 
-    configAWS.endpointOverride = net::IPAddress::hostAddress(config().endpoint.host()).asString();
+    configAWS.endpointOverride = config().secure ? "https://" : "http://";
+    configAWS.endpointOverride += net::IPAddress::hostAddress(config().endpoint.host()).asString();
 
     ASSERT(config().endpoint.port() > 0);
     configAWS.endpointOverride += ":" + std::to_string(config().endpoint.port());

@@ -153,12 +153,68 @@ private:
     rust::Box<ReaderBox> reader_;
 };
 
+// `eckit::DataHandle` subclass that forwards `write()` to a Rust `Write`
+// sink held in a `rust::Box<WriterBox>`. `close()` flushes the sink. The
+// handle is write-only: the read-side virtuals keep the base class
+// behaviour of throwing.
+class RustWriterHandle : public eckit::DataHandle {
+public:
+
+    explicit RustWriterHandle(rust::Box<WriterBox> writer) : writer_(std::move(writer)) {}
+
+    void print(std::ostream& s) const override { s << "RustWriterHandle[]"; }
+
+    void openForWrite(const eckit::Length&) override {}
+
+    long write(const void* buffer, long length) override {
+        if (length <= 0) {
+            return 0;
+        }
+        const auto* bytes = static_cast<const uint8_t*>(buffer);
+        rust::Slice<const uint8_t> slice{bytes, static_cast<size_t>(length)};
+        int64_t n = invoke_writer_write(*writer_, slice);
+        if (n < 0) {
+            throw eckit::WriteError("RustWriterHandle: error writing to Rust sink");
+        }
+        return static_cast<long>(n);
+    }
+
+    bool canSeek() const override { return false; }
+
+    void flush() override {
+        if (invoke_writer_flush(*writer_) < 0) {
+            throw eckit::WriteError("RustWriterHandle: flush failed");
+        }
+    }
+
+    void close() override {
+        if (invoke_writer_flush(*writer_) < 0) {
+            throw eckit::WriteError("RustWriterHandle: flush failed on close");
+        }
+    }
+
+    eckit::Length estimate() override { return eckit::Length(0); }
+
+    eckit::Length size() override { return eckit::Length(0); }
+
+private:
+
+    rust::Box<WriterBox> writer_;
+};
+
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
 std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_reader(rust::Box<ReaderBox> reader) {
     return std::make_unique<DataHandleWrapper>(new RustReaderHandle(std::move(reader)));
+}
+
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_writer(rust::Box<WriterBox> writer) {
+    auto handle  = std::make_unique<RustWriterHandle>(std::move(writer));
+    auto wrapper = std::make_unique<DataHandleWrapper>(handle.get());
+    handle.release();
+    return wrapper;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

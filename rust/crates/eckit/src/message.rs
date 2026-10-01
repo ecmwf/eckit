@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-//! Message and `MessageReader` — GRIB message abstraction.
+//! Message and `MessageReader`: GRIB message abstraction.
 
 use crate::datahandle::DataHandle;
 use crate::error::Result;
@@ -68,7 +68,7 @@ impl Message {
     /// Write this message to a `DataHandle` opened for writing.
     pub fn write_to(&self, handle: &mut DataHandle<crate::Writing>) -> Result<()> {
         self.inner
-            .write_to(handle.inner_mut()?)
+            .write_to(handle.as_sys_mut()?)
             .map_err(eckit_sys::Error::from)
     }
 }
@@ -81,7 +81,14 @@ impl Message {
     }
 }
 
-/// Iterator over messages from a `DataHandle`.
+/// Iterator over GRIB messages in a [`DataHandle<Reading>`].
+///
+/// The reader is tied to the lifetime of the borrow on the source handle
+/// (`'h`). The underlying C++ `eckit::message::Reader` stores a reference to
+/// the `DataHandle` (via an internal `BufferedHandle` constructed with
+/// `opened=true`), so dropping the `DataHandle` before the reader would
+/// leave a dangling reference inside C++. Encoding the borrow in the Rust
+/// type makes the compiler enforce the rule.
 ///
 /// # Example
 ///
@@ -94,14 +101,6 @@ impl Message {
 ///     println!("{param}: {} bytes", msg.length());
 /// }
 /// ```
-/// A streaming reader over GRIB messages in a [`DataHandle<Reading>`].
-///
-/// The reader is tied to the lifetime of the borrow on the source handle
-/// (`'h`). The underlying C++ `eckit::message::Reader` stores a reference to
-/// the `DataHandle` (via an internal `BufferedHandle` constructed with
-/// `opened=true`), so dropping the `DataHandle` before the reader would
-/// leave a dangling reference inside C++. Encoding the borrow in the Rust
-/// type makes the compiler enforce the rule.
 pub struct MessageReader<'h> {
     inner: eckit_sys::UniquePtr<eckit_sys::ReaderWrapper>,
     _handle: std::marker::PhantomData<&'h mut DataHandle<crate::Reading>>,
@@ -109,9 +108,9 @@ pub struct MessageReader<'h> {
 
 impl<'h> MessageReader<'h> {
     /// Create a reader over an opened `DataHandle<Reading>`. The returned
-    /// reader borrows the handle for `'h` — it cannot outlive the handle.
+    /// reader borrows the handle for `'h`; it cannot outlive the handle.
     pub fn new(handle: &'h mut DataHandle<crate::Reading>) -> Result<Self> {
-        let inner = eckit_sys::ReaderWrapper::from_handle(handle.inner_mut()?)
+        let inner = eckit_sys::ReaderWrapper::from_handle(handle.as_sys_mut()?)
             .map_err(eckit_sys::Error::from)?;
         Ok(Self {
             inner,

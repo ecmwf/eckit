@@ -37,8 +37,9 @@ public:
     void write_char(uint8_t c);
     void write_bool(bool v);
     void write_int(int32_t v);
-    void write_long(int64_t v);
-    void write_unsigned_long(uint64_t v);
+    void write_long_long(int64_t v);
+    void write_unsigned_long(uint32_t v);
+    void write_unsigned_long_long(uint64_t v);
     void write_double(double v);
     void write_string(rust::Str v);
     void write_blob(rust::Slice<const uint8_t> data);
@@ -47,10 +48,16 @@ public:
     uint8_t read_char();
     bool read_bool();
     int32_t read_int();
-    int64_t read_long();
-    uint64_t read_unsigned_long();
+    int64_t read_long_long();
+    uint32_t read_unsigned_long();
+    uint64_t read_unsigned_long_long();
     double read_double();
     rust::String read_string();
+
+    // Object framing (eckit::Stream startObject / endObject / next)
+    void start_object();
+    void end_object();
+    bool next_object();
 
     // Raw byte read (for data transfer after protocol handshake)
     virtual int64_t read_bytes(rust::Slice<uint8_t> buf);

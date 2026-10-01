@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -30,7 +23,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamMapNode {
-    FamNode header{};          // 24 bytes: { version, next }
+    FamNode header{};          // 16 bytes: { version, next }
     FamList::Descriptor desc;  // bucket FamList descriptor
 
     //------------------------------------------------------------------------------------------------------------------
@@ -47,9 +40,9 @@ struct FamMapNode {
 
 static_assert(std::is_standard_layout_v<FamMapNode>, "FamMapNode must be standard-layout for offsetof()");
 static_assert(std::is_trivially_copyable_v<FamMapNode>, "FamMapNode must be trivially copyable for FAM put/get");
-static_assert(sizeof(FamMapNode) == 56, "FamMapNode layout changed (FAM on-wire format depends on this)");
+static_assert(sizeof(FamMapNode) == 40, "FamMapNode layout changed (FAM on-wire format depends on this)");
 static_assert(offsetof(FamMapNode, header) == 0, "FamMapNode::header must be the first member (wire layout)");
-static_assert(offsetof(FamMapNode, desc) == 24, "FamMapNode::desc offset mismatch");
+static_assert(offsetof(FamMapNode, desc) == 16, "FamMapNode::desc offset mismatch");
 
 //----------------------------------------------------------------------------------------------------------------------
 

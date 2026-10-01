@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <cstddef>
@@ -48,6 +40,29 @@ CASE("Grid from grid_spec") {
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
         EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
+    }
+}
+
+
+CASE("Grid name/arrangement") {
+    struct {
+        const char* grid;
+        const char* name;
+    } tests[]{
+        {"{grid: [10, 10]}", ""},          // unnamed
+        {"{pl: [20, 24, 24, 20]}", "O2"},  //
+        {"{grid: n32}", "N32"},            //
+        {"{grid: o8}", "O8"},              //
+        {"{grid: h2}", "H2"},              //
+        {"{grid: h2n}", "H2"},             //
+        {"{grid: t20}", "T20"},            //
+    };
+
+    for (const auto& test : tests) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
+
+        EXPECT_EQUAL(grid->name(), test.name);
+        EXPECT(grid->arrangement().empty());
     }
 }
 

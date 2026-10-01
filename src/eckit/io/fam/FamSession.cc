@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -127,10 +120,10 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
     catch (openfam::Fam_Exception& e) {
         const auto code = e.fam_error();
         if (code == openfam::Fam_Error::FAM_ERR_NOTFOUND) {
-            throw NotFound(e.fam_error_msg());
+            throw NotFound(e.fam_error_msg(), Here(), true);
         }
         if (code == openfam::Fam_Error::FAM_ERR_ALREADYEXIST) {
-            throw AlreadyExists(e.fam_error_msg());
+            throw AlreadyExists(e.fam_error_msg(), Here(), true);
         }
         if (code == openfam::Fam_Error::FAM_ERR_NOPERM) {
             throw PermissionDenied(e.fam_error_msg());
@@ -145,7 +138,7 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
             throw OutOfRange(e.fam_error_msg(), Here());
         }
         if (code == openfam::Fam_Error::FAM_ERR_METADATA) {
-            throw NotFound(e.fam_error_msg());
+            throw NotFound(e.fam_error_msg(), Here(), true);
         }
         if (code == openfam::Fam_Error::FAM_ERR_RPC) {
             std::string option_name       = "CIS_SERVER";

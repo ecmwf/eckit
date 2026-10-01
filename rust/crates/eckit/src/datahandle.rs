@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! `DataHandle` wrapper — abstract I/O with typestate for read/write mode.
 //!
 //! The handle is modal: opened for read OR write, never both.

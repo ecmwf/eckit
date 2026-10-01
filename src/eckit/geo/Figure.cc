@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Figure.h"
@@ -19,6 +11,7 @@
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
+#include "eckit/geo/figure/Sun.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
@@ -107,8 +100,13 @@ double Figure::flattening() const {
 
 void Figure::fill_spec(spec::Custom& custom) const {
     static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
-        {std::shared_ptr<Figure>{new figure::Grs80}, "grs80"},
-        {std::shared_ptr<Figure>{new figure::Wgs84}, "wgs84"},
+        {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
+        {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
+        {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
+        {std::shared_ptr<Figure>{new figure::EarthIau1965}, "iau1965"},
+        {std::shared_ptr<Figure>{new figure::Sun}, "sun"},
+        {std::shared_ptr<Figure>{new figure::EarthWgs84}, "wgs84"},
+        {std::shared_ptr<Figure>{new figure::EarthWgs84Sphere}, "wgs84_sphere"},
     };
 
     for (const auto& [figure, name] : KNOWN) {
@@ -140,11 +138,18 @@ Figure* FigureFactory::make_from_string(const std::string& str) {
 }
 
 
+const Figure* FigureFactory::make_default() {
+    return new figure::Earth;
+}
+
+
 Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
     lock_type lock;
 
-    if (std::string figure; spec.get("figure", figure)) {
-        return Factory<Figure>::instance().get(figure).create();
+    if (spec.has("figure")) {
+        std::string name;
+        return spec.get("figure", name) ? Factory<Figure>::instance().get(name).create()
+                                        : make_from_spec_(spec.spec("figure"));
     }
 
     if (double a = 0., b = 0.;
@@ -157,9 +162,7 @@ Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
         return new figure::Sphere(R);
     }
 
-    const auto* msg = "Figure: cannot build figure without 'R'/'a'/'b' or 'radius'/'semi_major_axis'/'semi_minor_axis'";
-    Log::error() << msg << std::endl;
-    throw exception::SpecError(msg, Here());
+    return const_cast<Figure*>(make_default());
 }
 
 

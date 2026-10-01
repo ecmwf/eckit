@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -20,12 +13,13 @@
 #include <sstream>
 #include <string>
 
-#include "fam/fam.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamTypes.h"
+
+#include "fam/fam.h"
 
 namespace eckit {
 
@@ -81,8 +75,8 @@ void FamRegion::setObjectLevelPermissions() const {
 // OBJECT factory methods
 
 // Creates a FamObject wrapper around an existing object identified by {regionId, offset}
-FamObject FamRegion::proxyObject(const fam::index_t offset) const {
-    return session_->proxyObject(index(), offset);
+FamObject FamRegion::proxyObject(const FamDescriptor& descriptor) const {
+    return session_->proxyObject(descriptor.region, descriptor.offset);
 }
 
 FamObject FamRegion::lookupObject(const std::string& object_name) const {
@@ -91,10 +85,8 @@ FamObject FamRegion::lookupObject(const std::string& object_name) const {
 
 FamObject FamRegion::allocateObject(const fam::size_t object_size, const fam::perm_t object_perm,
                                     const std::string& object_name, const bool overwrite) const {
-    if (overwrite) {
-        return session_->ensureAllocateObject(*region_, object_size, object_perm, object_name);
-    }
-    return session_->allocateObject(*region_, object_size, object_perm, object_name);
+    return overwrite ? session_->ensureAllocateObject(*region_, object_size, object_perm, object_name)
+                     : session_->allocateObject(*region_, object_size, object_perm, object_name);
 }
 
 void FamRegion::deallocateObject(const std::string& object_name) const {

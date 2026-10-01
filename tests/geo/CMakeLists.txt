@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 set(_cache_path "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -6,6 +9,7 @@ foreach(_test
         area_polygon
         figure
         figure_earth
+        figure_sun
         gaussian
         great_circle
         grid

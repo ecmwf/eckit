@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/unstructured/ICON.h"
@@ -39,7 +31,8 @@ static std::string arrangement_to_string(Arrangement a) {
 
 ICON::ICON(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
-                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement")))) {}
+                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
+                 bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
 
 
 ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}

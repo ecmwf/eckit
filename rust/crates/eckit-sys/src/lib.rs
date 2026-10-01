@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! FFI bindings to ECMWF eckit C++ library.
 //!
 //! This crate builds eckit and provides:

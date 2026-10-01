@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/Rotation.h"
@@ -30,13 +22,15 @@ static ProjectionRegisterType<Rotation> PROJECTION("rotation");
 Rotation::Rotation(const Spec& spec) :
     Rotation(
         [](const auto& spec) -> PointLonLat {
-            if (std::vector<double> r; spec.get("rotation", r)) {
-                ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
-                return {r[0], r[1]};
+            if (std::vector<double> p; spec.get("south_pole", p) || spec.get("rotation", p)) {
+                ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+                return {p[0], p[1]};
             }
 
             if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
-                spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat)) {
+                spec.has("south_pole_lon") || spec.has("south_pole_lat")) {
+                ASSERT_MSG(spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat),
+                           "Rotation: 'south_pole_lon' and 'south_pole_lat' are required together");
                 return {lon, lat};
             }
 
@@ -132,10 +126,10 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
 
     auto lon = SOUTH_POLE.lon();
     auto lat = SOUTH_POLE.lat();
-    if (std::vector<double> r{lon, lat}; spec.get("rotation", r)) {
-        ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
-        lon = r[0];
-        lat = r[1];
+    if (std::vector<double> p{lon, lat}; spec.get("south_pole", p) || spec.get("rotation", p)) {
+        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+        lon = p[0];
+        lat = p[1];
     }
     else {
         ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),
@@ -156,8 +150,7 @@ void Rotation::fill_spec(spec::Custom& custom) const {
     bool projection = false;
 
     if (!points_equal(SOUTH_POLE, south_pole_)) {
-        custom.set("south_pole_lon", south_pole_.lon());
-        custom.set("south_pole_lat", south_pole_.lat());
+        custom.set("south_pole", std::vector<double>{south_pole_.lon(), south_pole_.lat()});
         projection = true;
     }
 

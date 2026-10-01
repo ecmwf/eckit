@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/spec/Layered.h"
 
@@ -98,19 +91,21 @@ void Layered::json(JSON&) const {
 
 
 const Spec& Layered::spec(const std::string& name) const {
-    for (const auto& spec : front_) {
-        if (spec->has(name)) {
-            return spec->spec(name);
+    if (!hide_.contains(name)) {
+        for (const auto& spec : front_) {
+            if (spec->has(name)) {
+                return spec->spec(name);
+            }
         }
-    }
 
-    if (has(name)) {
-        return Spec::spec(name);
-    }
+        if (spec_.has(name)) {
+            return spec_.spec(name);
+        }
 
-    for (const auto& spec : back_) {
-        if (spec->has(name)) {
-            return spec->spec(name);
+        for (const auto& spec : back_) {
+            if (spec->has(name)) {
+                return spec->spec(name);
+            }
         }
     }
 

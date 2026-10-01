@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ### endianess
 
 test_big_endian( _BIG_ENDIAN )
@@ -104,6 +107,7 @@ list( APPEND eckit_container_srcs
     container/MappedArray.cc
     container/MappedArray.h
     container/Queue.h
+    container/QueueOfQueues.h
     container/Recycler.h
     container/SharedMemArray.cc
     container/SharedMemArray.h
@@ -271,6 +275,7 @@ list(APPEND eckit_message_srcs
 # FAM support
 
 list( APPEND eckit_io_srcs
+    io/fam/FamTypes.cc
     io/fam/FamTypes.h
 )
 

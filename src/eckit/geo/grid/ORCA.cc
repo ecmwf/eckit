@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/ORCA.h"
@@ -31,7 +23,9 @@ namespace eckit::geo::grid {
 
 
 ORCA::ORCA(const Spec& spec) :
-    name_(spec.get_string("name")), arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
+    Grid(bounding_box_from_spec(spec), Projection::make_from_spec(spec)),
+    name_(spec.get_string("name")),
+    arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));
 }
 
@@ -145,6 +139,8 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 
 void ORCA::fill_spec(spec::Custom& custom) const {
+    Grid::fill_spec(custom);
+
     auto grid = name_ + "_" + arrangement_to_string(arrangement_);
     custom.set("grid", grid);
 

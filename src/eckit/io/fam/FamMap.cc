@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -123,7 +116,6 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
 
         // Write remaining descriptor fields FIRST (tail, size)
         const auto offset = bucket_offset(index);
-        table_.put(desc.region, offset + offsetof(FamList::Descriptor, region));
         table_.put(desc.tail, offset + offsetof(FamList::Descriptor, tail));
         table_.put(desc.size, offset + offsetof(FamList::Descriptor, size));
 

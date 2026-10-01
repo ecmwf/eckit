@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -57,7 +49,12 @@ public:
 
     // -- Methods
 
-    container_type deconstruct() const { return {min_x, min_y, max_x, max_y}; }
+    value_type min_x() const { return operator[](0); }
+    value_type min_y() const { return operator[](1); }
+    value_type max_x() const { return operator[](2); }
+    value_type max_y() const { return operator[](3); }
+
+    container_type deconstruct() const { return {min_x(), min_y(), max_x(), max_y()}; }
 
     bool contains(const Point&) const override;
     bool contains(const BoundingBoxXY&) const;
@@ -72,13 +69,6 @@ public:
     // -- Class methods
 
     [[nodiscard]] static BoundingBoxXY* make_from_spec(const Spec&);
-
-    // -- Members
-
-    const value_type& min_x = operator[](0);
-    const value_type& min_y = operator[](1);
-    const value_type& max_x = operator[](2);
-    const value_type& max_y = operator[](3);
 };
 
 

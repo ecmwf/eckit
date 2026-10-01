@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # OpenFAM Mock — standalone shared library
 #
 # Provides the same fam/fam.h API as the real OpenFAM library.

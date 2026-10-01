@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Grid.h"
@@ -51,7 +43,8 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(Projection* proj) : projection_(proj == nullptr ? new projection::EquidistantCylindrical : proj) {}
+Grid::Grid(BoundingBox* bbox, Projection* proj) :
+    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()) {}
 
 
 const spec::Spec& Grid::catalog() const {
@@ -81,7 +74,6 @@ const spec::Spec& Grid::catalog() const {
 const Grid::Spec& Grid::spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
-        ASSERT(spec_);
 
         auto& custom = *spec_;
         fill_spec(custom);
@@ -214,12 +206,8 @@ Grid::renumber_type Grid::crop(const Area&) const {
 
 
 const Projection& Grid::projection() const {
-    if (!projection_) {
-        projection_ = std::make_unique<projection::EquidistantCylindrical>();
-        ASSERT(projection_);
-    }
-
-    return *projection_;
+    return projection_ ? *projection_
+                       : *(projection_ = std::unique_ptr<const Projection>(ProjectionFactory::make_default()));
 }
 
 
@@ -303,6 +291,18 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
+Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
+    // NOTE: 'bounding_box' is how a grid catalogue entry spells its own 'area'; loose north/west/south/east keys are
+    // not considered, they can describe the first/last grid point instead
+    if (std::vector<double> bbox; spec.get("bounding_box", bbox)) {
+        ASSERT(bbox.size() == 4);
+        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
+    }
+
+    return spec.has("area") ? BoundingBox::make_from_spec(spec).release() : nullptr;
+}
+
+
 void Grid::fill_spec(spec::Custom& custom) const {
     auto custom_set_if_different = [&custom](const std::string& name, const auto& obj, const std::string& default_str) {
         spec::Custom spec;
@@ -323,6 +323,10 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
     custom_set_if_different("area", area(), area_default);
     custom_set_if_different("projection", projection(), proj_default);
+
+    if (const auto& fig = figure(); !fig.is_default()) {
+        custom_set_if_different("figure", fig, "");
+    }
 }
 
 
@@ -384,10 +388,11 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "unstructured_ll");
     }
 
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
 
-    if (static const std::string projection{"projection"}, rotation{"rotation"};
-        !cfg->has(projection) && cfg->has(rotation)) {
-        back->set(projection, new spec::Custom({{"type", rotation}, {rotation, cfg->get_double_vector(rotation)}}));
+    if (!cfg->has(PROJECTION) && cfg->has(ROTATION)) {
+        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {"south_pole", cfg->get_double_vector(ROTATION)}}));
     }
 
     if (!back->empty()) {

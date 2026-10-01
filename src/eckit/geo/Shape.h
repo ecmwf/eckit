@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -49,7 +41,7 @@ public:
 
     // -- Operators
 
-    bool operator==(const Shape& other) const { return nx == other.nx && ny == other.ny; }
+    bool operator==(const Shape& other) const { return nx() == other.nx() && ny() == other.ny(); }
 
     bool operator!=(const Shape& other) const { return !operator==(other); }
 
@@ -63,14 +55,12 @@ public:
         return *this;
     }
 
-    // Members
-
-    const value_type& nx = container_type::operator[](0);
-    const value_type& ny = container_type::operator[](1);
-
     // -- Methods
 
-    container_type deconstruct() const { return {nx, ny}; }
+    value_type nx() const { return container_type::operator[](0); }
+    value_type ny() const { return container_type::operator[](1); }
+
+    container_type deconstruct() const { return {nx(), ny()}; }
 
     // -- Class methods
 
@@ -81,7 +71,7 @@ private:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& os, const Shape& inc) {
-        return os << "[" << inc.nx << "," << inc.ny << "]";
+        return os << "[" << inc.nx() << "," << inc.ny() << "]";
     }
 };
 

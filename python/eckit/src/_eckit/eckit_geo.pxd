@@ -1,13 +1,3 @@
-# (C) Copyright 1996- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-#
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
-
-
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
 from libcpp.string cimport string
@@ -21,18 +11,18 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         LibEcKitGeo& instance()
 
         @staticmethod
-        void purgeCacheDir()
+        void purgeCacheDir() except +
 
         @staticmethod
-        bool projdb_is_available()
+        bool projdb_is_available() except +
 
         @staticmethod
         void projdb_set_search_paths(
             const string& db_path, const vector[string]& search_paths
-        )
+        ) except +
 
-        string version()
-        string gitsha1(unsigned int n)  # n=40 for full sha1
+        string version() except +
+        string gitsha1(unsigned int n) except +  # n=40 for full sha1
 
 
 cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
@@ -84,6 +74,18 @@ cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
         Figure* make_from_string(const string) except +
 
 
+cdef extern from "eckit/geo/Projection.h" namespace "eckit::geo":
+    cdef cppclass Projection:
+        string spec_str() const
+        string proj_str() const
+        const string& type() const
+        const Figure& figure() except +
+
+    cdef cppclass ProjectionFactory:
+        @staticmethod
+        const Projection* make_from_string(const string) except +
+
+
 cdef extern from "eckit/geo/Range.h" namespace "eckit::geo":
     cdef cppclass Range:
         vector[double] values() const
@@ -103,6 +105,8 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const
+        const Projection& projection() except +
+        const Figure& figure() except +
         const Range& x() const
         const Range& y() const
         const Range& lon() const

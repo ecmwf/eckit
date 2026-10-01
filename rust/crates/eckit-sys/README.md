@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # eckit-sys
 
 Low-level Rust bindings to ECMWF's [eckit](https://github.com/ecmwf/eckit) C++

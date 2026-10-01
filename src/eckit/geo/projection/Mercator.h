@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -18,7 +10,7 @@
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/// Calculate coordinates of a point on a Mercator projection, given the projection centre and first point
 class Mercator : public Projection {
 public:
 

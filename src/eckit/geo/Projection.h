@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -59,10 +51,13 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
+    /// Map a grid's (x, y) coordinates to geographic coordinates
+    virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
+
     void falseXY(const PointXY& falseXY) { false_ = falseXY; }
     const PointXY& falseXY() const { return false_; }
 
-    const Figure& figure() const;
+    const Figure& figure() const { return *figure_; }
 
     virtual void fill_spec(spec::Custom&) const;
     virtual const std::string& type() const = 0;
@@ -70,6 +65,8 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
     std::string proj_str() const;
+
+    bool is_default() const;
 
     // -- Class methods
 
@@ -83,13 +80,11 @@ private:
 
     // -- Members
 
-    mutable std::shared_ptr<Figure> figure_;
+    std::shared_ptr<const Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
     PointXY false_;
 
     // -- Friends
-
-    friend class Grid;
 
     friend bool operator==(const Projection& a, const Projection& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Projection& a, const Projection& b) { return !(a == b); }
@@ -112,6 +107,8 @@ struct ProjectionFactory {
     [[nodiscard]] static const Projection* build(const Projection::Spec& spec) {
         return instance().make_from_spec_(spec);
     }
+
+    [[nodiscard]] static const Projection* make_default();
 
     // This is 'const' as Projection should always be immutable
     [[nodiscard]] static const Projection* make_from_string(const std::string&);

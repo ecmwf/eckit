@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to itr by virtue of its status as an intergovernmental organisation nor
- * does itr submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
@@ -60,6 +52,20 @@ CASE("gridspec") {
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
         EXPECT(*grid3 == *grid);
+    }
+}
+
+
+CASE("name") {
+    for (size_t n : {2, 3, 64}) {
+        const auto name = "H" + std::to_string(n);
+
+        for (const auto& suffix : std::vector<std::string>{"", "n", "r"}) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: " + name + suffix + "}"));
+
+            EXPECT_EQUAL(grid->name(), name);
+            EXPECT(grid->arrangement().empty());
+        }
     }
 }
 

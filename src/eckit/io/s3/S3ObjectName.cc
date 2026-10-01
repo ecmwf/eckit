@@ -34,16 +34,18 @@ namespace eckit {
 
 auto S3ObjectName::parse(const std::string& name) -> S3ObjectPath {
     const auto parsed = S3Name::parse(name);
-    if (parsed.size() != 2) { throw S3SeriousBug("Could not parse bucket/object from name: " + name, Here()); }
+    if (parsed.size() != 2) {
+        throw S3SeriousBug("Could not parse bucket/object from name: " + name, Here());
+    }
     return {parsed[0], parsed[1]};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, S3ObjectPath path)
-    : S3Name(endpoint), path_ {std::move(path)} { }
+S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, S3ObjectPath path) :
+    S3Name(endpoint), path_{std::move(path)} {}
 
-S3ObjectName::S3ObjectName(const URI& uri) : S3Name(uri), path_ {parse(uri.name())} { }
+S3ObjectName::S3ObjectName(const URI& uri) : S3Name(uri), path_{parse(uri.name())} {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

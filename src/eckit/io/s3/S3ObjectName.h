@@ -34,9 +34,11 @@ class DataHandle;
 
 class S3ObjectName : public S3Name {
 public:  // factory
+
     static auto parse(const std::string& name) -> S3ObjectPath;
 
 public:  // methods
+
     S3ObjectName(const net::Endpoint& endpoint, S3ObjectPath path);
 
     explicit S3ObjectName(const URI& uri);
@@ -72,9 +74,11 @@ public:  // methods
     auto dataHandle(const Offset& offset) const -> DataHandle*;
 
 private:  // methods
+
     void print(std::ostream& out) const override;
 
 private:  // members
+
     S3ObjectPath path_;
 };
 

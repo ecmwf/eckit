@@ -5,10 +5,13 @@
 #include "eckit/geo/polygon/Polygon.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <iterator>
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Point.h"
 #include "eckit/types/FloatCompare.h"
 
 

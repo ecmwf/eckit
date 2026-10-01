@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/cache/DiskCache.h"
 
 

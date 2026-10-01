@@ -5,11 +5,12 @@
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 
 #include <algorithm>
-#include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
 
@@ -51,10 +52,10 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
 
 
 ReducedLonLat::ReducedLonLat(const Spec& spec) :
-    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, Projection::make_from_spec(spec)) {}
+    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
 
 
-ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, Projection* p) :
+ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
     Reduced(nullptr, p), pl_(pl), longitude_(pl.size()) {
     if (pl_.empty()) {
         throw exception::GridError("ReducedLonLat: 'pl' must not be empty", Here());

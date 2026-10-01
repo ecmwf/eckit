@@ -59,6 +59,7 @@ cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
 
 cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
     cdef cppclass Figure:
+        double R() except +  # spherical figures only
         double a() const
         double b() const
         double area() const
@@ -68,6 +69,7 @@ cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
         bool spherical() const
         double eccentricity() const
         double flattening() const
+        bool operator==(const Figure&) const
 
     cdef cppclass FigureFactory:
         @staticmethod
@@ -79,7 +81,16 @@ cdef extern from "eckit/geo/Projection.h" namespace "eckit::geo":
         string spec_str() const
         string proj_str() const
         const string& type() const
+        const vector[string]& source_point_coordinates() const
+        const vector[string]& target_point_coordinates() const
+        vector[vector[double]] fwd(
+            const vector[double]& v1, const vector[double]& v2, const vector[double]& v3
+        ) except +
+        vector[vector[double]] inv(
+            const vector[double]& v1, const vector[double]& v2, const vector[double]& v3
+        ) except +
         const Figure& figure() except +
+        bool operator==(const Projection&) const
 
     cdef cppclass ProjectionFactory:
         @staticmethod
@@ -117,14 +128,22 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         const Grid* make_from_string(const string) except +
 
 
+cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
+    cdef cppclass Unstructured(Grid):
+        Unstructured(
+            const vector[double]& longitudes,
+            const vector[double]& latitudes,
+            const string& name,
+        ) except +
+
+
 cdef extern from * namespace "eckit::geo::python":
     """
     #include <vector>
 
     #include "eckit/geo/area/BoundingBox.h"
-    #include "eckit/geo/Figure.h"
     #include "eckit/geo/Grid.h"
-    #include "eckit/geo/PointLonLat.h"
+    #include "eckit/geo/Point.h"
 
     namespace eckit::geo::python {
 
@@ -145,8 +164,6 @@ cdef extern from * namespace "eckit::geo::python":
         return bbox.contains(PointLonLat{lon, lat});
     }
 
-    inline double figure_R(const Figure& figure) { return figure.R(); }
-
     }
     """
     vector[double] grid_x_values(const Grid& grid) except +
@@ -156,4 +173,3 @@ cdef extern from * namespace "eckit::geo::python":
 
     bint bbox_intersects(const BoundingBox& lhs, BoundingBox& rhs) except +
     bint bbox_contains_lonlat(const BoundingBox& bbox, double lon, double lat) except +
-    double figure_R(const Figure& figure) except +

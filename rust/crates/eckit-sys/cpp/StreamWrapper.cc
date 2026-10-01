@@ -25,10 +25,13 @@ void StreamWrapper::write_bool(bool v) {
 void StreamWrapper::write_int(int32_t v) {
     inner() << v;
 }
-void StreamWrapper::write_long(int64_t v) {
+void StreamWrapper::write_long_long(int64_t v) {
     inner() << static_cast<long long>(v);
 }
-void StreamWrapper::write_unsigned_long(uint64_t v) {
+void StreamWrapper::write_unsigned_long(uint32_t v) {
+    inner() << static_cast<unsigned long>(v);
+}
+void StreamWrapper::write_unsigned_long_long(uint64_t v) {
     inner() << static_cast<unsigned long long>(v);
 }
 void StreamWrapper::write_double(double v) {
@@ -56,12 +59,17 @@ int32_t StreamWrapper::read_int() {
     inner() >> v;
     return v;
 }
-int64_t StreamWrapper::read_long() {
+int64_t StreamWrapper::read_long_long() {
     long long v{};
     inner() >> v;
     return static_cast<int64_t>(v);
 }
-uint64_t StreamWrapper::read_unsigned_long() {
+uint32_t StreamWrapper::read_unsigned_long() {
+    unsigned long v{};
+    inner() >> v;
+    return static_cast<uint32_t>(v);
+}
+uint64_t StreamWrapper::read_unsigned_long_long() {
     unsigned long long v{};
     inner() >> v;
     return static_cast<uint64_t>(v);
@@ -75,6 +83,16 @@ rust::String StreamWrapper::read_string() {
     std::string v;
     inner() >> v;
     return rust::String(v);
+}
+
+void StreamWrapper::start_object() {
+    inner().startObject();
+}
+void StreamWrapper::end_object() {
+    inner().endObject();
+}
+bool StreamWrapper::next_object() {
+    return inner().next();
 }
 
 int64_t StreamWrapper::read_bytes(rust::Slice<uint8_t> buf) {

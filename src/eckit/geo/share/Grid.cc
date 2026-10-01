@@ -4,6 +4,10 @@
 
 #include "eckit/geo/share/Grid.h"
 
+#include <memory>
+#include <ostream>
+#include <string>
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -11,6 +15,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
 
@@ -39,28 +44,6 @@ void Grid::load(const PathName& path) {
     auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
     ASSERT(custom != nullptr);
 
-    struct SpecByUIDGenerator final : GridSpecByUID::concrete_generator_t {
-        explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
-        bool match(const spec::Custom& other) const override { return other == *spec_; }
-
-    private:
-
-        std::unique_ptr<spec::Custom> spec_;
-    };
-
-    struct SpecByNameGenerator final : GridSpecByName::concrete_generator_t {
-        explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        spec::Spec* spec(GridSpecByName::concrete_generator_t::arg1_t) const override {
-            return new spec::Custom(spec_->container());
-        }
-        bool match(const spec::Custom& other) const override { return other == *spec_; }
-
-    private:
-
-        std::unique_ptr<spec::Custom> spec_;
-    };
-
     if (path.exists()) {
         ValueMap map(YAMLParser::decodeFile(path));
 
@@ -70,8 +53,8 @@ void Grid::load(const PathName& path) {
             if (key == "grid_uids") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
-                    GridSpecByUID::regist(m.begin()->first.as<std::string>(),
-                                          new SpecByUIDGenerator(spec::Custom::make_from_value(m.begin()->second)));
+                    const std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(m.begin()->second));
+                    GridSpecByUID::regist(m.begin()->first.as<std::string>(), *spec);
                 }
                 continue;
             }
@@ -79,8 +62,8 @@ void Grid::load(const PathName& path) {
             if (key == "grid_names") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
-                    GridSpecByName::regist(m.begin()->first.as<std::string>(),
-                                           new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
+                    const std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(m.begin()->second));
+                    GridSpecByName::regist(m.begin()->first.as<std::string>(), *spec);
                 }
                 continue;
             }

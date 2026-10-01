@@ -18,7 +18,7 @@ namespace eckit::geo::projection {
 static ProjectionRegisterType<Stretch> PROJECTION("stretch");
 
 
-Stretch::Stretch(double c) : c_(c) {
+Stretch::Stretch(double c) : Projection(nullptr, PointLonLat{}, PointLonLat{}), c_(c) {
     if (types::is_approximately_equal(c_, 0.)) {
         throw exception::ProjectionError("Stretch: stretching_factor != 0", Here());
     }

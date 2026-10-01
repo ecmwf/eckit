@@ -5,11 +5,13 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "eckit/container/sptree/SPValue.h"
-#include "eckit/geo/PointXYZ.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo {

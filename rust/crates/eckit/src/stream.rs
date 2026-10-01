@@ -1,21 +1,26 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-//! Stream — tagged binary serialization over TCP or memory.
+//! Stream: tagged binary serialization over TCP or memory.
 //!
 //! Wraps `eckit::Stream` (`TCPStream`, `MemoryStream`, `ResizableMemoryStream`).
 //! Used by the Hermes protocol for `MarsRequest` serialization.
 
 use crate::error::Result;
 
-/// Tagged binary stream — primitive read/write operations.
+/// Tagged binary stream with primitive read/write operations.
 ///
 /// Implemented by [`TcpStream`] and [`MemoryStream`].
 /// Hermes protocol code uses `&mut dyn Stream` for testability.
+///
+/// Integer widths map to the `eckit::Stream` C++ overloads: `i32` is `int`,
+/// `u32` is `unsigned long` (4 bytes on the wire), `i64` is `long long` and
+/// `u64` is `unsigned long long`.
 pub trait Stream {
     fn write_u8(&mut self, v: u8) -> Result<()>;
     fn write_bool(&mut self, v: bool) -> Result<()>;
     fn write_i32(&mut self, v: i32) -> Result<()>;
+    fn write_u32(&mut self, v: u32) -> Result<()>;
     fn write_i64(&mut self, v: i64) -> Result<()>;
     fn write_u64(&mut self, v: u64) -> Result<()>;
     fn write_f64(&mut self, v: f64) -> Result<()>;
@@ -25,10 +30,19 @@ pub trait Stream {
     fn read_u8(&mut self) -> Result<u8>;
     fn read_bool(&mut self) -> Result<bool>;
     fn read_i32(&mut self) -> Result<i32>;
+    fn read_u32(&mut self) -> Result<u32>;
     fn read_i64(&mut self) -> Result<i64>;
     fn read_u64(&mut self) -> Result<u64>;
     fn read_f64(&mut self) -> Result<f64>;
     fn read_string(&mut self) -> Result<String>;
+
+    /// Write a start-of-object tag (`eckit::Stream::startObject`).
+    fn start_object(&mut self) -> Result<()>;
+    /// Write an end-of-object tag (`eckit::Stream::endObject`).
+    fn end_object(&mut self) -> Result<()>;
+    /// Advance to the next start-of-object tag, skipping end-of-object tags
+    /// (`eckit::Stream::next`). Returns `false` at end of stream.
+    fn next_object(&mut self) -> Result<bool>;
 
     fn bytes_written(&self) -> i64;
 
@@ -70,16 +84,22 @@ macro_rules! impl_stream {
                     .write_int(v)
                     .map_err(eckit_sys::Error::from)
             }
+            fn write_u32(&mut self, v: u32) -> Result<()> {
+                self.inner
+                    .pin_mut()
+                    .write_unsigned_long(v)
+                    .map_err(eckit_sys::Error::from)
+            }
             fn write_i64(&mut self, v: i64) -> Result<()> {
                 self.inner
                     .pin_mut()
-                    .write_long(v)
+                    .write_long_long(v)
                     .map_err(eckit_sys::Error::from)
             }
             fn write_u64(&mut self, v: u64) -> Result<()> {
                 self.inner
                     .pin_mut()
-                    .write_unsigned_long(v)
+                    .write_unsigned_long_long(v)
                     .map_err(eckit_sys::Error::from)
             }
             fn write_f64(&mut self, v: f64) -> Result<()> {
@@ -118,16 +138,22 @@ macro_rules! impl_stream {
                     .read_int()
                     .map_err(eckit_sys::Error::from)
             }
+            fn read_u32(&mut self) -> Result<u32> {
+                self.inner
+                    .pin_mut()
+                    .read_unsigned_long()
+                    .map_err(eckit_sys::Error::from)
+            }
             fn read_i64(&mut self) -> Result<i64> {
                 self.inner
                     .pin_mut()
-                    .read_long()
+                    .read_long_long()
                     .map_err(eckit_sys::Error::from)
             }
             fn read_u64(&mut self) -> Result<u64> {
                 self.inner
                     .pin_mut()
-                    .read_unsigned_long()
+                    .read_unsigned_long_long()
                     .map_err(eckit_sys::Error::from)
             }
             fn read_f64(&mut self) -> Result<f64> {
@@ -142,6 +168,24 @@ macro_rules! impl_stream {
                     .read_string()
                     .map_err(eckit_sys::Error::from)
             }
+            fn start_object(&mut self) -> Result<()> {
+                self.inner
+                    .pin_mut()
+                    .start_object()
+                    .map_err(eckit_sys::Error::from)
+            }
+            fn end_object(&mut self) -> Result<()> {
+                self.inner
+                    .pin_mut()
+                    .end_object()
+                    .map_err(eckit_sys::Error::from)
+            }
+            fn next_object(&mut self) -> Result<bool> {
+                self.inner
+                    .pin_mut()
+                    .next_object()
+                    .map_err(eckit_sys::Error::from)
+            }
             fn bytes_written(&self) -> i64 {
                 self.inner.bytes_written()
             }
@@ -154,7 +198,7 @@ macro_rules! impl_stream {
 
 // ==================== TcpStream ====================
 
-/// TCP stream — connects to a Hermes server.
+/// TCP stream that connects to a Hermes server.
 pub struct TcpStream {
     inner: eckit_sys::UniquePtr<eckit_sys::StreamWrapper>,
 }
@@ -184,7 +228,7 @@ impl TcpStream {
 /// Hand off the connected socket as a streaming `DataHandle`.
 ///
 /// Use after a protocol handshake when the remainder of the connection should
-/// be drained as raw bytes — the resulting `DataHandle` reads on demand from
+/// be drained as raw bytes; the resulting `DataHandle` reads on demand from
 /// the socket, with no in-memory buffering. Consumes the [`TcpStream`].
 impl TryFrom<TcpStream> for crate::DataHandle {
     type Error = crate::Error;
@@ -203,7 +247,7 @@ impl_stream!(TcpStream);
 
 // ==================== MemoryStream ====================
 
-/// Memory-backed stream — for testing and in-memory serialization.
+/// Memory-backed stream for testing and in-memory serialization.
 pub struct MemoryStream {
     inner: eckit_sys::UniquePtr<eckit_sys::StreamWrapper>,
 }
@@ -261,6 +305,12 @@ impl StreamWrite for i32 {
     }
 }
 
+impl StreamWrite for u32 {
+    fn write_to(&self, stream: &mut dyn Stream) -> Result<()> {
+        stream.write_u32(*self)
+    }
+}
+
 impl StreamWrite for i64 {
     fn write_to(&self, stream: &mut dyn Stream) -> Result<()> {
         stream.write_i64(*self)
@@ -314,6 +364,12 @@ impl StreamRead for bool {
 impl StreamRead for i32 {
     fn read_from(stream: &mut dyn Stream) -> Result<Self> {
         stream.read_i32()
+    }
+}
+
+impl StreamRead for u32 {
+    fn read_from(stream: &mut dyn Stream) -> Result<Self> {
+        stream.read_u32()
     }
 }
 

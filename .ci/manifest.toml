@@ -49,7 +49,7 @@ platform = "ubuntu-24.04"
 triggers = ["upstream-change", "rebuild-request"]
 
 [matrix.build-hpc.defaults]
-job-script = "./.ci/hpc/build.sh.j2"
+job-script = "./.ci/build.sh.j2"
 
 [[matrix.build-hpc.include]]
 cxx-compiler = "g++-8"
@@ -61,8 +61,8 @@ platform = "hpc-atos-gnu"
 # gcc/old, not a version number: as of now gives you 8.5.0
 # `module avail gcc` lists no 8.5.0 to pin directly.
 modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load ninja"]
-cc = "gcc"
-cxx = "g++"
+c-compiler-binary = "gcc"
+cxx-compiler-binary = "g++"
 time = "00:40:00"
 
 [matrix.build-hpc]

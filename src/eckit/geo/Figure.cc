@@ -141,6 +141,14 @@ Figure* FigureFactory::make_from_string(const std::string& str) {
 }
 
 
+const std::set<std::string>& FigureFactory::keys() {
+    static const std::set<std::string> KEYS{
+        "figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis",
+    };
+    return KEYS;
+}
+
+
 const Figure* FigureFactory::make_default() {
     return new figure::Earth;
 }

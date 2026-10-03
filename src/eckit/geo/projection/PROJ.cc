@@ -315,12 +315,9 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
         return it != map.end() ? it->second : key;
     };
 
-    static const std::set<std::string> FIGURE_KEYS{"figure",         "R", "r", "radius", "a", "b", "semi_major_axis",
-                                                   "semi_minor_axis"};
-
     std::set<key_value_type, key_value_compare> set;
     for (const auto& [k, v] : custom.container()) {
-        if (FIGURE_KEYS.count(k) == 0) {
+        if (FigureFactory::keys().count(k) == 0) {
             set.emplace(rename(KEYS, k), rename(VALUES, to_string(v)));
         }
     }

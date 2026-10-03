@@ -23,7 +23,7 @@ static ProjectionRegisterType<Rotation> PROJECTION("rotation");
 
 Rotation::Rotation(const Spec& spec) :
     Rotation(
-        [](const auto& spec) -> PointLonLat {
+        [&spec]() -> PointLonLat {
             if (std::vector<double> p; spec.get("south_pole", p)) {
                 ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
                 return {p[0], p[1]};
@@ -34,20 +34,18 @@ Rotation::Rotation(const Spec& spec) :
                 return {p[1], p[0]};
             }
 
-            if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
-                spec.has("south_pole_lon") || spec.has("south_pole_lat")) {
-                ASSERT_MSG(spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat),
-                           "Rotation: 'south_pole_lon' and 'south_pole_lat' are required together");
-                return {lon, lat};
-            }
+            auto lon = SOUTH_POLE.lon();
+            auto lat = SOUTH_POLE.lat();
+            spec.get("south_pole_lon", lon);
+            spec.get("south_pole_lat", lat);
 
-            return SOUTH_POLE;
-        }(spec),
-        [](const auto& spec) -> double {
+            return {lon, lat};
+        }(),
+        [&spec]() -> double {
             double angle = 0.;
             spec.get("rotation_angle", angle);
             return angle;
-        }(spec)) {}
+        }()) {}
 
 
 Rotation::Rotation(const PointLonLat& south_pole, double angle) :
@@ -177,33 +175,8 @@ const std::string& Rotation::type() const {
 
 
 Rotation* Rotation::make_from_spec(const Spec& spec) {
-    double angle = 0.;
-    spec.get("rotation_angle", angle);
-
-    auto lon = SOUTH_POLE.lon();
-    auto lat = SOUTH_POLE.lat();
-    if (std::vector<double> p; spec.get("south_pole", p)) {
-        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
-        lon = p[0];
-        lat = p[1];
-    }
-    else if (spec.get("rotation", p)) {
-        ASSERT_MSG(p.size() == 2, "Rotation: expected 'rotation' as [lat, lon]");
-        lon = p[1];
-        lat = p[0];
-    }
-    else {
-        ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),
-                   "Rotation: expected 'south_pole_lon' and 'south_pole_lat'");
-    }
-
-    auto* r = new Rotation{{lon, lat}, angle};
-    if (!r->rotated()) {
-        delete r;
-        r = nullptr;
-    }
-
-    return r;
+    auto r = std::make_unique<Rotation>(spec);
+    return r->rotated() ? r.release() : nullptr;
 }
 
 

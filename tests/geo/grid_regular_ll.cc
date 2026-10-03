@@ -25,41 +25,44 @@ using grid::regular::RegularLL;
 
 
 CASE("rotated: spec equivalences") {
-    const std::string canonical = R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})";
+    auto grd = [](const std::string& str) { return std::unique_ptr<const Grid>(GridFactory::make_from_string(str)); };
 
-    for (const auto& spec : {
+    for (const auto* spec : {
              R"({"grid":[5,5],"rotation":[-40,-20]})",
              R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})",
              R"({"grid":[5,5],"projection":{"south_pole_lon":-20,"south_pole_lat":-40,"type":"rotation"}})",
              R"({"grid":[5,5],"projection":{"rotation":[-40,-20],"type":"rotation"}})",
          }) {
-        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
-
-        EXPECT_EQUAL(grid->spec_str(), canonical);
+        EXPECT_EQUAL(grd(spec)->spec_str(),
+                     R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})");
     }
 
-
-    SECTION("a south pole at its default is no rotation at all") {
-        for (const auto& spec : {
-                 R"({"grid":[5,5]})",
-                 R"({"grid":[5,5],"rotation":[-90,0]})",
-                 R"({"grid":[5,5],"projection":{"south_pole":[0,-90],"type":"rotation"}})",
-                 R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
-             }) {
-            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
-
-            EXPECT_EQUAL(grid->spec_str(), R"({"grid":[5,5]})");
-        }
+    for (const auto* spec : {
+             R"({"grid":[5,5]})",
+             R"({"grid":[5,5],"rotation":[-90,0]})",
+             R"({"grid":[5,5],"projection":{"south_pole":[0,-90],"type":"rotation"}})",
+             R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
+         }) {
+        EXPECT_EQUAL(grd(spec)->spec_str(), R"({"grid":[5,5]})");
     }
 
+    struct {
+        std::string a;
+        std::string b;
+        std::string c;
+    } tests[]{
+        {R"({"grid":[5,5],"rotation":[-90,-20]})",                                   //
+         R"({"grid":[5,5],"projection":{"type":"rotation","south_pole_lon":-20}})",  //
+         R"({"grid":[5,5],"projection":{"type":"rotation","south_pole":[-20,-90]}})"},
 
-    SECTION("'south_pole_lon' and 'south_pole_lat' are required together") {
-        for (const auto& spec : {
-                 R"({"grid":[5,5],"projection":{"south_pole_lon":-20,"type":"rotation"}})",
-                 R"({"grid":[5,5],"projection":{"south_pole_lat":-40,"type":"rotation"}})",
-             }) {
-            EXPECT_THROWS(auto dummy = GridFactory::make_from_string(spec));
-        }
+        {R"({"grid":[5,5],"rotation":[-90,0]})",  //
+         R"({"grid":[5,5]})",                     //
+         R"({"grid":[5,5],"projection":{"type":"rotation","south_pole_lon":-720}})"},
+    };
+
+    for (const auto& test : tests) {
+        EXPECT_EQUAL(grd(test.a)->spec_str(), grd(test.b)->spec_str());
+        EXPECT_EQUAL(grd(test.b)->spec_str(), grd(test.c)->spec_str());
     }
 }
 

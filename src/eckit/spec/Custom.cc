@@ -29,11 +29,9 @@ template <typename T>
 std::string to_string(const T& value) {
     static_assert(std::is_arithmetic_v<T>);
 
-    std::ostringstream str;
-    str.precision(std::min(STREAM_PRECISION, std::numeric_limits<T>::digits10));
-
     if constexpr (std::is_floating_point_v<T>) {
-        str.clear();
+        std::ostringstream str;
+        str.precision(std::numeric_limits<T>::digits10);
         str << value;
         return str.str();
     }

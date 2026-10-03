@@ -86,34 +86,15 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
         std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
                                                     const std::vector<double>& lat) const override {
             const auto n = lon.size();
+            ASSERT(lat.size() == n);
 
-            // spherical to Cartesian (unit sphere)
-            std::vector<double> x(n);
-            std::vector<double> y(n);
-            std::vector<double> z(n);
-            for (size_t i = 0; i < n; ++i) {
-                const auto p = figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]});
-                x[i]         = p.X();
-                y[i]         = p.Y();
-                z[i]         = p.Z();
-            }
-
-            // rotation, as the matrix product of all points at once
-            for (size_t i = 0; i < n; ++i) {
-                const auto a = x[i];
-                const auto b = y[i];
-                const auto c = z[i];
-                x[i]         = R_.XX() * a + R_.XY() * b + R_.XZ() * c;
-                y[i]         = R_.YX() * a + R_.YY() * b + R_.YZ() * c;
-                z[i]         = R_.ZX() * a + R_.ZY() * b + R_.ZZ() * c;
-            }
-
-            // Cartesian to spherical
+            // spherical to Cartesian (unit sphere), rotation, Cartesian to spherical
             std::vector<std::vector<double>> out{std::vector<double>(n), std::vector<double>(n)};
             for (size_t i = 0; i < n; ++i) {
-                const auto q = figure::UnitSphere::_convertCartesianToSpherical(PointXYZ{x[i], y[i], z[i]});
-                out[0][i]    = q.lon();
-                out[1][i]    = q.lat();
+                const auto q = figure::UnitSphere::_convertCartesianToSpherical(
+                    R_ * figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]}));
+                out[0][i] = q.lon();
+                out[1][i] = q.lat();
             }
             return out;
         }

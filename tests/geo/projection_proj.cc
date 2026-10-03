@@ -14,6 +14,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/projection/PROJ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -58,6 +59,19 @@ CASE("projdb") {
 
         EXPECT(LibEcKitGeo::projdb_is_available());
     }
+}
+
+
+CASE("PROJ::proj_str") {
+    using projection::PROJ;
+
+    // key "proj" first, then the others (sorted), then the figure (default if not specified)
+    EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lon_0", -180}}),
+                 "+proj=merc +lon_0=-180 +R=6371229");
+    EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lat_ts", 14}, {"figure", "wgs84"}}),
+                 "+proj=merc +lat_ts=14 +ellps=WGS84");
+    EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "lcc"}, {"lat_1", 30}, {"a", 6378206.4}, {"b", 6356583.8}}),
+                 "+proj=lcc +lat_1=30 +a=6378206.4 +b=6356583.8");
 }
 
 

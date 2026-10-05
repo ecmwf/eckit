@@ -104,6 +104,7 @@ public:
 
     // -- Stubs (not called by strategies) --
 
+    std::string fileSystemType() const { throw NotImplemented("FakeFileSystem::fileSystemType", Here()); }
     const char* localPath() const { throw NotImplemented("FakeFileSystem::localPath", Here()); }
     Length size() const { throw NotImplemented("FakeFileSystem::size", Here()); }
     time_t lastAccess() const { throw NotImplemented("FakeFileSystem::lastAccess", Here()); }

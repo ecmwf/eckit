@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/cache/DiskCache.h"
 #include "eckit/log/Bytes.h"
 

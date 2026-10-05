@@ -4,9 +4,12 @@
 
 #pragma once
 
+#include <cstddef>
+#include <string>
 #include <vector>
 
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo::iterator {

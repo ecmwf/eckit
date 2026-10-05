@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Point.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 

@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/figure/Sun.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"

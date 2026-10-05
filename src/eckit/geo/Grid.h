@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
@@ -20,6 +21,7 @@
 #include "eckit/memory/Builder.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit {
@@ -109,7 +111,7 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    [[nodiscard]] const Spec& spec() const;
+    [[nodiscard]] const Spec& spec() const { return custom_spec(); }
     [[nodiscard]] std::string spec_str() const { return spec().str(); }
 
     [[nodiscard]] const spec::Spec& catalog() const;
@@ -176,7 +178,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Grid(BoundingBox* = nullptr, const Projection* = nullptr);
 
     // -- Methods
 
@@ -184,7 +186,7 @@ protected:
 
     void reset_uid(uid_type = {});
 
-    void projection(Projection* ptr) { projection_.reset(ptr); }
+    void projection(const Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
     [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
@@ -198,6 +200,10 @@ private:
     mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;
+
+    // -- Methods
+
+    const spec::Custom& custom_spec() const;
 
     // -- Friends
 
@@ -213,6 +219,7 @@ struct GridSpecByName {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
 };
 
@@ -224,6 +231,7 @@ struct GridSpecByUID {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
 };
 
@@ -246,23 +254,11 @@ struct GridRegisterName {
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] static const Grid* build(const Grid::Spec& spec) { return instance().make_from_spec_(spec); }
-
-    // This is 'const' as Grid should always be immutable
+    [[nodiscard]] static const Grid* build(const Grid::Spec&);
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
-    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec& spec) { return instance().make_spec_(spec); }
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static GridFactory& instance();
-
-    // This is 'const' as Grid should always be immutable
-    [[nodiscard]] const Grid* make_from_spec_(const Grid::Spec&) const;
-
-    [[nodiscard]] Grid::Spec* make_spec_(const Grid::Spec&) const;
-    std::ostream& list_(std::ostream&) const;
+    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec&);
+    static std::ostream& list(std::ostream&);
 };
 
 

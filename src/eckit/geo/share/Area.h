@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/spec/Spec.h"
+
 
 namespace eckit {
 namespace spec {

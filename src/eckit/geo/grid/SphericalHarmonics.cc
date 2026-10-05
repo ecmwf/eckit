@@ -5,7 +5,9 @@
 #include "eckit/geo/grid/SphericalHarmonics.h"
 
 #include <regex>
+#include <vector>
 
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"

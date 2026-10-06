@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/testing/Test.h"
 

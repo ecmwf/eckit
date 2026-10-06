@@ -120,10 +120,10 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
     catch (openfam::Fam_Exception& e) {
         const auto code = e.fam_error();
         if (code == openfam::Fam_Error::FAM_ERR_NOTFOUND) {
-            throw NotFound(e.fam_error_msg());
+            throw NotFound(e.fam_error_msg(), Here(), true);
         }
         if (code == openfam::Fam_Error::FAM_ERR_ALREADYEXIST) {
-            throw AlreadyExists(e.fam_error_msg());
+            throw AlreadyExists(e.fam_error_msg(), Here(), true);
         }
         if (code == openfam::Fam_Error::FAM_ERR_NOPERM) {
             throw PermissionDenied(e.fam_error_msg());
@@ -138,7 +138,7 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
             throw OutOfRange(e.fam_error_msg(), Here());
         }
         if (code == openfam::Fam_Error::FAM_ERR_METADATA) {
-            throw NotFound(e.fam_error_msg());
+            throw NotFound(e.fam_error_msg(), Here(), true);
         }
         if (code == openfam::Fam_Error::FAM_ERR_RPC) {
             std::string option_name       = "CIS_SERVER";

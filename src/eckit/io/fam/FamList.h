@@ -16,47 +16,50 @@
 ///
 /// FamList provides **multiple-reader, multiple-writer (MRMW)** safety:
 ///
-/// - **Concurrent insertions** (`pushFront`, `pushBack`): Lock-free using atomic CAS loops.
-///   Two threads can insert simultaneously without serialization.
+/// - **Concurrent insertions** (`pushFront`, `pushBack`): Lock-free using atomic CAS loops. Two threads can insert
+///   simultaneously without serialization.
 ///
-/// - **Concurrent deletions** (`popFront`, `popBack`, `erase`): Wait-free logical deletion.
-///   Nodes are *marked* for deletion before physical deallocation. Readers skip marked nodes.
+/// - **Concurrent deletions** (`popFront`, `popBack`, `erase`): Wait-free logical deletion. Nodes are *marked* for
+///   deletion and unlinked, but not freed. Readers skip marked nodes.
 ///
-/// - **Concurrent iteration**: Safe during concurrent insertions/deletions via node versioning.
-///   Iterators validate version stamps to detect stale node descriptors (ABA problem).
+/// - **Concurrent iteration**: Safe during concurrent insertions and deletions, because an unlinked node keeps valid
+///   next/prev links for as long as the list is live.
 ///
 /// - **Size tracking**: Updated atomically with pointer modifications via careful CAS loops.
+///
+/// ## Addressing
+///
+/// Links are packed {regionId, offset} pairs in a single 64-bit word, which is the widest atomic OpenFAM offers.
+/// @see FamDescriptor::pack()
 ///
 /// ## Lock-Free Algorithm Details
 ///
 /// ### Insertion (pushBack example):
 /// ```
 /// 1. Allocate new node with data
-/// 2. CAS-loop: old_last.next = new_node (atomic version-aware)
-/// 3. CAS-loop: tail.prev = new_node (atomic version-aware)
+/// 2. CAS-loop: tail.prev = new_node
+/// 3. CAS-loop: walk forward to the node whose next is tail, then old_last.next = new_node
 /// 4. Atomic add to size
 /// ```
 ///
 /// ### Deletion (popFront example, logical):
 /// ```
-/// 1. CAS-loop: mark first node as deleted
+/// 1. Mark first node as deleted
 /// 2. CAS-loop: update head.next (skip marked node)
 /// 3. Atomic subtract from size
-/// 4. Deallocate node immediately (safe due to logical marking)
+/// 4. Node is left allocated; see "Reclamation"
 /// ```
 ///
-/// ## ABA Problem Handling
+/// ## Reclamation
 ///
-/// - Each node has a `version` field (incremented on reuse).
-/// - Node descriptors are `{offset, version}` pairs.
-/// - CAS operations compare both offset and version.
-/// - Prevents use-after-free when freed nodes are reallocated at same address.
+/// Logically deleted nodes are never freed while the list is live — only `clear()` and region teardown reclaim them,
+/// and both require quiescence. This is what makes concurrent traversal safe, and it is also why no ABA protection is
+/// needed: a node address is never reused behind a concurrent reader.
 ///
 /// ## Marked Node Convention
 ///
-/// - Deleted nodes are **logically marked** (bit flag) before physical deallocation.
+/// - Deleted nodes are **logically marked** (bit flag) and unlinked.
 /// - Readers check the mark bit; they skip marked nodes transparently.
-/// - This delays physical freeing and avoids race windows.
 
 #pragma once
 
@@ -67,6 +70,7 @@
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -75,7 +79,7 @@ namespace eckit {
 /// @brief Concurrent-safe, FAM-resident doubly-linked list.
 ///
 /// Supports multiple readers and writers operating concurrently without locks.
-/// Implements wait-free insertion and logical deletion, with version-based ABA detection.
+/// Implements lock-free insertion and wait-free logical deletion.
 class FamList {
 public:  // types
 
@@ -84,12 +88,12 @@ public:  // types
     using const_iterator = FamListConstIterator;
     using value_type     = FamListIterator::data_type;
 
-    /// List descriptor: encodes region ID and FAM object locations.
+    /// List descriptor: packed {regionId, offset} addresses of the list's FAM objects.
+    /// @see FamDescriptor::pack()
     struct Descriptor {
-        fam::index_t region{0};  // region ID
-        fam::index_t head{0};    // offset of head sentinel
-        fam::index_t tail{0};    // offset of tail sentinel
-        fam::index_t size{0};    // offset of atomic size counter
+        fam::index_t head{0};  // head sentinel
+        fam::index_t tail{0};  // tail sentinel
+        fam::index_t size{0};  // atomic size counter
     };
 
 public:  // methods
@@ -109,13 +113,12 @@ public:  // methods
     size_type size() const;
 
     /// Check if list is empty (lock-free wait-free).
-    [[nodiscard]]
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     // ---- iterators ----
 
     /// Return iterator to first element (or end() if empty).
-    /// Safe during concurrent modifications; validates version stamps.
+    /// Safe during concurrent modifications; skips logically deleted nodes.
     iterator begin() const;
 
     const_iterator cbegin() const;
@@ -167,7 +170,6 @@ public:  // methods
     iterator erase(iterator pos);
 
     /// Reclaims the FAM memory immediately. Deallocate all data nodes and reset the list to empty.
-    /// Precondition: caller guarantees no concurrent operations on this list.
     /// @pre  No concurrent readers or writers.
     void clear();
 

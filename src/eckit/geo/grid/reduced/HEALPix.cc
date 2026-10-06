@@ -11,7 +11,8 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
@@ -22,6 +23,18 @@
 
 
 namespace eckit::geo::range {
+
+
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
 
 
 class HEALPixLatitude final : public Range {
@@ -36,8 +49,7 @@ public:
     [[nodiscard]] HEALPixLatitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        static util::recursive_mutex MUTEX;
-        util::lock_guard<util::recursive_mutex> lock(MUTEX);
+        lock_type lock;
 
         using cache_t = cache::MemoryCacheT<size_t, std::vector<double>>;
         const cache_t::key_type key{Nside_};
@@ -90,8 +102,7 @@ public:
     [[nodiscard]] HEALPixLongitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        static util::recursive_mutex MUTEX;
-        util::lock_guard<util::recursive_mutex> lock(MUTEX);
+        lock_type lock;
 
         using cache_t = cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
         const cache_t::key_type key{Nside_, j_};
@@ -139,10 +150,10 @@ static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default()),
-            bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
+            bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, Projection* p) :
+HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projection* p) :
     Reduced(bbox, p), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
     ASSERT(y_);
 }

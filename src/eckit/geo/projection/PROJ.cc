@@ -4,22 +4,22 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
-#include <proj.h>
-
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
+#include <limits>
 #include <map>
 #include <memory>
 #include <set>
-#include <sstream>
 #include <utility>
 #include <vector>
 
+#include <proj.h>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/Point.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -79,6 +79,11 @@ struct Convert {
 
     virtual PJ_COORD to_coord(const Point&) const = 0;
     virtual Point to_point(const PJ_COORD&) const = 0;
+    virtual Point point() const                   = 0;  // an example point, of the point type
+    virtual size_t dims() const                   = 0;
+
+    /// Normalise projected coordinates (one vector per coordinate), as to_point does
+    virtual void normalise(std::vector<std::vector<double>>&) const {}
 };
 
 
@@ -89,6 +94,21 @@ struct LonLat final : Convert {
     }
 
     Point to_point(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.e, c.enu.n, lon_minimum_); }
+
+    Point point() const final { return PointLonLat{}; }
+    size_t dims() const final { return PointLonLat::DIMS; }
+
+    void normalise(std::vector<std::vector<double>>& c) const final {
+        auto& lon = c[0];
+        auto& lat = c[1];
+        for (size_t i = 0; i < lon.size(); ++i) {
+            if (std::isfinite(lon[i]) && std::isfinite(lat[i])) {
+                const auto q = PointLonLat::make(lon[i], lat[i], lon_minimum_);
+                lon[i]       = q.lon();
+                lat[i]       = q.lat();
+            }
+        }
+    }
 
     explicit LonLat(double lon_minimum) : lon_minimum_(lon_minimum) {}
     const double lon_minimum_;
@@ -102,6 +122,9 @@ struct XY final : Convert {
     }
 
     Point to_point(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
+
+    Point point() const final { return PointXY{}; }
+    size_t dims() const final { return PointXY::DIMS; }
 };
 
 
@@ -112,6 +135,9 @@ struct XYZ final : Convert {
     }
 
     Point to_point(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
+
+    Point point() const final { return PointXYZ{}; }
+    size_t dims() const final { return PointXYZ::DIMS; }
 };
 
 
@@ -150,11 +176,49 @@ struct PROJ::Implementation {
         return source_->to_point(proj_trans(proj_.get(), PJ_INV, target_->to_coord(p)));
     }
 
+    /// Project points (one vector per coordinate), in the given direction; points failing to project are NaN
+    std::vector<std::vector<double>> trans(PJ_DIRECTION direction, const std::vector<double>& v1,
+                                           const std::vector<double>& v2, const std::vector<double>& v3) const {
+        const auto& from = direction == PJ_FWD ? *source_ : *target_;
+        const auto& to   = direction == PJ_FWD ? *target_ : *source_;
+
+        // PROJ transforms coordinates x, y (and z) in place
+        const auto n = v1.size();
+        const auto m = std::max(from.dims(), to.dims());
+        ASSERT(2 <= m && m <= 3);
+
+        std::vector<std::vector<double>> c{v1, v2};
+        if (m == 3) {
+            c.emplace_back(from.dims() == 3 ? v3 : std::vector<double>(n, 0.));
+        }
+
+        constexpr auto stride = sizeof(double);
+        proj_trans_generic(proj_.get(), direction, c[0].data(), stride, n, c[1].data(), stride, n,
+                           m == 3 ? c[2].data() : nullptr, stride, m == 3 ? n : 0, nullptr, 0, 0);
+
+        c.resize(to.dims());
+
+        // points that fail to project (HUGE_VAL) result in NaN
+        for (size_t i = 0; i < n; ++i) {
+            if (std::any_of(c.begin(), c.end(), [i](const auto& ci) { return !std::isfinite(ci[i]); })) {
+                for (auto& ci : c) {
+                    ci[i] = std::numeric_limits<double>::quiet_NaN();
+                }
+            }
+        }
+
+        to.normalise(c);
+        return c;
+    }
+
+    inline Point source_point() const { return source_->point(); }
+    inline Point target_point() const { return target_->point(); }
+
 private:
 
     const pj_t proj_;
-    const std::unique_ptr<Convert> source_;
-    const std::unique_ptr<Convert> target_;
+    const std::unique_ptr<const Convert> source_;
+    const std::unique_ptr<const Convert> target_;
 };
 
 
@@ -184,6 +248,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
     implementation_ = std::make_unique<Implementation>(p.release(), make_convert(source_), make_convert(target_));
+    point_types(implementation_->source_point(), implementation_->target_point());
 }
 
 
@@ -211,28 +276,27 @@ Point PROJ::inv(const Point& q) const {
 }
 
 
+std::vector<std::vector<double>> PROJ::fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                  const std::vector<double>& v3) const {
+    return implementation_->trans(PJ_FWD, v1, v2, v3);
+}
+
+
+std::vector<std::vector<double>> PROJ::inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                  const std::vector<double>& v3) const {
+    return implementation_->trans(PJ_INV, v1, v2, v3);
+}
+
+
 std::string PROJ::proj_str(const spec::Custom& custom) {
     using key_value_type = std::pair<std::string, std::string>;
-    using keys_type      = std::vector<std::string>;
 
+    // key "proj" comes first in string, then the others (sorted)
     struct key_value_compare {
         bool operator()(const key_value_type& a, const key_value_type& b) const {
-            if (a.first != b.first) {
-                // keys that come first in string
-                for (const auto& key : keys_type{"proj"}) {
-                    if (a.first == key || b.first == key) {
-                        return a.first == key;
-                    }
-                }
-
-                // keys that come last in string
-                for (const auto& key : keys_type{"R", "a", "b"}) {
-                    if (a.first == key || b.first == key) {
-                        return b.first == key;
-                    }
-                }
+            if (a.first != b.first && (a.first == "proj" || b.first == "proj")) {
+                return a.first == "proj";
             }
-
             return a < b;
         };
     };
@@ -251,66 +315,23 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
         return it != map.end() ? it->second : key;
     };
 
-    auto to_str = [](double value) {
-        std::ostringstream str;
-        str.precision(15);
-        str << value;
-        return str.str();
-    };
-
-    static const keys_type FIGURE_KEYS{"figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis"};
-
-    struct ProjFigure : std::unique_ptr<Figure> {
-        ProjFigure(const spec::Spec& custom) :
-            unique_ptr(std::any_of(FIGURE_KEYS.begin(), FIGURE_KEYS.end(),
-                                   [&custom](const auto& key) { return custom.has(key); })
-                           ? FigureFactory::build(custom)
-                           : static_cast<Figure*>(new figure::Earth)) {
-            ASSERT(operator bool());
-        }
-
-        bool is_approximately_equal(const Figure& other) const {
-            return types::is_approximately_equal(get()->a(), other.a()) &&
-                   types::is_approximately_equal(get()->b(), other.b());
-        };
-    } fig(custom);
-
-
     std::set<key_value_type, key_value_compare> set;
-
-    if (fig.is_approximately_equal(figure::EARTH_WGS84)) {
-        set.emplace("ellps", "WGS84");
-    }
-    else if (fig.is_approximately_equal(figure::EARTH_GRS80)) {
-        set.emplace("ellps", "GRS80");
-    }
-    else if (fig->spherical()) {
-        set.emplace("R", to_str(fig->R()));
-    }
-    else {
-        set.emplace("a", to_str(fig->a()));
-        set.emplace("b", to_str(fig->b()));
-    }
-
     for (const auto& [k, v] : custom.container()) {
-        if (std::find(FIGURE_KEYS.begin(), FIGURE_KEYS.end(), k) != FIGURE_KEYS.end()) {
-            continue;
-        }
-
-        if (const auto& key = rename(KEYS, k); !key.empty()) {
-            const auto& value = rename(VALUES, to_string(v));
-            set.emplace(key, value);
+        if (FigureFactory::keys().count(k) == 0) {
+            set.emplace(rename(KEYS, k), rename(VALUES, to_string(v)));
         }
     }
 
     std::string str;
-    const auto* sep = "+";
     for (const auto& [key, value] : set) {
-        str += sep + key + "=" + value;
-        sep = " +";
+        str += "+" + key + "=" + value + " ";
     }
 
-    return str;
+    // figure comes last in string (default figure if not specified)
+    std::unique_ptr<const Figure> figure(FigureFactory::build(custom));
+    ASSERT(figure);
+
+    return str + figure->proj_str();
 }
 
 
@@ -329,7 +350,7 @@ bool PROJ::projdb_is_available() {
 
     // Note: not using pj_t, which throws on failure (failure is a possible outcome)
     std::unique_ptr<pj_t::element_type, pj_t::deleter_type> crs(
-        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr), &proj_destroy);
+        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, 0, nullptr), &proj_destroy);
 
     return static_cast<bool>(crs);
 }

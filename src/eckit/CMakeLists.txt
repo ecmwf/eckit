@@ -107,6 +107,7 @@ list( APPEND eckit_container_srcs
     container/MappedArray.cc
     container/MappedArray.h
     container/Queue.h
+    container/QueueOfQueues.h
     container/Recycler.h
     container/SharedMemArray.cc
     container/SharedMemArray.h
@@ -274,6 +275,7 @@ list(APPEND eckit_message_srcs
 # FAM support
 
 list( APPEND eckit_io_srcs
+    io/fam/FamTypes.cc
     io/fam/FamTypes.h
 )
 
@@ -344,6 +346,7 @@ list( APPEND eckit_filesystem_srcs
     filesystem/FileSystem.cc
     filesystem/FileSystem.h
     filesystem/FileSystemSize.h
+    filesystem/detail/FileSystemType.h
     filesystem/LocalPathName.cc
     filesystem/LocalPathName.h
     filesystem/PathExpander.cc

@@ -8,6 +8,7 @@
 #define eckit_StdioBuf_h
 
 #include <cstdio>
+#include <streambuf>
 
 #include "eckit/eckit.h"
 

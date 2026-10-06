@@ -5,6 +5,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 
 #include "eckit/maths/ConvexHull.h"
 

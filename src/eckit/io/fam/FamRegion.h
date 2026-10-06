@@ -18,6 +18,7 @@
 
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -35,6 +36,9 @@ public:  // methods
 
     // properties
 
+    /// Bare region number, as carried by the *region* descriptor.
+    /// This region's objects report a different id — theirs packs in the memory server serving them — so this must
+    /// never be used to address an object. @see FamDescriptor
     fam::index_t index() const;
 
     fam::size_t size() const;
@@ -51,8 +55,10 @@ public:  // methods
 
     // object methods
 
+    /// Wraps an already-allocated object at @p descriptor, reusing this region's session.
+    /// The descriptor addresses the object on its own memory server, which need not match index().
     /// @note this avoids invoking fam, as in lookupObject.
-    FamObject proxyObject(fam::index_t offset) const;
+    FamObject proxyObject(const FamDescriptor& descriptor) const;
 
     FamObject lookupObject(const std::string& object_name) const;
 

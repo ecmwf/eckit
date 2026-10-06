@@ -60,10 +60,13 @@ public:  // methods
 
     // properties
 
+    /// Region number with the serving memory server packed into bits 14 and above. @see FamDescriptor
     fam::index_t regionId() const;
 
+    /// Byte offset within this object's memory server, so it is unique only together with regionId().
     fam::index_t offset() const;
 
+    /// The object's full address; the only form safe to store or publish.
     FamDescriptor descriptor() const { return {regionId(), offset()}; }
 
     fam::size_t size() const;

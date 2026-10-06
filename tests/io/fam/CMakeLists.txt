@@ -13,10 +13,14 @@ if( eckit_HAVE_OPENFAM_MOCK )
     # so running many at once (ctest -j) exhausts tmpfs.
     set( _fam_test_properties TEST_PROPERTIES RESOURCE_LOCK famfdb_mock_shm )
 elseif( eckit_HAVE_OPENFAM )
-    # Real OpenFAM servers running in docker environment.
+    # Real OpenFAM servers are site-specific, so the caller must point the tests at them.
+    if( NOT DEFINED ENV{OPENFAM_ROOT} OR NOT DEFINED ENV{ECKIT_FAM_TEST_ENDPOINT} )
+        ecbuild_warn( "FAM tests need OPENFAM_ROOT and ECKIT_FAM_TEST_ENDPOINT in the environment; skipping them." )
+        return()
+    endif()
     list( APPEND _fam_environment ${_test_environment}
-        "OPENFAM_ROOT=/workspace/cis-rpc_meta-direct_mem-rpc"
-        "ECKIT_FAM_TEST_ENDPOINT=172.26.0.2:8880"
+        "OPENFAM_ROOT=$ENV{OPENFAM_ROOT}"
+        "ECKIT_FAM_TEST_ENDPOINT=$ENV{ECKIT_FAM_TEST_ENDPOINT}"
     )
 endif()
 

@@ -110,11 +110,15 @@ Fam_Region_Descriptor* fam::fam_create_region(const char* name, std::uint64_t si
 
     const auto regionId = session.nextRegion();
 
-    *slot        = mock::Region{};
-    slot->active = true;
-    slot->id     = regionId;
-    slot->size   = size;
-    slot->perm   = perm;
+    *slot               = mock::Region{};
+    slot->active        = true;
+    slot->id            = regionId;
+    slot->size          = size;
+    slot->perm          = perm;
+    slot->memoryServers = mock::FamMockSession::memoryServers();
+    for (auto& cursor : slot->nextOffset) {
+        cursor = mock::g_first_offset;
+    }
     std::strncpy(slot->name, name, mock::g_max_name_len - 1);
     slot->name[mock::g_max_name_len - 1] = '\0';
 
@@ -222,16 +226,15 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
         throw Fam_Exception("Maximum number of objects per region reached", FAM_ERR_NO_SPACE);
     }
 
-    const std::uint64_t offset  = region.nextOffset;
-    const std::uint64_t aligned = ((offset + size) + std::uint64_t{7}) & ~std::uint64_t{7};
-    region.nextOffset           = aligned;
+    const auto address = mock::FamMockSession::reserveAddress(region, size);
 
     // Allocate backing storage in the shared data area.
     const std::uint64_t dataOff = session.allocateData(size);
 
     *slot            = mock::Object{};
     slot->active     = true;
-    slot->offset     = offset;
+    slot->server     = address.server;
+    slot->offset     = address.offset;
     slot->size       = size;
     slot->perm       = perm;
     slot->uid        = ::getuid();
@@ -246,7 +249,8 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
     // Zero-init the data area for this object.
     std::memset(session.objectData(*slot), 0, size);
 
-    return new Fam_Descriptor(region.id, offset, size, perm, name, slot->uid, slot->gid);
+    return new Fam_Descriptor(mock::encodeRegionId(region.id, address.server), address.offset, size, perm, name,
+                              slot->uid, slot->gid);
 }
 
 Fam_Descriptor* fam::fam_lookup(const char* object_name, const char* region_name) {
@@ -267,7 +271,8 @@ Fam_Descriptor* fam::fam_lookup(const char* object_name, const char* region_name
         throw Fam_Exception(std::string("Object not found: ") + object_name, FAM_ERR_NOTFOUND);
     }
 
-    return new Fam_Descriptor(region->id, obj->offset, obj->size, obj->perm, object_name, obj->uid, obj->gid);
+    return new Fam_Descriptor(mock::encodeRegionId(region->id, obj->server), obj->offset, obj->size, obj->perm,
+                              object_name, obj->uid, obj->gid);
 }
 
 void fam::fam_deallocate(Fam_Descriptor* object) {
@@ -278,8 +283,7 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
     auto& session = getSession();
     std::lock_guard lock(session);
 
-    const auto regionId     = object->get_global_descriptor().regionId;
-    const auto objectOffset = object->get_global_descriptor().offset;
+    const auto [regionId, objectOffset] = object->get_global_descriptor();
 
     auto* region = session.findRegionById(regionId);
     if (!region) {
@@ -288,20 +292,8 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
         return;
     }
 
-    auto* obj = mock::FamMockSession::findObjectByOffset(*region, objectOffset);
-    if (!obj) {
-        object->mock_invalidate();
-        return;
-    }
-
-    const auto nextExpectedOffset  = objectOffset + obj->size;
-    const auto nextExpectedAligned = (nextExpectedOffset + std::uint64_t{7}) & ~std::uint64_t{7};
-
-    session.freeObject(*obj);
-
-    // If this was the last allocated object, reclaim its region offset space.
-    if (region->nextOffset == nextExpectedAligned) {
-        region->nextOffset = objectOffset;
+    if (auto* obj = mock::FamMockSession::findObjectAt(*region, regionId >> mock::g_regionid_bits, objectOffset)) {
+        session.freeObject(*region, *obj);
     }
 
     object->mock_invalidate();

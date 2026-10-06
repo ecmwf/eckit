@@ -7,7 +7,7 @@ on:
   push:
     branches: [develop, master]
   pull_request:
-    types: [opened, reopened, synchronize, labeled]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 concurrency:
@@ -59,11 +59,10 @@ jobs:
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
       - id: r
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
         with:
-          current-branch: ${{ github.head_ref || github.ref_name }}
           matrix: build,build-hpc
           token: ${{ steps.mint.outputs.token }}
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
@@ -87,7 +86,7 @@ jobs:
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
 
       - name: Fetch resolved deps
         id: deps
@@ -98,18 +97,12 @@ jobs:
 
       - name: Build eckit
         id: build
-        uses: ./.github/actions/build-eckit
+        uses: ecmwf/ci-infrastructure/actions/run-job-script@main
         with:
+          job-script: ${{ matrix.job-script }}
+          matrix-leg: ${{ toJSON(matrix) }}
+          package: eckit
           cmake-prefix-path: ${{ steps.deps.outputs.cmake-prefix-path }}
-          cxx-compiler: ${{ matrix.cxx-compiler }}
-          build-type: ${{ matrix.build-type }}
-
-      # Invocation comes from .ci/manifest.toml's [matrix.build], the same place
-      # the generated cross-repo-trigger.yml renders its Test step from. Spelling
-      # it out again here is how the two lanes drift apart.
-      - name: Test
-        if: ${{ matrix._resolved.ctest }}
-        run: ctest --test-dir "${{ steps.build.outputs.build-dir }}" --output-on-failure ${{ matrix._resolved['ctest-args'] }}
 
       - name: Publish eckit
         uses: ecmwf/ci-infrastructure/actions/publish-artifact@main
@@ -144,7 +137,7 @@ jobs:
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
 
       - name: Fetch resolved deps
         id: deps
@@ -161,7 +154,7 @@ jobs:
         uses: ecmwf/ci-infrastructure/actions/build-on-hpc@main
         with:
           site: ${{ matrix.site }}
-          job-script: ${{ matrix.job-script || './.ci/hpc/build.sh.j2' }}
+          job-script: ${{ matrix.job-script }}
           # The render context for the .j2 recipe: the toolchain this leg declares.
           matrix-leg: ${{ toJSON(matrix) }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}

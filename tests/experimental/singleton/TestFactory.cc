@@ -6,6 +6,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <new>
 
 #include "eckit/exception/Exceptions.h"
 

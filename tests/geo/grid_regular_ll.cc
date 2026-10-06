@@ -2,11 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -19,41 +25,44 @@ using grid::regular::RegularLL;
 
 
 CASE("rotated: spec equivalences") {
-    const std::string canonical = R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})";
+    auto grd = [](const std::string& str) { return std::unique_ptr<const Grid>(GridFactory::make_from_string(str)); };
 
-    for (const auto& spec : {
-             R"({"grid":[5,5],"rotation":[-20,-40]})",
+    for (const auto* spec : {
+             R"({"grid":[5,5],"rotation":[-40,-20]})",
              R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})",
              R"({"grid":[5,5],"projection":{"south_pole_lon":-20,"south_pole_lat":-40,"type":"rotation"}})",
-             R"({"grid":[5,5],"projection":{"rotation":[-20,-40],"type":"rotation"}})",
+             R"({"grid":[5,5],"projection":{"rotation":[-40,-20],"type":"rotation"}})",
          }) {
-        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
-
-        EXPECT_EQUAL(grid->spec_str(), canonical);
+        EXPECT_EQUAL(grd(spec)->spec_str(),
+                     R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})");
     }
 
-
-    SECTION("a south pole at its default is no rotation at all") {
-        for (const auto& spec : {
-                 R"({"grid":[5,5]})",
-                 R"({"grid":[5,5],"rotation":[0,-90]})",
-                 R"({"grid":[5,5],"projection":{"south_pole":[0,-90],"type":"rotation"}})",
-                 R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
-             }) {
-            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
-
-            EXPECT_EQUAL(grid->spec_str(), R"({"grid":[5,5]})");
-        }
+    for (const auto* spec : {
+             R"({"grid":[5,5]})",
+             R"({"grid":[5,5],"rotation":[-90,0]})",
+             R"({"grid":[5,5],"projection":{"south_pole":[0,-90],"type":"rotation"}})",
+             R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
+         }) {
+        EXPECT_EQUAL(grd(spec)->spec_str(), R"({"grid":[5,5]})");
     }
 
+    struct {
+        std::string a;
+        std::string b;
+        std::string c;
+    } tests[]{
+        {R"({"grid":[5,5],"rotation":[-90,-20]})",                                   //
+         R"({"grid":[5,5],"projection":{"type":"rotation","south_pole_lon":-20}})",  //
+         R"({"grid":[5,5],"projection":{"type":"rotation","south_pole":[-20,-90]}})"},
 
-    SECTION("'south_pole_lon' and 'south_pole_lat' are required together") {
-        for (const auto& spec : {
-                 R"({"grid":[5,5],"projection":{"south_pole_lon":-20,"type":"rotation"}})",
-                 R"({"grid":[5,5],"projection":{"south_pole_lat":-40,"type":"rotation"}})",
-             }) {
-            EXPECT_THROWS(auto dummy = GridFactory::make_from_string(spec));
-        }
+        {R"({"grid":[5,5],"rotation":[-90,0]})",  //
+         R"({"grid":[5,5]})",                     //
+         R"({"grid":[5,5],"projection":{"type":"rotation","south_pole_lon":-720}})"},
+    };
+
+    for (const auto& test : tests) {
+        EXPECT_EQUAL(grd(test.a)->spec_str(), grd(test.b)->spec_str());
+        EXPECT_EQUAL(grd(test.b)->spec_str(), grd(test.c)->spec_str());
     }
 }
 
@@ -63,7 +72,7 @@ CASE("rotated") {
     const projection::Rotation rotation(south_pole);
 
     std::unique_ptr<const Grid> grid(
-        GridFactory::make_from_string("{area: [10, -10, -10, 10], grid: [5, 5], rotation: [-20, -40]}"));
+        GridFactory::make_from_string("{area: [10, -10, -10, 10], grid: [5, 5], rotation: [-40, -20]}"));
 
 
     SECTION("spec") {
@@ -79,6 +88,12 @@ CASE("rotated") {
             GridFactory::make_from_string("{area: [10, -10, -10, 10], grid: [5, 5]}"));
         EXPECT(grid->size() == unrotated->size());
         EXPECT(*grid != *unrotated);
+    }
+
+
+    SECTION("first and last points (rotated frame)") {
+        EXPECT(points_equal(grid->first_point(), PointLonLat{-10., 10.}));
+        EXPECT(points_equal(grid->last_point(), PointLonLat{10., -10.}));
     }
 
 
@@ -112,6 +127,30 @@ CASE("rotated") {
         for (const auto& p : grid->to_points()) {
             auto q = std::get<PointLonLat>(p);
             EXPECT(bbox.contains(q));
+        }
+    }
+
+
+    SECTION("compare") {
+        constexpr double EPS = 1e-6;  // comparison tolerance
+        const std::vector<PointLonLat> points_ref{
+            {-30.37923437901262, 54.30167983367708}, {-30.21461696695217, 54.28605285392668},
+            {-30.05013625049183, 54.27016346802356}, {-29.88579431820473, 54.25401202651201},
+            {-29.72159324673793, 54.23759888507955}, {-29.55753510066738, 54.22092440451927},
+            {-29.39362193235515, 54.20398895069178}, {-29.22985578180936, 54.18679289448672},
+            {-29.06623867654653, 54.16933661178392}, {-28.90277263145643, 54.15162048341411},
+        };
+
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(
+            R"({area:[26.65, 5.75, -13.25, 30.45], grid:[0.1, 0.1], order:i+j+, rotation:[-22, 320]})"));
+        ASSERT(grid);
+
+        EXPECT(grid->projection().type() == "rotation");
+        EXPECT(grid->size() >= points_ref.size());
+
+        auto points = grid->to_points();
+        for (size_t i = 0; i < points_ref.size(); ++i) {
+            EXPECT(points_equal(points[i], points_ref[i], EPS));
         }
     }
 }

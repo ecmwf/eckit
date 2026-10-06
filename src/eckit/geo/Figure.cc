@@ -4,10 +4,13 @@
 
 #include "eckit/geo/Figure.h"
 
+#include <algorithm>
+#include <limits>
+#include <map>
 #include <memory>
+#include <sstream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -17,20 +20,31 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
-#if eckit_HAVE_PROJ
-#include "eckit/geo/projection/PROJ.h"
-#endif
-
 
 namespace eckit::geo {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
+
+
+const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
+    {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
+    {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
+    {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
+    {std::shared_ptr<Figure>{new figure::EarthIau1965}, "iau1965"},
+    {std::shared_ptr<Figure>{new figure::Sun}, "sun"},
+    {std::shared_ptr<Figure>{new figure::EarthWgs84}, "wgs84"},
+    {std::shared_ptr<Figure>{new figure::EarthWgs84Sphere}, "wgs84_sphere"},
+};
 
 
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
+
+
+}  // namespace
 
 
 double Figure::R() const {
@@ -74,12 +88,17 @@ std::string Figure::spec_str() const {
 
 
 std::string Figure::proj_str() const {
-#if eckit_HAVE_PROJ
-    std::unique_ptr<const spec::Custom> custom(spec());
-    return projection::PROJ::proj_str(*custom);
-#else
-    NOTIMP;
-#endif
+    auto to_str = [](double value) {
+        std::ostringstream str;
+        str.precision(std::numeric_limits<double>::digits10);
+        str << value;
+        return str.str();
+    };
+
+    return *this == figure::EARTH_WGS84   ? "+ellps=WGS84"
+           : *this == figure::EARTH_GRS80 ? "+ellps=GRS80"
+           : spherical()                  ? "+R=" + to_str(R())
+                                          : "+a=" + to_str(a()) + " +b=" + to_str(b());
 }
 
 
@@ -98,43 +117,35 @@ double Figure::flattening() const {
 }
 
 
-void Figure::fill_spec(spec::Custom& custom) const {
-    static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
-        {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
-        {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
-        {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
-        {std::shared_ptr<Figure>{new figure::EarthIau1965}, "iau1965"},
-        {std::shared_ptr<Figure>{new figure::Sun}, "sun"},
-        {std::shared_ptr<Figure>{new figure::EarthWgs84}, "wgs84"},
-        {std::shared_ptr<Figure>{new figure::EarthWgs84Sphere}, "wgs84_sphere"},
-    };
-
-    for (const auto& [figure, name] : KNOWN) {
-        if (types::is_approximately_equal(figure->a(), a()) && types::is_approximately_equal(figure->b(), b())) {
-            custom.set("figure", name);
-            return;
-        }
-    }
-
-    if (types::is_approximately_equal(a(), b())) {
-        custom.set("R", R());
-    }
-    else {
-        custom.set("a", a());
-        custom.set("b", b());
-    }
+bool Figure::is_default() const {
+    // default figures are known figures (not all)
+    auto fn = std::find_if(KNOWN.begin(), KNOWN.end(), [this](const auto& fn) { return *fn.first == *this; });
+    return fn != KNOWN.end() && fn->first->is_default();
 }
 
 
-FigureFactory& FigureFactory::instance() {
-    static FigureFactory obj;
-    return obj;
+void Figure::fill_spec(spec::Custom& custom) const {
+    auto fn = std::find_if(KNOWN.begin(), KNOWN.end(), [this](const auto& fn) { return *fn.first == *this; });
+    if (fn != KNOWN.end()) {
+        custom.set("figure", fn->second);
+        return;
+    }
+
+    custom.set("figure", spherical() ? new spec::Custom{{"R", R()}} : new spec::Custom{{"a", a()}, {"b", b()}});
 }
 
 
 Figure* FigureFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Figure::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
+}
+
+
+const std::set<std::string>& FigureFactory::keys() {
+    static const std::set<std::string> KEYS{
+        "figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis",
+    };
+    return KEYS;
 }
 
 
@@ -143,13 +154,21 @@ const Figure* FigureFactory::make_default() {
 }
 
 
-Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
+Figure* FigureFactory::build(const Figure::Spec& spec) {
     lock_type lock;
 
     if (spec.has("figure")) {
         std::string name;
-        return spec.get("figure", name) ? Factory<Figure>::instance().get(name).create()
-                                        : make_from_spec_(spec.spec("figure"));
+        if (!spec.get("figure", name)) {
+            return build(spec.spec("figure"));
+        }
+
+        // a figure described inline (e.g. '{"R":6371229}', '{"a":6378137,"b":6356752}'), or by name
+        if (auto first = name.find_first_not_of(" \t\n"); first != std::string::npos && name[first] == '{') {
+            return make_from_string(name);
+        }
+
+        return Factory<Figure>::instance().get(name).create();
     }
 
     if (double a = 0., b = 0.;
@@ -158,11 +177,16 @@ Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
                                                    : new figure::OblateSpheroid(a, b);
     }
 
-    if (double R = 0.; spec.get("R", R) || spec.get("radius", R)) {
+    if (double R = 0.; spec.get("R", R) || spec.get("r", R) || spec.get("radius", R)) {
         return new figure::Sphere(R);
     }
 
     return const_cast<Figure*>(make_default());
+}
+
+
+bool operator==(const Figure& a, const Figure& b) {
+    return types::is_approximately_equal(a.a(), b.a()) && types::is_approximately_equal(a.b(), b.b());
 }
 
 

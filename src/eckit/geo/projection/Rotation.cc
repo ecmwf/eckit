@@ -6,6 +6,8 @@
 
 #include <cmath>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
@@ -21,47 +23,80 @@ static ProjectionRegisterType<Rotation> PROJECTION("rotation");
 
 Rotation::Rotation(const Spec& spec) :
     Rotation(
-        [](const auto& spec) -> PointLonLat {
-            if (std::vector<double> p; spec.get("south_pole", p) || spec.get("rotation", p)) {
-                ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+        [&spec]() -> PointLonLat {
+            if (std::vector<double> p; spec.get("south_pole", p)) {
+                ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
                 return {p[0], p[1]};
             }
 
-            if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
-                spec.has("south_pole_lon") || spec.has("south_pole_lat")) {
-                ASSERT_MSG(spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat),
-                           "Rotation: 'south_pole_lon' and 'south_pole_lat' are required together");
-                return {lon, lat};
+            if (std::vector<double> p; spec.get("rotation", p)) {
+                ASSERT_MSG(p.size() == 2, "Rotation: expected 'rotation' as [lat, lon]");
+                return {p[1], p[0]};
             }
 
-            return SOUTH_POLE;
-        }(spec),
-        [](const auto& spec) -> double {
+            auto lon = SOUTH_POLE.lon();
+            auto lat = SOUTH_POLE.lat();
+            spec.get("south_pole_lon", lon);
+            spec.get("south_pole_lat", lat);
+
+            return {lon, lat};
+        }(),
+        [&spec]() -> double {
             double angle = 0.;
             spec.get("rotation_angle", angle);
             return angle;
-        }(spec)) {}
+        }()) {}
 
 
 Rotation::Rotation(const PointLonLat& south_pole, double angle) :
-    south_pole_(south_pole), angle_(angle), rotated_(true) {
+    Projection(nullptr, PointLonLat{}, PointLonLat{}), south_pole_(south_pole), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
 
     struct NonRotated final : Implementation {
+        using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
+        std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                    const std::vector<double>& lat) const override {
+            return {lon, lat};
+        }
     };
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
+        using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon() + angle_, p.lat()}; }
+        std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                    const std::vector<double>& lat) const override {
+            std::vector<std::vector<double>> out{lon, lat};
+            for (auto& x : out[0]) {
+                x += angle_;
+            }
+            return out;
+        }
         const double angle_;
     };
 
     struct RotationMatrix final : Implementation {
         explicit RotationMatrix(M&& R) : R_(R) {}
+        using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override {
             return figure::UnitSphere::_convertCartesianToSpherical(
                 R_ * figure::UnitSphere::_convertSphericalToCartesian(p));
+        }
+        std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                    const std::vector<double>& lat) const override {
+            const auto n = lon.size();
+            ASSERT(lat.size() == n);
+
+            // spherical to Cartesian (unit sphere), rotation, Cartesian to spherical
+            std::vector<std::vector<double>> out{std::vector<double>(n), std::vector<double>(n)};
+            for (size_t i = 0; i < n; ++i) {
+                const auto q = figure::UnitSphere::_convertCartesianToSpherical(
+                    R_ * figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]}));
+                out[0][i] = q.lon();
+                out[1][i] = q.lat();
+            }
+            return out;
         }
         const M R_;
     };
@@ -121,28 +156,8 @@ const std::string& Rotation::type() const {
 
 
 Rotation* Rotation::make_from_spec(const Spec& spec) {
-    double angle = 0.;
-    spec.get("rotation_angle", angle);
-
-    auto lon = SOUTH_POLE.lon();
-    auto lat = SOUTH_POLE.lat();
-    if (std::vector<double> p{lon, lat}; spec.get("south_pole", p) || spec.get("rotation", p)) {
-        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
-        lon = p[0];
-        lat = p[1];
-    }
-    else {
-        ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),
-                   "Rotation: expected 'south_pole_lon' and 'south_pole_lat'");
-    }
-
-    auto* r = new Rotation{{lon, lat}, angle};
-    if (!r->rotated()) {
-        delete r;
-        r = nullptr;
-    }
-
-    return r;
+    auto r = std::make_unique<Rotation>(spec);
+    return r->rotated() ? r.release() : nullptr;
 }
 
 

@@ -8,6 +8,7 @@
 
 #if eckit_HAVE_CXXABI_H
 #include <cxxabi.h>
+#include <cstdlib>
 #include <memory>
 #endif
 

@@ -45,13 +45,18 @@ c-compiler = "gcc-13"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
+[[matrix.build.include]]
+cxx-compiler = "g++-13"
+c-compiler = "gcc-13"
+options = "mpi"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13-openmpi:latest"
+platform = "ubuntu-24.04"
+
 [matrix.build]
 triggers = ["upstream-change", "rebuild-request"]
 
 [matrix.build-hpc.defaults]
 job-script = "./.ci/build.sh.j2"
-
-[[matrix.build-hpc.include]]
 cxx-compiler = "g++-8"
 build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
@@ -64,6 +69,13 @@ modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load 
 c-compiler-binary = "gcc"
 cxx-compiler-binary = "g++"
 time = "00:40:00"
+
+[[matrix.build-hpc.include]]
+options = ""
+
+[[matrix.build-hpc.include]]
+options = "mpi"
+modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load ninja", "load openmpi"]
 
 [matrix.build-hpc]
 execution = "hpc-atos"

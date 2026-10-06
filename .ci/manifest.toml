@@ -128,3 +128,10 @@ triggers = ["upstream-change", "rebuild-request"]
 repo = "ecmwf/eccodes"
 ref = "develop"
 
+[[trigger-downstream]]
+repo = "ecmwf/fckit"
+ref = "develop"
+
+[[trigger-downstream]]
+repo = "ecmwf/atlas"
+ref = "develop"

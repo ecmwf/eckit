@@ -49,7 +49,7 @@ platform = "ubuntu-24.04"
 triggers = ["upstream-change", "rebuild-request"]
 
 [matrix.build-hpc.defaults]
-job-script = "./.ci/hpc/build.sh.j2"
+job-script = "./.ci/build.sh.j2"
 
 [[matrix.build-hpc.include]]
 cxx-compiler = "g++-8"

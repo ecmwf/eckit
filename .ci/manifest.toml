@@ -69,7 +69,6 @@ time = "00:40:00"
 execution = "hpc-atos"
 container-credentials = true
 triggers = ["upstream-change", "rebuild-request"]
-forwarded-deps-outputs = ["cmake-prefix-path"]
 
 [[trigger-downstream]]
 repo = "ecmwf/eccodes"

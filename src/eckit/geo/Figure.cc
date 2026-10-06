@@ -5,11 +5,12 @@
 #include "eckit/geo/Figure.h"
 
 #include <algorithm>
+#include <limits>
 #include <map>
 #include <memory>
+#include <sstream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -18,10 +19,6 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
-
-#if eckit_HAVE_PROJ
-#include "eckit/geo/projection/PROJ.h"
-#endif
 
 
 namespace eckit::geo {
@@ -91,12 +88,17 @@ std::string Figure::spec_str() const {
 
 
 std::string Figure::proj_str() const {
-#if eckit_HAVE_PROJ
-    std::unique_ptr<const spec::Custom> custom(spec());
-    return projection::PROJ::proj_str(*custom);
-#else
-    NOTIMP;
-#endif
+    auto to_str = [](double value) {
+        std::ostringstream str;
+        str.precision(std::numeric_limits<double>::digits10);
+        str << value;
+        return str.str();
+    };
+
+    return *this == figure::EARTH_WGS84   ? "+ellps=WGS84"
+           : *this == figure::EARTH_GRS80 ? "+ellps=GRS80"
+           : spherical()                  ? "+R=" + to_str(R())
+                                          : "+a=" + to_str(a()) + " +b=" + to_str(b());
 }
 
 
@@ -139,6 +141,14 @@ Figure* FigureFactory::make_from_string(const std::string& str) {
 }
 
 
+const std::set<std::string>& FigureFactory::keys() {
+    static const std::set<std::string> KEYS{
+        "figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis",
+    };
+    return KEYS;
+}
+
+
 const Figure* FigureFactory::make_default() {
     return new figure::Earth;
 }
@@ -167,7 +177,7 @@ Figure* FigureFactory::build(const Figure::Spec& spec) {
                                                    : new figure::OblateSpheroid(a, b);
     }
 
-    if (double R = 0.; spec.get("R", R) || spec.get("radius", R)) {
+    if (double R = 0.; spec.get("R", R) || spec.get("r", R) || spec.get("radius", R)) {
         return new figure::Sphere(R);
     }
 

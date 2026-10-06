@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <set>
 #include <string>
 
 #include "eckit/memory/Builder.h"
@@ -99,6 +100,8 @@ struct FigureFactory {
     [[nodiscard]] static Figure* build(const Figure::Spec&);
     [[nodiscard]] static Figure* make_from_string(const std::string&);
     [[nodiscard]] static const Figure* make_default();
+
+    static const std::set<std::string>& keys();
 };
 
 

@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <memory>
+#include <string>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
@@ -95,6 +96,37 @@ CASE("Inline figure") {
     EXPECT(*f6 == *f7);
 
     EXPECT_THROWS_AS(F(FigureFactory::build(spec::Custom{{"figure", "not_a_figure"}})), BadParameter);
+}
+
+
+CASE("Figure::proj_str") {
+    struct test_t {
+        spec::Custom spec;
+        std::string proj_str;
+    } tests[] = {
+        {spec::Custom{{"figure", "wgs84"}}, "+ellps=WGS84"},
+        {spec::Custom{{"figure", "grs80"}}, "+ellps=GRS80"},
+        {spec::Custom{{"figure", "earth"}}, "+R=6371229"},
+        {spec::Custom{{"figure", "wgs84_sphere"}}, "+R=6371200"},
+        {spec::Custom{{"figure", "unit-sphere"}}, "+R=1"},
+        {spec::Custom{{"R", 6378206.4}}, "+R=6378206.4"},
+        {spec::Custom{{"r", 6378206.4}}, "+R=6378206.4"},
+        {spec::Custom{{"radius", 6378206.4}}, "+R=6378206.4"},
+        {spec::Custom{{"a", 6378206.4}, {"b", 6356583.8}}, "+a=6378206.4 +b=6356583.8"},
+
+        {spec::Custom{{"a", 6378137.}, {"b", 6356752.314245}}, "+ellps=WGS84"},
+        {spec::Custom{{"a", 6378137.}, {"b", 6356752.31414}}, "+ellps=GRS80"},
+        {spec::Custom{{"figure", R"({"a":6378137,"b":6356752.314245})"}}, "+ellps=WGS84"},
+        {spec::Custom{{"semi_major_axis", 6378137.}, {"semi_minor_axis", 6356752.314245}}, "+ellps=WGS84"},
+
+        {spec::Custom{{"figure", "iau1965"}}, "+a=6378160 +b=6356775"},
+        {spec::Custom{{"semi_major_axis", 6378160.}, {"semi_minor_axis", 6356775.}}, "+a=6378160 +b=6356775"},
+        {spec::Custom{{"a", 6371229.}, {"b", 6371229.}}, "+R=6371229"},
+    };
+
+    for (const auto& test : tests) {
+        EXPECT_EQUAL(F(FigureFactory::build(test.spec))->proj_str(), test.proj_str);
+    }
 }
 
 

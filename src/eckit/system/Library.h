@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "eckit/thread/Mutex.h"
 
@@ -43,6 +44,10 @@ public:  // methods
     virtual void libraryHome(const std::string&);
 
     virtual std::string expandPath(const std::string& path) const;
+
+    /// @brief Paths to scan for plugin manifest files for this library.
+    ///        Default returns {"~<name>/share/plugins"}.
+    virtual std::vector<std::string> pluginManifestPaths() const;
 
     std::string libraryPath() const;
 

@@ -211,6 +211,22 @@ CASE("scan modes") {
 }
 
 
+CASE("spec round trip: same points") {
+    for (const std::string spec : {
+             "{grid: F16}",
+             "{grid: F16, area: [60, -10, 30, 40]}",
+             "{grid: F16, area: [60, 0, 30, 40]}",
+             "{grid: F8, area: [89, 350, 1, 400]}",
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+
+        EXPECT_EQUAL(same->size(), grid->size());
+        EXPECT(same->to_latlons() == grid->to_latlons());
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

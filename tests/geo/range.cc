@@ -154,6 +154,15 @@ CASE("range::RegularLongitude") {
     }
 
 
+    SECTION("cropped to a single value") {
+        const range::RegularLongitude range(11.25, 0., 360.);
+        const std::unique_ptr<range::RegularLongitude> cropped(range.make_cropped_range(-7., 7.));
+
+        EXPECT(cropped->size() == 1);
+        EXPECT(cropped->a() == 0.);
+    }
+
+
     SECTION("degenerate") {
         range::RegularLongitude range1(1., 1., 1.);
 

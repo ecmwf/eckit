@@ -75,7 +75,16 @@ struct RegularLongitude final : Regular::Implementation {
         }
 
         if (Fraction::abs(b_ - a_ + inc_) >= PERIOD) {
-            b_        = a_ + adjust(PERIOD, inc_, a_ < b_) - inc_;
+            const auto inc  = Fraction::abs(inc_);
+            const auto span = adjust(PERIOD, inc, true) - inc;
+
+            if (a_ < b_) {
+                b_ = a_ + span;
+            }
+            else {
+                a_ = b_ + span;
+            }
+
             size_     = N(inc_, a_, b_);
             periodic_ = true;
         }

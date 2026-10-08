@@ -80,6 +80,8 @@ CASE("type") {
     std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
 
     EXPECT(from_gridspec->type() == "ORCA");
+    EXPECT(from_gridspec->spec_str() == R"({"grid":"eORCA1_T"})");
+    EXPECT(from_gridspec->size() == 120184);
     EXPECT(*from_spec == *from_gridspec);
 }
 

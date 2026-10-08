@@ -118,7 +118,7 @@ PointLonLat PointLonLat::componentsMax(const PointLonLat& p, const PointLonLat& 
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
     const auto c = PointLonLat::make(a.lon(), a.lat(), 0., eps);
-    const auto d = PointLonLat::make(b.lon(), b.lat(), 0., eps);
+    const auto d = PointLonLat::make(b.lon(), b.lat(), c.lon() - PointLonLat::FLAT_ANGLE, eps);
     return types::is_approximately_equal(c.lon(), d.lon(), eps) && types::is_approximately_equal(c.lat(), d.lat(), eps);
 }
 

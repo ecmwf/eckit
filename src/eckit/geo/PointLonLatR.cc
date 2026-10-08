@@ -65,7 +65,7 @@ PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, valu
 
 bool points_equal(const PointLonLatR& a, const PointLonLatR& b, PointLonLatR::value_type eps) {
     const auto c = PointLonLatR::make(a.lonr(), a.latr(), 0., eps);
-    const auto d = PointLonLatR::make(b.lonr(), b.latr(), 0., eps);
+    const auto d = PointLonLatR::make(b.lonr(), b.latr(), c.lonr() - PointLonLatR::FLAT_ANGLE, eps);
     return types::is_approximately_equal(c.lonr(), d.lonr(), eps) &&
            types::is_approximately_equal(c.latr(), d.latr(), eps);
 }

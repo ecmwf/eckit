@@ -15,7 +15,12 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_minimum(value_type a, 
     static const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
     auto diff = a - minimum;
-    return 0. <= diff && diff < FULL_ANGLE ? a : (modulus(diff) + minimum);
+    if (0. <= diff && diff < FULL_ANGLE) {
+        return a;
+    }
+
+    auto mod = modulus(diff);
+    return (mod < FULL_ANGLE ? mod : 0.) + minimum;
 }
 
 
@@ -23,7 +28,12 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, 
     auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
 
     auto diff = a - maximum;
-    return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);
+    if (-FULL_ANGLE < diff && diff <= 0.) {
+        return a;
+    }
+
+    auto mod = modulus(diff);
+    return (-FULL_ANGLE < mod ? mod : 0.) + maximum;
 }
 
 

@@ -98,6 +98,9 @@ CASE("PointLonLatR normalise angles") {
         2. + PointLonLatR::FULL_ANGLE * 11,
         PointLonLatR::normalise_angle_to_minimum(2. + PointLonLatR::FULL_ANGLE * 11, PointLonLatR::FULL_ANGLE * 11),
         PointLonLatR::EPS));
+
+    EXPECT(0. == PointLonLatR::normalise_angle_to_minimum(-1e-16, 0.));
+    EXPECT(0. == PointLonLatR::normalise_angle_to_maximum(1e-16, 0.));
 }
 
 

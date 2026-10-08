@@ -4,6 +4,8 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
+#include <memory>
+
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -26,6 +28,27 @@ size_t check_N(size_t N) {
 }
 
 
+range::RegularLongitude make_x(size_t N, const area::BoundingBox& bbox, bool positive) {
+    constexpr auto FULL = PointLonLat::FULL_ANGLE;
+    const auto inc      = FULL / static_cast<double>(4 * N);
+
+    const range::RegularLongitude global(positive ? inc : -inc, positive ? 0. : FULL, positive ? FULL : 0.);
+    std::unique_ptr<range::RegularLongitude> x(
+        global.make_cropped_range(positive ? bbox.west() : bbox.east(), positive ? bbox.east() : bbox.west()));
+
+    return *x;
+}
+
+
+range::GaussianLatitude make_y(size_t N, const area::BoundingBox& bbox, bool positive) {
+    std::unique_ptr<range::GaussianLatitude> y(
+        range::GaussianLatitude(N, positive)
+            .make_cropped_range(positive ? bbox.south() : bbox.north(), positive ? bbox.north() : bbox.south()));
+
+    return *y;
+}
+
+
 }  // namespace
 
 
@@ -36,14 +59,8 @@ RegularGaussian::RegularGaussian(const Spec& spec) :
 RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, const Projection* p) :
     Regular(s, p),
     N_(check_N(N)),
-    x_(*range::RegularLongitude(
-            (s.is_scan_i_positive() ? 1. : -1.) * PointLonLat::FULL_ANGLE / static_cast<double>(4 * N), 0.,
-            PointLonLat::FULL_ANGLE)
-            .make_cropped_range(s.is_scan_i_positive() ? bbox.west() : bbox.east(),
-                                s.is_scan_i_positive() ? bbox.east() : bbox.west())),
-    y_(*range::GaussianLatitude(N, s.is_scan_j_positive())
-            .make_cropped_range(s.is_scan_j_positive() ? bbox.south() : bbox.north(),
-                                s.is_scan_j_positive() ? bbox.north() : bbox.south())) {
+    x_(make_x(N_, bbox, s.is_scan_i_positive())),
+    y_(make_y(N_, bbox, s.is_scan_j_positive())) {
     ASSERT(!empty());
 }
 

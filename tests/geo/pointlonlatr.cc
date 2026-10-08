@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Point.h"
@@ -84,6 +85,13 @@ CASE("PointLonLatR comparison") {
 
     EXPECT(points_equal(NORTH_POLE_R, {-42, PointLonLatR::RIGHT_ANGLE}));
     EXPECT(points_equal(SOUTH_POLE_R, {42., -PointLonLatR::RIGHT_ANGLE}));
+
+    for (const auto& [lonr1, lonr2] : std::vector<std::pair<double, double>>{
+             {0., -1e-16}, {0., PointLonLatR::FULL_ANGLE - 1e-12}, {PointLonLatR::FULL_ANGLE - 1e-12, -1e-12}}) {
+        EXPECT(points_equal(PointLonLatR{lonr1, 0.5}, PointLonLatR{lonr2, 0.5}));
+    }
+
+    EXPECT(!points_equal(PointLonLatR{0., 0.5}, PointLonLatR{-1e-6, 0.5}));
 }
 
 

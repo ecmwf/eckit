@@ -66,6 +66,43 @@ CASE("order=scan") {
 }
 
 
+CASE("order=scan, reorder") {
+    using order::Scan;
+    constexpr size_t ni = 3;
+    constexpr size_t nj = 2;
+
+    // points, by their index in the default order (i+j-)
+    for (const auto& [order, points] : std::map<std::string, Scan::renumber_type>{
+             {"i+j-", {0, 1, 2, 3, 4, 5}},
+             {"i+j+", {3, 4, 5, 0, 1, 2}},
+             {"i-j-", {2, 1, 0, 5, 4, 3}},
+             {"i-j+", {5, 4, 3, 2, 1, 0}},
+             {"j-i+", {0, 3, 1, 4, 2, 5}},
+             {"j+i+", {3, 0, 4, 1, 5, 2}},
+             {"j-i-", {2, 5, 1, 4, 0, 3}},
+             {"j+i-", {5, 2, 4, 1, 3, 0}},
+             {"i+-j-", {0, 1, 2, 5, 4, 3}},
+             {"j-+i+", {0, 3, 4, 1, 2, 5}},
+         }) {
+        EXPECT(Scan{order}.reorder(Scan::order_default(), ni, nj) == points);
+    }
+
+    const std::vector<std::string> orders{"i+j+", "i+j-", "i-j+", "i-j-", "i-+j+", "i-+j-", "i+-j+", "i+-j-",
+                                          "j+i+", "j+i-", "j-i+", "j-i-", "j-+i+", "j-+i-", "j+-i+", "j+-i-"};
+
+    for (const auto& a : orders) {
+        for (const auto& b : orders) {
+            const auto ab = Scan{a}.reorder(b, ni, nj);
+            const auto ba = Scan{b}.reorder(a, ni, nj);
+
+            for (size_t k = 0; k < ab.size(); ++k) {
+                EXPECT(ba[ab[k]] == k);
+            }
+        }
+    }
+}
+
+
 CASE("healpix") {
     using order::HEALPix;
 

@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-#include <cmath>
 #include <cstddef>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -637,19 +635,6 @@ CASE("arakawa c-grids") {
 
 
 CASE("scanning orders: same points and bounding box") {
-    using Points = std::set<std::pair<double, double>>;
-
-    auto points = [](const Grid& grid) {
-        auto round = [](double x) { return std::round(x * 1e9) / 1e9; };
-
-        Points points;
-        const auto [lats, lons] = grid.to_latlons();
-        for (size_t i = 0; i < lats.size(); ++i) {
-            points.emplace(round(lats[i]), round(PointLonLat::normalise_angle_to_minimum(lons[i], 0.)));
-        }
-        return points;
-    };
-
     const std::vector<std::string> orders{"i+j+", "i-j-", "i-j+", "j-i+", "j+i+", "j-i-", "j+i-"};
 
     for (const std::string spec : {
@@ -664,14 +649,19 @@ CASE("scanning orders: same points and bounding box") {
              "grid: [2, 2], area: [2, -4, -2, 4], rotation: [-40, 20]",
          }) {
         const std::unique_ptr<const Grid> canonical(GridFactory::make_from_string("{" + spec + "}"));
-        const auto canonical_points = points(*canonical);
+        const auto canonical_points = canonical->to_points();
 
         for (const auto& order : orders) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + spec + ", order: " + order + "}"));
 
             EXPECT_EQUAL(grid->size(), canonical->size());
             EXPECT(grid->boundingBox() == canonical->boundingBox());
-            EXPECT(points(*grid) == canonical_points);
+
+            const auto ren    = grid->reorder(canonical->order());
+            const auto points = grid->to_points();
+            for (size_t k = 0; k < points.size(); ++k) {
+                EXPECT(points_equal(points[k], canonical_points[ren[k]]));
+            }
         }
     }
 

@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cmath>
 #include <cstddef>
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -629,6 +632,65 @@ CASE("arakawa c-grids") {
         EXPECT(points_equal(PointLonLat{2.8125, -90.}, points_v[1]));
         EXPECT(points_equal(PointLonLat{357.188, 90.}, points_v[size - 2], EPS));
         EXPECT(points_equal(PointLonLat{359.062, 90.}, points_v.back(), EPS));
+    }
+}
+
+
+CASE("scanning orders: same points and bounding box") {
+    using Points = std::set<std::pair<double, double>>;
+
+    auto points = [](const Grid& grid) {
+        auto round = [](double x) { return std::round(x * 1e9) / 1e9; };
+
+        Points points;
+        const auto [lats, lons] = grid.to_latlons();
+        for (size_t i = 0; i < lats.size(); ++i) {
+            points.emplace(round(lats[i]), round(PointLonLat::normalise_angle_to_minimum(lons[i], 0.)));
+        }
+        return points;
+    };
+
+    const std::vector<std::string> orders{"i+j+", "i-j-", "i-j+", "j-i+", "j+i+", "j-i-", "j+i-"};
+
+    for (const std::string spec : {
+             "grid: [90, 90]",
+             "grid: [10, 10]",
+             "grid: [7, 7]",
+             "grid: [10, 10], reference: [5, 5]",
+             "grid: [10, 10], area: [60, -10, 30, 40]",
+             "grid: [10, 10], area: [60, 350, 30, 400]",
+             "grid: [10, 10], area: [60, -10, 30, 40], reference: [5, 5]",
+             "grid: [3, 3], area: [10, -7, -10, 7]",
+             "grid: [2, 2], area: [2, -4, -2, 4], rotation: [-40, 20]",
+         }) {
+        const std::unique_ptr<const Grid> canonical(GridFactory::make_from_string("{" + spec + "}"));
+        const auto canonical_points = points(*canonical);
+
+        for (const auto& order : orders) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + spec + ", order: " + order + "}"));
+
+            EXPECT_EQUAL(grid->size(), canonical->size());
+            EXPECT(grid->boundingBox() == canonical->boundingBox());
+            EXPECT(points(*grid) == canonical_points);
+        }
+    }
+
+    SECTION("first point") {
+        for (const auto& [order, first] : std::vector<std::pair<std::string, PointLonLat>>{
+                 {"i+j-", {0., 90.}},
+                 {"i+j+", {0., -90.}},
+                 {"i-j-", {270., 90.}},
+                 {"i-j+", {270., -90.}},
+                 {"j-i+", {0., 90.}},
+                 {"j+i+", {0., -90.}},
+                 {"j-i-", {270., 90.}},
+                 {"j+i-", {270., -90.}},
+             }) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: [90, 90], order: " + order + "}"));
+
+            const auto [lats, lons] = grid->to_latlons();
+            EXPECT(points_equal(PointLonLat{lons.front(), lats.front()}, first));
+        }
     }
 }
 

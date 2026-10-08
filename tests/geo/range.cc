@@ -108,6 +108,12 @@ CASE("range::RegularLongitude") {
                  {-90., 90., -90., 0., false, {90, 0, -90}},
                  {90., -180., 180., 0., true, {-180, -90, 0, 90}},
                  {45., -180., 180., 0., true, {-180, -135, -90, -45, 0, 45, 90, 135}},
+                 {100., 0., 360., 0., true, {0, 100, 200, 300}},
+                 // decreasing, periodic (from the lowest point)
+                 {-90., 180., -180., 0., true, {90, 0, -90, -180}},
+                 {-90., 360., 0., 0., true, {270, 180, 90, 0}},
+                 {-45., 180., -180., 0., true, {135, 90, 45, 0, -45, -90, -135, -180}},
+                 {-100., 360., 0., 0., true, {300, 200, 100, 0}},
              }) {
             range::RegularLongitude range(test.inc, test.a, test.b, test.ref);
             EXPECT(range.periodic() == test.periodic);

@@ -119,7 +119,7 @@ jobs:
           resolved: ${{ toJSON(matrix._resolved) }}
 
   rust:
-    needs: [ci-approval, resolve]
+    needs: [ci-approval, resolve, build]
     name: rust (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:

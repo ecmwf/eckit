@@ -3,7 +3,6 @@
 
 ---
 exempt:
-  - workflow: contributor-declaration.yml
   - workflow: label-public-pr.yml
   - workflow: notify-pull-request.yml
   - workflow: pr-label-downstream-ci.yml

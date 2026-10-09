@@ -8,11 +8,20 @@
     {
       "cacheVariables": {
         "ENABLE_AEC": "ON",
+        "ENABLE_CURL": "ON",
         "ENABLE_ECKIT_CMD": "ON",
         "ENABLE_ECKIT_SQL": "ON",
+        "ENABLE_MPI": "OFF",
         "ENABLE_TESTS": "ON"
       },
       "name": "ci"
+    },
+    {
+      "cacheVariables": {
+        "ENABLE_MPI": "ON"
+      },
+      "inherits": "ci",
+      "name": "mpi"
     }
   ],
   "version": 3

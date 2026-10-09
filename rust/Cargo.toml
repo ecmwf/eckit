@@ -17,7 +17,7 @@ categories = ["science"]
 
 [workspace.dependencies]
 # Internal
-eckit-sys = { version = "2.4", path = "crates/eckit-sys" }
+eckit-sys = { version = "2.4", path = "crates/eckit-sys", default-features = false, features = ["eckit-codec", "eckit-spec", "eckit-geo", "unicode", "aio"] }
 eckit = { version = "2.4", path = "crates/eckit" }
 
 # Build tools

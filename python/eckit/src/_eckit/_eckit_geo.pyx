@@ -1,4 +1,5 @@
 cimport eckit_geo
+from cpython.pycapsule cimport PyCapsule_New
 from cython.operator cimport dereference
 from libcpp.memory cimport unique_ptr
 from libcpp.string cimport string
@@ -528,6 +529,16 @@ cdef class Grid:
             return None
 
         return mir.grid_box_areas(self)
+
+    def search(self, **spec):
+        """Search on the grid points (see eckit.geo.Search)."""
+        from eckit.geo._eckit_geo_search import Search
+
+        return Search(self, **spec)
+
+    def _capsule(self):
+        """The C++ grid, for other extension modules."""
+        return PyCapsule_New(<void*>self._grid, "eckit::geo::Grid", NULL)
 
     @property
     def figure(self) -> Figure:

@@ -45,4 +45,10 @@ MemoryCache::MemoryCache() {
 }
 
 
+MemoryCache::~MemoryCache() {
+    lock_type lock;
+    CACHES.erase(std::remove(CACHES.begin(), CACHES.end(), this), CACHES.end());
+}
+
+
 }  // namespace eckit::geo::cache

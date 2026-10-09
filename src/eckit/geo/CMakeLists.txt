@@ -56,10 +56,13 @@ list(APPEND eckit_geo_srcs
     cache/Download.h
     cache/Grid.cc
     cache/Grid.h
+    cache/InMemoryCache.h
     cache/LatitudeLongitude.cc
     cache/LatitudeLongitude.h
     cache/MemoryCache.cc
     cache/MemoryCache.h
+    cache/MemoryUsage.cc
+    cache/MemoryUsage.h
     cache/RecordCache.h
     figure/Earth.cc
     figure/Earth.h

@@ -64,6 +64,8 @@ list(APPEND eckit_geo_srcs
     cache/MemoryUsage.cc
     cache/MemoryUsage.h
     cache/RecordCache.h
+    cache/SearchCache.cc
+    cache/SearchCache.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -155,6 +157,8 @@ list(APPEND eckit_geo_srcs
     search/TreeMappedFile.h
     search/TreeMemory.cc
     search/TreeMemory.h
+    search/TreeSharedMemory.cc
+    search/TreeSharedMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc

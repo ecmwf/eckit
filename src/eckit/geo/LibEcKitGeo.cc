@@ -129,6 +129,28 @@ std::string LibEcKitGeo::cacheDir() {
 }
 
 
+std::string LibEcKitGeo::searchTree() {
+    static const std::string tree{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-tree;$ECKIT_GEO_SEARCH_TREE", "mapped-cache-file")};
+    return tree;
+}
+
+
+bool LibEcKitGeo::searchFastBuild() {
+    static const bool yes{
+        LibResource<bool, LibEcKitGeo>("eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD", true)};
+    return yes;
+}
+
+
+std::string LibEcKitGeo::searchCacheCapacity() {
+    // as mir's in-memory caches, "memory,shared" (bytes)
+    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-search-cache-capacity;$ECKIT_GEO_SEARCH_CACHE_CAPACITY", "536870912,536870912")};
+    return capacity;
+}
+
+
 void LibEcKitGeo::purgeCacheDir() {
     purge_path_recursive(cacheDir());
 }

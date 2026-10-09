@@ -5,70 +5,65 @@
 #include "eckit/geo/search/TreeMemory.h"
 
 #include <ostream>
-#include <vector>
+
+#include "eckit/geo/Exceptions.h"
 
 
 namespace eckit::geo::search {
 
 
-void TreeMemory::build(std::vector<Tree::PointValueType>& v) {
+static const TreeRegisterType<TreeMemory> BUILDER("memory");
+
+
+TreeMemory::TreeMemory(const std::string& uid, size_t size) : Tree(uid, size) {}
+
+
+void TreeMemory::build(std::vector<Value>& values) {
+    ASSERT(count_ == 0);
+    ASSERT(values.size() <= size());
+
+    // native value type, avoiding conversions while partitioning
+    std::vector<KDTree::Value> v(values.begin(), values.end());
     tree_.build(v);
+    count_ = v.size();
 }
 
 
-void TreeMemory::insert(const Tree::PointValueType& pt) {
-    tree_.insert(pt);
+void TreeMemory::insert(const Value& value) {
+    ASSERT(count_ < size());
+    tree_.insert(value);
+    ++count_;
 }
 
 
-void TreeMemory::statsPrint(std::ostream& out, bool pretty) {
+Neighbour TreeMemory::nearest_neighbour(const Point& p) {
+    return to_neighbour(tree_.nearestNeighbour(p));
+}
+
+
+Neighbours TreeMemory::k_nearest_neighbours(const Point& p, size_t k) {
+    return to_neighbours(tree_.kNearestNeighbours(p, k));
+}
+
+
+Neighbours TreeMemory::find_in_sphere(const Point& p, double radius) {
+    return to_neighbours(tree_.findInSphere(p, radius));
+}
+
+
+void TreeMemory::stats_print(std::ostream& out, bool pretty) const {
     tree_.statsPrint(out, pretty);
 }
 
 
-void TreeMemory::statsReset() {
+void TreeMemory::stats_reset() {
     tree_.statsReset();
 }
 
 
-Tree::PointValueType TreeMemory::nearestNeighbour(const Tree::Point& pt) {
-    const auto& nn = tree_.nearestNeighbour(pt).value();
-    return {nn.point(), nn.payload()};
-}
-
-
-std::vector<Tree::PointValueType> TreeMemory::kNearestNeighbours(const Tree::Point& pt, size_t k) {
-    std::vector<PointValueType> result;
-    for (const auto& n : tree_.kNearestNeighbours(pt, k)) {
-        result.emplace_back(PointValueType(n.point(), n.payload()));
-    }
-    return result;
-}
-
-
-std::vector<Tree::PointValueType> TreeMemory::findInSphere(const Tree::Point& pt, double radius) {
-    std::vector<PointValueType> result;
-    for (const auto& n : tree_.findInSphere(pt, radius)) {
-        result.emplace_back(PointValueType(n.point(), n.payload()));
-    }
-    return result;
-}
-
-
-bool TreeMemory::ready() const {
-    return false;
-}
-
-
-void TreeMemory::commit() {}
-
-
 void TreeMemory::print(std::ostream& out) const {
-    out << "TreeMemory[]";
+    out << "TreeMemory[size=" << size() << "]";
 }
-
-
-static const TreeBuilder<TreeMemory> builder("memory");
 
 
 }  // namespace eckit::geo::search

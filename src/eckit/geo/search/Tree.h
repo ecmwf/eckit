@@ -4,129 +4,158 @@
 
 #pragma once
 
-#include <array>
 #include <cstddef>
-#include <ostream>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
 #include "eckit/container/sptree/SPValue.h"
-#include "eckit/geo/Point.h"
-
-
-namespace eckit::geo {
-class Grid;
-}
+#include "eckit/geo/PointXYZ.h"
+#include "eckit/geo/cache/MemoryUsage.h"
+#include "eckit/memory/Builder.h"
 
 
 namespace eckit::geo::search {
 
 
+struct Traits {
+    using Point   = PointXYZ;
+    using Payload = size_t;
+};
+
+
+struct Neighbour {
+    PointXYZ point;
+    size_t index;
+    double distance;
+
+    friend bool operator==(const Neighbour& a, const Neighbour& b) {
+        return a.index == b.index && a.distance == b.distance && a.point == b.point;
+    }
+
+    friend bool operator!=(const Neighbour& a, const Neighbour& b) { return !(a == b); }
+
+    friend std::ostream& operator<<(std::ostream&, const Neighbour&);
+};
+
+
+using Neighbours = std::vector<Neighbour>;
+
+
+/**
+ * @brief k-d tree, abstracting its storage
+ * @details Building is: lock(), if not ready() then build() (or insert()) and commit(), unlock(). Queries update
+ * statistics, so they need external synchronisation.
+ */
 class Tree {
 public:
 
-#if 0
-    using Point = PointXYZ;
-#else
-    struct Point : private std::array<double, 3> {
-        static constexpr size_t DIMS = 3;
+    // -- Types
 
-        Point(value_type x, value_type y, value_type z) : array{x, y, z} {}
-        using array::array;
+    using Point       = Traits::Point;
+    using Payload     = Traits::Payload;
+    using Value       = SPValue<Traits>;
+    using MemoryUsage = cache::MemoryUsage;
 
-        explicit Point(const PointXYZ& p) : Point{p.X(), p.Y(), p.Z()} {}
+    using builder_t = BuilderT2<Tree>;
+    using ARG1      = const std::string&;
+    using ARG2      = size_t;
 
-        value_type x(size_t axis) const { return operator[](axis); }
+    // -- Constructors
 
-        PointXYZ to_xyz() const { return {operator[](0), operator[](1), operator[](2)}; }  // (additional)
-
-        static value_type distance(const Point& p, const Point& q);
-        static value_type distance(const Point& p, const Point& q, size_t axis);
-
-        static constexpr value_type EPS = PointXYZ::EPS;
-
-        friend std::ostream& operator<<(std::ostream& out, const Point& p) {
-            return out << '{' << p[0] << ", " << p[1] << ", " << p[2] << '}';
-        }
-    };
-#endif
-
-    using Payload        = size_t;
-    using PointValueType = SPValue<Tree>;
-
-    explicit Tree(const Grid&);
+    Tree(const std::string& uid, size_t size);
 
     Tree(const Tree&) = delete;
     Tree(Tree&&)      = delete;
 
+    // -- Destructor
+
     virtual ~Tree();
+
+    // -- Operators
 
     Tree& operator=(const Tree&) = delete;
     Tree& operator=(Tree&&)      = delete;
 
-    virtual void build(std::vector<PointValueType>&);
+    // -- Methods
 
-    virtual void insert(const PointValueType&);
-    virtual void statsPrint(std::ostream&, bool);
-    virtual void statsReset();
+    /// Balanced (container is reordered)
+    virtual void build(std::vector<Value>&) = 0;
 
-    virtual PointValueType nearestNeighbour(const Point&);
-    virtual std::vector<PointValueType> kNearestNeighbours(const Point&, size_t k);
-    virtual std::vector<PointValueType> findInSphere(const Point&, double);
+    /// Unbalanced
+    virtual void insert(const Value&) = 0;
 
-    virtual bool ready() const;
-    virtual void commit();
-    virtual void print(std::ostream&) const;
+    virtual Neighbour nearest_neighbour(const Point&)               = 0;
+    virtual Neighbours k_nearest_neighbours(const Point&, size_t k) = 0;
+    virtual Neighbours find_in_sphere(const Point&, double radius)  = 0;
 
-    virtual void lock();
-    virtual void unlock();
+    /// If built already (e.g. cached)
+    virtual bool ready() = 0;
 
-    std::string str() const;
+    /// Finalise building (e.g. persist)
+    virtual void commit() = 0;
 
-    size_t itemCount() const { return itemCount_; }
+    /// Exclusive building, across threads and processes as applicable (BasicLockable)
+    virtual void lock() {}
+    virtual void unlock() {}
 
-    friend std::ostream& operator<<(std::ostream& s, const Tree& p) {
-        p.print(s);
-        return s;
+    virtual void stats_print(std::ostream&, bool pretty) const = 0;
+    virtual void stats_reset()                                 = 0;
+
+    virtual MemoryUsage footprint() const = 0;
+
+    const std::string& uid() const { return uid_; }
+    size_t size() const { return size_; }
+
+    // -- Class methods
+
+    static std::string className() { return "tree"; }
+
+    // -- Friends
+
+    friend std::ostream& operator<<(std::ostream& out, const Tree& tree) {
+        tree.print(out);
+        return out;
+    }
+
+protected:
+
+    // -- Methods
+
+    virtual void print(std::ostream&) const = 0;
+
+    template <typename NodeInfo>
+    static Neighbour to_neighbour(const NodeInfo& n) {
+        return {n.point(), n.payload(), n.distance()};
+    }
+
+    template <typename NodeList>
+    static Neighbours to_neighbours(const NodeList& list) {
+        Neighbours result;
+        result.reserve(list.size());
+        for (const auto& n : list) {
+            result.emplace_back(to_neighbour(n));
+        }
+        return result;
     }
 
 private:
 
-    const size_t itemCount_;
+    // -- Members
+
+    const std::string uid_;
+    const size_t size_;
 };
 
 
-class TreeFactory {
-protected:
-
-    virtual Tree* make(const Grid&) = 0;
-    explicit TreeFactory(const std::string&);
-    virtual ~TreeFactory();
-
-public:
-
-    TreeFactory(const TreeFactory&) = delete;
-    TreeFactory(TreeFactory&&)      = delete;
-
-    TreeFactory& operator=(TreeFactory&&)      = delete;
-    TreeFactory& operator=(const TreeFactory&) = delete;
-
-    static Tree* build(const std::string&, const Grid&);
-    static void list(std::ostream&);
-
-private:
-
-    std::string name_;
-};
+template <typename T>
+using TreeRegisterType = ConcreteBuilderT2<Tree, T>;
 
 
-template <class T>
-class TreeBuilder : public TreeFactory {
-    Tree* make(const Grid& r) override { return new T(r); }
-
-public:
-
-    explicit TreeBuilder(const std::string& name) : TreeFactory(name) {}
+struct TreeFactory {
+    [[nodiscard]] static Tree* build(const std::string& type, const std::string& uid, size_t size);
+    static bool has_type(const std::string& type) { return Factory<Tree>::instance().exists(type); }
+    static std::ostream& list(std::ostream&);
 };
 
 

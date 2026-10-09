@@ -66,6 +66,30 @@ if(eckit_HAVE_ECKIT_GEO)
     target_include_directories(_eckit_geo PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${_src})
     target_link_libraries(_eckit_geo PRIVATE eckit_geo)
 
+    # ---- eckit.geo._eckit_geo_search ----
+    set(_eckit_geo_search_cpp ${CMAKE_CURRENT_BINARY_DIR}/_eckit_geo_search.cpp)
+    add_custom_command(
+        OUTPUT ${_eckit_geo_search_cpp}
+        COMMAND
+            ${Python3_EXECUTABLE} -m cython
+            ${_cython_flags}
+            -I ${_src}
+            ${_src}/_eckit_geo_search.pyx
+            -o ${_eckit_geo_search_cpp}
+        DEPENDS
+            ${_src}/_eckit_geo_search.pyx
+            ${_src}/eckit_geo_search.pxd
+        COMMENT "Cythonizing _eckit_geo_search.pyx"
+        VERBATIM
+    )
+
+    Python3_add_library(_eckit_geo_search MODULE WITH_SOABI ${_eckit_geo_search_cpp})
+
+    target_include_directories(_eckit_geo_search PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${_src})
+    target_link_libraries(_eckit_geo_search PRIVATE eckit_geo)
+
+    install(TARGETS _eckit_geo_search DESTINATION ${PYTHONEXT_INSTALL_DIR}/eckit/geo COMPONENT python)
+
 endif()
 
 install(TARGETS _eckit             DESTINATION ${PYTHONEXT_INSTALL_DIR}/eckit     COMPONENT python)

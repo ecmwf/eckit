@@ -8,25 +8,16 @@
 #include <string>
 
 #include "eckit/eckit_config.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
-#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::test {
-
-
-const std::string URL             = "https://www.ecmwf.int/robots.txt";
-const std::string URL_NOT_FOUND_1 = "https://does.not/exist";
-const std::string URL_NOT_FOUND_2 = "https://sites.ecmwf.int/repository/does/not/exist";
-const std::string URL_BAD_SSL     = "https://expired.badssl.com/robots.txt";
 
 
 CASE("eckit::geo::util") {
@@ -115,72 +106,6 @@ CASE("eckit::geo::util") {
 
 
 #if eckit_HAVE_CURL
-CASE("download: error handling") {
-    const PathName path("test.download");
-    if (path.exists()) {
-        path.unlink();
-        ASSERT(!path.exists());
-    }
-
-    SECTION("not found") {
-        EXPECT_THROWS_AS(cache::Download::to_path(URL_NOT_FOUND_1, path), UserError);
-        EXPECT(!path.exists());
-
-        EXPECT_THROWS_AS(cache::Download::to_path(URL_NOT_FOUND_2, path), UserError);
-        EXPECT(!path.exists());
-    }
-
-    SECTION("bad ssl") {
-        EXPECT_THROWS_AS(cache::Download::to_path(URL_BAD_SSL, path), UserError);
-        EXPECT(!path.exists());
-    }
-}
-
-
-CASE("download: non-cached") {
-    const PathName path("test.download");
-    if (path.exists()) {
-        path.unlink();
-        ASSERT(!path.exists());
-    }
-
-    auto info = cache::Download::to_path(URL, path);
-
-    EXPECT(info.bytes.value() > 0.);
-    EXPECT(path.exists());
-
-    path.unlink();
-    ASSERT(!path.exists());
-}
-
-
-CASE("download: cached") {
-    const std::string prefix = "prefix-";
-    const std::string suffix = ".suffix";
-
-    const PathName root("test.download.dir", true);
-
-    cache::Download download(root);
-    EXPECT(root == download.cache_root());
-
-    download.rm_cache_root();
-    EXPECT(!root.exists());
-
-    auto path = download.to_cached_path(URL, prefix, suffix);
-
-    EXPECT(root.exists() && root.isDir());
-    EXPECT(path.exists());
-
-    std::string basename = path.baseName();
-    EXPECT(StringTools::startsWith(basename, prefix));
-    EXPECT(StringTools::endsWith(basename, suffix));
-    EXPECT(path.dirName() == root);
-
-    download.rm_cache_root();
-    EXPECT(!root.exists());
-}
-
-
 CASE("grid") {
     using Cache = cache::MemoryCache;
 

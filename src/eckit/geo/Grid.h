@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,6 +30,7 @@ class JSON;
 namespace geo {
 class Area;
 class Range;
+class Search;
 }  // namespace geo
 }  // namespace eckit
 
@@ -138,6 +140,9 @@ public:
 
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
 
+    /// Shared (cache::SearchCache), valid for the grid lifetime
+    const Search& search() const;
+
     virtual size_t truncation() const;
 
     virtual const order_type& order() const;
@@ -200,6 +205,9 @@ private:
     mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;
+
+    mutable std::shared_ptr<const Search> search_;
+    mutable std::once_flag search_once_;
 
     // -- Methods
 

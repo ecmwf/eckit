@@ -64,6 +64,69 @@ void remove_file(const PathName& path) {
 }
 
 
+CASE("validate_response: http(s) requires a 2xx status") {
+    const Download::headers_type binary{{"content-type", "application/octet-stream"}};
+
+    for (const std::string url : {"https://host/file", "http://host/file", "HTTPS://host/file", "Http://host/file"}) {
+        EXPECT(Download::validate_response(url, 200, binary).empty());
+        EXPECT(Download::validate_response(url, 203, binary).empty());
+        EXPECT(Download::validate_response(url, 206, binary).empty());
+
+        // 0: no HTTP response received at all (eg. DNS or connection failure)
+        for (long code : {0L, 100L, 199L, 300L, 301L, 302L, 304L, 400L, 401L, 403L, 404L, 407L, 500L, 502L, 503L}) {
+            const auto error = Download::validate_response(url, code, binary);
+            EXPECT(!error.empty());
+            EXPECT(StringTools::startsWith(error, "HTTP status " + std::to_string(code)));
+
+            EXPECT(!Download::validate_response(url, code, binary, true).empty());
+        }
+    }
+}
+
+
+CASE("validate_response: http(s) rejects HTML, unless HTML is allowed") {
+    const auto& url = URL_HTTP;
+
+    const Download::headers_type none;
+    const Download::headers_type data{{"content-type", "application/zip"}};
+    const Download::headers_type text{{"content-type", "text/plain; charset=utf-8"}};
+
+    for (const Download::headers_type& html : {
+             Download::headers_type{{"content-type", "text/html"}},
+             Download::headers_type{{"content-type", "text/html; charset=UTF-8"}},
+             Download::headers_type{{"content-type", " TEXT/HTML "}},
+             Download::headers_type{{"content-type", "application/xhtml+xml"}},
+         }) {
+        EXPECT(!Download::validate_response(url, 200, html).empty());
+        EXPECT(Download::validate_response(url, 200, html, true).empty());
+
+        // status is checked first
+        EXPECT(StringTools::startsWith(Download::validate_response(url, 404, html, true), "HTTP status 404"));
+    }
+
+    for (const auto& headers : {none, data, text}) {
+        EXPECT(Download::validate_response(url, 200, headers).empty());
+        EXPECT(Download::validate_response(url, 200, headers, true).empty());
+    }
+
+    // only the content-type header is relevant
+    EXPECT(Download::validate_response(url, 200, {{"x-content-type", "text/html"}}).empty());
+}
+
+
+CASE("validate_response: other schemes rely on transport errors only") {
+    const Download::headers_type none;
+    const Download::headers_type html{{"content-type", "text/html"}};
+
+    for (const std::string url : {"file:///path/to/file", "ftp://host/file", "/path/to/file", "httpx://host/file"}) {
+        for (long code : {0L, 200L, 226L, 404L}) {
+            EXPECT(Download::validate_response(url, code, none).empty());
+            EXPECT(Download::validate_response(url, code, html).empty());
+        }
+    }
+}
+
+
 CASE("url_file_basename, url_file_extension") {
     const std::string url = "https://host/path/to/file.tar.gz?query=1#fragment";
 
@@ -137,13 +200,13 @@ CASE("to_path: file:// (no network)") {
     SECTION("empty rejected") {
         write_file(source, "");
 
-        EXPECT_THROWS_AS(Download::to_path(url, path), UserError);
+        EXPECT_THROWS_AS(Download::to_path(url, path), exception::DownloadError);
         EXPECT(!path.exists());
         EXPECT(!part.exists());
     }
 
     SECTION("missing rejected") {
-        EXPECT_THROWS_AS(Download::to_path(url, path), UserError);
+        EXPECT_THROWS_AS(Download::to_path(url, path), exception::DownloadError);
         EXPECT(!path.exists());
         EXPECT(!part.exists());
     }
@@ -177,7 +240,7 @@ CASE("to_cached_path: file:// (no network)") {
     SECTION("failed download is not cached") {
         write_file(source, "");
 
-        EXPECT_THROWS_AS(download.to_cached_path(url, PREFIX, SUFFIX), UserError);
+        EXPECT_THROWS_AS(download.to_cached_path(url, PREFIX, SUFFIX), exception::DownloadError);
 
         std::vector<PathName> files;
         std::vector<PathName> dirs;
@@ -198,15 +261,15 @@ CASE("to_path: error handling (network)") {
     remove_file(path);
 
     SECTION("not found") {
-        EXPECT_THROWS_AS(Download::to_path(URL_NOT_FOUND_1, path), UserError);
+        EXPECT_THROWS_AS(Download::to_path(URL_NOT_FOUND_1, path), exception::DownloadError);
         EXPECT(!path.exists());
 
-        EXPECT_THROWS_AS(Download::to_path(URL_NOT_FOUND_2, path), UserError);
+        EXPECT_THROWS_AS(Download::to_path(URL_NOT_FOUND_2, path), exception::DownloadError);
         EXPECT(!path.exists());
     }
 
     SECTION("bad ssl") {
-        EXPECT_THROWS_AS(Download::to_path(URL_BAD_SSL, path), UserError);
+        EXPECT_THROWS_AS(Download::to_path(URL_BAD_SSL, path), exception::DownloadError);
         EXPECT(!path.exists());
     }
 }
@@ -256,7 +319,7 @@ CASE("to_path, to_cached_path: not supported without CURL") {
     const PathName path(PATH);
     remove_file(path);
 
-    EXPECT_THROWS_AS(Download::to_path(URL_HTTP, path), UserError);
+    EXPECT_THROWS_AS(Download::to_path(URL_HTTP, path), exception::DownloadError);
     EXPECT(!path.exists());
 
     const PathName root(ROOT, true);
@@ -264,7 +327,7 @@ CASE("to_path, to_cached_path: not supported without CURL") {
     Download download(root);
     download.rm_cache_root();
 
-    EXPECT_THROWS_AS(download.to_cached_path(URL_HTTP), UserError);
+    EXPECT_THROWS_AS(download.to_cached_path(URL_HTTP), exception::DownloadError);
 
     download.rm_cache_root();
 }

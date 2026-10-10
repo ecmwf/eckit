@@ -41,7 +41,6 @@ class lock_type {
 };
 
 
-// Generator of a grid spec, by uid
 struct SpecByUID final : GridSpecByUID::concrete_generator_t {
     explicit SpecByUID(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
     spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
@@ -53,7 +52,6 @@ private:
 };
 
 
-// Generator of a grid spec, by name
 struct SpecByName final : GridSpecByName::concrete_generator_t {
     explicit SpecByName(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
     spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
@@ -120,9 +118,7 @@ size_t Grid::size() const {
 }
 
 
-void Grid::cache() const {
-    // By default, there's no cacheable data, so do nothing
-}
+void Grid::cache() const {}
 
 
 const Search& Grid::search() const {

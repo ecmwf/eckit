@@ -108,7 +108,6 @@ std::string Download::url_file_extension(const url_type& url) {
 
 
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
-    // control concurrent download
     lock_type lock;
 
     Length length = 0;
@@ -163,12 +162,10 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 
 
 PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {
-    // control concurrent access
     lock_type lock;
 
     static MemoryCacheT<MD5::digest_t, std::string> CACHE;
 
-    // set cache key, return path early if possible
     const auto key = MD5{url}.digest();
     const auto path =
         CACHE.contains(key) ? PathName{CACHE[key]} : cache_root() / prefix + (prefix.empty() ? "" : "-") + key + suffix;
@@ -177,7 +174,6 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
         return CACHE[key] = path;
     }
 
-    // download, update cache, return path
     Log::info() << "Downloading '" << url << "' to '" << path << "'..." << std::endl;
     auto info = Download::to_path(url, path, html_);
     Log::info() << "Download of " << info.bytes << " took " << info.time_s << "s." << std::endl;

@@ -32,7 +32,7 @@ CASE("Sun") {
     EXPECT(types::is_approximately_equal(f1->R(), 695990000.));
     EXPECT(types::is_approximately_equal(f1->eccentricity(), 0.));
 
-    EXPECT(f1->spec_str() == R"({"figure":"sun"})");
+    EXPECT_EQUAL(f1->spec_str(), R"({"figure":"sun"})");
 }
 
 

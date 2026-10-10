@@ -111,7 +111,6 @@ double Sphere::area(double radius) {
 double Sphere::area(double radius, const area::BoundingBox& bbox) {
     ASSERT(radius > 0.);
 
-    // Set longitude and latitude fractions
     auto lonf = bbox.periodic() ? 1. : (bbox.east() - bbox.west()) / PointLonLat::FULL_ANGLE;
     ASSERT(0. <= lonf && lonf <= 1.);
 
@@ -119,7 +118,6 @@ double Sphere::area(double radius, const area::BoundingBox& bbox) {
     auto ss   = std::sin(util::DEGREE_TO_RADIAN * bbox.south());
     auto latf = 0.5 * (sn - ss);
 
-    // Calculate area
     return area(radius) * latf * lonf;
 }
 

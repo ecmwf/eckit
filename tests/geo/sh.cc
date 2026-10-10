@@ -23,7 +23,7 @@ CASE("sh") {
     EXPECT(a.size() == 6);
     EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(a.truncation()));
     EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(a.truncation()) * 2);
-    EXPECT(a.spec_str() == R"({"grid":"T1"})");
+    EXPECT_EQUAL(a.spec_str(), R"({"grid":"T1"})");
 
     grid::SphericalHarmonics b(1279);
 
@@ -31,7 +31,7 @@ CASE("sh") {
     EXPECT(b.size() == 1639680);
     EXPECT(b.size() == grid::SphericalHarmonics::number_of_real_coefficients(b.truncation()));
     EXPECT(b.size() == grid::SphericalHarmonics::number_of_complex_coefficients(b.truncation()) * 2);
-    EXPECT(b.spec_str() == R"({"grid":"T1279"})");
+    EXPECT_EQUAL(b.spec_str(), R"({"grid":"T1279"})");
 
     EXPECT(b == *std::unique_ptr<const Grid>(GridFactory::build(spec::Custom{{"grid", "t1279"}})));
     EXPECT(b == *std::unique_ptr<const Grid>(GridFactory::make_from_string("{type: sh, truncation: 1279}")));

@@ -43,7 +43,7 @@ CASE("Grid from spec/uid") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
         EXPECT(grid->size() == test.size);
-        EXPECT(grid->spec_str() == test.canonical);
+        EXPECT_EQUAL(grid->spec_str(), test.canonical);
 
         std::unique_ptr<const Grid> same(GridFactory::build(spec::Custom{{"uid", grid->uid()}}));
 
@@ -51,7 +51,7 @@ CASE("Grid from spec/uid") {
 
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
-        EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
+        EXPECT_EQUAL(grid->boundingBox().spec_str(), bbox_spec_str);
     }
 }
 

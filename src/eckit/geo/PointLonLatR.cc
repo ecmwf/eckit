@@ -15,7 +15,12 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_minimum(value_type a, 
     static const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
     auto diff = a - minimum;
-    return 0. <= diff && diff < FULL_ANGLE ? a : (modulus(diff) + minimum);
+    if (0. <= diff && diff < FULL_ANGLE) {
+        return a;
+    }
+
+    auto mod = modulus(diff);
+    return (mod < FULL_ANGLE ? mod : 0.) + minimum;
 }
 
 
@@ -23,7 +28,12 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, 
     auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
 
     auto diff = a - maximum;
-    return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);
+    if (-FULL_ANGLE < diff && diff <= 0.) {
+        return a;
+    }
+
+    auto mod = modulus(diff);
+    return (-FULL_ANGLE < mod ? mod : 0.) + maximum;
 }
 
 
@@ -55,7 +65,7 @@ PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, valu
 
 bool points_equal(const PointLonLatR& a, const PointLonLatR& b, PointLonLatR::value_type eps) {
     const auto c = PointLonLatR::make(a.lonr(), a.latr(), 0., eps);
-    const auto d = PointLonLatR::make(b.lonr(), b.latr(), 0., eps);
+    const auto d = PointLonLatR::make(b.lonr(), b.latr(), c.lonr() - PointLonLatR::FLAT_ANGLE, eps);
     return types::is_approximately_equal(c.lonr(), d.lonr(), eps) &&
            types::is_approximately_equal(c.latr(), d.latr(), eps);
 }

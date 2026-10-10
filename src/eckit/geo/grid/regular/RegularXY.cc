@@ -134,13 +134,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
 }
 
 
-// ---
-
-
 static const GridRegisterType<RegularXY> GRIDTYPE("regular_xy");
-
-// static const GridRegisterType<RegularXY> GRID2("lambert");
-// static const GridRegisterType<RegularXY> GRID3("lambert_lam");
 
 
 }  // namespace eckit::geo::grid::regular

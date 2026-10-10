@@ -268,7 +268,6 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
                                                           : NOTIMP;
     };
 
-    // projection, normalised
     pj_t p(proj_create_crs_to_crs(ctx(), source_.c_str(), target_.c_str(), area()));
     p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 

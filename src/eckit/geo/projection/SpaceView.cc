@@ -35,7 +35,7 @@ const std::string& SpaceView::type() const {
 void SpaceView::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
-    custom.set("type", "geos");  //?
+    custom.set("type", "geos");
     NOTIMP;
 }
 

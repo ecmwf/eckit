@@ -26,10 +26,7 @@
 namespace eckit::geo::area::library {
 
 
-// PIMPL body: holds the shapelib-typed state so <shapefil.h> stays out of the
-// installed public header. Kept in the .cc so that the unique_ptr in the
-// Shapefile class only sees a complete Implementation type where its
-// destructor is instantiated (i.e. in ~Shapefile() below).
+// keeps <shapefil.h> out of the installed header
 struct Shapefile::Implementation {
     SHPInfo* shp = nullptr;
 };
@@ -119,7 +116,6 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
             throw CantOpenFile(shpPath_ + " (as .dbf)", Here());
         }
 
-        // find named field index
         std::map<std::string, int> to_index;
 
         char fieldName[12];

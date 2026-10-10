@@ -19,11 +19,6 @@
 
 
 namespace eckit::geo {
-class Figure;
-}
-
-
-namespace eckit::geo {
 
 
 class Projection {
@@ -72,7 +67,6 @@ public:
     /// Map a grid's (x, y) coordinates to geographic coordinates
     virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
 
-    void falseXY(const PointXY& falseXY) { false_ = falseXY; }
     const PointXY& falseXY() const { return false_; }
 
     const Figure& figure() const { return *figure_; }

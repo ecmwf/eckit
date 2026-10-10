@@ -10,7 +10,6 @@
 namespace eckit::geo::figure {
 
 
-/// Definition of a unit datum
 struct DatumUnit {
     static constexpr double radius = 1.;
 
@@ -21,7 +20,6 @@ struct DatumUnit {
 };
 
 
-/// Definition of a unit sphere
 using UnitSphere = SphereT<DatumUnit>;
 
 

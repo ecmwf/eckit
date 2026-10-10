@@ -52,7 +52,7 @@ public:
     template <typename Make>
     value_type get(const key_type& key, const MemoryUsage& estimate, const Make& make) {
         // requests of the same key are serialised, so the value is made once (the others find it cached)
-        util::lock_guard<util::recursive_mutex> making(key_mutex(key));
+        util::lock_guard<util::recursive_mutex> making(key_mutexes_[key]);
 
         {
             util::lock_guard<util::recursive_mutex> lock(mutex_);
@@ -87,12 +87,6 @@ public:
         evict();  // the footprint can differ from the estimate
 
         return value;
-    }
-
-    /// Cached, or made (make() returns a value_type) then making room for it
-    template <typename Make>
-    value_type get(const key_type& key, const Make& make) {
-        return get(key, MemoryUsage{}, make);
     }
 
     /// Footprint of the cached values
@@ -148,23 +142,12 @@ private:
     mutable util::recursive_mutex mutex_;
     std::map<key_type, Entry> entries_;
     std::map<key_type, MemoryUsage> reserved_;  // estimates, of values being made
-    std::map<key_type, std::unique_ptr<util::recursive_mutex>> key_mutexes_;
+    util::mutex_map<key_type> key_mutexes_;     // never released (the number of keys is bounded)
     MemoryUsage capacity_;
     Statistics statistics_;
     size_t clock_ = 0;
 
     // -- Methods
-
-    /// One per key, never released (the number of keys is bounded)
-    util::recursive_mutex& key_mutex(const key_type& key) {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-
-        auto& m = key_mutexes_[key];
-        if (!m) {
-            m = std::make_unique<util::recursive_mutex>();
-        }
-        return *m;
-    }
 
     /// Evict the least recently used values not in use, until the values and those being made (estimated) fit
     void evict() {

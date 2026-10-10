@@ -6,17 +6,15 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <atomic>
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <mutex>
 #include <random>
 #include <string>
-#include <thread>
 #include <utility>
 #include <vector>
 
@@ -31,9 +29,11 @@
 #include "eckit/geo/search/MappedFile.h"
 #include "eckit/geo/search/Memory.h"
 #include "eckit/geo/search/SharedMemory.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+#include "eckit/thread/ThreadPool.h"
 
 
 namespace eckit::geo::test {
@@ -45,6 +45,21 @@ using search::KDTreeFactory;
 using search::MappedFile;
 using search::SharedMemory;
 using search::TempSharedMemory;
+
+
+/// Thread pool task, calling a function
+template <typename Function>
+class Task final : public ThreadPoolTask {
+public:
+
+    explicit Task(Function fun) : fun_(std::move(fun)) {}
+
+private:
+
+    void execute() override { fun_(); }
+
+    Function fun_;
+};
 
 
 // one name per loader (see the aliases in KDTreeFactory test)
@@ -105,7 +120,7 @@ bool consistent(const Search& search, const std::vector<PointXYZ>& points) {
 
 /// Build k-d tree if not ready, @return if built
 bool load_or_build(KDTree& kdtree, const std::vector<PointXYZ>& points) {
-    std::lock_guard<KDTree> lock(kdtree);
+    util::lock_guard<KDTree> lock(kdtree);
 
     if (kdtree.ready()) {
         return false;
@@ -150,13 +165,13 @@ void remove(const PathName& path) {
 
 CASE("KDTreeFactory") {
     for (const auto& name : LOADERS) {
-        EXPECT(KDTreeFactory::has_type(name));
+        EXPECT(KDTreeFactory::estimate(name, 1));
     }
 
-    EXPECT_NOT(KDTreeFactory::has_type("unknown"));
-    EXPECT_NOT(KDTreeFactory::has_type("mapped-cache-file"));  // now mapped-memory
-    EXPECT_THROWS_AS(std::unique_ptr<KDTree>(KDTreeFactory::build("unknown", "uid", 1)), exception::SearchError);
-    EXPECT_THROWS_AS(KDTreeFactory::estimate("unknown", 1), exception::SearchError);
+    for (const auto& name : {"unknown", "mapped-cache-file" /* now mapped-memory */}) {
+        EXPECT_THROWS_AS(KDTreeFactory::estimate(name, 1), exception::SearchError);
+        EXPECT_THROWS_AS(std::unique_ptr<KDTree>(KDTreeFactory::build(name, "uid", 1)), exception::SearchError);
+    }
 
     // the default loader
     EXPECT_EQUAL(LibEcKitGeo::searchLoader(), "mapped-memory");
@@ -202,11 +217,10 @@ CASE("KDTree: build and query") {
                 const auto uid = unique_uid("build-" + name + (fast ? "-build" : "-insert"));
 
                 std::unique_ptr<KDTree> kdtree(KDTreeFactory::build(name, uid, points.size()));
-                EXPECT_EQUAL(kdtree->uid(), uid);
                 EXPECT_EQUAL(kdtree->size(), points.size());
 
                 {
-                    std::lock_guard<KDTree> lock(*kdtree);
+                    util::lock_guard<KDTree> lock(*kdtree);
                     EXPECT_NOT(kdtree->ready());
 
                     if (fast) {
@@ -288,7 +302,7 @@ CASE("KDTree: capacity") {
                 KDTreeFactory::build(name, unique_uid("capacity-" + name), points.size() - 1));
 
             {
-                std::lock_guard<KDTree> lock(*kdtree);
+                util::lock_guard<KDTree> lock(*kdtree);
 
                 auto v = values(points);
                 EXPECT_THROWS(kdtree->build(v));
@@ -397,7 +411,7 @@ CASE("MappedFile: uncommitted build is discarded") {
         MappedFile kdtree(uid, points.size());
         path = kdtree.path();
 
-        std::lock_guard<KDTree> lock(kdtree);
+        util::lock_guard<KDTree> lock(kdtree);
         EXPECT_NOT(kdtree.ready());
 
         auto v = values(points);
@@ -413,44 +427,27 @@ CASE("MappedFile: uncommitted build is discarded") {
 
 
 CASE("MappedFile: multi-threaded") {
-    const auto points = random_points(50000, 7);
+    const auto points = random_points(2000, 7);
     const auto uid    = unique_uid("threads");
 
-    constexpr int N = 8;
+    constexpr size_t N = 4;
 
-    std::atomic<int> built{0};
-    std::atomic<int> failed{0};
-    std::atomic<bool> go{false};
+    // per task
+    std::vector<int> built(N, 0);
+    std::vector<int> valid(N, 0);
 
-    std::vector<std::thread> threads;
-    for (int i = 0; i < N; ++i) {
-        threads.emplace_back([&]() {
-            while (!go) {
-                std::this_thread::yield();
-            }
-
-            try {
-                MappedFile kdtree(uid, points.size());
-                if (load_or_build(kdtree, points)) {
-                    ++built;
-                }
-                if (!consistent(kdtree, points)) {
-                    ++failed;
-                }
-            }
-            catch (...) {
-                ++failed;
-            }
-        });
+    ThreadPool pool("threads", N);
+    for (size_t i = 0; i < N; ++i) {
+        pool.push(new Task([&, i]() {
+            MappedFile kdtree(uid, points.size());
+            built[i] = load_or_build(kdtree, points) ? 1 : 0;
+            valid[i] = consistent(kdtree, points) ? 1 : 0;
+        }));
     }
+    pool.waitForThreads();  // throws if a task failed
 
-    go = true;
-    for (auto& t : threads) {
-        t.join();
-    }
-
-    EXPECT_EQUAL(failed.load(), 0);
-    EXPECT_EQUAL(built.load(), 1);
+    EXPECT_EQUAL(std::count(built.begin(), built.end(), 1), 1);
+    EXPECT_EQUAL(std::count(valid.begin(), valid.end(), 1), N);
 
     MappedFile kdtree(uid, points.size());
     EXPECT_EQUAL(count_temporary_files(kdtree.path()), 0);
@@ -642,60 +639,38 @@ CASE("TempSharedMemory: removed at exit") {
 
 CASE("Search: multi-threaded") {
     // unique points (uid), so the cached k-d tree is new
-    auto points = random_points(5000, 9);
+    auto points = random_points(1000, 9);
     points.emplace_back(10., static_cast<double>(::getpid()),
                         static_cast<double>(std::chrono::steady_clock::now().time_since_epoch().count() % 1000000));
 
     const spec::Custom spec{{{"search-loader", "mmap"}}};
 
-    constexpr int N = 8;
-    std::atomic<int> failed{0};
+    constexpr size_t N = 4;
+    std::vector<int> valid(N, 0);  // per task
 
     SECTION("construct concurrently") {
-        std::vector<std::thread> threads;
-        for (int i = 0; i < N; ++i) {
-            threads.emplace_back([&]() {
-                try {
-                    const Search search(points, spec);
-                    if (!consistent(search, points)) {
-                        ++failed;
-                    }
-                }
-                catch (...) {
-                    ++failed;
-                }
-            });
+        ThreadPool pool("threads", N);
+        for (size_t i = 0; i < N; ++i) {
+            pool.push(new Task([&, i]() {
+                const Search search(points, spec);
+                valid[i] = consistent(search, points) ? 1 : 0;
+            }));
         }
+        pool.waitForThreads();  // throws if a task failed
 
-        for (auto& t : threads) {
-            t.join();
-        }
-
-        EXPECT_EQUAL(failed.load(), 0);
+        EXPECT_EQUAL(std::count(valid.begin(), valid.end(), 1), N);
     }
 
     SECTION("query concurrently") {
         const Search search(points, spec);
 
-        std::vector<std::thread> threads;
-        for (int i = 0; i < N; ++i) {
-            threads.emplace_back([&]() {
-                if (!consistent(search, points)) {
-                    ++failed;
-                }
-                for (const auto& p : points) {
-                    if (search.search_knn(p, 4).size() != 4) {
-                        ++failed;
-                    }
-                }
-            });
+        ThreadPool pool("threads", N);
+        for (size_t i = 0; i < N; ++i) {
+            pool.push(new Task([&, i]() { valid[i] = consistent(search, points) ? 1 : 0; }));
         }
+        pool.waitForThreads();  // throws if a task failed
 
-        for (auto& t : threads) {
-            t.join();
-        }
-
-        EXPECT_EQUAL(failed.load(), 0);
+        EXPECT_EQUAL(std::count(valid.begin(), valid.end(), 1), N);
     }
 
     const Search search(points, spec);

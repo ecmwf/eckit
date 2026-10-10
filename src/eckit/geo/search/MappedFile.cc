@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
-#include <map>
 #include <ostream>
 
 #include "eckit/container/KDMapped.h"
@@ -34,16 +33,8 @@ namespace {
 
 // one mutex per file, never released (the number of k-d trees is bounded)
 util::recursive_mutex& file_mutex(const std::string& path) {
-    static util::recursive_mutex mutex;
-    static std::map<std::string, std::unique_ptr<util::recursive_mutex>> mutexes;
-
-    util::lock_guard<util::recursive_mutex> lock(mutex);
-
-    auto& m = mutexes[path];
-    if (!m) {
-        m = std::make_unique<util::recursive_mutex>();
-    }
-    return *m;
+    static util::mutex_map<std::string> mutexes;
+    return mutexes[path];
 }
 
 
@@ -58,7 +49,7 @@ bool safe_uid(const std::string& uid) {
 
 
 MappedFile::MappedFile(const std::string& uid, size_t size) :
-    KDTree(uid, size),
+    KDTree(size),
     path_(kdtree_path(uid, PathName{LibEcKitGeo::cacheDir()})),
     lock_path_(path_ + ".lock"),
     mutex_(file_mutex(lock_path_.asString())) {

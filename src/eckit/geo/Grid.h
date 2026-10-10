@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +18,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
@@ -211,7 +211,7 @@ private:
     mutable uid_type uid_;
 
     mutable std::shared_ptr<const Search> search_;
-    mutable std::once_flag search_once_;
+    mutable util::once_flag search_once_;
 
     // -- Methods
 

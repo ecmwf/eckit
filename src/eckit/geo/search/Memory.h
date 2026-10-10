@@ -38,6 +38,7 @@ public:
     bool ready() override { return false; }
     void commit() override {}
 
+
     void stats_print(std::ostream&, bool pretty) const override;
     void stats_reset() override;
 

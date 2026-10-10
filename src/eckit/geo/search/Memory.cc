@@ -15,7 +15,7 @@ namespace eckit::geo::search {
 static const KDTreeBuilder<Memory> BUILDER("memory");
 
 
-Memory::Memory(const std::string& uid, size_t size) : KDTree(uid, size) {}
+Memory::Memory(const std::string& /*uid*/, size_t size) : KDTree(size) {}
 
 
 void Memory::build(std::vector<Value>& values) {

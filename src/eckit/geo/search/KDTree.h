@@ -58,7 +58,7 @@ public:
 
     // -- Constructors
 
-    KDTree(const std::string& uid, size_t size);
+    explicit KDTree(size_t size);
 
     KDTree(const KDTree&) = delete;
     KDTree(KDTree&&)      = delete;
@@ -99,7 +99,6 @@ public:
 
     virtual MemoryUsage footprint() const = 0;
 
-    const std::string& uid() const { return uid_; }
     size_t size() const { return size_; }
 
     // -- Friends
@@ -134,7 +133,6 @@ private:
 
     // -- Members
 
-    const std::string uid_;
     const size_t size_;
 };
 
@@ -165,8 +163,6 @@ public:
     /// Memory usage of a k-d tree of size points, once built or loaded
     static KDTree::MemoryUsage estimate(const std::string& loader, size_t size);
 
-    static bool has_type(const std::string& loader);
-    static std::ostream& list(std::ostream&);
 
 protected:
 
@@ -192,6 +188,7 @@ private:
     // -- Class methods
 
     static const KDTreeFactory& get(const std::string& loader);
+    static std::ostream& list(std::ostream&);
 };
 
 

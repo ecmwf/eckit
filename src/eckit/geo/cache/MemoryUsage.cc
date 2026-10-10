@@ -46,11 +46,6 @@ bool MemoryUsage::exceeds(const MemoryUsage& capacity) const {
 }
 
 
-std::string MemoryUsage::str() const {
-    return std::to_string(memory_) + "," + std::to_string(shared_);
-}
-
-
 std::ostream& operator<<(std::ostream& out, const MemoryUsage& usage) {
     return out << "MemoryUsage[memory=" << usage.memory_ << ",shared=" << usage.shared_ << "]";
 }

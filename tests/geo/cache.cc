@@ -197,7 +197,6 @@ CASE("MemoryUsage") {
     EXPECT_EQUAL(a.memory(), 100);
     EXPECT_EQUAL(a.shared(), 200);
     EXPECT_EQUAL(b.shared(), 300);
-    EXPECT_EQUAL(MemoryUsage{a.str()}, a);
 
     EXPECT_EQUAL(a + b, MemoryUsage(400, 500));
     EXPECT_EQUAL(b - a, MemoryUsage(200, 100));
@@ -227,13 +226,16 @@ CASE("InMemoryCache: usage, capacity and evictions") {
     // 50 values use 400 bytes, the capacity is 1000 bytes (in process memory)
     InMemoryCache<Values> cached(MemoryUsage{1000, 0});
 
-    auto make = [](size_t n) { return [n]() { return std::make_shared<const Values>(n); }; };
+    // n values, as estimated
+    auto get = [&cached](const std::string& key, size_t n) {
+        return cached.get(key, MemoryUsage{n * sizeof(double), 0}, [n]() { return std::make_shared<const Values>(n); });
+    };
 
     const auto total = Cache::total_footprint();
 
-    cached.get("a", make(50));  // miss
-    cached.get("b", make(50));  // miss
-    cached.get("a", make(50));  // hit, "a" is now more recently used than "b"
+    get("a", 50);  // miss
+    get("b", 50);  // miss
+    get("a", 50);  // hit, "a" is now more recently used than "b"
 
     EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
     EXPECT_EQUAL(cached.statistics().hits, 1);
@@ -243,13 +245,13 @@ CASE("InMemoryCache: usage, capacity and evictions") {
     EXPECT_EQUAL(Cache::total_footprint(), total + 800);
 
     // over capacity: the least recently used is evicted
-    cached.get("c", make(50));
+    get("c", 50);
     EXPECT_EQUAL(cached.size(), 2);
     EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
     EXPECT_EQUAL(cached.statistics().evictions, 1);
 
     // values in use are not evicted, even over capacity
-    auto d = cached.get("d", make(200));
+    auto d = get("d", 200);
     EXPECT_EQUAL(cached.size(), 1);
     EXPECT_EQUAL(cached.usage(), MemoryUsage(1600, 0));
 

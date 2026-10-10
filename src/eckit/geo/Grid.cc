@@ -127,7 +127,7 @@ void Grid::cache() const {
 
 const Search& Grid::search() const {
     // the grid holds its search, so it is not evicted from the cache while the grid exists
-    std::call_once(search_once_, [this]() { search_ = cache::SearchCache::instance().get(*this); });
+    util::call_once(search_once_, [this]() { search_ = cache::SearchCache::instance().get(*this); });
     return *search_;
 }
 

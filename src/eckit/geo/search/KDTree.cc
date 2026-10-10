@@ -20,7 +20,7 @@ std::ostream& operator<<(std::ostream& out, const Neighbour& n) {
 }
 
 
-KDTree::KDTree(const std::string& uid, size_t size) : uid_(uid), size_(size) {
+KDTree::KDTree(size_t size) : size_(size) {
     if (size_ == 0) {
         throw exception::SearchError("KDTree: cannot build without points", Here());
     }
@@ -88,14 +88,6 @@ KDTree* KDTreeFactory::build(const std::string& loader, const std::string& uid, 
 
 KDTree::MemoryUsage KDTreeFactory::estimate(const std::string& loader, size_t size) {
     return get(loader).make_estimate(size);
-}
-
-
-bool KDTreeFactory::has_type(const std::string& loader) {
-    auto& r = registry();
-    util::lock_guard<util::recursive_mutex> lock(r.mutex);
-
-    return r.loaders.find(loader) != r.loaders.end();
 }
 
 

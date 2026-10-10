@@ -44,7 +44,6 @@ public:
     /// Either memory or shared
     bool exceeds(const MemoryUsage& capacity) const;
 
-    std::string str() const;
 
     // -- Friends
 

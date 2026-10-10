@@ -156,7 +156,7 @@ CASE("crop") {
     EXPECT_EQUAL(n3, n1);
 
     EXPECT(grid3->boundingBox().periodic());
-    EXPECT(grid3->boundingBox().spec_str() == R"({"area":[90,-180,-90,180]})");
+    EXPECT_EQUAL(grid3->boundingBox().spec_str(), R"({"area":[90,-180,-90,180]})");
 
     // (exclude Greenwhich meridian)
     std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.e-6)));

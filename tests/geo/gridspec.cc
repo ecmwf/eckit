@@ -30,7 +30,7 @@ CASE("canonical") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridSpec));
 
         EXPECT(grid);
-        EXPECT(grid->spec_str() == gridSpec);
+        EXPECT_EQUAL(grid->spec_str(), gridSpec);
     }
 }
 
@@ -221,27 +221,27 @@ CASE("grid: reduced_gg") {
     SECTION("O16, N16") {
         std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
 
-        EXPECT(o16->spec_str() == R"({"grid":"O16"})");
+        EXPECT_EQUAL(o16->spec_str(), R"({"grid":"O16"})");
 
         std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
 
-        EXPECT(n16->spec_str() == R"({"grid":"N16"})");
+        EXPECT_EQUAL(n16->spec_str(), R"({"grid":"N16"})");
 
         std::unique_ptr<const Grid> known_pl_1(GridFactory::build(
             spec::Custom({{"pl", pl_type{20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64,
                                          64, 64, 64, 64, 64, 64, 64, 64, 60, 60, 48, 45, 40, 32, 27, 20}}})));
 
-        EXPECT(known_pl_1->spec_str() == R"({"grid":"N16"})");
+        EXPECT_EQUAL(known_pl_1->spec_str(), R"({"grid":"N16"})");
 
         std::unique_ptr<const Grid> known_pl_2(
             GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 20}}})));
 
-        EXPECT(known_pl_2->spec_str() == R"({"grid":"O4"})");
+        EXPECT_EQUAL(known_pl_2->spec_str(), R"({"grid":"O4"})");
 
         std::unique_ptr<const Grid> unknown_pl(
             GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
 
-        EXPECT(unknown_pl->spec_str() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
+        EXPECT_EQUAL(unknown_pl->spec_str(), R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
     }
 
 
@@ -258,11 +258,11 @@ CASE("grid: reduced_gg") {
 CASE("grid: HEALPix") {
     std::unique_ptr<const Grid> h2(GridFactory::build(spec::Custom({{"grid", "h2"}})));
 
-    EXPECT(h2->spec_str() == R"({"grid":"H2"})");
+    EXPECT_EQUAL(h2->spec_str(), R"({"grid":"H2"})");
 
     std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"order", "nested"}})));
 
-    EXPECT(h2n->spec_str() == R"({"grid":"H2","order":"nested"})");
+    EXPECT_EQUAL(h2n->spec_str(), R"({"grid":"H2","order":"nested"})");
 }
 
 
@@ -316,7 +316,7 @@ CASE("order") {
         std::unique_ptr<const Grid> grid1(GridFactory::build(test.spec));
 
         EXPECT(grid1->order() == test.order_default);
-        EXPECT(grid1->spec_str() == test.spec_str_order_default);
+        EXPECT_EQUAL(grid1->spec_str(), test.spec_str_order_default);
 
         spec::Layered spec(test.spec);
         spec.push_back(new spec::Custom({{"order", test.order_nondefault}}));
@@ -324,12 +324,12 @@ CASE("order") {
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
 
         EXPECT(grid2->order() == test.order_nondefault);
-        EXPECT(grid2->spec_str() == test.spec_str_order_nondefault);
+        EXPECT_EQUAL(grid2->spec_str(), test.spec_str_order_nondefault);
 
         std::unique_ptr<const Grid> grid3(GridFactory::make_from_string(grid2->spec_str()));
 
         EXPECT(grid3->order() == grid2->order());
-        EXPECT(grid3->spec_str() == grid2->spec_str());
+        EXPECT_EQUAL(grid3->spec_str(), grid2->spec_str());
     }
 }
 

@@ -11,7 +11,6 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -53,14 +52,10 @@ CASE("projection: ll-to-xyz") {
 
 
     SECTION("spec") {
-        Log::info() << to_xyz_1->spec_str() << std::endl;
-        Log::info() << to_xyz_2->spec_str() << std::endl;
-        Log::info() << to_xyz_3->spec_str() << std::endl;
-        Log::info() << to_xyz_4->spec_str() << std::endl;
-        EXPECT(to_xyz_1->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_2->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_3->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_4->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
+        EXPECT_EQUAL(to_xyz_1->spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT_EQUAL(to_xyz_2->spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT_EQUAL(to_xyz_3->spec_str(), R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
+        EXPECT_EQUAL(to_xyz_4->spec_str(), R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
     }
 
 

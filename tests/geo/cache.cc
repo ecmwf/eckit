@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <unistd.h>
+
 #include <cstddef>
 #include <memory>
 #include <ostream>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/eckit_config.h"
@@ -21,14 +25,33 @@
 #include "eckit/geo/cache/MemoryUsage.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/cache/Version.h"
+#include "eckit/geo/search/FileIO.h"
+#include "eckit/geo/search/KDTree.h"
 #include "eckit/geo/search/MappedFile.h"
 #include "eckit/geo/util.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+#include "eckit/thread/ThreadPool.h"
 
 
 namespace eckit::geo::test {
+
+
+/// Thread pool task, calling a function
+template <typename Function>
+class Task final : public ThreadPoolTask {
+public:
+
+    explicit Task(Function fun) : fun_(std::move(fun)) {}
+
+private:
+
+    void execute() override { fun_(); }
+
+    Function fun_;
+};
 
 
 CASE("eckit::geo::util") {
@@ -237,6 +260,160 @@ CASE("InMemoryCache: usage, capacity and evictions") {
 }
 
 
+/// Cached value of a given footprint
+struct Footprint {
+    explicit Footprint(const cache::MemoryUsage& _usage) : usage(_usage) {}
+    cache::MemoryUsage footprint() const { return usage; }
+    const cache::MemoryUsage usage;
+};
+
+
+CASE("InMemoryCache: room is made before making a value") {
+    using cache::InMemoryCache;
+    using cache::MemoryUsage;
+
+    InMemoryCache<Footprint> cached(MemoryUsage{1000, 1000});
+
+    size_t made = 0;
+    auto make   = [&made](const MemoryUsage& usage) {
+        return [&made, usage]() {
+            ++made;
+            return std::make_shared<const Footprint>(usage);
+        };
+    };
+
+    std::weak_ptr<const Footprint> a = cached.get("a", MemoryUsage{400, 0}, make({400, 0}));
+    std::weak_ptr<const Footprint> b = cached.get("b", MemoryUsage{400, 0}, make({400, 0}));
+    std::weak_ptr<const Footprint> s = cached.get("s", MemoryUsage{0, 800}, make({0, 800}));
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 800));
+    EXPECT_EQUAL(made, 3);
+
+    SECTION("a cached value is not made again, and nothing is evicted (even if the estimate doesn't fit)") {
+        EXPECT_EQUAL(cached.get("a", MemoryUsage{1000, 0}, make({400, 0})).get(), a.lock().get());
+        EXPECT_EQUAL(made, 3);
+        EXPECT_EQUAL(cached.statistics().hits, 1);
+        EXPECT_EQUAL(cached.statistics().evictions, 0);
+        EXPECT_EQUAL(cached.size(), 3);
+    }
+
+    SECTION("evicting before making, only what relieves the capacity (memory)") {
+        cached.get("c", MemoryUsage{400, 0}, [&]() {
+            // the least recently used, before c is made
+            EXPECT(a.expired());
+            EXPECT_NOT(b.expired());
+            EXPECT_NOT(s.expired());  // in shared memory
+            return make({400, 0})();
+        });
+
+        EXPECT_EQUAL(cached.statistics().evictions, 1);
+        EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 800));
+    }
+
+    SECTION("evicting before making, only what relieves the capacity (shared)") {
+        cached.get("t", MemoryUsage{0, 400}, [&]() {
+            EXPECT_NOT(a.expired());
+            EXPECT_NOT(b.expired());
+            EXPECT(s.expired());
+            return make({0, 400})();
+        });
+
+        EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 400));
+    }
+
+    SECTION("a value beyond the capacity is made and cached, evicting all values not in use") {
+        auto in_use = b.lock();
+
+        auto big = cached.get("big", MemoryUsage{2000, 0}, [&]() {
+            EXPECT(a.expired());
+            EXPECT_NOT(b.expired());
+            return make({2000, 0})();
+        });
+
+        EXPECT_EQUAL(cached.size(), 3);  // b, s and big
+        EXPECT_EQUAL(cached.usage(), MemoryUsage(2400, 800));
+
+        // evicted only once not in use
+        in_use.reset();
+        big.reset();
+        cached.capacity(MemoryUsage{1000, 1000});
+        EXPECT_EQUAL(cached.size(), 1);
+        EXPECT_EQUAL(cached.usage(), MemoryUsage(0, 800));
+    }
+
+    SECTION("an estimate below the footprint, evicting after making") {
+        auto c = cached.get("c", MemoryUsage{100, 0}, make({400, 0}));
+        EXPECT(a.expired());
+        EXPECT_NOT(b.expired());
+        EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 800));
+    }
+}
+
+
+CASE("InMemoryCache: a value is made once, if requested concurrently") {
+    using cache::InMemoryCache;
+    using cache::MemoryUsage;
+
+    InMemoryCache<Footprint> cached(MemoryUsage{1000, 0});
+
+    constexpr size_t N = 4;
+
+    util::recursive_mutex mutex;
+    int made = 0;
+
+    std::vector<std::shared_ptr<const Footprint>> values(N);  // per task
+
+    ThreadPool pool("threads", N);
+    for (size_t i = 0; i < N; ++i) {
+        pool.push(new Task([&, i]() {
+            values[i] = cached.get("x", MemoryUsage{100, 0}, [&]() {
+                {
+                    util::lock_guard<util::recursive_mutex> lock(mutex);
+                    ++made;
+                }
+                ::usleep(10000);  // so the other requests are concurrent
+                return std::make_shared<const Footprint>(MemoryUsage{100, 0});
+            });
+        }));
+    }
+    pool.waitForThreads();  // throws if a task failed
+
+    EXPECT_EQUAL(made, 1);
+    for (const auto& value : values) {
+        EXPECT(value == values.front());
+    }
+
+    EXPECT_EQUAL(cached.statistics().misses, 1);
+    EXPECT_EQUAL(cached.statistics().hits, N - 1);
+    EXPECT_EQUAL(cached.size(), 1);
+}
+
+
+CASE("InMemoryCache: a value failing to be made is not cached") {
+    using cache::InMemoryCache;
+    using cache::MemoryUsage;
+
+    InMemoryCache<Footprint> cached(MemoryUsage{1000, 0});
+
+    auto make = [](const MemoryUsage& usage) { return [usage]() { return std::make_shared<const Footprint>(usage); }; };
+
+    std::weak_ptr<const Footprint> a = cached.get("a", MemoryUsage{400, 0}, make({400, 0}));
+
+    auto failing = []() -> std::shared_ptr<const Footprint> { throw std::runtime_error("failed"); };
+    EXPECT_THROWS_AS(cached.get("x", MemoryUsage{600, 0}, failing), std::runtime_error);
+    EXPECT_EQUAL(cached.size(), 1);
+
+    // the room made is not kept: a fits along with b
+    cached.get("b", MemoryUsage{600, 0}, make({600, 0}));
+    EXPECT_NOT(a.expired());
+    EXPECT_EQUAL(cached.statistics().evictions, 0);
+
+    // made on the next request
+    cached.get("x", MemoryUsage{0, 0}, make({0, 0}));
+    EXPECT_EQUAL(cached.size(), 3);
+    EXPECT_EQUAL(cached.statistics().misses, 4);
+}
+
+
 CASE("SearchCache: a grid search, accounted for") {
     auto& cache = cache::SearchCache::instance();
     cache.clear();
@@ -280,6 +457,46 @@ CASE("SearchCache: a grid search, accounted for") {
     EXPECT_EQUAL(cache.size(), 1);
     EXPECT_EQUAL(cache.usage(), search.footprint());
 
+    cache.capacity(capacity);
+    cache.clear();
+}
+
+
+CASE("SearchCache: room is made for a search before loading it") {
+    auto& cache = cache::SearchCache::instance();
+    cache.clear();
+
+    const auto capacity = cache.capacity();
+
+    std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
+    std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom{{{"grid", "20/20"}}}));
+
+    // in process memory, as estimated
+    const spec::Custom spec{{{"search-loader", "file-io"}}};
+
+    auto search1 = cache.get(*grid1, spec);
+    EXPECT(dynamic_cast<const search::FileIO*>(&search1->kdtree()) != nullptr);
+    EXPECT_EQUAL(search1->footprint(), search::KDTreeFactory::estimate("file-io", grid1->size()));
+    EXPECT_EQUAL(cache.usage(), search1->footprint());
+
+    // room for one search only
+    const auto estimate2 = search::KDTreeFactory::estimate("file-io", grid2->size());
+    cache.capacity(estimate2 + cache::MemoryUsage{0, capacity.shared()});
+
+    std::weak_ptr<const Search> evicted = search1;
+    search1.reset();
+
+    const auto evictions = cache.statistics().evictions;
+    auto search2         = cache.get(*grid2, spec);
+    EXPECT(evicted.expired());
+    EXPECT_EQUAL(cache.statistics().evictions, evictions + 1);
+    EXPECT_EQUAL(cache.usage(), estimate2);
+
+    // cached, so nothing is evicted
+    EXPECT(cache.get(*grid2, spec) == search2);
+    EXPECT_EQUAL(cache.statistics().evictions, evictions + 1);
+
+    search2.reset();
     cache.capacity(capacity);
     cache.clear();
 }

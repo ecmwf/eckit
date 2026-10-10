@@ -130,6 +130,9 @@ private:
 
     /// k-d tree configuration, so searches of other behaviours can share it
     static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
+
+    /// Footprint of a search of size points, before building or loading it
+    static MemoryUsage estimate(size_t size, const Spec&);
     static bool spec_has_behaviour(const Spec&);
 };
 

@@ -167,6 +167,11 @@ const search::KDTree& Search::kdtree() const {
 }
 
 
+Search::MemoryUsage Search::estimate(size_t size, const Spec& spec) {
+    return geo::search::KDTreeFactory::estimate(loader(spec), size);
+}
+
+
 std::unique_ptr<spec::Custom> Search::spec_kdtree(const Spec& spec) {
     auto kdtree = std::make_unique<spec::Custom>();
 

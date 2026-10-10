@@ -77,15 +77,56 @@ const Scan::order_type& Scan::order_default() {
 Scan::renumber_type Scan::reorder(const order_type& to, size_t ni, size_t nj) const {
     ASSERT(0 < ni && 0 < nj);
 
+    renumber_type ren(ni * nj);
     if (to == order_) {
-        // no reordering
-        renumber_type ren(ni * nj);
         std::iota(ren.begin(), ren.end(), 0);
         return ren;
     }
 
-    // TODO regular grid reordering
-    NOTIMP;
+    const auto from_canonical = canonical(ni, nj);
+    const auto to_canonical   = Scan{to}.canonical(ni, nj);
+
+    renumber_type to_index(ni * nj);
+    for (size_t k = 0; k < to_canonical.size(); ++k) {
+        to_index[to_canonical[k]] = k;
+    }
+
+    for (size_t k = 0; k < from_canonical.size(); ++k) {
+        ren[k] = to_index[from_canonical[k]];
+    }
+
+    return ren;
+}
+
+
+Scan::renumber_type Scan::canonical(size_t ni, size_t nj) const {
+    const auto i_positive  = is_scan_i_positive();
+    const auto j_positive  = is_scan_j_positive();
+    const auto alternating = is_scan_alternating();
+
+    renumber_type index;
+    index.reserve(ni * nj);
+
+    if (is_scan_i_then_j()) {
+        for (size_t j = 0; j < nj; ++j) {
+            const auto row = j_positive ? nj - 1 - j : j;
+            const auto pos = i_positive != (alternating && j % 2 == 1);
+            for (size_t i = 0; i < ni; ++i) {
+                index.emplace_back(row * ni + (pos ? i : ni - 1 - i));
+            }
+        }
+    }
+    else {
+        for (size_t i = 0; i < ni; ++i) {
+            const auto col = i_positive ? i : ni - 1 - i;
+            const auto pos = j_positive != (alternating && i % 2 == 1);
+            for (size_t j = 0; j < nj; ++j) {
+                index.emplace_back((pos ? nj - 1 - j : j) * ni + col);
+            }
+        }
+    }
+
+    return index;
 }
 
 

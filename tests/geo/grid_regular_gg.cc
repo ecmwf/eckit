@@ -211,6 +211,60 @@ CASE("scan modes") {
 }
 
 
+CASE("scanning order: same points and bounding box") {
+    const std::vector<std::string> orders{"i+j+", "i-j-", "i-j+", "j-i+", "j+i+", "j-i-", "j+i-"};
+
+    for (const std::string spec : {
+             "grid: F8",
+             "grid: F8, area: [60, -10, 30, 40]",
+             "grid: F16, area: [60, 350, 30, 400]",
+             "grid: F8, rotation: [-40, 20]",
+         }) {
+        const std::unique_ptr<const Grid> canonical(GridFactory::make_from_string("{" + spec + "}"));
+        const auto canonical_points = canonical->to_points();
+
+        for (const auto& order : orders) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + spec + ", order: " + order + "}"));
+
+            EXPECT_EQUAL(grid->size(), canonical->size());
+            EXPECT(grid->boundingBox() == canonical->boundingBox());
+
+            const auto ren    = grid->reorder(canonical->order());
+            const auto points = grid->to_points();
+            for (size_t k = 0; k < points.size(); ++k) {
+                EXPECT(points_equal(points[k], canonical_points[ren[k]]));
+            }
+        }
+    }
+}
+
+
+CASE("spec round trip: same points") {
+    for (const std::string spec : {
+             "{grid: F16}",
+             "{grid: F16, area: [60, -10, 30, 40]}",
+             "{grid: F16, area: [60, 0, 30, 40]}",
+             "{grid: F8, area: [89, 350, 1, 400]}",
+             "{grid: F8, area: [10, -7, -10, 7]}",
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+
+        EXPECT_EQUAL(same->size(), grid->size());
+        EXPECT(same->to_latlons() == grid->to_latlons());
+    }
+}
+
+
+CASE("crop to a single column") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: F8, area: [10, -7, -10, 7]}"));
+
+    const auto [lats, lons] = grid->to_latlons();
+    EXPECT(lons == std::vector<double>(lats.size(), 0.));
+    EXPECT_EQUAL(grid->size(), 2);
+}
+
+
 }  // namespace eckit::geo::test
 
 

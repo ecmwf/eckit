@@ -30,19 +30,19 @@ CASE("AreaFactory::make_from_string") {
          }) {
         std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
 
-        EXPECT(expected_spec == area->spec_str());
+        EXPECT_EQUAL(area->spec_str(), expected_spec);
         EXPECT(expected_area == *area);
     }
 
     std::unique_ptr<const Area> area1(
         geo::AreaFactory::make_from_string(R"({north: 90, west: 0, south: -90, east: 360})"));
 
-    EXPECT(area1->spec_str() == expected_spec);
+    EXPECT_EQUAL(area1->spec_str(), expected_spec);
 
     std::unique_ptr<const Area> area2(
         geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
 
-    EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
+    EXPECT_EQUAL(area2->spec_str(), R"({"area":[10,1,0,10]})");
 }
 
 

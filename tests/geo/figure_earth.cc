@@ -31,12 +31,12 @@ CASE("Earth") {
     F f2(new figure::Earth);
 
     EXPECT(*f1 == *f2);
-    EXPECT(f1->spec_str() == R"({"figure":"earth"})");
+    EXPECT_EQUAL(f1->spec_str(), R"({"figure":"earth"})");
     EXPECT(types::is_approximately_equal(f1->R(), 6371229., 1e-8));
 
     F f4(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));
 
-    EXPECT(f4->spec_str() == R"({"figure":"wgs84"})");
+    EXPECT_EQUAL(f4->spec_str(), R"({"figure":"wgs84"})");
     EXPECT(types::is_approximately_equal(1. / f4->flattening(), 298.257223563, 1e-8));
     EXPECT_THROWS_AS(f4->R(), BadValue);
 }
@@ -65,7 +65,7 @@ CASE("Named spheres") {
             EXPECT(types::is_approximately_equal(f1->eccentricity(), 0.));
 
             // a named sphere round-trips by name
-            EXPECT(f1->spec_str() == R"({"figure":")" + test.name + R"("})");
+            EXPECT_EQUAL(f1->spec_str(), R"({"figure":")" + test.name + R"("})");
         }
     }
 }
@@ -96,7 +96,7 @@ CASE("Named oblate spheroids") {
             EXPECT_THROWS_AS(f1->R(), BadValue);
 
             // a named spheroid round-trips by name
-            EXPECT(f1->spec_str() == R"({"figure":")" + test.name + R"("})");
+            EXPECT_EQUAL(f1->spec_str(), R"({"figure":")" + test.name + R"("})");
         }
     }
 }

@@ -51,7 +51,7 @@ CASE("Sphere") {
     auto e = f1->eccentricity();
     EXPECT(types::is_approximately_equal(e, 0.));
 
-    EXPECT(f1->spec_str() == R"({"figure":{"r":1}})");
+    EXPECT_EQUAL(f1->spec_str(), R"({"figure":{"r":1}})");
 }
 
 
@@ -67,7 +67,7 @@ CASE("Oblate spheroid") {
     auto e = f1->eccentricity();
     EXPECT(types::is_strictly_greater(e, 0.));
 
-    EXPECT(f1->spec_str() == R"({"figure":{"a":1,"b":0.5}})");
+    EXPECT_EQUAL(f1->spec_str(), R"({"figure":{"a":1,"b":0.5}})");
 }
 
 

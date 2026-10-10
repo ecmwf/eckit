@@ -182,7 +182,7 @@ CASE("global, non-shifted") {
     RegularLL b(spec::Custom{{{"grid", std::vector<double>{1, 1}}}});
 
     EXPECT(b.size() == 360 * 181);
-    EXPECT(b.spec_str() == R"({"grid":[1,1]})");
+    EXPECT_EQUAL(b.spec_str(), R"({"grid":[1,1]})");
 
     for (const double d : {
              7.,
@@ -196,11 +196,11 @@ CASE("global, non-shifted") {
 
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom{{{"grid", std::vector<double>{d, d}}}}));
 
-        EXPECT(spec_ref == grid1->spec_str());
+        EXPECT_EQUAL(grid1->spec_str(), spec_ref);
 
         std::unique_ptr<const Grid> grid2(GridFactory::make_from_string(std::to_string(d) + "/" + std::to_string(d)));
 
-        EXPECT(spec_ref == grid2->spec_str());
+        EXPECT_EQUAL(grid2->spec_str(), spec_ref);
     }
 }
 
@@ -221,7 +221,7 @@ CASE("global, shifted") {
             EXPECT(grid.nx() == 360);
             EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 360 * 180);
-            EXPECT(grid.spec_str() == spec_ref);
+            EXPECT_EQUAL(grid.spec_str(), spec_ref);
         }
     }
 
@@ -241,7 +241,7 @@ CASE("global, shifted") {
             EXPECT(grid.nx() == 180);
             EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 180 * 180);
-            EXPECT(grid.spec_str() == spec_ref);
+            EXPECT_EQUAL(grid.spec_str(), spec_ref);
         }
     }
 
@@ -315,7 +315,7 @@ CASE("non-global, shifted") {
         RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
         EXPECT(b.size() == 5 * 10);
-        EXPECT(b.spec_str() == R"({"area":[10,1,1,9],"grid":[2,1],"reference":[1,0]})");
+        EXPECT_EQUAL(b.spec_str(), R"({"area":[10,1,1,9],"grid":[2,1],"reference":[1,0]})");
     }
 
 
@@ -423,7 +423,7 @@ CASE("MARS-like grid + area -> gridSpec-like grid + area + reference") {
 
         RegularLL g1({grid[0], grid[1]}, {area[0], area[1], area[2], area[3]}, {area[1], area[2]});
         EXPECT(expected_shape == g1.shape());
-        EXPECT(expected_spec_str == g1.spec_str());
+        EXPECT_EQUAL(g1.spec_str(), expected_spec_str);
 
         RegularLL g2(spec);
         EXPECT(g1 == g2);
@@ -446,7 +446,7 @@ CASE("scan modes") {
 
         EXPECT(grid.order() == "i+j-");
         EXPECT(grid.size() == 4 * 3);
-        EXPECT(grid.spec_str() == R"({"grid":[90,90]})");
+        EXPECT_EQUAL(grid.spec_str(), R"({"grid":[90,90]})");
 
         const std::vector<PointLonLat> ref{
             {0., 90.},  {90., 90.},  {180., 90.},  {270., 90.},   //
@@ -468,7 +468,7 @@ CASE("scan modes") {
 
         EXPECT(grid.order() == "i+j+");
         EXPECT(grid.size() == 4 * 3);
-        EXPECT(grid.spec_str() == R"({"grid":[90,90],"order":"i+j+"})");
+        EXPECT_EQUAL(grid.spec_str(), R"({"grid":[90,90],"order":"i+j+"})");
 
         const std::vector<PointLonLat> ref{
             {0., -90.}, {90., -90.}, {180., -90.}, {270., -90.},  //

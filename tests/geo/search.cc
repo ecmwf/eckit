@@ -11,6 +11,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
@@ -279,6 +280,28 @@ CASE("Search: grid, on the grid figure") {
 
     for (const auto& n : knn) {
         EXPECT(approx(n.distance, 2. * R * std::sin(7.5 * M_PI / 180.), 1e-6));
+    }
+}
+
+
+CASE("Search: grid points find themselves, on their figure") {
+    std::vector<std::string> grids{R"({"grid": [30, 30]})", R"({"grid": [30, 30], "figure": "wgs84"})"};
+
+    if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+        // (lon, lat) on the PROJ source CRS, and geocentric points
+        grids.emplace_back("swisslv95");
+        grids.emplace_back(
+            R"({"type": "regular_xy", "grid": [1000000, 1000000], "bounding_box_xy": [-2000000, -2000000, 2000000, 2000000],)"
+            R"( "projection": {"type": "proj", "source": "+proj=geocent +ellps=WGS84", "target": "EPSG:3857"}})");
+    }
+
+    for (const auto& g : grids) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(g));
+        const Search search(*grid, spec::Custom{{{"search-tree", "memory"}}});
+
+        for (const auto& p : *grid) {
+            EXPECT(search.search_nn(p).distance < 1e-6);
+        }
     }
 }
 

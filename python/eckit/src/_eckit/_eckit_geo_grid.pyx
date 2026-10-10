@@ -52,6 +52,10 @@ cdef class Grid:
         cdef pair[vector[double], vector[double]] latlons = self._grid.to_latlons()
         return list(latlons.first), list(latlons.second)
 
+    def to_xyz(self):
+        cdef vector[vector[double]] xyz = self._grid.to_xyz()
+        return list(xyz[0]), list(xyz[1]), list(xyz[2])
+
     def to_unstructured_ll(self, name: str = ""):
         cdef Grid grid = Grid.__new__(Grid)  # wrap pointer directly
         grid._grid = self._grid.to_unstructured_ll(name)

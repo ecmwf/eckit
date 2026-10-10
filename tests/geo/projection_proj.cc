@@ -276,8 +276,7 @@ CASE("projection: proj, multi-threaded") {
             try {
                 for (int j = 0; j < 20; ++j) {
                     const projection::PROJ cart("+proj=longlat +R=6371229", "+proj=cart +R=6371229");
-                    auto xyz = static_cast<const Projection&>(cart).fwd(std::vector<double>{0., 90.},
-                                                                        std::vector<double>{0., 0.});
+                    auto xyz = cart.fwd(std::vector<double>{0., 90.}, std::vector<double>{0., 0.});
                     if (!points_equal(PointXYZ{xyz[0][0], xyz[1][0], xyz[2][0]}, PointXYZ{6371229., 0., 0.}, 1e-6)) {
                         ++failed;
                     }

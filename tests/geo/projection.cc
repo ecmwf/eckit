@@ -367,8 +367,8 @@ CASE("projection: vectors, rotation") {
         projection::Reverse<projection::Rotation> reverse(PointLonLat{10., -40.});
         projection::Rotation rotation(PointLonLat{10., -40.});
 
-        const auto a = static_cast<const Projection&>(reverse).fwd(lon, lat);
-        const auto b = static_cast<const Projection&>(rotation).inv(lon, lat);
+        const auto a = reverse.fwd(lon, lat);
+        const auto b = rotation.inv(lon, lat);
 
         EXPECT(approx(a[0], b[0]));
         EXPECT(approx(a[1], b[1]));

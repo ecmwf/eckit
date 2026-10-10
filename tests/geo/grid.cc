@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -9,7 +10,10 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -135,6 +139,71 @@ CASE("Grid from increments") {
         ASSERT(b);
 
         EXPECT(*a == *b);
+    }
+}
+
+
+CASE("Grid::to_xyz") {
+    // points from the projection source, geocentric
+    constexpr auto GEOCENTRIC_GRID =
+        R"({"type": "regular_xy", "grid": [1000000, 1000000], "bounding_box_xy": [-2000000, -2000000, 2000000, 2000000],)"
+        R"( "projection": {"type": "proj", "source": "+proj=geocent +ellps=WGS84", "target": "EPSG:3857"}})";
+
+    // the (lon, lat) grid points, one by one, on the given figure
+    auto expect_on_figure = [](const Grid& grid, double a, double b) {
+        const projection::LonLatToXYZ to_xyz(a, b);
+        const auto [lat, lon] = grid.to_latlons();
+        const auto xyz        = grid.to_xyz();
+
+        EXPECT_EQUAL(xyz.size(), 3);
+        EXPECT_EQUAL(xyz[0].size(), grid.size());
+        for (size_t i = 0; i < grid.size(); ++i) {
+            EXPECT(
+                points_equal(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, to_xyz.fwd(PointLonLat{lon[i], lat[i]}), 1e-6));
+        }
+    };
+
+
+    SECTION("default figure") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(R"({"grid": [30, 30]})"));
+        expect_on_figure(*grid, figure::DatumIFS::a, figure::DatumIFS::b);
+    }
+
+
+    SECTION("grid figure") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(R"({"grid": [30, 30], "figure": "wgs84"})"));
+        expect_on_figure(*grid, figure::DatumWgs84::a, figure::DatumWgs84::b);
+    }
+
+
+    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+        return;
+    }
+
+
+    SECTION("PROJ, on the source figure") {
+        // EPSG:2056 is on Bessel 1841, its (lon, lat) on WGS 84 (EPSG:4326)
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string("swisslv95"));
+        EXPECT(std::abs(grid->figure().a() - figure::DatumWgs84::a) > 1.);
+
+        expect_on_figure(*grid, figure::DatumWgs84::a, figure::DatumWgs84::b);
+    }
+
+
+    SECTION("3D grid points, as they are") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(GEOCENTRIC_GRID));
+        EXPECT(!grid->empty());
+
+        EXPECT_THROWS_AS(grid->to_latlons(), exception::GridError);
+
+        const auto xyz = grid->to_xyz();
+        EXPECT_EQUAL(xyz[0].size(), grid->size());
+
+        size_t i = 0;
+        for (const auto& p : *grid) {
+            EXPECT(points_equal(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, std::get<PointXYZ>(p)));
+            ++i;
+        }
     }
 }
 

@@ -31,6 +31,9 @@ public:
     double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
 
+    using Projection::fwd;
+    using Projection::inv;
+
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
     inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
 

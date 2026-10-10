@@ -10,19 +10,13 @@
 #include <string>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Trace.h"
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/MD5.h"
-
-#if eckit_HAVE_PROJ
-#include "eckit/geo/projection/PROJ.h"
-#endif
 
 
 namespace eckit::geo {
@@ -42,41 +36,6 @@ std::string tree_type(const spec::Spec& spec) {
 
 bool fast_build(const spec::Spec& spec) {
     return spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild());
-}
-
-
-const Projection* make_projection_to_xyz(const Figure& figure) {
-#if eckit_HAVE_PROJ
-    try {
-        const auto ellipsoid = figure.proj_str();
-        return new projection::PROJ("+proj=longlat " + ellipsoid, "+proj=cart " + ellipsoid);
-    }
-    catch (const std::exception& e) {
-        // e.g. PROJ without its database, the fallback is equivalent
-        Log::debug() << "Search: PROJ not used: " << e.what() << std::endl;
-    }
-#endif
-
-    return new projection::LonLatToXYZ(figure.a(), figure.b());
-}
-
-
-const Projection* make_projection_to_xyz(const Grid& grid) {
-#if eckit_HAVE_PROJ
-    if (const auto* proj = dynamic_cast<const projection::PROJ*>(&grid.projection());
-        proj != nullptr && proj->source_point_coordinates() == point_coordinates<PointLonLat>()) {
-        try {
-            // (lon, lat) are on the PROJ source CRS, whose ellipsoid can differ from the grid figure (target CRS)
-            const projection::PROJ geographic(proj->source(), proj->source());
-            return new projection::PROJ(proj->source(), "+proj=cart " + geographic.figure().proj_str());
-        }
-        catch (const std::exception& e) {
-            Log::debug() << "Search: PROJ not used: " << e.what() << std::endl;
-        }
-    }
-#endif
-
-    return make_projection_to_xyz(grid.figure());
 }
 
 
@@ -111,9 +70,9 @@ void check_radius(double radius) {
 
 struct Search::Shared {
     std::unique_ptr<Tree> tree;
-    std::unique_ptr<const Projection> to_xyz;
+    std::unique_ptr<const projection::LonLatToXYZ> to_xyz;
 
-    // queries update the tree statistics, and PROJ objects are not thread-safe
+    // queries update the tree statistics
     util::recursive_mutex mutex;
 };
 
@@ -152,20 +111,19 @@ void Search::build(const std::string& uid, size_t size, const Spec& spec, const 
 Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Shared>()) {
     configure(spec);
 
-    shared_->to_xyz.reset(make_projection_to_xyz(grid));
-    const auto& projection = *shared_->to_xyz;
+    // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
+    const auto& figure = grid.projection().source_figure();
+    shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
 
-    // the tree depends on the grid points and their conversion
-    const auto uid = MD5{grid.uid() + projection.spec_str()}.digest();
+    // the tree depends on the grid points and the figure they're converted on
+    const auto uid = MD5{grid.uid() + shared_->to_xyz->spec_str()}.digest();
 
-    build(uid, grid.size(), spec, [&grid, &projection](std::vector<Tree::Value>& values) {
-        // all at once, as projections convert vectors efficiently (PROJ)
-        const auto [lat, lon] = grid.to_latlons();
-        const auto xyz        = projection.fwd(lon, lat);
-        ASSERT(xyz.size() == 3 && xyz[0].size() == lat.size());
+    build(uid, grid.size(), spec, [&grid](std::vector<Tree::Value>& values) {
+        const auto xyz = grid.to_xyz();
+        ASSERT(xyz.size() == 3);
 
-        values.reserve(lat.size());
-        for (size_t i = 0; i < lat.size(); ++i) {
+        values.reserve(xyz[0].size());
+        for (size_t i = 0; i < xyz[0].size(); ++i) {
             values.emplace_back(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, i);
         }
     });
@@ -175,7 +133,7 @@ Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Sh
 Search::Search(const std::vector<PointXYZ>& points, const Spec& spec) : shared_(std::make_shared<Shared>()) {
     configure(spec);
 
-    shared_->to_xyz.reset(make_projection_to_xyz(*std::unique_ptr<const Figure>(FigureFactory::build(spec))));
+    shared_->to_xyz = std::make_unique<projection::LonLatToXYZ>(spec);
 
     build(points_uid(points), points.size(), spec, [&points](std::vector<Tree::Value>& values) {
         values.reserve(points.size());
@@ -361,9 +319,8 @@ PointXYZ Search::to_xyz(const Point& p) const {
         return std::get<PointXYZ>(p);
     }
 
-    if (std::holds_alternative<PointLonLat>(p)) {
-        util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        return std::get<PointXYZ>(shared_->to_xyz->fwd(p));
+    if (const auto* q = std::get_if<PointLonLat>(&p); q != nullptr) {
+        return shared_->to_xyz->fwd(*q);
     }
 
     throw exception::SearchError("Search: unsupported point type (supported: PointXYZ, PointLonLat)", Here());

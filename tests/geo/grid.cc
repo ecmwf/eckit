@@ -23,12 +23,14 @@ CASE("Grid from spec/uid") {
         const char* canonical;
         size_t size;
     } tests[]{
-        {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},          //
-        {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
-        {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
-        {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
-        {"{grid: h2}", R"({"grid":"H2"})", 48},                    //
-        {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
+        {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},                                  //
+        {"{grid: [10, 10], figure: earth}", R"({"grid":[10,10]})", 684},                   //
+        {"{grid: [10, 10], figure: wgs84}", R"({"figure":"wgs84","grid":[10,10]})", 684},  //
+        {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},                                  //
+        {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},                                //
+        {"{grid: o8}", R"({"grid":"O8"})", 544},                                           //
+        {"{grid: h2}", R"({"grid":"H2"})", 48},                                            //
+        {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},                          //
         {R"({"grid":"F48","rotation":[30,30]})",
          R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})", 48 * 2 * 48 * 4},  //
     };

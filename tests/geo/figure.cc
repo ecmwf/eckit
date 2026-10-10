@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
@@ -67,6 +68,29 @@ CASE("Oblate spheroid") {
     EXPECT(types::is_strictly_greater(e, 0.));
 
     EXPECT(f1->spec_str() == R"({"figure":{"a":1,"b":0.5}})");
+}
+
+
+CASE("Figure: spec, and as part of a projection's") {
+    struct test_t {
+        std::string figure;
+        std::string spec;
+        std::string projection_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{figure: earth}", R"({"figure":"earth"})", "{}"},
+             {"{figure: grib1}", R"({"figure":"grib1"})", "{}"},
+             {"{figure: wgs84}", R"({"figure":"wgs84"})", R"({"figure":"wgs84"})"},
+             {"{R: 1}", R"({"figure":{"r":1}})", R"({"figure":{"r":1}})"},
+         }) {
+        F figure(FigureFactory::make_from_string(test.figure));
+        EXPECT_EQUAL(figure->spec_str(), test.spec);
+
+        spec::Custom projection_spec;
+        figure->fill_projection_spec(projection_spec);
+        EXPECT_EQUAL(projection_spec.str(), test.projection_spec);
+    }
 }
 
 

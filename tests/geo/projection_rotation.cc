@@ -12,9 +12,11 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {
@@ -325,6 +327,74 @@ CASE("make_from_projection (2)") {
 
     EXPECT(points_equal(PointLonLat{0, bbox->north()}, NORTH_POLE));
     EXPECT(bbox->periodic());
+}
+
+
+using v = std::vector<double>;
+
+
+bool approx(const v& a, const v& b) {
+    if (a.size() != b.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < a.size(); ++i) {
+        if (!types::is_approximately_equal(a[i], b[i], 1e-9)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+CASE("rotation: vectors") {
+    const v lon{0., 10., -30., 170., 45.};
+    const v lat{0., 20., 45., -60., 89.};
+
+    // vectors (specialised) match points (one at a time)
+    auto check = [&](const Projection& projection) {
+        const auto fwd_ll = projection.fwd(lon, lat);
+        const auto inv_ll = projection.inv(lon, lat);
+
+        for (size_t i = 0; i < lon.size(); ++i) {
+            const auto q = std::get<PointLonLat>(projection.fwd(PointLonLat{lon[i], lat[i]}));
+            EXPECT(approx(v{fwd_ll[0][i], fwd_ll[1][i]}, v{q.lon(), q.lat()}));
+
+            const auto p = std::get<PointLonLat>(projection.inv(PointLonLat{lon[i], lat[i]}));
+            EXPECT(approx(v{inv_ll[0][i], inv_ll[1][i]}, v{p.lon(), p.lat()}));
+        }
+
+        // and round trip
+        const auto back = projection.inv(fwd_ll[0], fwd_ll[1]);
+        for (size_t i = 0; i < lon.size(); ++i) {
+            EXPECT(points_equal(PointLonLat{back[0][i], back[1][i]}, PointLonLat{lon[i], lat[i]}, 1e-9));
+        }
+    };
+
+    SECTION("matrix") {
+        check(projection::Rotation{PointLonLat{10., -40.}});
+    }
+
+
+    SECTION("angle") {
+        check(projection::Rotation{PointLonLat{0., -90.}, 30.});
+    }
+
+
+    SECTION("none") {
+        check(projection::Rotation{});
+    }
+
+
+    SECTION("reverse") {
+        projection::Reverse<projection::Rotation> reverse(PointLonLat{10., -40.});
+        projection::Rotation rotation(PointLonLat{10., -40.});
+
+        const auto a = reverse.fwd(lon, lat);
+        const auto b = rotation.inv(lon, lat);
+
+        EXPECT(approx(a[0], b[0]));
+        EXPECT(approx(a[1], b[1]));
+    }
 }
 
 

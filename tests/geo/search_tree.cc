@@ -21,6 +21,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Search.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/search/Tree.h"
 #include "eckit/geo/search/TreeMappedFile.h"
 #include "eckit/geo/search/TreeMemory.h"
@@ -239,7 +240,7 @@ CASE("TreeMappedFile: location") {
     TreeMappedCacheFile tree(uid, 1);
 
     const auto expected =
-        PathName{LibEcKitGeo::cacheDir()} / "search" / std::to_string(TreeMappedFile::VERSION) / (uid + ".kdtree");
+        PathName{LibEcKitGeo::cacheDir()} / "search" / std::to_string(cache::version::SEARCH) / (uid + ".kdtree");
     EXPECT_EQUAL(tree.path(), expected);
     EXPECT_NOT(tree.path().exists());
 

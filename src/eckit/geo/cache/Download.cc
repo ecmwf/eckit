@@ -10,7 +10,9 @@
 
 #include "eckit/eckit_config.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/FileLock.h"
 #include "eckit/io/Length.h"
@@ -27,7 +29,6 @@
 namespace eckit::geo::cache {
 
 
-const int Download::VERSION        = 1;
 const std::string Download::PREFIX = "";
 const std::string Download::SUFFIX = ".download";
 
@@ -73,6 +74,11 @@ public:
 
 
 }  // namespace
+
+
+PathName Download::default_root() {
+    return PathName{LibEcKitGeo::cacheDir()} / "download" / std::to_string(version::DOWNLOAD);
+}
 
 
 std::string Download::url_file_basename(const url_type& url, bool ext) {

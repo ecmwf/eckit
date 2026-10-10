@@ -14,6 +14,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/io/FileLock.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/AutoUmask.h"
@@ -24,9 +25,6 @@ namespace eckit::geo::search {
 
 static const TreeRegisterType<TreeMappedCacheFile> BUILDER_CACHE("mapped-cache-file");
 static const TreeRegisterType<TreeMappedTempFile> BUILDER_TEMP("mapped-temporary-file");
-
-
-const int TreeMappedFile::VERSION = 1;
 
 
 namespace {
@@ -92,7 +90,7 @@ PathName TreeMappedFile::tree_path(const std::string& uid, const std::vector<Pat
     // shared cache, accessible to all
     AutoUmask umask(0);
 
-    const auto relative = "search/" + std::to_string(VERSION) + "/" + uid + ".kdtree";
+    const auto relative = "search/" + std::to_string(cache::version::SEARCH) + "/" + uid + ".kdtree";
 
     for (const auto& root : roots) {
         if (!root.exists()) {

@@ -41,7 +41,6 @@ public:
 
     // -- Class methods
 
-    /// Sphere radius
     inline static double radius() { return DATUM::radius; }
 
     /// Great-circle central angle between two points [radian]

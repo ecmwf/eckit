@@ -43,7 +43,6 @@ struct unzip_type : std::unique_ptr<zip_file_t, decltype(&zip_fclose)> {
             }
         }
 
-        // decompression buffer
         std::array<char, 4096> buffer{
             0,
         };
@@ -67,7 +66,6 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
         throw CantOpenFile(zip + "', errorp=" + std::to_string(errorp), Here());
     }
 
-    // Extract all files, or a specific one
     if (what.empty()) {
         const auto num_entries = static_cast<zip_uint64_t>(zip_get_num_entries(z.get(), 0));
         for (zip_uint64_t i = 0; i < num_entries; ++i) {

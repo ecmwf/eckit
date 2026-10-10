@@ -36,10 +36,7 @@ public:
     /// Radius
     static double R(double a, double b);
 
-    /// Elliptic eccentricity
     static double eccentricity(double a, double b);
-
-    /// Flattening
     static double flattening(double a, double b);
 
     /// Surface area [L^2]

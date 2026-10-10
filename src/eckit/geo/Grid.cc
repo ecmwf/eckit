@@ -11,8 +11,12 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Range.h"
+#include "eckit/geo/Search.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/share/Grid.h"
+#include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
@@ -37,7 +41,6 @@ class lock_type {
 };
 
 
-// Generator of a grid spec, by uid
 struct SpecByUID final : GridSpecByUID::concrete_generator_t {
     explicit SpecByUID(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
     spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
@@ -49,7 +52,6 @@ private:
 };
 
 
-// Generator of a grid spec, by name
 struct SpecByName final : GridSpecByName::concrete_generator_t {
     explicit SpecByName(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
     spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
@@ -116,8 +118,13 @@ size_t Grid::size() const {
 }
 
 
-void Grid::cache() const {
-    // By default, there's no cacheable data, so do nothing
+void Grid::cache() const {}
+
+
+const Search& Grid::search() const {
+    // the grid holds its search, so it is not evicted from the cache while the grid exists
+    std::call_once(search_once_, [this]() { search_ = cache::SearchCache::instance().get(*this); });
+    return *search_;
 }
 
 
@@ -160,7 +167,7 @@ void Grid::reset_uid(uid_type id) {
 
 Point Grid::first_point() const {
     ASSERT(!empty());
-    return to_points().front();
+    return *cbegin();
 }
 
 
@@ -180,14 +187,46 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     ll.first.reserve(size());
     ll.second.reserve(size());
 
-    std::for_each(cbegin(), cend(), [&ll](const auto& p) {
-        auto q = std::get<PointLonLat>(p);
-        ll.first.emplace_back(q.lat());
-        ll.second.emplace_back(q.lon());
-    });
+    for (const auto& p : *this) {
+        if (const auto* q = std::get_if<PointLonLat>(&p); q != nullptr) {
+            ll.first.emplace_back(q->lat());
+            ll.second.emplace_back(q->lon());
+        }
+        else if (const auto* r = std::get_if<PointLonLatR>(&p); r != nullptr) {
+            ll.first.emplace_back(util::RADIAN_TO_DEGREE * r->latr());
+            ll.second.emplace_back(util::RADIAN_TO_DEGREE * r->lonr());
+        }
+        else {
+            throw exception::GridError("Grid::to_latlons: grid points are not (lon, lat)", Here());
+        }
+    }
 
     return ll;
 }
+
+
+std::vector<std::vector<double>> Grid::to_xyz() const {
+    if (!empty() && std::holds_alternative<PointXYZ>(first_point())) {
+        std::vector<std::vector<double>> xyz(3);
+        for (auto& v : xyz) {
+            v.reserve(size());
+        }
+
+        for (const auto& p : *this) {
+            const auto& q = std::get<PointXYZ>(p);
+            xyz[0].emplace_back(q.X());
+            xyz[1].emplace_back(q.Y());
+            xyz[2].emplace_back(q.Z());
+        }
+
+        return xyz;
+    }
+
+    const auto& figure    = projection().source_figure();
+    const auto [lat, lon] = to_latlons();
+    return projection::LonLatToXYZ(figure.a(), figure.b()).fwd(lon, lat);
+}
+
 
 Grid* Grid::to_unstructured_ll(const std::string& name) const {
     auto [lat, lon] = to_latlons();
@@ -328,29 +367,8 @@ Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    auto custom_set_if_different = [&custom](const std::string& name, const auto& obj, const std::string& default_str) {
-        spec::Custom spec;
-        obj.fill_spec(spec);
-
-        if (default_str != spec.str()) {
-            if (spec.only(name)) {
-                custom.set(spec);
-            }
-            else {
-                custom.set(name, spec);
-            }
-        }
-    };
-
-    static const auto area_default = Area::area_default().spec().str();
-    static const auto proj_default = Projection::projection_default().spec().str();
-
-    custom_set_if_different("area", area(), area_default);
-    custom_set_if_different("projection", projection(), proj_default);
-
-    if (const auto& fig = figure(); !fig.is_default()) {
-        custom_set_if_different("figure", fig, "");
-    }
+    area().fill_grid_spec(custom);
+    projection().fill_grid_spec(custom);
 }
 
 

@@ -37,6 +37,16 @@ CASE("swisslv95") {
 }
 
 
+CASE("type") {
+    std::unique_ptr<const Grid> from_gridspec(
+        GridFactory::make_from_string("{type: swisslv95, x: [2480000, 2840000, 20000], y: [1080000, 1300000, 20000]}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "regular_xy");
+    EXPECT(*from_spec == *from_gridspec);
+}
+
+
 }  // namespace eckit::geo::test
 
 

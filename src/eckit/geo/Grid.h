@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,6 +30,7 @@ class JSON;
 namespace geo {
 class Area;
 class Range;
+class Search;
 }  // namespace geo
 }  // namespace eckit
 
@@ -136,7 +138,14 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
+    /// Geocentric coordinates (one vector per coordinate), as the grid points or on their figure (see
+    /// Projection::source_figure)
+    [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
+
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
+
+    /// Shared (cache::SearchCache), valid for the grid lifetime
+    const Search& search() const;
 
     virtual size_t truncation() const;
 
@@ -200,6 +209,9 @@ private:
     mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;
+
+    mutable std::shared_ptr<const Search> search_;
+    mutable std::once_flag search_once_;
 
     // -- Methods
 

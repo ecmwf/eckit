@@ -11,6 +11,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -29,19 +30,43 @@ CASE("AreaFactory::make_from_string") {
          }) {
         std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
 
-        EXPECT(expected_spec == area->spec_str());
+        EXPECT_EQUAL(area->spec_str(), expected_spec);
         EXPECT(expected_area == *area);
     }
 
     std::unique_ptr<const Area> area1(
         geo::AreaFactory::make_from_string(R"({north: 90, west: 0, south: -90, east: 360})"));
 
-    EXPECT(area1->spec_str() == expected_spec);
+    EXPECT_EQUAL(area1->spec_str(), expected_spec);
 
     std::unique_ptr<const Area> area2(
         geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
 
-    EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
+    EXPECT_EQUAL(area2->spec_str(), R"({"area":[10,1,0,10]})");
+}
+
+
+CASE("Area: spec, and as part of a grid's") {
+    struct test_t {
+        std::string area;
+        std::string spec;
+        std::string grid_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{}", R"({"area":[90,0,-90,360]})", "{}"},
+             {"{area: [10, 1, 0, 10]}", R"({"area":[10,1,0,10]})", R"({"area":[10,1,0,10]})"},
+             {"{type: bounding_box_xy, bounding_box_xy: [0, 0, 1, 1]}",
+              R"({"bounding_box_xy":[0,0,1,1],"type":"bounding_box_xy"})",
+              R"({"area":{"bounding_box_xy":[0,0,1,1],"type":"bounding_box_xy"}})"},
+         }) {
+        std::unique_ptr<const Area> area(AreaFactory::make_from_string(test.area));
+        EXPECT_EQUAL(area->spec_str(), test.spec);
+
+        spec::Custom grid_spec;
+        area->fill_grid_spec(grid_spec);
+        EXPECT_EQUAL(grid_spec.str(), test.grid_spec);
+    }
 }
 
 

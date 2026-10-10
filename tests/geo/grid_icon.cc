@@ -59,6 +59,12 @@ CASE("type") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
 
     EXPECT(grid->type() == "ICON");
+
+    std::unique_ptr<const Grid> from_gridspec(GridFactory::make_from_string("{grid: icon-ch2}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "ICON");
+    EXPECT(*from_spec == *from_gridspec);
 }
 
 

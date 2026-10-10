@@ -78,16 +78,13 @@ Grid::uid_type FESOM::calculate_uid() const {
 
     if (arrangement_from_string(arrangement()) == Arrangement::FESOM_C) {
         // download internally controls concurrent reads/writes
-        static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "fesom" /
-                                        std::to_string(cache::Download::version()));
+        static const cache::Download download;
 
-        // bootstrap uid
         std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());
 
-        // get coordinates from arrangement: N
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
 
-        // get element indices (0-based) from arrangement: C (this one)
+        // element indices are 0-based
         auto url  = LibEcKitGeo::url(spec->get_string("url_connectivity"));
         auto path = download.to_cached_path(url, spec->get_string("name", ""), ".ek");
         ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");

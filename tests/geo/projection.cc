@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/UnitSphere.h"
@@ -51,8 +52,41 @@ CASE("projection: reverse") {
     EXPECT(points_equal(p, ba.fwd(q)));
     EXPECT(points_equal(q, ba.inv(p)));
 
-    ASSERT(ab.spec().get_string("type") == "ll-to-xyz");
-    EXPECT(ba.spec().get_string("type") == "reverse-ll-to-xyz");
+    EXPECT(!ab.reverse());
+    EXPECT(ba.reverse());
+
+    EXPECT_EQUAL(ab.spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+    EXPECT_EQUAL(ba.spec_str(), R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})");
+}
+
+
+CASE("projection: spec, and as part of a grid's") {
+    // with the grid names loaded (e.g. SMUFF-OPERA-2km, on wgs84), not taken for projection names
+    std::unique_ptr<Grid::Spec> grids(GridFactory::make_spec(spec::Custom{}));
+
+    struct test_t {
+        std::string projection;
+        std::string spec;
+        std::string grid_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{}", "{}", "{}"},
+             {"{figure: earth}", "{}", "{}"},
+             {"{figure: wgs84}", R"({"figure":"wgs84"})", R"({"figure":"wgs84"})"},
+             {"{type: eqc, lat_ts: 60, figure: wgs84}", R"({"figure":"wgs84","lat_ts":60,"type":"eqc"})",
+              R"({"projection":{"figure":"wgs84","lat_ts":60,"type":"eqc"}})"},
+             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
+              R"({"projection":{"south_pole":[10,-40],"type":"rotation"}})"},
+         }) {
+        std::unique_ptr<const Projection> projection(ProjectionFactory::make_from_string(test.projection));
+        EXPECT(!projection->reverse());
+        EXPECT_EQUAL(projection->spec_str(), test.spec);
+
+        spec::Custom grid_spec;
+        projection->fill_grid_spec(grid_spec);
+        EXPECT_EQUAL(grid_spec.str(), test.grid_spec);
+    }
 }
 
 
@@ -333,8 +367,8 @@ CASE("projection: vectors, rotation") {
         projection::Reverse<projection::Rotation> reverse(PointLonLat{10., -40.});
         projection::Rotation rotation(PointLonLat{10., -40.});
 
-        const auto a = static_cast<const Projection&>(reverse).fwd(lon, lat);
-        const auto b = static_cast<const Projection&>(rotation).inv(lon, lat);
+        const auto a = reverse.fwd(lon, lat);
+        const auto b = rotation.inv(lon, lat);
 
         EXPECT(approx(a[0], b[0]));
         EXPECT(approx(a[1], b[1]));

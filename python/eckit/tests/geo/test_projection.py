@@ -150,6 +150,23 @@ def test_projection_equality():
     assert Projection(type="eqc", lat_ts=60.0) != Projection(type="eqc")
 
 
+@pytest.mark.parametrize(
+    "spec, expected",
+    [
+        (dict(type="eqc"), dict()),
+        (dict(type="eqc", figure="earth"), dict()),
+        (dict(type="eqc", figure="wgs84"), dict(figure="wgs84")),
+        (dict(type="eqc", lat_ts=60.0, figure="wgs84"), dict(type="eqc", lat_ts=60, figure="wgs84")),
+        (dict(type="ll-to-xyz", R=1.0), dict(type="ll-to-xyz", figure=dict(r=1))),
+    ],
+)
+def test_projection_spec(spec, expected):
+    # the figure is part of the projection spec, unless the default
+    projection = Projection(spec)
+    assert projection.spec == expected
+    assert not projection.reverse
+
+
 @pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_coordinates_forms():
     # the same point, given in all the supported forms

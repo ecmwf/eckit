@@ -10,7 +10,9 @@
 
 #include "eckit/eckit_config.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/FileLock.h"
 #include "eckit/io/Length.h"
@@ -27,7 +29,6 @@
 namespace eckit::geo::cache {
 
 
-const int Download::VERSION        = 1;
 const std::string Download::PREFIX = "";
 const std::string Download::SUFFIX = ".download";
 
@@ -75,6 +76,11 @@ public:
 }  // namespace
 
 
+PathName Download::default_root() {
+    return PathName{LibEcKitGeo::cacheDir()} / "download" / std::to_string(version::DOWNLOAD);
+}
+
+
 std::string Download::url_file_basename(const url_type& url, bool ext) {
     std::string n = url;
 
@@ -102,7 +108,6 @@ std::string Download::url_file_extension(const url_type& url) {
 
 
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
-    // control concurrent download
     lock_type lock;
 
     Length length = 0;
@@ -157,12 +162,10 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 
 
 PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {
-    // control concurrent access
     lock_type lock;
 
     static MemoryCacheT<MD5::digest_t, std::string> CACHE;
 
-    // set cache key, return path early if possible
     const auto key = MD5{url}.digest();
     const auto path =
         CACHE.contains(key) ? PathName{CACHE[key]} : cache_root() / prefix + (prefix.empty() ? "" : "-") + key + suffix;
@@ -171,7 +174,6 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
         return CACHE[key] = path;
     }
 
-    // download, update cache, return path
     Log::info() << "Downloading '" << url << "' to '" << path << "'..." << std::endl;
     auto info = Download::to_path(url, path, html_);
     Log::info() << "Download of " << info.bytes << " took " << info.time_s << "s." << std::endl;

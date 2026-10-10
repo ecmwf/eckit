@@ -121,7 +121,7 @@ const std::string& RegularLL::type() const {
 
 Point RegularLL::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};  // First longitude and first latitude
+    return PointLonLat{x().values().front(), y().values().front()};
 }
 
 

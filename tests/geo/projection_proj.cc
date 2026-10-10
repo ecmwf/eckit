@@ -3,10 +3,12 @@
 
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -261,6 +263,36 @@ CASE("projection: proj vectors") {
         const auto lonlat = ll->fwd(v{190., -10.}, v{0., 0.});
         EXPECT(approx(lonlat[0], v{-170., -10.}, eps_ll));
     }
+}
+
+
+CASE("projection: proj, multi-threaded") {
+    // PROJ objects share a context, which isn't thread-safe
+    std::atomic<int> failed{0};
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 8; ++i) {
+        threads.emplace_back([&failed]() {
+            try {
+                for (int j = 0; j < 20; ++j) {
+                    const projection::PROJ cart("+proj=longlat +R=6371229", "+proj=cart +R=6371229");
+                    auto xyz = cart.fwd(std::vector<double>{0., 90.}, std::vector<double>{0., 0.});
+                    if (!points_equal(PointXYZ{xyz[0][0], xyz[1][0], xyz[2][0]}, PointXYZ{6371229., 0., 0.}, 1e-6)) {
+                        ++failed;
+                    }
+                }
+            }
+            catch (...) {
+                ++failed;
+            }
+        });
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    EXPECT_EQUAL(failed.load(), 0);
 }
 
 

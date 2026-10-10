@@ -6,13 +6,22 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Search.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/InMemoryCache.h"
+#include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/cache/MemoryUsage.h"
+#include "eckit/geo/cache/SearchCache.h"
+#include "eckit/geo/cache/Version.h"
+#include "eckit/geo/search/TreeMappedFile.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
@@ -212,6 +221,141 @@ CASE("grid") {
     EXPECT(Cache::total_footprint() <= footprint_1);
 }
 #endif
+
+
+CASE("cache layout") {
+    const PathName root{LibEcKitGeo::cacheDir()};
+
+    // downloads (e.g. ORCA, ICON and FESOM coordinates) go to download/VERSION/<md5(url)>
+    const cache::Download download;
+    EXPECT_EQUAL(download.cache_root(), root / "download" / std::to_string(cache::version::DOWNLOAD));
+
+    // coordinates written locally (e.g. unstructured grids) go to latlon/VERSION/<uid>.ek
+    const auto path = cache::LatitudeLongitude({1., 2.}, {3., 4.}).to_cached_path();
+    EXPECT(path.exists());
+    EXPECT_EQUAL(path.dirName(), root / "latlon" / std::to_string(cache::version::LATLON));
+}
+
+
+CASE("MemoryUsage") {
+    using cache::MemoryUsage;
+
+    // as capacities are given: "memory[,shared]" (bytes), shared defaults to memory
+    MemoryUsage a{"100,200"};
+    MemoryUsage b{"300"};
+
+    EXPECT_EQUAL(a.memory(), 100);
+    EXPECT_EQUAL(a.shared(), 200);
+    EXPECT_EQUAL(b.shared(), 300);
+    EXPECT_EQUAL(MemoryUsage{a.str()}, a);
+
+    EXPECT_EQUAL(a + b, MemoryUsage(400, 500));
+    EXPECT_EQUAL(b - a, MemoryUsage(200, 100));
+    EXPECT_EQUAL(a - b, MemoryUsage());  // saturates at zero
+    EXPECT_NOT(MemoryUsage());
+
+    // exceeding a capacity in either memory or shared memory
+    EXPECT(MemoryUsage(301, 0).exceeds(b));
+    EXPECT(MemoryUsage(0, 301).exceeds(b));
+    EXPECT_NOT(b.exceeds(b));
+
+    EXPECT_THROWS_AS(MemoryUsage{"1,2,3"}, BadValue);
+}
+
+
+CASE("InMemoryCache: usage, capacity and evictions") {
+    using cache::InMemoryCache;
+    using cache::MemoryUsage;
+    using Cache = cache::MemoryCache;
+
+    struct Values {
+        explicit Values(size_t n) : values(n) {}
+        MemoryUsage footprint() const { return {values.size() * sizeof(double), 0}; }
+        std::vector<double> values;
+    };
+
+    // 50 values use 400 bytes, the capacity is 1000 bytes (in process memory)
+    InMemoryCache<Values> cached(MemoryUsage{1000, 0});
+
+    auto make = [](size_t n) { return [n]() { return std::make_shared<const Values>(n); }; };
+
+    const auto total = Cache::total_footprint();
+
+    cached.get("a", make(50));  // miss
+    cached.get("b", make(50));  // miss
+    cached.get("a", make(50));  // hit, "a" is now more recently used than "b"
+
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
+    EXPECT_EQUAL(cached.statistics().hits, 1);
+    EXPECT_EQUAL(cached.statistics().misses, 2);
+
+    // reported in the memory caches total
+    EXPECT_EQUAL(Cache::total_footprint(), total + 800);
+
+    // over capacity: the least recently used is evicted
+    cached.get("c", make(50));
+    EXPECT_EQUAL(cached.size(), 2);
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
+    EXPECT_EQUAL(cached.statistics().evictions, 1);
+
+    // values in use are not evicted, even over capacity
+    auto d = cached.get("d", make(200));
+    EXPECT_EQUAL(cached.size(), 1);
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(1600, 0));
+
+    d.reset();
+    cached.capacity(MemoryUsage{1000, 0});
+    EXPECT_EQUAL(cached.size(), 0);
+    EXPECT_EQUAL(Cache::total_footprint(), total);
+}
+
+
+CASE("SearchCache: a grid search, accounted for") {
+    auto& cache = cache::SearchCache::instance();
+    cache.clear();
+
+    const auto capacity = cache.capacity();
+
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
+
+    // a grid holds its search (default configuration), loading it increases the cache usage
+    const auto& search = grid->search();
+    EXPECT(search.footprint());
+    EXPECT_EQUAL(cache.usage(), search.footprint());
+    EXPECT(&search == &grid->search());
+
+    // default tree, as mir: a cache file, using shared memory (page cache)
+    if (LibEcKitGeo::caching()) {
+        EXPECT(dynamic_cast<const search::TreeMappedCacheFile*>(&search.tree()) != nullptr);
+        EXPECT(search.footprint().shared() > 0);
+    }
+
+    // searches are cached by grid and k-d tree configuration
+    auto memory = cache.get(*grid, spec::Custom{{{"search-tree", "memory"}}});
+    EXPECT(memory.get() != &search);
+    EXPECT(memory->footprint().memory() > 0);
+    EXPECT_EQUAL(cache.usage(), search.footprint() + memory->footprint());
+    EXPECT(cache.get(*grid, spec::Custom{{{"search-tree", "memory"}}}) == memory);
+
+    // other behaviours share the k-d tree, so they are not accounted for again
+    auto knn = cache.get(*grid, spec::Custom{{{"search-tree", "memory"}, {"search", "knn"}, {"search-k", 4}}});
+    EXPECT(&knn->tree() == &memory->tree());
+    EXPECT_EQUAL(knn->search(PointLonLat{14., 1.}).size(), 4);
+    EXPECT_EQUAL(cache.size(), 2);
+
+    // searches in use are not evicted (the grid's own, and the other shared by knn)
+    memory.reset();
+    cache.capacity(cache::MemoryUsage{0, 0});
+    EXPECT_EQUAL(cache.size(), 2);
+
+    knn.reset();
+    cache.capacity(cache::MemoryUsage{0, 0});
+    EXPECT_EQUAL(cache.size(), 1);
+    EXPECT_EQUAL(cache.usage(), search.footprint());
+
+    cache.capacity(capacity);
+    cache.clear();
+}
 
 
 }  // namespace eckit::geo::test

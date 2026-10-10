@@ -26,10 +26,7 @@
 namespace eckit::geo::area::library {
 
 
-// PIMPL body: holds the shapelib-typed state so <shapefil.h> stays out of the
-// installed public header. Kept in the .cc so that the unique_ptr in the
-// Shapefile class only sees a complete Implementation type where its
-// destructor is instantiated (i.e. in ~Shapefile() below).
+// keeps <shapefil.h> out of the installed header
 struct Shapefile::Implementation {
     SHPInfo* shp = nullptr;
 };
@@ -119,7 +116,6 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
             throw CantOpenFile(shpPath_ + " (as .dbf)", Here());
         }
 
-        // find named field index
         std::map<std::string, int> to_index;
 
         char fieldName[12];
@@ -154,8 +150,7 @@ Shapefile::~Shapefile() {
 
 
 Shapefile* Shapefile::make_from_url(const std::string& url) {
-    static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "shapefile" /
-                                    std::to_string(cache::Download::version()));
+    static const cache::Download download;
 
     return new Shapefile(download.to_cached_path(url, cache::Download::url_file_basename(url, false),
                                                  cache::Download::url_file_extension(url)));
@@ -165,9 +160,9 @@ Shapefile* Shapefile::make_from_url(const std::string& url) {
 void Shapefile::fill_spec(spec::Custom& custom) const {
     custom.set("type", "shapefile");
     custom.set("shp", shpPath_);
-    custom.set("shp", dbfPath_);
+    custom.set("dbf", dbfPath_);
     if (!name_.empty()) {
-        custom.set("field", name_);
+        custom.set("name_field", name_);
     }
 }
 

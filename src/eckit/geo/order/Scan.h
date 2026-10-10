@@ -63,6 +63,11 @@ private:
     // -- Members
 
     order_type order_;
+
+    // -- Methods
+
+    /// Renumber in the default order (i+j-) of each point, in this order
+    renumber_type canonical(size_t ni, size_t nj) const;
 };
 
 

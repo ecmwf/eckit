@@ -4,73 +4,97 @@
 
 #pragma once
 
-#include <unistd.h>
-#include <fstream>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/search/Tree.h"
 #include "eckit/geo/search/TreeMapped.h"
-#include "eckit/log/Log.h"
-#include "eckit/os/AutoUmask.h"
-#include "eckit/os/Semaphore.h"
-#include "eckit/runtime/Main.h"
+#include "eckit/geo/util/mutex.h"
+
+
+namespace eckit {
+class FileLock;
+}
 
 
 namespace eckit::geo::search {
 
 
-template <class T>
+/**
+ * @brief k-d tree in a memory-mapped file, under the first writable root
+ * @details Building is exclusive across threads and processes, into a temporary file renamed (atomically) on commit, so
+ * a tree file is either complete or absent. An invalid tree file (e.g. of another layout) is rebuilt.
+ */
 class TreeMappedFile : public TreeMapped {
-protected:
-
-    PathName real_;
-    Semaphore lock_;  // Must be after real
-
-    bool ready() const override { return path() == real_; }
-
-    void commit() override { PathName::rename(path(), real_); }
-
-    void print(std::ostream& out) const override {
-        out << "TreeMappedFile["
-               "path="
-            << path() << ",ready?" << ready() << "]";
-    }
-
-    void lock() override {
-        AutoUmask umask(0);
-
-        auto path = lockFile(real_);
-
-        lock_.lock();
-
-        std::ofstream os(path.asString().c_str());
-        os << Main::hostname() << " " << ::getpid() << std::endl;
-    }
-
-    void unlock() override {
-        PathName path = lockFile(real_);
-
-        std::ofstream os(path.asString().c_str());
-        os << std::endl;
-        lock_.unlock();
-    }
-
-    static PathName treePath(const Grid& r, bool makeUnique);
-
-    static PathName lockFile(const std::string& path);
-
 public:
 
-    explicit TreeMappedFile(const Grid& r) :
-        TreeMapped(r, treePath(r, true)), real_(treePath(r, false)), lock_(lockFile(real_)) {
+    // -- Constructors
 
-        lockFile(real_).touch();
+    TreeMappedFile(const std::string& uid, size_t size, const std::vector<PathName>& roots);
 
-        if (ready()) {
-            Log::debug() << "Loading " << *this << std::endl;
-        }
-    }
+    // -- Destructor
+
+    ~TreeMappedFile() override;
+
+    // -- Methods
+
+    const PathName& path() const { return path_; }
+
+    // -- Overridden methods
+
+    void build(std::vector<Value>&) override;
+    void insert(const Value&) override;
+
+    bool ready() override;
+    void commit() override;
+
+    void lock() override;
+    void unlock() override;
+
+    /// File-backed storage is shared (page cache)
+    MemoryUsage footprint() const override { return {0, TreeMapped::footprint().memory()}; }
+
+    // -- Class methods
+
+    static PathName tree_path(const std::string& uid, const std::vector<PathName>& roots);
+
+private:
+
+    // -- Members
+
+    const PathName path_;
+    const PathName lock_path_;
+    std::string tmp_;
+
+    util::recursive_mutex& mutex_;
+    std::unique_ptr<FileLock> file_lock_;
+
+    // -- Methods
+
+    void create();
+
+    // -- Overridden methods
+
+    void print(std::ostream&) const override;
+};
+
+
+class TreeMappedCacheFile final : public TreeMappedFile {
+public:
+
+    TreeMappedCacheFile(const std::string& uid, size_t size);
+
+    static std::vector<PathName> roots();
+};
+
+
+class TreeMappedTempFile final : public TreeMappedFile {
+public:
+
+    TreeMappedTempFile(const std::string& uid, size_t size);
+
+    static std::vector<PathName> roots();
 };
 
 

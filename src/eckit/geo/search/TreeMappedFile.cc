@@ -5,113 +5,215 @@
 #include "eckit/geo/search/TreeMappedFile.h"
 
 #include <unistd.h>
-#include <ostream>
-#include <vector>
 
-#include "eckit/filesystem/PathExpander.h"
+#include <algorithm>
+#include <cctype>
+#include <map>
+#include <ostream>
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/Version.h"
+#include "eckit/io/FileLock.h"
 #include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/os/AutoUmask.h"
 
 
 namespace eckit::geo::search {
 
 
-template <class T>
-PathName TreeMappedFile<T>::treePath(const Grid& r, bool makeUnique) {
+static const TreeRegisterType<TreeMappedCacheFile> BUILDER_CACHE("mapped-cache-file");
+static const TreeRegisterType<TreeMappedTempFile> BUILDER_TEMP("mapped-temporary-file");
 
-    // LocalPathName::unique and LocalPathName::mkdir call mkdir, make sure to use umask = 0
+
+namespace {
+
+
+// one mutex per file, never released (the number of trees is bounded)
+util::recursive_mutex& file_mutex(const std::string& path) {
+    static util::recursive_mutex mutex;
+    static std::map<std::string, std::unique_ptr<util::recursive_mutex>> mutexes;
+
+    util::lock_guard<util::recursive_mutex> lock(mutex);
+
+    auto& m = mutexes[path];
+    if (!m) {
+        m = std::make_unique<util::recursive_mutex>();
+    }
+    return *m;
+}
+
+
+// uid is part of a path, restrict to safe characters
+bool safe_uid(const std::string& uid) {
+    return !uid.empty() &&
+           std::all_of(uid.begin(), uid.end(), [](unsigned char c) { return std::isalnum(c) || c == '-' || c == '_'; });
+}
+
+
+}  // namespace
+
+
+TreeMappedFile::TreeMappedFile(const std::string& uid, size_t size, const std::vector<PathName>& roots) :
+    TreeMapped(uid, size),
+    path_(tree_path(uid, roots)),
+    lock_path_(path_ + ".lock"),
+    mutex_(file_mutex(lock_path_.asString())) {
+    Log::debug() << "TreeMappedFile: '" << path_ << "'" << std::endl;
+}
+
+
+TreeMappedFile::~TreeMappedFile() {
+    try {
+        if (!tmp_.empty()) {
+            close();
+            PathName(tmp_).unlink(false);
+        }
+    }
+    catch (const std::exception& e) {
+        Log::warning() << "TreeMappedFile: failed to remove '" << tmp_ << "': " << e.what() << std::endl;
+    }
+
+    if (file_lock_) {
+        file_lock_.reset();  // closing the lock file releases the process lock
+        mutex_.unlock();
+    }
+}
+
+
+PathName TreeMappedFile::tree_path(const std::string& uid, const std::vector<PathName>& roots) {
+    if (!safe_uid(uid)) {
+        throw exception::SearchError("TreeMappedFile: invalid uid '" + uid + "'", Here());
+    }
+
+    // shared cache, accessible to all
     AutoUmask umask(0);
 
-    static const long VERSION = 2;
+    const auto relative = "search/" + std::to_string(cache::version::SEARCH) + "/" + uid + ".kdtree";
 
-    const std::string relative = "eckit/geo/search/" + std::to_string(VERSION) + "/" + r.uid() + ".kdtree";
-
-    auto writable = [](const PathName& path) -> bool { return (::access(path.asString().c_str(), W_OK) == 0); };
-
-    for (PathName path : T::roots()) {
-        if (not path.exists()) {
-            if (not writable(path.dirName())) {
-                continue;
-            }
-
+    for (const auto& root : roots) {
+        if (!root.exists()) {
             try {
-                path.mkdir(0777);
+                root.mkdir(0777);
             }
-            catch (FailedSystemCall&) {
-                // ignore
+            catch (const FailedSystemCall&) {
+                continue;
             }
         }
 
-        if (not writable(path)) {
-            Log::debug() << "TreeMappedFile: path '" << path << "' isn't writable" << std::endl;
+        if (::access(root.localPath(), W_OK) != 0) {
+            Log::debug() << "TreeMappedFile: root '" << root << "' isn't writable" << std::endl;
             continue;
         }
 
-        path /= relative;
-        if (makeUnique && !path.exists()) {
-            path = PathName::unique(path);
-        }
-
-        Log::debug() << "TreeMappedFile: path '" << path << "'" << (makeUnique ? " (unique)" : "") << std::endl;
-        return path;
+        return root / relative;
     }
 
-    throw exception::SeriousBug("TreeMappedFile: no paths are viable for caching");
+    throw exception::SearchError("TreeMappedFile: no writable root for '" + relative + "'", Here());
 }
 
 
-template <class T>
-PathName TreeMappedFile<T>::lockFile(const std::string& path) {
+void TreeMappedFile::build(std::vector<Value>& values) {
+    create();
+    TreeMapped::build(values);
+}
+
+
+void TreeMappedFile::insert(const Value& value) {
+    if (!is_open()) {
+        create();
+    }
+    TreeMapped::insert(value);
+}
+
+
+bool TreeMappedFile::ready() {
+    if (is_open()) {
+        return tmp_.empty();  // loaded, or being built
+    }
+
+    if (!path_.exists()) {
+        return false;
+    }
+
+    if (!valid(path_)) {
+        Log::warning() << "TreeMappedFile: invalid '" << path_ << "', rebuilding" << std::endl;
+        return false;
+    }
+
+    open(path_, false);
+    return true;
+}
+
+
+void TreeMappedFile::commit() {
+    ASSERT(is_open() && !tmp_.empty());
+
+    // unmap before publishing (atomically), then map the published file as any other reader would
+    close();
+    PathName::rename(tmp_, path_);
+    tmp_.clear();
+
+    open(path_, false);
+}
+
+
+void TreeMappedFile::lock() {
+    mutex_.lock();
+
+    try {
+        // all access to the lock file within the process is serialised by mutex_, because closing any of its
+        // descriptors would release the process (fcntl) lock
+        file_lock_ = std::make_unique<FileLock>(lock_path_);
+        file_lock_->lock();
+    }
+    catch (...) {
+        file_lock_.reset();
+        mutex_.unlock();
+        throw;
+    }
+}
+
+
+void TreeMappedFile::unlock() {
+    ASSERT(file_lock_);
+
+    file_lock_->unlock();
+    file_lock_.reset();
+    mutex_.unlock();
+}
+
+
+void TreeMappedFile::create() {
+    ASSERT(!is_open());
+
     AutoUmask umask(0);
+    tmp_ = PathName::unique(path_).asString();  // also creates the directory
 
-    PathName lock(path + ".lock");
-    lock.touch();
-    return lock;
+    open(tmp_, true);
 }
 
 
-class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
-    using P = TreeMappedFile<TreeMappedCacheFile>;
-
-public:
-
-    using P::P;
-    static std::vector<std::string> roots() {
-        static auto roots = []() {
-            std::vector<std::string> r;
-            Tokenizer{":"}(LibEcKitGeo::cacheDir(), r);
-
-            for (auto& root : r) {
-                root = PathExpander::expand(root);
-            }
-
-            return r;
-        }();
-        return roots;
-    }
-};
+void TreeMappedFile::print(std::ostream& out) const {
+    out << "TreeMappedFile[path=" << path_ << ",size=" << size() << "]";
+}
 
 
-static const TreeBuilder<TreeMappedCacheFile> builder1("mapped-cache-file");
+TreeMappedCacheFile::TreeMappedCacheFile(const std::string& uid, size_t size) : TreeMappedFile(uid, size, roots()) {}
 
 
-class TreeMappedTempFile : public TreeMappedFile<TreeMappedTempFile> {
-    using P = TreeMappedFile<TreeMappedTempFile>;
-
-public:
-
-    using P::P;
-    static std::vector<std::string> roots() {
-        static std::vector<std::string> _root{"/tmp"};
-        return _root;
-    }
-};
+std::vector<PathName> TreeMappedCacheFile::roots() {
+    return {PathName{LibEcKitGeo::cacheDir()}};
+}
 
 
-static const TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
+TreeMappedTempFile::TreeMappedTempFile(const std::string& uid, size_t size) : TreeMappedFile(uid, size, roots()) {}
+
+
+std::vector<PathName> TreeMappedTempFile::roots() {
+    return {PathName{"/tmp/eckit/geo"}};
+}
 
 
 }  // namespace eckit::geo::search

@@ -5,10 +5,4 @@
 #include "eckit/geo/area/Library.h"
 
 
-namespace eckit::geo::area {
-
-
-// TODO
-
-
-}
+namespace eckit::geo::area {}

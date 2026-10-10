@@ -19,6 +19,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -33,6 +34,13 @@ namespace {
 
 PJ_AREA* AREA       = nullptr;
 PJ_CONTEXT* CONTEXT = nullptr;
+
+
+// PROJ objects share the context, which isn't thread-safe
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
 
 
 PJ_CONTEXT* ctx() {
@@ -55,8 +63,16 @@ void proj_reset() {
 }
 
 
-struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
-    explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {
+struct pj_destroy {
+    void operator()(PJ* ptr) const {
+        lock_type lock;
+        proj_destroy(ptr);
+    }
+};
+
+
+struct pj_t : std::unique_ptr<PJ, pj_destroy> {
+    explicit pj_t(element_type* ptr) : unique_ptr(ptr) {
         if (!operator bool()) {
             // common errors are "proj.db not found" or "invalid CRS string"
             const auto err = proj_context_errno(ctx());
@@ -142,6 +158,8 @@ struct XYZ final : Convert {
 
 
 Figure* make_figure(const std::string& proj_str) {
+    lock_type lock;
+
     pj_t identity(proj_create_crs_to_crs(ctx(), proj_str.c_str(), proj_str.c_str(), area()));
 
     pj_t crs(proj_get_target_crs(ctx(), identity.get()));
@@ -169,10 +187,12 @@ struct PROJ::Implementation {
     }
 
     inline Point fwd(const Point& p) const {
+        lock_type lock;
         return target_->to_point(proj_trans(proj_.get(), PJ_FWD, source_->to_coord(p)));
     }
 
     inline Point inv(const Point& p) const {
+        lock_type lock;
         return source_->to_point(proj_trans(proj_.get(), PJ_INV, target_->to_coord(p)));
     }
 
@@ -193,8 +213,11 @@ struct PROJ::Implementation {
         }
 
         constexpr auto stride = sizeof(double);
-        proj_trans_generic(proj_.get(), direction, c[0].data(), stride, n, c[1].data(), stride, n,
-                           m == 3 ? c[2].data() : nullptr, stride, m == 3 ? n : 0, nullptr, 0, 0);
+        {
+            lock_type lock;
+            proj_trans_generic(proj_.get(), direction, c[0].data(), stride, n, c[1].data(), stride, n,
+                               m == 3 ? c[2].data() : nullptr, stride, m == 3 ? n : 0, nullptr, 0, 0);
+        }
 
         c.resize(to.dims());
 
@@ -223,9 +246,11 @@ private:
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    Projection(make_figure(target)), source_(source), target_(target) {
+    Projection(make_figure(target)), source_(source), target_(target), source_figure_(make_figure(source)) {
     ASSERT(!source_.empty());
     ASSERT(!target_.empty());
+
+    lock_type lock;
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
         pj_t identity(proj_create_crs_to_crs(ctx(), string.c_str(), string.c_str(), area()));
@@ -243,7 +268,6 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
                                                           : NOTIMP;
     };
 
-    // projection, normalised
     pj_t p(proj_create_crs_to_crs(ctx(), source_.c_str(), target_.c_str(), area()));
     p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
@@ -342,6 +366,8 @@ const std::string& PROJ::proj_default() {
 
 
 bool PROJ::projdb_is_available() {
+    lock_type lock;
+
     struct MuteLog {
         MuteLog() : previous_(proj_log_level(ctx(), PJ_LOG_NONE)) {}
         ~MuteLog() { proj_log_level(ctx(), previous_); }
@@ -350,13 +376,15 @@ bool PROJ::projdb_is_available() {
 
     // Note: not using pj_t, which throws on failure (failure is a possible outcome)
     std::unique_ptr<pj_t::element_type, pj_t::deleter_type> crs(
-        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, 0, nullptr), &proj_destroy);
+        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, 0, nullptr));
 
     return static_cast<bool>(crs);
 }
 
 
 void PROJ::projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths) {
+    lock_type lock;
+
     // Recreate context so the new paths takes effect (an already-open database is reset)
     proj_reset();
 
@@ -377,6 +405,8 @@ void PROJ::projdb_set_search_paths(const std::string& db_path, const std::vector
 
 
 void PROJ::projdb_reset() {
+    lock_type lock;
+
     // a fresh context re-resolves the database from the environment / compiled-in defaults.
     proj_reset();
 }

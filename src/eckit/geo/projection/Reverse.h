@@ -31,8 +31,13 @@ public:
 
     // -- Overridden methods
 
+    using Projection::fwd;
+    using Projection::inv;
+
     inline Point fwd(const Point& p) const override { return P::inv(p); }
     inline Point inv(const Point& p) const override { return P::fwd(p); }
+
+    bool reverse() const final { return true; }
 
 protected:
 
@@ -56,11 +61,7 @@ private:
 
     void fill_spec(spec::Custom& custom) const override {
         P::fill_spec(custom);
-
-        // spec is only set of non-default projection, or default projection with non-default parameters
-        if (!custom.empty()) {
-            custom.set("type", "reverse-" + custom.get_string("type"));
-        }
+        custom.set("reverse", true);
     }
 };
 

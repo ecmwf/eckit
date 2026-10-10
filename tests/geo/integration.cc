@@ -28,10 +28,10 @@ CASE("gridSpec") {
 
     SECTION("regular lat/lon") {
         std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("grid: 2/1.0"));
-        EXPECT(grid1->spec_str() == R"({"grid":[2,1]})");
+        EXPECT_EQUAL(grid1->spec_str(), R"({"grid":[2,1]})");
 
         std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("grid: .250/001e-1"));
-        EXPECT(grid2->spec_str() == R"({"grid":[0.25,0.1]})");
+        EXPECT_EQUAL(grid2->spec_str(), R"({"grid":[0.25,0.1]})");
 
         std::vector<test_type> tests{
             {R"({"grid":[0.05,0.05]})", {3601, 7200}},
@@ -64,7 +64,7 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            EXPECT(grid->spec_str() == t.spec);
+            EXPECT_EQUAL(grid->spec_str(), t.spec);
             EXPECT(grid->shape() == t.shape);
         }
     }
@@ -85,7 +85,7 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            EXPECT(grid->spec_str() == t.spec);
+            EXPECT_EQUAL(grid->spec_str(), t.spec);
             EXPECT(grid->shape() == t.shape);
         }
     }
@@ -108,7 +108,7 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            EXPECT(grid->spec_str() == t.spec);
+            EXPECT_EQUAL(grid->spec_str(), t.spec);
             EXPECT(grid->shape() == t.shape);
         }
     }
@@ -120,7 +120,7 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            EXPECT(grid->spec_str() == t.spec);
+            EXPECT_EQUAL(grid->spec_str(), t.spec);
             EXPECT(grid->shape() == t.shape);
         }
     }
@@ -146,7 +146,7 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            EXPECT(grid->spec_str() == t.spec);
+            EXPECT_EQUAL(grid->spec_str(), t.spec);
             EXPECT(grid->shape() == t.shape);
         }
     }

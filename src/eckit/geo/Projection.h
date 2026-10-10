@@ -19,11 +19,6 @@
 
 
 namespace eckit::geo {
-class Figure;
-}
-
-
-namespace eckit::geo {
 
 
 class Projection {
@@ -72,12 +67,19 @@ public:
     /// Map a grid's (x, y) coordinates to geographic coordinates
     virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
 
-    void falseXY(const PointXY& falseXY) { false_ = falseXY; }
     const PointXY& falseXY() const { return false_; }
 
     const Figure& figure() const { return *figure_; }
 
+    /// Figure of the source coordinates, which PROJ can have different from the target's
+    virtual const Figure& source_figure() const { return figure(); }
+
+    /// Spec on its own, with the figure unless the default
     virtual void fill_spec(spec::Custom&) const;
+
+    /// Spec as part of a grid's: "projection": {...}, but for the default projection only its figure (as the grid's)
+    void fill_grid_spec(spec::Custom&) const;
+
     virtual const std::string& type() const = 0;
 
     [[nodiscard]] const Spec& spec() const;
@@ -85,6 +87,9 @@ public:
     std::string proj_str() const;
 
     bool is_default() const;
+
+    /// If fwd/inv are reversed (see projection::Reverse)
+    virtual bool reverse() const { return false; }
 
     // -- Class methods
 
@@ -129,14 +134,14 @@ private:
 };
 
 
-using ProjectionSpecByName = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+// a type of its own, so names aren't shared with other registries (e.g. grids')
+struct ProjectionSpecGenerator : spec::SpecGeneratorT1<const std::string&> {};
+
+using ProjectionSpecByName = spec::GeneratorT<ProjectionSpecGenerator>;
 
 
 template <typename T>
 using ProjectionRegisterType = ConcreteBuilderT1<Projection, T>;
-
-template <typename T>
-using ProjectionRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 
 struct ProjectionFactory {

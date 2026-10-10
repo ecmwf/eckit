@@ -56,6 +56,28 @@ const Area::Spec& Area::spec() const {
 }
 
 
+void Area::fill_grid_spec(spec::Custom& custom) const {
+    if (is_default()) {
+        return;
+    }
+
+    spec::Custom area_spec;
+    fill_spec(area_spec);
+
+    if (area_spec.only(className())) {
+        custom.set(area_spec);
+        return;
+    }
+
+    custom.set(className(), area_spec);
+}
+
+
+bool Area::is_default() const {
+    return *this == area_default();
+}
+
+
 bool Area::intersects(area::BoundingBox&) const {
     NOTIMP;
 }
@@ -109,14 +131,6 @@ Area::Spec* AreaFactory::make_spec(const Area::Spec& spec) {
     auto back = std::make_unique<spec::Custom>();
 
     cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
-
-    // if (cfg->has("north") || cfg->has("east") || cfg->has("south") || cfg->has("west")) {
-    //     // back->set("type", "reduced_gg");
-    // }
-
-    // if (std::vector<double> area; cfg->get("area", area) && area.size() == 4) {
-    //     back->set("type", "regular_ll");
-    // }
 
     if (!back->empty()) {
         cfg->push_back(back.release());

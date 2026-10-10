@@ -10,6 +10,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/order/HEALPix.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/util.h"
@@ -28,7 +30,101 @@ CASE("canonical") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridSpec));
 
         EXPECT(grid);
-        EXPECT(grid->spec_str() == gridSpec);
+        EXPECT_EQUAL(grid->spec_str(), gridSpec);
+    }
+}
+
+
+CASE("canonical (global grids)") {
+    struct test_t {
+        std::string gridspec;
+        std::string canonical;
+        size_t size;
+    };
+
+    static const auto bbox_global = area::BoundingBox::bounding_box_default().spec_str();
+
+    for (const auto& test : {
+             test_t{"{grid: 10/10}", R"({"grid":[10,10]})", 684},
+             {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},
+             {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},
+             {"{grid: o8}", R"({"grid":"O8"})", 544},
+             {"{grid: hr2}", R"({"grid":"H2"})", 48},
+             {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},
+             {"{grid: o96}", R"({"grid":"O96"})", 40320},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.gridspec));
+
+        EXPECT_EQUAL(grid->spec_str(), test.canonical);
+        EXPECT_EQUAL(grid->size(), test.size);
+        EXPECT_EQUAL(grid->boundingBox().spec_str(), bbox_global);
+    }
+}
+
+
+CASE("routings") {
+    for (const auto* gridspec : {"{grid: [1,1]}", "{grid: 1/1}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridspec));
+
+        EXPECT_EQUAL(grid->spec_str(), R"({"grid":[1,1]})");
+        EXPECT(grid->shape() == std::vector<size_t>({181, 360}));
+    }
+
+    for (const auto* gridspec : {
+             "{grid: 0.05/0.05, area: [89.975,-179.975,-89.975,179.975]}",
+             "{grid: [0.05, 0.05], area: 89.975/-179.975/-89.975/179.975}",
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridspec));
+
+        EXPECT_EQUAL(grid->spec_str(),
+                     R"({"area":[90,-179.975,-90,180.025],"grid":[0.05,0.05],"reference":[0.025,0.025]})");
+        EXPECT(grid->shape() == std::vector<size_t>({3600, 7200}));
+    }
+}
+
+
+CASE("type (rotated regional)") {
+    std::unique_ptr<const Grid> grid(
+        GridFactory::make_from_string(R"({"area":[3.36,-6.82,-4.42,4.8],"grid":[0.02,0.02],"order":"i+j+",)"
+                                      R"("projection":{"south_pole":[10,-43],"type":"rotation"}})"));
+
+    EXPECT_EQUAL(grid->type(), "regular_ll");
+}
+
+
+CASE("spec round trip (same points)") {
+    std::vector<std::string> gridspecs{
+        "{grid: [2, 2], area: [60, -10, 30, 40]}",
+        R"({"area":[3.4,-6.8,-4.4,4.8],"grid":[0.2,0.2],"order":"i+j+","projection":{"south_pole":[10,-43],"type":"rotation"}})",
+        "{grid: F16}",
+        "{grid: F16, area: [60, -10, 30, 40]}",
+        "{grid: O16}",
+        "{grid: N32}",
+        "{pl: [20, 24, 24, 20]}",
+        "{grid: O16, area: [60, -10, 30, 40]}",
+        "{grid: H4}",
+        "{grid: H4, order: nested}",
+    };
+
+    for (const auto* grid : {"grid: 10/10", "grid: 10/10, area: [60, -10, 30, 40]", "grid: F8"}) {
+        for (const auto* order : {"i+j-", "i+j+", "i-j-", "i-j+", "j-i+", "j+i+", "j-i-", "j+i-"}) {
+            gridspecs.emplace_back("{" + std::string(grid) + ", order: " + order + "}");
+        }
+    }
+
+    for (const auto& gridspec : gridspecs) {
+        SECTION(gridspec) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridspec));
+            std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+
+            const auto [lats, lons]           = grid->to_latlons();
+            const auto [same_lats, same_lons] = same->to_latlons();
+            EXPECT_EQUAL(same_lats.size(), lats.size());
+
+            for (size_t i = 0; i < lats.size(); ++i) {
+                EXPECT(points_equal(PointLonLat{lons[i], lats[i]}, PointLonLat{same_lons[i], same_lats[i]}));
+            }
+        }
     }
 }
 
@@ -125,27 +221,27 @@ CASE("grid: reduced_gg") {
     SECTION("O16, N16") {
         std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
 
-        EXPECT(o16->spec_str() == R"({"grid":"O16"})");
+        EXPECT_EQUAL(o16->spec_str(), R"({"grid":"O16"})");
 
         std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
 
-        EXPECT(n16->spec_str() == R"({"grid":"N16"})");
+        EXPECT_EQUAL(n16->spec_str(), R"({"grid":"N16"})");
 
         std::unique_ptr<const Grid> known_pl_1(GridFactory::build(
             spec::Custom({{"pl", pl_type{20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64,
                                          64, 64, 64, 64, 64, 64, 64, 64, 60, 60, 48, 45, 40, 32, 27, 20}}})));
 
-        EXPECT(known_pl_1->spec_str() == R"({"grid":"N16"})");
+        EXPECT_EQUAL(known_pl_1->spec_str(), R"({"grid":"N16"})");
 
         std::unique_ptr<const Grid> known_pl_2(
             GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 20}}})));
 
-        EXPECT(known_pl_2->spec_str() == R"({"grid":"O4"})");
+        EXPECT_EQUAL(known_pl_2->spec_str(), R"({"grid":"O4"})");
 
         std::unique_ptr<const Grid> unknown_pl(
             GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
 
-        EXPECT(unknown_pl->spec_str() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
+        EXPECT_EQUAL(unknown_pl->spec_str(), R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
     }
 
 
@@ -162,11 +258,11 @@ CASE("grid: reduced_gg") {
 CASE("grid: HEALPix") {
     std::unique_ptr<const Grid> h2(GridFactory::build(spec::Custom({{"grid", "h2"}})));
 
-    EXPECT(h2->spec_str() == R"({"grid":"H2"})");
+    EXPECT_EQUAL(h2->spec_str(), R"({"grid":"H2"})");
 
     std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"order", "nested"}})));
 
-    EXPECT(h2n->spec_str() == R"({"grid":"H2","order":"nested"})");
+    EXPECT_EQUAL(h2n->spec_str(), R"({"grid":"H2","order":"nested"})");
 }
 
 
@@ -220,7 +316,7 @@ CASE("order") {
         std::unique_ptr<const Grid> grid1(GridFactory::build(test.spec));
 
         EXPECT(grid1->order() == test.order_default);
-        EXPECT(grid1->spec_str() == test.spec_str_order_default);
+        EXPECT_EQUAL(grid1->spec_str(), test.spec_str_order_default);
 
         spec::Layered spec(test.spec);
         spec.push_back(new spec::Custom({{"order", test.order_nondefault}}));
@@ -228,12 +324,12 @@ CASE("order") {
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
 
         EXPECT(grid2->order() == test.order_nondefault);
-        EXPECT(grid2->spec_str() == test.spec_str_order_nondefault);
+        EXPECT_EQUAL(grid2->spec_str(), test.spec_str_order_nondefault);
 
         std::unique_ptr<const Grid> grid3(GridFactory::make_from_string(grid2->spec_str()));
 
         EXPECT(grid3->order() == grid2->order());
-        EXPECT(grid3->spec_str() == grid2->spec_str());
+        EXPECT_EQUAL(grid3->spec_str(), grid2->spec_str());
     }
 }
 

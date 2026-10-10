@@ -129,10 +129,10 @@ std::string LibEcKitGeo::cacheDir() {
 }
 
 
-std::string LibEcKitGeo::searchTree() {
-    static const std::string tree{
-        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-tree;$ECKIT_GEO_SEARCH_TREE", "mapped-cache-file")};
-    return tree;
+std::string LibEcKitGeo::searchLoader() {
+    static const std::string loader{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-memory")};
+    return loader;
 }
 
 

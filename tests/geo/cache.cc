@@ -21,7 +21,7 @@
 #include "eckit/geo/cache/MemoryUsage.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/cache/Version.h"
-#include "eckit/geo/search/TreeMappedFile.h"
+#include "eckit/geo/search/MappedFile.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
@@ -251,22 +251,22 @@ CASE("SearchCache: a grid search, accounted for") {
     EXPECT_EQUAL(cache.usage(), search.footprint());
     EXPECT(&search == &grid->search());
 
-    // default tree, as mir: a cache file, using shared memory (page cache)
+    // default loader (mapped-memory), as mir: the cache file mapped, using shared memory (page cache)
     if (LibEcKitGeo::caching()) {
-        EXPECT(dynamic_cast<const search::TreeMappedCacheFile*>(&search.tree()) != nullptr);
+        EXPECT(dynamic_cast<const search::MappedFile*>(&search.kdtree()) != nullptr);
         EXPECT(search.footprint().shared() > 0);
     }
 
     // searches are cached by grid and k-d tree configuration
-    auto memory = cache.get(*grid, spec::Custom{{{"search-tree", "memory"}}});
+    auto memory = cache.get(*grid, spec::Custom{{{"search-loader", "memory"}}});
     EXPECT(memory.get() != &search);
     EXPECT(memory->footprint().memory() > 0);
     EXPECT_EQUAL(cache.usage(), search.footprint() + memory->footprint());
-    EXPECT(cache.get(*grid, spec::Custom{{{"search-tree", "memory"}}}) == memory);
+    EXPECT(cache.get(*grid, spec::Custom{{{"search-loader", "memory"}}}) == memory);
 
     // other behaviours share the k-d tree, so they are not accounted for again
-    auto knn = cache.get(*grid, spec::Custom{{{"search-tree", "memory"}, {"search", "knn"}, {"search-k", 4}}});
-    EXPECT(&knn->tree() == &memory->tree());
+    auto knn = cache.get(*grid, spec::Custom{{{"search-loader", "memory"}, {"search", "knn"}, {"search-k", 4}}});
+    EXPECT(&knn->kdtree() == &memory->kdtree());
     EXPECT_EQUAL(knn->search(PointLonLat{14., 1.}).size(), 4);
     EXPECT_EQUAL(cache.size(), 2);
 

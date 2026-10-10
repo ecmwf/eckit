@@ -88,11 +88,12 @@ std::vector<PointXYZ> random_points_on_unit_sphere(size_t n, unsigned seed) {
 const std::vector<PointXYZ> LINE{{0., 0., 0.}, {1., 0., 0.}, {2., 0., 0.}, {3., 0., 0.}, {10., 0., 0.}};
 
 
-const std::vector<std::string> TREES{"memory", "mapped-anonymous-memory", "mapped-temporary-file", "mapped-cache-file"};
+// shared memory removed at exit (tmp-shmem)
+const std::vector<std::string> LOADERS{"memory", "mmap", "file-io", "tmp-shmem"};
 
 
 CASE("Search: examples") {
-    const Search search(LINE, spec::Custom{{{"search-tree", "memory"}}});
+    const Search search(LINE, spec::Custom{{{"search-loader", "memory"}}});
     EXPECT_EQUAL(search.size(), LINE.size());
 
     SECTION("search_nn: nearest point") {
@@ -155,7 +156,7 @@ CASE("Search: search(point), configured behaviour") {
 
     auto make = [](const spec::Custom::container_type& c) {
         auto custom = spec::Custom{c};
-        custom.set("search-tree", std::string{"memory"});
+        custom.set("search-loader", std::string{"memory"});
         return std::make_unique<Search>(LINE, custom);
     };
 
@@ -199,9 +200,9 @@ CASE("Search: search(point), configured behaviour") {
         EXPECT_THROWS_AS(make({{"search", "knn_and_radius"}, {"search-radius", 1.}}), exception::SearchError);
     }
 
-    SECTION("invalid tree") {
-        EXPECT_THROWS_AS(Search(LINE, spec::Custom{{{"search-tree", "unknown"}}}), exception::SearchError);
-        EXPECT_THROWS_AS(Search(std::vector<PointXYZ>{}, spec::Custom{{{"search-tree", "memory"}}}),
+    SECTION("invalid loader") {
+        EXPECT_THROWS_AS(Search(LINE, spec::Custom{{{"search-loader", "unknown"}}}), exception::SearchError);
+        EXPECT_THROWS_AS(Search(std::vector<PointXYZ>{}, spec::Custom{{{"search-loader", "memory"}}}),
                          exception::SearchError);
     }
 }
@@ -209,7 +210,7 @@ CASE("Search: search(point), configured behaviour") {
 
 CASE("Search: (lon, lat) points") {
     // unit sphere, as configured
-    const spec::Custom spec{{{"search-tree", "memory"}, {"R", 1.}}};
+    const spec::Custom spec{{{"search-loader", "memory"}, {"R", 1.}}};
 
     projection::LonLatToXYZ to_xyz(1.);
     const std::vector<PointXYZ> points{to_xyz.fwd(PointLonLat{0., 0.}), to_xyz.fwd(PointLonLat{90., 0.}),
@@ -242,7 +243,7 @@ CASE("Search: grid") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
     ASSERT(grid);
 
-    const Search search(*grid, spec::Custom{{{"search-tree", "memory"}}});
+    const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
     EXPECT_EQUAL(search.size(), grid->size());
 
     const auto nx = 360 / 30;
@@ -272,7 +273,7 @@ CASE("Search: grid, on the grid figure") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
     const auto R = grid->figure().R();  // spherical Earth
 
-    const Search search(*grid, spec::Custom{{{"search-tree", "memory"}}});
+    const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
 
     // equidistant to two points on the equator (lon = 0 and 30): chords subtending 15 degrees
     auto knn = search.search_knn(PointLonLat{15., 0.}, 2);
@@ -297,7 +298,7 @@ CASE("Search: grid points find themselves, on their figure") {
 
     for (const auto& g : grids) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(g));
-        const Search search(*grid, spec::Custom{{{"search-tree", "memory"}}});
+        const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
 
         for (const auto& p : *grid) {
             EXPECT(search.search_nn(p).distance < 1e-6);
@@ -314,7 +315,7 @@ CASE("Grid::search") {
     EXPECT(&search == &grid->search());
     EXPECT_EQUAL(search.size(), grid->size());
 
-    const Search reference(*grid, spec::Custom{{{"search-tree", "memory"}}});
+    const Search reference(*grid, spec::Custom{{{"search-loader", "memory"}}});
 
     // away from ties (e.g. the poles, represented by coincident points)
     for (const auto& p : {PointLonLat{14., 1.}, PointLonLat{-100., 44.}, PointLonLat{170., -50.}}) {
@@ -329,17 +330,17 @@ CASE("Grid::search") {
 }
 
 
-CASE("Search: all trees, compared to brute force") {
+CASE("Search: all loaders, compared to brute force") {
     const auto points  = random_points_on_unit_sphere(1000, 42);
     const auto queries = random_points_on_unit_sphere(50, 7);
 
     constexpr size_t k   = 7;
     constexpr double rad = 0.2;
 
-    for (const auto& tree : TREES) {
+    for (const auto& loader : LOADERS) {
         for (bool fast : {true, false}) {
-            SECTION(tree + (fast ? " (fast build)" : " (build by insertion)")) {
-                const Search search(points, spec::Custom{{{"search-tree", tree}, {"search-fast-build", fast}}});
+            SECTION(loader + (fast ? " (fast build)" : " (build by insertion)")) {
+                const Search search(points, spec::Custom{{{"search-loader", loader}, {"search-fast-build", fast}}});
                 EXPECT_EQUAL(search.size(), points.size());
 
                 for (const auto& q : queries) {

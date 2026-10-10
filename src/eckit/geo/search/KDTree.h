@@ -12,7 +12,6 @@
 #include "eckit/container/sptree/SPValue.h"
 #include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/cache/MemoryUsage.h"
-#include "eckit/memory/Builder.h"
 
 
 namespace eckit::geo::search {
@@ -47,7 +46,7 @@ using Neighbours = std::vector<Neighbour>;
  * @details Building is: lock(), if not ready() then build() (or insert()) and commit(), unlock(). Queries update
  * statistics, so they need external synchronisation.
  */
-class Tree {
+class KDTree {
 public:
 
     // -- Types
@@ -57,25 +56,21 @@ public:
     using Value       = SPValue<Traits>;
     using MemoryUsage = cache::MemoryUsage;
 
-    using builder_t = BuilderT2<Tree>;
-    using ARG1      = const std::string&;
-    using ARG2      = size_t;
-
     // -- Constructors
 
-    Tree(const std::string& uid, size_t size);
+    KDTree(const std::string& uid, size_t size);
 
-    Tree(const Tree&) = delete;
-    Tree(Tree&&)      = delete;
+    KDTree(const KDTree&) = delete;
+    KDTree(KDTree&&)      = delete;
 
     // -- Destructor
 
-    virtual ~Tree();
+    virtual ~KDTree();
 
     // -- Operators
 
-    Tree& operator=(const Tree&) = delete;
-    Tree& operator=(Tree&&)      = delete;
+    KDTree& operator=(const KDTree&) = delete;
+    KDTree& operator=(KDTree&&)      = delete;
 
     // -- Methods
 
@@ -107,14 +102,10 @@ public:
     const std::string& uid() const { return uid_; }
     size_t size() const { return size_; }
 
-    // -- Class methods
-
-    static std::string className() { return "tree"; }
-
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& out, const Tree& tree) {
-        tree.print(out);
+    friend std::ostream& operator<<(std::ostream& out, const KDTree& kdtree) {
+        kdtree.print(out);
         return out;
     }
 
@@ -148,14 +139,72 @@ private:
 };
 
 
-template <typename T>
-using TreeRegisterType = ConcreteBuilderT2<Tree, T>;
+/**
+ * @brief Loaders of k-d trees (spec search-loader), by name
+ * @details Loaders (aliases): memory (no cache file, the default when not caching), mmap (mapped-memory, the default
+ * when caching), file-io, shmem (shared-memory) and tmp-shmem (tmp-shared-memory). A loader is a KDTree type, providing
+ * its memory usage before building or loading (T::estimate), so caches make room beforehand.
+ */
+class KDTreeFactory {
+public:
 
+    // -- Constructors
 
-struct TreeFactory {
-    [[nodiscard]] static Tree* build(const std::string& type, const std::string& uid, size_t size);
-    static bool has_type(const std::string& type) { return Factory<Tree>::instance().exists(type); }
+    KDTreeFactory(const KDTreeFactory&) = delete;
+    KDTreeFactory(KDTreeFactory&&)      = delete;
+
+    // -- Operators
+
+    KDTreeFactory& operator=(const KDTreeFactory&) = delete;
+    KDTreeFactory& operator=(KDTreeFactory&&)      = delete;
+
+    // -- Class methods
+
+    [[nodiscard]] static KDTree* build(const std::string& loader, const std::string& uid, size_t size);
+
+    /// Memory usage of a k-d tree of size points, once built or loaded
+    static KDTree::MemoryUsage estimate(const std::string& loader, size_t size);
+
+    static bool has_type(const std::string& loader);
     static std::ostream& list(std::ostream&);
+
+protected:
+
+    // -- Constructors
+
+    explicit KDTreeFactory(const std::string& loader);
+
+    // -- Destructor
+
+    virtual ~KDTreeFactory();
+
+private:
+
+    // -- Members
+
+    const std::string loader_;
+
+    // -- Methods
+
+    virtual KDTree* make(const std::string& uid, size_t size) const = 0;
+    virtual KDTree::MemoryUsage make_estimate(size_t size) const    = 0;
+
+    // -- Class methods
+
+    static const KDTreeFactory& get(const std::string& loader);
+};
+
+
+template <typename T>
+class KDTreeBuilder final : public KDTreeFactory {
+public:
+
+    explicit KDTreeBuilder(const std::string& loader) : KDTreeFactory(loader) {}
+
+private:
+
+    KDTree* make(const std::string& uid, size_t size) const override { return new T(uid, size); }
+    KDTree::MemoryUsage make_estimate(size_t size) const override { return T::estimate(size); }
 };
 
 

@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-import sys
 from json import loads
 
 import pytest
@@ -220,7 +219,7 @@ def test_grid_search():
 def test_grid_search_spec():
     grid = Grid(grid=[30, 30])
 
-    search = grid.search(tree="memory", search="knn", k=3)
+    search = grid.search(loader="memory", search="knn", k=3)
     assert search.search((15, 0)) == search.search_knn((15, 0), 3)
 
     with pytest.raises(RuntimeError):
@@ -229,27 +228,22 @@ def test_grid_search_spec():
 
 LOADERS = [
     ("memory", "memory"),
-    ("mapped-anonymous-memory", "memory"),
-    ("mapped-temporary-file", "shared"),
-    ("mapped-cache-file", "shared"),  # the default, as mir
-    pytest.param(
-        "shared-memory",
-        "shared",
-        marks=pytest.mark.skipif(
-            sys.platform == "darwin", reason="System V shared memory limits on macOS"
-        ),
-    ),
+    ("mmap", "shared"),
+    ("mapped-memory", "shared"),  # the default, as mir
+    ("file-io", "memory"),
+    ("tmp-shmem", "shared"),  # removed at exit
+    ("tmp-shared-memory", "shared"),
 ]
 
 
-@pytest.mark.parametrize("tree, usage", LOADERS)
-def test_grid_search_loaders(tree, usage):
+@pytest.mark.parametrize("loader, usage", LOADERS)
+def test_grid_search_loaders(loader, usage):
     grid = Grid(grid=[30, 30])
 
     search_cache_clear()
     before = search_cache_statistics()
 
-    search = grid.search(tree=tree)
+    search = grid.search(loader=loader)
 
     # the cache accounts for the loaded search, in process memory or shared
     after = search_cache_statistics()
@@ -257,6 +251,6 @@ def test_grid_search_loaders(tree, usage):
     assert after[usage] - before[usage] == search.footprint[usage] > 0
 
     # whatever the loader, the same results
-    reference = grid.search(tree="memory")
+    reference = grid.search(loader="memory")
     for point in ((14, 1), (-100, 44), (170, -50)):
         assert indices(search.search_knn(point, 4)) == indices(reference.search_knn(point, 4))

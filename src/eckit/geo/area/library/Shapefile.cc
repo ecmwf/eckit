@@ -154,8 +154,7 @@ Shapefile::~Shapefile() {
 
 
 Shapefile* Shapefile::make_from_url(const std::string& url) {
-    static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "shapefile" /
-                                    std::to_string(cache::Download::version()));
+    static const cache::Download download;
 
     return new Shapefile(download.to_cached_path(url, cache::Download::url_file_basename(url, false),
                                                  cache::Download::url_file_extension(url)));

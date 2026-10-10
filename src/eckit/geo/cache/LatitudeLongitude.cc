@@ -13,6 +13,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/os/AutoUmask.h"
@@ -51,9 +52,7 @@ struct Loader final : Cache::Loader {
         }
 
         if (spec->has("url")) {
-            static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "latlon" /
-                                            std::to_string(cache::Download::version()));
-
+            static const Download download;
             record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }
@@ -122,7 +121,7 @@ void LatitudeLongitude::write(const PathName& p) const {
 
 PathName LatitudeLongitude::to_cached_path() const {
     auto uid  = grid::Unstructured::uid_from_latlons(latitude(), longitude());
-    auto path = PathName(LibEcKitGeo::cacheDir()) / "latlon" / (uid + ".ek");
+    auto path = PathName(LibEcKitGeo::cacheDir()) / "latlon" / std::to_string(version::LATLON) / (uid + ".ek");
 
     if (auto dir = path.dirName(); !dir.exists()) {
         try {

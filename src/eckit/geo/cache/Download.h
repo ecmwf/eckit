@@ -30,11 +30,10 @@ public:
 
     // -- Constructors
 
-    explicit Download(const PathName& root = ".", bool html = false) : DiskCache(root), html_(html) {}
+    explicit Download(const PathName& root = default_root(), bool html = false) : DiskCache(root), html_(html) {}
 
     // -- Methods
 
-    static const int VERSION;
     static const std::string PREFIX;
     static const std::string SUFFIX;
 
@@ -47,7 +46,7 @@ public:
 
     static std::string validate_response(const url_type&, long code, const headers_type&, bool html = false);
 
-    static int version() { return VERSION; }
+    static PathName default_root();
 
     static std::string url_file_basename(const url_type&, bool ext = true);
     static std::string url_file_extension(const url_type&);

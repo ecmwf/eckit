@@ -337,29 +337,8 @@ Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    auto custom_set_if_different = [&custom](const std::string& name, const auto& obj, const std::string& default_str) {
-        spec::Custom spec;
-        obj.fill_spec(spec);
-
-        if (default_str != spec.str()) {
-            if (spec.only(name)) {
-                custom.set(spec);
-            }
-            else {
-                custom.set(name, spec);
-            }
-        }
-    };
-
-    static const auto area_default = Area::area_default().spec().str();
-    static const auto proj_default = Projection::projection_default().spec().str();
-
-    custom_set_if_different("area", area(), area_default);
-    custom_set_if_different("projection", projection(), proj_default);
-
-    if (const auto& fig = figure(); !fig.is_default()) {
-        custom_set_if_different("figure", fig, "");
-    }
+    area().fill_grid_spec(custom);
+    projection().fill_grid_spec(custom);
 }
 
 

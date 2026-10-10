@@ -157,6 +157,11 @@ cdef class Projection:
         )
 
     @property
+    def reverse(self) -> bool:
+        """If fwd/inv are reversed."""
+        return self._projection.reverse()
+
+    @property
     def spec_str(self) -> str:
         return self._projection.spec_str()
 

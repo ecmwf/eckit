@@ -15,7 +15,6 @@ namespace geo {
 namespace area {
 class BoundingBox;
 }
-class Projection;
 }  // namespace geo
 namespace spec {
 class Custom;
@@ -73,6 +72,12 @@ public:
     std::string spec_str() const;
     std::string proj_str() const;
 
+    /// Spec on its own
+    virtual void fill_spec(spec::Custom&) const;
+
+    /// Spec as part of a projection's: nothing for the default figure
+    void fill_projection_spec(spec::Custom&) const;
+
     bool spherical() const;
     double eccentricity() const;
     double flattening() const;
@@ -81,17 +86,10 @@ public:
 
 private:
 
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const;
-
     // -- Friends
 
     friend bool operator==(const Figure& a, const Figure& b);
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
-
-    friend class Grid;
-    friend class Projection;
 };
 
 

@@ -245,9 +245,7 @@ const Projection* ProjectionFactory::make_default() {
 
 
 void Projection::fill_spec(spec::Custom& custom) const {
-    if (!figure_->is_default()) {
-        figure_->fill_spec(custom);
-    }
+    figure_->fill_projection_spec(custom);
 
     if (!types::is_approximately_equal(false_.X(), 0.)) {
         custom.set("x_0", false_.X());
@@ -256,6 +254,23 @@ void Projection::fill_spec(spec::Custom& custom) const {
     if (!types::is_approximately_equal(false_.Y(), 0.)) {
         custom.set("y_0", false_.Y());
     }
+}
+
+
+void Projection::fill_grid_spec(spec::Custom& custom) const {
+    if (is_default()) {
+        return;
+    }
+
+    spec::Custom projection_spec;
+    fill_spec(projection_spec);
+
+    if (projection_spec.only(Figure::className())) {
+        custom.set(projection_spec);
+        return;
+    }
+
+    custom.set(className(), projection_spec);
 }
 
 

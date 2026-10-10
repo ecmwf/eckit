@@ -4,6 +4,8 @@
 
 #include "eckit/geo/cache/LatitudeLongitude.h"
 
+#include <unistd.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -135,7 +137,11 @@ PathName LatitudeLongitude::to_cached_path() const {
     }
 
     if (!path.exists()) {
-        write(path);
+        // write then rename, so that concurrent processes never read a partial file
+        lock_type lock;
+        auto tmp = path + ".part." + std::to_string(::getpid());
+        write(tmp);
+        PathName::rename(tmp, path);
     }
 
     return path;

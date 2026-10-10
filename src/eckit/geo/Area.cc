@@ -132,14 +132,6 @@ Area::Spec* AreaFactory::make_spec(const Area::Spec& spec) {
 
     cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
 
-    // if (cfg->has("north") || cfg->has("east") || cfg->has("south") || cfg->has("west")) {
-    //     // back->set("type", "reduced_gg");
-    // }
-
-    // if (std::vector<double> area; cfg->get("area", area) && area.size() == 4) {
-    //     back->set("type", "regular_ll");
-    // }
-
     if (!back->empty()) {
         cfg->push_back(back.release());
     }

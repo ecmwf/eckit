@@ -9,7 +9,6 @@
 #include "eckit/eckit_config.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/Version.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/FileLock.h"
@@ -216,7 +215,6 @@ Download::info_type download(const Download::url_type& url, const PathName& path
 
 
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
-    // control concurrent download
     lock_type lock;
     file_lock_type flock(path);
 
@@ -225,18 +223,12 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 
 
 PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {
-    // control concurrent access
     lock_type lock;
 
-    static MemoryCacheT<MD5::digest_t, std::string> CACHE;
-
-    // set cache key, return path early if possible
-    const auto key = MD5{url}.digest();
-    const auto path =
-        CACHE.contains(key) ? PathName{CACHE[key]} : cache_root() / prefix + (prefix.empty() ? "" : "-") + key + suffix;
+    const auto path = cache_root() / prefix + (prefix.empty() ? "" : "-") + MD5{url}.digest() + suffix;
 
     if (path.exists()) {
-        return CACHE[key] = path;
+        return path;
     }
 
     // across processes: the first downloads, the others find the file
@@ -249,7 +241,7 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
     }
 
     ASSERT_MSG(path.exists(), "Download: file '" + path + "' not found");
-    return CACHE[key] = path;
+    return path;
 }
 
 

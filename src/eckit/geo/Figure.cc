@@ -135,6 +135,13 @@ void Figure::fill_spec(spec::Custom& custom) const {
 }
 
 
+void Figure::fill_projection_spec(spec::Custom& custom) const {
+    if (!is_default()) {
+        fill_spec(custom);
+    }
+}
+
+
 Figure* FigureFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Figure::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return build(*spec);

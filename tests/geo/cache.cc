@@ -6,13 +6,16 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/InMemoryCache.h"
 #include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/cache/MemoryUsage.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
@@ -212,6 +215,79 @@ CASE("grid") {
     EXPECT(Cache::total_footprint() <= footprint_1);
 }
 #endif
+
+
+CASE("MemoryUsage") {
+    using cache::MemoryUsage;
+
+    // as capacities are given: "memory[,shared]" (bytes), shared defaults to memory
+    MemoryUsage a{"100,200"};
+    MemoryUsage b{"300"};
+
+    EXPECT_EQUAL(a.memory(), 100);
+    EXPECT_EQUAL(a.shared(), 200);
+    EXPECT_EQUAL(b.shared(), 300);
+    EXPECT_EQUAL(MemoryUsage{a.str()}, a);
+
+    EXPECT_EQUAL(a + b, MemoryUsage(400, 500));
+    EXPECT_EQUAL(b - a, MemoryUsage(200, 100));
+    EXPECT_EQUAL(a - b, MemoryUsage());  // saturates at zero
+    EXPECT_NOT(MemoryUsage());
+
+    // exceeding a capacity in either memory or shared memory
+    EXPECT(MemoryUsage(301, 0).exceeds(b));
+    EXPECT(MemoryUsage(0, 301).exceeds(b));
+    EXPECT_NOT(b.exceeds(b));
+
+    EXPECT_THROWS_AS(MemoryUsage{"1,2,3"}, BadValue);
+}
+
+
+CASE("InMemoryCache: usage, capacity and evictions") {
+    using cache::InMemoryCache;
+    using cache::MemoryUsage;
+    using Cache = cache::MemoryCache;
+
+    struct Values {
+        explicit Values(size_t n) : values(n) {}
+        MemoryUsage footprint() const { return {values.size() * sizeof(double), 0}; }
+        std::vector<double> values;
+    };
+
+    // 50 values use 400 bytes, the capacity is 1000 bytes (in process memory)
+    InMemoryCache<Values> cached(MemoryUsage{1000, 0});
+
+    auto make = [](size_t n) { return [n]() { return std::make_shared<const Values>(n); }; };
+
+    const auto total = Cache::total_footprint();
+
+    cached.get("a", make(50));  // miss
+    cached.get("b", make(50));  // miss
+    cached.get("a", make(50));  // hit, "a" is now more recently used than "b"
+
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
+    EXPECT_EQUAL(cached.statistics().hits, 1);
+    EXPECT_EQUAL(cached.statistics().misses, 2);
+
+    // reported in the memory caches total
+    EXPECT_EQUAL(Cache::total_footprint(), total + 800);
+
+    // over capacity: the least recently used is evicted
+    cached.get("c", make(50));
+    EXPECT_EQUAL(cached.size(), 2);
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
+    EXPECT_EQUAL(cached.statistics().evictions, 1);
+
+    // values in use are not evicted, even over capacity
+    auto d = cached.get("d", make(200));
+    EXPECT_EQUAL(cached.size(), 1);
+    EXPECT_EQUAL(cached.usage(), MemoryUsage(1600, 0));
+
+    d.reset();
+    cached.capacity(MemoryUsage{1000, 0});
+    EXPECT_EQUAL(cached.size(), 0);
+    EXPECT_EQUAL(Cache::total_footprint(), total);
+}
 
 
 }  // namespace eckit::geo::test

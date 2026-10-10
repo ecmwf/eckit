@@ -103,13 +103,12 @@ def test_grid_rotated_default_south_pole_is_not_a_rotation():
         assert Grid(spec).spec == dict(grid=[5, 5])
 
 
-def test_grid_rotated_south_pole_lon_lat_required_together():
-    for projection in [
-        dict(south_pole_lon=-20, type="rotation"),
-        dict(south_pole_lat=-40, type="rotation"),
+def test_grid_rotated_south_pole_lon_lat_optional():
+    for rotation, projection in [
+        ([-90, -20], dict(south_pole_lon=-20, type="rotation")),
+        ([-40, 0], dict(south_pole_lat=-40, type="rotation")),
     ]:
-        with pytest.raises(Exception):
-            Grid(dict(grid=[5, 5], projection=projection))
+        assert Grid(dict(grid=[5, 5], projection=projection)).spec == Grid(dict(grid=[5, 5], rotation=rotation)).spec
 
 
 def test_grid_rotated_gg():

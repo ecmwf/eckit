@@ -246,7 +246,7 @@ private:
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    Projection(make_figure(target)), source_(source), target_(target) {
+    Projection(make_figure(target)), source_(source), target_(target), source_figure_(make_figure(source)) {
     ASSERT(!source_.empty());
     ASSERT(!target_.empty());
 

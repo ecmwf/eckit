@@ -31,6 +31,9 @@ public:
 
     // -- Overridden methods
 
+    using Projection::fwd;
+    using Projection::inv;
+
     inline Point fwd(const Point& p) const override { return P::inv(p); }
     inline Point inv(const Point& p) const override { return P::fwd(p); }
 

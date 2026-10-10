@@ -138,6 +138,10 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
+    /// Geocentric coordinates (one vector per coordinate), as the grid points or on their figure (see
+    /// Projection::source_figure)
+    [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
+
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
 
     /// Shared (cache::SearchCache), valid for the grid lifetime

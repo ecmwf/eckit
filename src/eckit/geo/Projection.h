@@ -77,6 +77,10 @@ public:
 
     const Figure& figure() const { return *figure_; }
 
+    /// Figure of the source coordinates, which PROJ can have different from the target's
+    virtual const Figure& source_figure() const { return figure(); }
+
+    /// Spec on its own, with the figure unless the default
     virtual void fill_spec(spec::Custom&) const;
 
     /// Spec as part of a grid's: "projection": {...}, but for the default projection only its figure (as the grid's)

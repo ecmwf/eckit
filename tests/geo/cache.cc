@@ -16,9 +16,11 @@
 #include "eckit/geo/Search.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/InMemoryCache.h"
+#include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/MemoryUsage.h"
 #include "eckit/geo/cache/SearchCache.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/search/TreeMappedFile.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
@@ -219,6 +221,20 @@ CASE("grid") {
     EXPECT(Cache::total_footprint() <= footprint_1);
 }
 #endif
+
+
+CASE("cache layout") {
+    const PathName root{LibEcKitGeo::cacheDir()};
+
+    // downloads (e.g. ORCA, ICON and FESOM coordinates) go to download/VERSION/<md5(url)>
+    const cache::Download download;
+    EXPECT_EQUAL(download.cache_root(), root / "download" / std::to_string(cache::version::DOWNLOAD));
+
+    // coordinates written locally (e.g. unstructured grids) go to latlon/VERSION/<uid>.ek
+    const auto path = cache::LatitudeLongitude({1., 2.}, {3., 4.}).to_cached_path();
+    EXPECT(path.exists());
+    EXPECT_EQUAL(path.dirName(), root / "latlon" / std::to_string(cache::version::LATLON));
+}
 
 
 CASE("MemoryUsage") {

@@ -264,6 +264,33 @@ CASE("projection: proj vectors") {
 }
 
 
+CASE("projection: proj, reverse from spec") {
+    const std::string spec = "{type: proj, source: 'EPSG:4326', target: 'EPSG:3035'}";
+
+    P plain(ProjectionFactory::make_from_string(spec));
+    P reverse(ProjectionFactory::make_from_string(spec.substr(0, spec.size() - 1) + ", reverse: true}"));
+
+    // the source is the default
+    EXPECT_EQUAL(plain->spec_str(), R"({"target":"EPSG:3035","type":"proj"})");
+    EXPECT_EQUAL(reverse->spec_str(), R"({"reverse":true,"target":"EPSG:3035","type":"proj"})");
+    EXPECT_NOT(plain->reverse());
+    EXPECT(reverse->reverse());
+
+    // identical, if built from the spec of another
+    for (const auto* projection : {plain.get(), reverse.get()}) {
+        P same(ProjectionFactory::build(projection->spec()));
+        EXPECT(*same == *projection);
+        EXPECT_EQUAL(same->reverse(), projection->reverse());
+    }
+
+    // reversed: fwd as inv, and inv as fwd
+    const PointLonLat p{10., 50.};
+    const auto q = plain->fwd(p);
+    EXPECT(points_equal(reverse->fwd(q), p, 1e-9));
+    EXPECT(points_equal(reverse->inv(p), q, 1e-6));
+}
+
+
 }  // namespace eckit::geo::test
 
 

@@ -60,6 +60,50 @@ CASE("projection: reverse") {
 }
 
 
+CASE("projection: reverse, from spec") {
+    struct test_t {
+        std::string spec;     // reversed with "reverse: true"
+        std::string plain;    // spec after construction
+        std::string reverse;  // ...
+    };
+
+    const PointLonLat p{10., 20.};
+
+    for (const auto& test : std::vector<test_t>{
+             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
+              R"({"reverse":true,"south_pole":[10,-40],"type":"rotation"})"},
+             {"{type: ll-to-xyz, R: 1}", R"({"figure":{"r":1},"type":"ll-to-xyz"})",
+              R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})"},
+             {"{type: eqc, lat_ts: 60, figure: wgs84}", R"({"figure":"wgs84","lat_ts":60,"type":"eqc"})",
+              R"({"figure":"wgs84","lat_ts":60,"reverse":true,"type":"eqc"})"},
+             {"{type: eqc}", "{}", R"({"reverse":true})"},
+         }) {
+        SECTION(test.spec) {
+            std::unique_ptr<const Projection> plain(ProjectionFactory::make_from_string(test.spec));
+            std::unique_ptr<const Projection> reverse(
+                ProjectionFactory::make_from_string(test.spec.substr(0, test.spec.size() - 1) + ", reverse: true}"));
+
+            EXPECT_EQUAL(plain->spec_str(), test.plain);
+            EXPECT_EQUAL(reverse->spec_str(), test.reverse);
+            EXPECT_NOT(plain->reverse());
+            EXPECT(reverse->reverse());
+
+            // identical, if built from the spec of another
+            for (const auto* projection : {plain.get(), reverse.get()}) {
+                std::unique_ptr<const Projection> same(ProjectionFactory::build(projection->spec()));
+                EXPECT(*same == *projection);
+                EXPECT_EQUAL(same->reverse(), projection->reverse());
+            }
+
+            // reversed: fwd as inv, and inv as fwd
+            const auto q = plain->fwd(p);
+            EXPECT(points_equal(reverse->fwd(q), p));
+            EXPECT(points_equal(reverse->inv(p), q));
+        }
+    }
+}
+
+
 CASE("projection: spec, and as part of a grid's") {
     // with the grid names loaded (e.g. SMUFF-OPERA-2km, on wgs84), not taken for projection names
     std::unique_ptr<Grid::Spec> grids(GridFactory::make_spec(spec::Custom{}));

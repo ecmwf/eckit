@@ -140,10 +140,6 @@ struct ProjectionSpecGenerator : spec::SpecGeneratorT1<const std::string&> {};
 using ProjectionSpecByName = spec::GeneratorT<ProjectionSpecGenerator>;
 
 
-template <typename T>
-using ProjectionRegisterType = ConcreteBuilderT1<Projection, T>;
-
-
 struct ProjectionFactory {
     // This is 'const' as Projection should always be immutable
     [[nodiscard]] static const Projection* build(const Projection::Spec&);
@@ -153,6 +149,36 @@ struct ProjectionFactory {
     [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec&);
     static std::ostream& list(std::ostream&);
     static bool has_type(const std::string& type) { return Factory<Projection>::instance().exists(type); }
+
+    /// Reverse of a projection type (see projection::Reverse), built if the spec has "reverse": true
+    using reverse_builder_t = const Projection* (*)(const Projection::Spec&);
+    static void register_reverse(const std::string& type, reverse_builder_t);
+};
+
+
+}  // namespace eckit::geo
+
+
+// once Projection is defined, for ProjectionRegisterType
+#include "eckit/geo/projection/Reverse.h"
+
+
+namespace eckit::geo {
+
+
+/// Registers a projection type, and its reverse (see projection::Reverse)
+template <typename T>
+class ProjectionRegisterType {
+public:
+
+    explicit ProjectionRegisterType(const std::string& type) : builder_(type) {
+        ProjectionFactory::register_reverse(
+            type, [](const Projection::Spec& spec) -> const Projection* { return new projection::Reverse<T>(spec); });
+    }
+
+private:
+
+    ConcreteBuilderT1<Projection, T> builder_;
 };
 
 

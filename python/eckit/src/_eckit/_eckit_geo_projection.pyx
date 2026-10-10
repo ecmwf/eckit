@@ -28,10 +28,12 @@ cdef class Projection:
         self._owner = None
         if spec is None and not kwargs:
             return  # internal use only (borrowed pointer, see _borrow)
-        assert bool(spec) != bool(kwargs)
+        if spec is not None and kwargs:
+            raise TypeError("Projection: either a spec or keyword arguments")
 
-        if kwargs or isinstance(spec, dict):
-            spec = _spec_str(kwargs if kwargs else spec)
+        # a spec can be empty (the default projection)
+        if spec is None or isinstance(spec, dict):
+            spec = _spec_str(kwargs if spec is None else spec)
 
         assert isinstance(spec, str)
         self._projection = eckit_geo_projection.ProjectionFactory.make_from_string(spec)

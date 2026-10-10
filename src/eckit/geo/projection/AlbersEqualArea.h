@@ -38,6 +38,12 @@ public:
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointXY>(q)); }
 
+protected:
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
+
 private:
 
     // -- Members
@@ -51,10 +57,6 @@ private:
     const double R_;
     const double C_;
     const double rho0_;
-
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

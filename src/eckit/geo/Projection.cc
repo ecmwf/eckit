@@ -6,6 +6,7 @@
 
 #include <array>
 #include <limits>
+#include <map>
 #include <ostream>
 #include <utility>
 #include <variant>
@@ -13,7 +14,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/None.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
@@ -37,6 +37,36 @@ class lock_type {
     inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
+
+
+/// Reverses of the projection types (see projection::Reverse), registered during static initialisation
+struct ReverseRegistry {
+    util::recursive_mutex mutex;
+    std::map<std::string, ProjectionFactory::reverse_builder_t> builders;
+
+    static ReverseRegistry& instance() {
+        static ReverseRegistry registry;
+        return registry;
+    }
+};
+
+
+/// Projection of a type, reversed if the spec has "reverse": true
+const Projection* make(const std::string& type, const Projection::Spec& spec) {
+    if (!spec.get_bool("reverse", false)) {
+        return Factory<Projection>::instance().get(type).create(spec);
+    }
+
+    auto& registry = ReverseRegistry::instance();
+    util::lock_guard<util::recursive_mutex> lock(registry.mutex);
+
+    auto it = registry.builders.find(type);
+    if (it == registry.builders.end()) {
+        throw exception::ProjectionError("ProjectionFactory: unknown reverse of '" + type + "'", Here());
+    }
+
+    return it->second(spec);
+}
 
 
 /// Tag carrying a point type, see visit_point_type
@@ -286,7 +316,7 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
     // an explicit 'projection' has to name its type
     if (spec.has("projection")) {
         const auto& cfg = spec.spec("projection");
-        return Factory<Projection>::instance().get(cfg.get_string("type")).create(cfg);
+        return make(cfg.get_string("type"), cfg);
     }
 
     if (spec.has("rotation")) {
@@ -299,10 +329,18 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
 
     // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)
     if (std::string type; cfg->get("type", type) && has_type(type)) {
-        return Factory<Projection>::instance().get(type).create(*cfg);
+        return make(type, *cfg);
     }
 
-    return new projection::EquidistantCylindrical(*cfg);
+    return make("eqc", *cfg);  // the default
+}
+
+
+void ProjectionFactory::register_reverse(const std::string& type, reverse_builder_t builder) {
+    auto& registry = ReverseRegistry::instance();
+    util::lock_guard<util::recursive_mutex> lock(registry.mutex);
+
+    ASSERT(registry.builders.try_emplace(type, builder).second);
 }
 
 

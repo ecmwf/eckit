@@ -59,6 +59,8 @@ protected:
 
     // -- Overridden methods
 
+    void fill_spec(spec::Custom&) const override;
+
     std::vector<std::vector<double>> fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
                                                 const std::vector<double>& v3) const override;
     std::vector<std::vector<double>> inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
@@ -77,10 +79,6 @@ private:
     const std::string source_;
     const std::string target_;
     const std::shared_ptr<const Figure> source_figure_;
-
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

@@ -29,9 +29,8 @@ namespace eckit::geo {
 /**
  * @brief Search in point clouds, following k-d tree algorithms
  *
- * @details Points are geocentric (X, Y, Z): grid points after the grid projection, on the grid figure (on the
- * geographic CRS, for PROJ projections), and queries either (X, Y, Z) or (lon, lat) likewise. Distances are chord
- * lengths (metres, on the Earth). Results are by increasing distance, then index.
+ * @details Points are geocentric (X, Y, Z): grid points as Grid::to_xyz, and queries either (X, Y, Z) or (lon, lat) on
+ * the same figure. Distances are chord lengths (metres, on the Earth). Results are by increasing distance, then index.
  *
  * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius), search-k, search-radius.
  * Spec, of the k-d tree: search-tree (see search::TreeFactory), caching, search-fast-build (defaults in LibEcKitGeo).

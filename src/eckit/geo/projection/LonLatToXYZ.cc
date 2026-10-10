@@ -18,34 +18,11 @@ static const std::string TYPE("ll-to-xyz");
 static ProjectionRegisterType<LonLatToXYZ> PROJECTION(TYPE);
 
 
-LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : Projection(figure_ptr, PointLonLat{}, PointXYZ{}) {
-    struct LonLatToSphereXYZ final : Implementation {
-        const double R;
-
-        explicit LonLatToSphereXYZ(double _R) : R(_R) {}
-        PointXYZ operator()(const PointLonLat& p) const override {
-            return figure::Sphere::convertSphericalToCartesian(R, p, 0.);
-        }
-        PointLonLat operator()(const PointXYZ& q) const override {
-            return figure::Sphere::convertCartesianToSpherical(R, q);
-        }
-    };
-
-    struct LonLatToSpheroidXYZ final : Implementation {
-        const double a;
-        const double b;
-
-        explicit LonLatToSpheroidXYZ(double _a, double _b) : a(_a), b(_b) {}
-        PointXYZ operator()(const PointLonLat& p) const override {
-            return figure::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
-        }
-        PointLonLat operator()(const PointXYZ& q) const override { NOTIMP; }
-    };
-
-    impl_.reset(types::is_approximately_equal(figure().eccentricity(), 0.)
-                    ? static_cast<Implementation*>(new LonLatToSphereXYZ(figure().R()))
-                    : new LonLatToSpheroidXYZ(figure().a(), figure().b()));
-}
+LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) :
+    Projection(figure_ptr, PointLonLat{}, PointXYZ{}),
+    a_(figure().a()),
+    b_(figure().b()),
+    spherical_(figure().spherical()) {}
 
 
 LonLatToXYZ::LonLatToXYZ(double R) : LonLatToXYZ(R, R) {}
@@ -59,6 +36,21 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) :
 LonLatToXYZ::LonLatToXYZ(const Spec& spec) : LonLatToXYZ(FigureFactory::build(spec)) {}
 
 
+PointXYZ LonLatToXYZ::fwd(const PointLonLat& p) const {
+    return spherical_ ? figure::Sphere::convertSphericalToCartesian(a_, p)
+                      : figure::OblateSpheroid::convertSphericalToCartesian(a_, b_, p);
+}
+
+
+PointLonLat LonLatToXYZ::inv(const PointXYZ& q) const {
+    if (!spherical_) {
+        NOTIMP;
+    }
+
+    return figure::Sphere::convertCartesianToSpherical(a_, q);
+}
+
+
 const std::string& LonLatToXYZ::type() const {
     static const std::string type{TYPE};
     return type;
@@ -69,6 +61,29 @@ void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
     custom.set("type", TYPE);
+}
+
+
+std::vector<std::vector<double>> LonLatToXYZ::fwd_vector(const std::vector<double>& lon, const std::vector<double>& lat,
+                                                         const std::vector<double>&) const {
+    auto convert = [&lon, &lat](const auto& to_xyz) {
+        std::vector<std::vector<double>> xyz(3, std::vector<double>(lon.size()));
+        for (size_t i = 0; i < lon.size(); ++i) {
+            const auto q = to_xyz(PointLonLat{lon[i], lat[i]});
+            xyz[0][i]    = q.X();
+            xyz[1][i]    = q.Y();
+            xyz[2][i]    = q.Z();
+        }
+        return xyz;
+    };
+
+    if (spherical_) {
+        return convert([R = a_](const PointLonLat& p) { return figure::Sphere::convertSphericalToCartesian(R, p); });
+    }
+
+    return convert([a = a_, b = b_](const PointLonLat& p) {
+        return figure::OblateSpheroid::convertSphericalToCartesian(a, b, p);
+    });
 }
 
 

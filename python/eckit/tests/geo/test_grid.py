@@ -169,6 +169,28 @@ def test_grid_spec(spec, expected):
     assert Grid(grid.spec) == grid
 
 
+@pytest.mark.parametrize(
+    "spec, a, b",
+    [
+        (dict(grid=[30, 30]), 6371229.0, 6371229.0),  # default figure
+        (dict(grid=[30, 30], figure="wgs84"), 6378137.0, 6356752.314245),
+    ],
+)
+def test_grid_to_xyz(spec, a, b):
+    grid = Grid(spec)
+    lat, _ = grid.to_latlons()
+    x, y, z = grid.to_xyz()
+    assert len(x) == len(y) == len(z) == grid.size()
+
+    # radius at the equator and the poles
+    for i, la in enumerate(lat):
+        radius = (x[i] ** 2 + y[i] ** 2 + z[i] ** 2) ** 0.5
+        if la == 0:
+            assert radius == pytest.approx(a)
+        if abs(la) == 90:
+            assert radius == pytest.approx(b)
+
+
 def indices(neighbours):
     return [index for index, _ in neighbours]
 

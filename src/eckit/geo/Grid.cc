@@ -11,6 +11,8 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Range.h"
+#include "eckit/geo/Search.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
@@ -118,6 +120,13 @@ size_t Grid::size() const {
 
 void Grid::cache() const {
     // By default, there's no cacheable data, so do nothing
+}
+
+
+const Search& Grid::search() const {
+    // the grid holds its search, so it is not evicted from the cache while the grid exists
+    std::call_once(search_once_, [this]() { search_ = cache::SearchCache::instance().get(*this); });
+    return *search_;
 }
 
 

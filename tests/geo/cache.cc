@@ -12,10 +12,14 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Search.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/InMemoryCache.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/MemoryUsage.h"
+#include "eckit/geo/cache/SearchCache.h"
+#include "eckit/geo/search/TreeMappedFile.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
@@ -287,6 +291,54 @@ CASE("InMemoryCache: usage, capacity and evictions") {
     cached.capacity(MemoryUsage{1000, 0});
     EXPECT_EQUAL(cached.size(), 0);
     EXPECT_EQUAL(Cache::total_footprint(), total);
+}
+
+
+CASE("SearchCache: a grid search, accounted for") {
+    auto& cache = cache::SearchCache::instance();
+    cache.clear();
+
+    const auto capacity = cache.capacity();
+
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
+
+    // a grid holds its search (default configuration), loading it increases the cache usage
+    const auto& search = grid->search();
+    EXPECT(search.footprint());
+    EXPECT_EQUAL(cache.usage(), search.footprint());
+    EXPECT(&search == &grid->search());
+
+    // default tree, as mir: a cache file, using shared memory (page cache)
+    if (LibEcKitGeo::caching()) {
+        EXPECT(dynamic_cast<const search::TreeMappedCacheFile*>(&search.tree()) != nullptr);
+        EXPECT(search.footprint().shared() > 0);
+    }
+
+    // searches are cached by grid and k-d tree configuration
+    auto memory = cache.get(*grid, spec::Custom{{{"search-tree", "memory"}}});
+    EXPECT(memory.get() != &search);
+    EXPECT(memory->footprint().memory() > 0);
+    EXPECT_EQUAL(cache.usage(), search.footprint() + memory->footprint());
+    EXPECT(cache.get(*grid, spec::Custom{{{"search-tree", "memory"}}}) == memory);
+
+    // other behaviours share the k-d tree, so they are not accounted for again
+    auto knn = cache.get(*grid, spec::Custom{{{"search-tree", "memory"}, {"search", "knn"}, {"search-k", 4}}});
+    EXPECT(&knn->tree() == &memory->tree());
+    EXPECT_EQUAL(knn->search(PointLonLat{14., 1.}).size(), 4);
+    EXPECT_EQUAL(cache.size(), 2);
+
+    // searches in use are not evicted (the grid's own, and the other shared by knn)
+    memory.reset();
+    cache.capacity(cache::MemoryUsage{0, 0});
+    EXPECT_EQUAL(cache.size(), 2);
+
+    knn.reset();
+    cache.capacity(cache::MemoryUsage{0, 0});
+    EXPECT_EQUAL(cache.size(), 1);
+    EXPECT_EQUAL(cache.usage(), search.footprint());
+
+    cache.capacity(capacity);
+    cache.clear();
 }
 
 

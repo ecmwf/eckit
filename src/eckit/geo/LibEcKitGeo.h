@@ -34,6 +34,11 @@ public:
     static bool caching();
     static std::string cacheDir();
 
+    /// k-d tree when caching
+    static std::string searchTree();
+    static bool searchFastBuild();
+    static std::string searchCacheCapacity();
+
     static void purgeCacheDir();
     static void purgeCacheArea();
     static void purgeCacheGrid();

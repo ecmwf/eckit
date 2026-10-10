@@ -10,6 +10,7 @@ findlibs.load("eckit_geo", "eckitlib")
 from eckit._utils import configure_ca_bundle_from_certifi
 from eckit._utils import configure_projdb
 from eckit.geo._eckit_geo import *
+from eckit.geo._eckit_geo_search import *
 
 configure_projdb()
 configure_ca_bundle_from_certifi()

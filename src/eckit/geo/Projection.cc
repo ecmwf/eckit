@@ -20,7 +20,6 @@
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
-#include "eckit/types/FloatCompare.h"
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
@@ -53,6 +52,11 @@ struct ReverseRegistry {
 
 /// Projection of a type, reversed if the spec has "reverse": true
 const Projection* make(const std::string& type, const Projection::Spec& spec) {
+    if (spec.has("x_0") || spec.has("y_0")) {
+        throw exception::SpecError("ProjectionFactory: no false easting/northing (x_0, y_0), see the grid's 'false'",
+                                   Here());
+    }
+
     if (!spec.get_bool("reverse", false)) {
         return Factory<Projection>::instance().get(type).create(spec);
     }
@@ -276,14 +280,6 @@ const Projection* ProjectionFactory::make_default() {
 
 void Projection::fill_spec(spec::Custom& custom) const {
     figure_->fill_projection_spec(custom);
-
-    if (!types::is_approximately_equal(false_.X(), 0.)) {
-        custom.set("x_0", false_.X());
-    }
-
-    if (!types::is_approximately_equal(false_.Y(), 0.)) {
-        custom.set("y_0", false_.Y());
-    }
 }
 
 

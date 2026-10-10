@@ -112,7 +112,7 @@ Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Sh
     configure(spec);
 
     // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
-    const auto& figure = grid.projection().source_figure();
+    const auto& figure = grid.figure();
     shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
 
     // the k-d tree depends on the grid points and the figure they're converted on

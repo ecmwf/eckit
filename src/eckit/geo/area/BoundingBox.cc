@@ -111,6 +111,23 @@ private:
 };
 
 
+/// Projection inverted, by reference
+class Inverse final : public Projection {
+public:
+
+    explicit Inverse(const Projection& projection) : projection_(projection) {}
+
+    Point fwd(const Point& p) const override { return projection_.inv(p); }
+    Point inv(const Point& q) const override { return projection_.fwd(q); }
+
+    const std::string& type() const override { return projection_.type(); }
+
+private:
+
+    const Projection& projection_;
+};
+
+
 struct Derivate {
     Derivate(const Projection& p, PointXY A, PointXY B, double h, double refLongitude = 0.) :
         projection_(p),
@@ -376,12 +393,24 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, Poin
     constexpr double precision_ll = 0.5e-6;  // to microdegrees
     constexpr double precision_xy = 0.5e-1;  // to decimeters
 
-    // not (lon, lat) points (e.g. geocentric), all of them are included
-    if (projection.source_point_coordinates() != point_coordinates<PointLonLat>()) {
-        return std::make_unique<BoundingBox>();
+    const auto& ll = point_coordinates<PointLonLat>();
+    const auto& xy = point_coordinates<PointXY>();
+
+    // (lon, lat) to (x, y), or the reverse
+    if (projection.source_point_coordinates() == ll && projection.target_point_coordinates() == xy) {
+        return make_bounding_box(min, max, projection, precision_ll, precision_xy);
     }
 
-    return make_bounding_box(min, max, projection, precision_ll, precision_xy);
+    if (projection.source_point_coordinates() == xy && projection.target_point_coordinates() == ll) {
+        return make_bounding_box(min, max, Inverse{projection}, precision_ll, precision_xy);
+    }
+
+    if (projection.source_point_coordinates() == ll || projection.target_point_coordinates() == ll) {
+        throw exception::ProjectionError("BoundingBox: projection between (lon, lat) and (x, y) expected", Here());
+    }
+
+    // not geographic points (e.g. geocentric), all of them are included
+    return std::make_unique<BoundingBox>();
 }
 
 

@@ -144,10 +144,10 @@ CASE("Grid from increments") {
 
 
 CASE("Grid::to_xyz") {
-    // points from the projection source, geocentric
+    // points from the projection target, geocentric
     constexpr auto GEOCENTRIC_GRID =
         R"({"type": "regular_xy", "grid": [1000000, 1000000], "bounding_box_xy": [-2000000, -2000000, 2000000, 2000000],)"
-        R"( "projection": {"type": "proj", "source": "+proj=geocent +ellps=WGS84", "target": "EPSG:3857"}})";
+        R"( "projection": {"type": "proj", "source": "EPSG:3857", "target": "+proj=geocent +ellps=WGS84"}})";
 
     // the (lon, lat) grid points, one by one, on the given figure
     auto expect_on_figure = [](const Grid& grid, double a, double b) {
@@ -181,10 +181,11 @@ CASE("Grid::to_xyz") {
     }
 
 
-    SECTION("PROJ, on the source figure") {
+    SECTION("PROJ, on the figure of the grid points") {
         // EPSG:2056 is on Bessel 1841, its (lon, lat) on WGS 84 (EPSG:4326)
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string("swisslv95"));
-        EXPECT(std::abs(grid->figure().a() - figure::DatumWgs84::a) > 1.);
+        EXPECT(std::abs(grid->projection().source_figure().a() - figure::DatumWgs84::a) > 1.);
+        EXPECT(std::abs(grid->figure().a() - figure::DatumWgs84::a) < 1e-3);
 
         expect_on_figure(*grid, figure::DatumWgs84::a, figure::DatumWgs84::b);
     }

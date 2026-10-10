@@ -222,9 +222,8 @@ std::vector<std::vector<double>> Grid::to_xyz() const {
         return xyz;
     }
 
-    const auto& figure    = projection().source_figure();
     const auto [lat, lon] = to_latlons();
-    return projection::LonLatToXYZ(figure.a(), figure.b()).fwd(lon, lat);
+    return projection::LonLatToXYZ(figure().a(), figure().b()).fwd(lon, lat);
 }
 
 
@@ -422,6 +421,10 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
 
     if (std::vector<double> grid; cfg->get("grid", grid) && grid.size() == 2) {
         back->set("type", "regular_ll");
+    }
+
+    if (cfg->has("x") && cfg->has("y")) {
+        back->set("type", "regular_xy");
     }
 
     if (auto lats = cfg->has("latitudes"), lons = cfg->has("longitudes"); lats || lons) {

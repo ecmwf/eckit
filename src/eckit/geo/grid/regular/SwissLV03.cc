@@ -15,10 +15,10 @@ namespace eckit::geo::grid::regular {
 
 
 struct SwissLV03 : RegularXY {
-    explicit SwissLV03(const Spec& spec) :                //
-        RegularXY(RangeXY::make_from_spec(spec, "x"),     //
-                  RangeXY::make_from_spec(spec, "y"),     //
-                  new projection::PROJ("EPSG:21781")) {}  // https://epsg.io/21781
+    explicit SwissLV03(const Spec& spec) :                                                  //
+        RegularXY(RangeXY::make_from_spec(spec, "x"),                                       //
+                  RangeXY::make_from_spec(spec, "y"),                                       //
+                  new projection::PROJ("EPSG:21781", projection::PROJ::proj_default())) {}  // https://epsg.io/21781
 };
 
 

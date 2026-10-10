@@ -11,12 +11,9 @@
 #include "eckit/geo/Point.h"
 
 
-namespace eckit::geo {
-class Projection;
-namespace grid {
+namespace eckit::geo::grid {
 class Regular;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
@@ -33,7 +30,7 @@ private:
 
     // -- Members
 
-    const Projection& projection_;
+    const grid::Regular& grid_;
 
     const bool xy_;
     const std::vector<double>& x_;

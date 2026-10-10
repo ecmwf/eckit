@@ -307,7 +307,7 @@ CASE("make_from_projection (1)") {
     }
 
     EXPECT_THROWS_AS(auto dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
-                     std::bad_variant_access);
+                     exception::ProjectionError);
 
     auto bbox = area::BoundingBox::make_from_projection(PointLonLat{0., 0.}, PointLonLat{2., 1.}, rotation);
     ASSERT(bbox);

@@ -50,6 +50,9 @@ protected:
 
     // -- Methods
 
+    /// Point of grid coordinates (x, y)
+    virtual Point point(double x, double y) const { return projection().from_grid_xy(x, y); }
+
     void scan(const order_type& to);
     void scan(order::Scan);
     const order::Scan& scan() const { return scan_; }

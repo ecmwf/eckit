@@ -156,7 +156,8 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
-    virtual const Figure& figure() const { return projection().figure(); }
+    /// Figure of the grid points (by default, the projection source's)
+    virtual const Figure& figure() const { return projection().source_figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;

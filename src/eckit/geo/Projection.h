@@ -67,8 +67,6 @@ public:
     /// Map a grid's (x, y) coordinates to geographic coordinates
     virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
 
-    const PointXY& falseXY() const { return false_; }
-
     const Figure& figure() const { return *figure_; }
 
     /// Figure of the source coordinates, which PROJ can have different from the target's
@@ -123,7 +121,6 @@ private:
 
     std::shared_ptr<const Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
-    PointXY false_;
     size_t source_;  // point types (as Point alternatives)
     size_t target_;
 

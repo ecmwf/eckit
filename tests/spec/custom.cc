@@ -148,6 +148,16 @@ b:
 }
 
 
+CASE("Custom::make_from_value, booleans") {
+    std::unique_ptr<Custom> custom(
+        Custom::make_from_value(YAMLParser::decodeString("{a: true, b: false, c: [true, false]}")));
+
+    EXPECT_EQUAL(custom->str(), R"({"a":true,"b":false,"c":[true,false]})");
+    EXPECT(custom->get_bool("a"));
+    EXPECT_NOT(custom->get_bool("b"));
+}
+
+
 CASE("Custom::operator==") {
     Custom a({{"foo", "bar"}, {"boo", "far"}});
     Custom b({{"bOo", "far"}, {"Foo", "bar"}});

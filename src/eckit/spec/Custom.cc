@@ -203,7 +203,8 @@ Custom* Custom::make_from_value(const Value& value) {
     ASSERT(value.isMap());
 
     auto scalar = [](const Value& value) -> value_type {
-        return value.isNumber()   ? value_type(static_cast<int>(value))
+        return value.isBool()     ? value_type(static_cast<bool>(value))
+               : value.isNumber() ? value_type(static_cast<int>(value))
                : value.isDouble() ? value_type(static_cast<double>(value))
                : value.isString() ? static_cast<std::string>(value)
                                   : throw BadValue(value, Here());

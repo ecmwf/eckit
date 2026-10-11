@@ -228,6 +228,39 @@ CASE("RegularXY: as GRIB") {
 }
 
 
+CASE("RegularXY: space_view, as GRIB") {
+    // grids as GRIB (by eccodes): Nr=6.6107, dx=3622, dy=3622 (or 3610), Xp=Yp=1856, sectors (Xo, Yo) of 16 x 16 (or
+    // 12) points; points as the eccodes iterator (and PROJ geos), to microdegrees
+    constexpr double microdegree = 1e-6;
+
+    for (
+        const auto& [spec_str, first_second_last] : std::vector<std::pair<std::string, std::vector<PointLonLat>>>{
+            {R"({"false":[1067074.48,-467594.435],"projection":{"h":35747054.5503,"reverse":true,"type":"space_view"},)"
+             R"("x":[0,44961.0033558134,2997.40022372089],"y":[0,-44961.0033558134,-2997.40022372089]})",
+             {{350.299524805, 4.223693723}, {350.327193534, 4.223622147}, {350.719698129, 3.815601110}}},
+            // iScansNegatively=1, jScansPositively=1 (as MSG)
+            {R"({"false":[-1022113.476,422633.432],"projection":{"h":35747054.5503,"reverse":true,"type":"space_view"},)"
+             R"("x":[0,44961.0033558134,2997.40022372089],"y":[0,-44961.0033558134,-2997.40022372089]})",
+             {{9.280301871, -3.815601110}, {9.307903835, -3.815663064}, {9.700475195, -4.223693723}}},
+            {R"({"false":[-1632353.683,-1968348.046],)"
+             R"("projection":{"figure":"wgs84","h":35785813.2659,"lon_0":-75,"reverse":true,"type":"space_view"},)"
+             R"("x":[0,45009.7522881123,3000.65015254082],"y":[0,-33005.8361442917,-3000.53055857197]})",
+             {{300.905565350, 18.425011761}, {300.936080607, 18.425558651}, {301.327135202, 18.106822780}}},
+        }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec_str));
+        EXPECT_EQUAL(grid->spec_str(), spec_str);
+
+        const auto points = grid->to_points();
+        EXPECT(points_equal(points.front(), first_second_last[0], microdegree));
+        EXPECT(points_equal(points[1], first_second_last[1], microdegree));
+        EXPECT(points_equal(points.back(), first_second_last[2], microdegree));
+
+        // not a PROJ projection
+        EXPECT_THROWS(grid->projection().proj_str());
+    }
+}
+
+
 CASE("RegularXY") {
     if (!ProjectionFactory::has_type("proj")) {
         return;

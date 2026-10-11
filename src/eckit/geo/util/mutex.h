@@ -4,19 +4,27 @@
 
 #pragma once
 
+#define eckit_GEO_ECKIT_THREADS
+
 #include <map>
 #include <memory>
 #include <utility>
 
+#if defined(eckit_GEO_ECKIT_THREADS)
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#else
+#include <mutex>
+#endif
 
 
-/// Threading of eckit::geo, on eckit threads (pthreads) as production software requires, not on the STL threads
+/// Threading of eckit::geo, on eckit threads (pthreads) as production software requires, or on the STL threads
 namespace eckit::geo::util {
 
 
-/// Recursive mutex
+#if defined(eckit_GEO_ECKIT_THREADS)
+
+
 using recursive_mutex = eckit::Mutex;
 
 
@@ -56,6 +64,18 @@ void call_once(once_flag& flag, Callable&& fun) {
         flag.done_ = true;
     }
 }
+
+
+#else
+
+
+using std::call_once;
+using std::lock_guard;
+using std::once_flag;
+using std::recursive_mutex;
+
+
+#endif
 
 
 /// Recursive mutexes by key, created on first use and never released (the number of keys is bounded)

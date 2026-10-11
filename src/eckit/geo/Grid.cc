@@ -423,10 +423,6 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
         back->set("type", "regular_ll");
     }
 
-    if (cfg->has("x") && cfg->has("y")) {
-        back->set("type", "regular_xy");
-    }
-
     if (auto lats = cfg->has("latitudes"), lons = cfg->has("longitudes"); lats || lons) {
         if (lats != lons) {
             throw exception::SpecError("Grid: both 'latitudes' and 'longitudes' are required", Here());
@@ -447,6 +443,11 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
 
     if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
         cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
+    }
+
+    // x and y (also of a named grid) are of a regular_xy
+    if (!cfg->has("type") && cfg->has("x") && cfg->has("y")) {
+        cfg->push_back(new spec::Custom{{"type", "regular_xy"}});
     }
 
     return cfg;

@@ -128,6 +128,16 @@ CASE("RegularXY: as GRIB") {
               R"("projection":{"lat_0":90,"lat_ts":60,"lon_0":280,"reverse":true,"type":"stere"},)"
               R"("x":[0,1910000,2500],"y":[0,1422500,2500]})",
               {{268.656832, 38.7017}, {268.681435261, 38.705547328}, {290.67818439, 50.672962595}}},
+             // gridType=lambert_azimuthal_equal_area, Nx=1000, Ny=950, Dx=Dy=5000 m, standardParallel=52,
+             // centralLongitude=10, shapeOfTheEarth=4 (GRS80), jScansPositively=0
+             {"opera.grib2",
+              "x: [0, 4995000, 5000], y: [0, -4745000, -5000], false: [1818500.021, -2287499.955]",
+              "type: laea, lat_0: 52, lon_0: 10, figure: grs80",
+              "+proj=laea +lat_0=52 +lon_0=10 +ellps=GRS80",
+              R"({"false":[1818500.021,-2287499.955],)"
+              R"("projection":{"figure":"grs80","lat_0":52,"lon_0":10,"reverse":true,"type":"laea"},)"
+              R"("x":[0,4995000,5000],"y":[0,-4745000,-5000]})",
+              {{-35.034024, 66.982142999}, {-34.944263537, 67.009598344}, {41.139704951, 23.942342883}}},
          }) {
         SECTION(test.name) {
             auto check = [&test](const std::string& projection) {

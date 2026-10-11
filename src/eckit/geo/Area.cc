@@ -16,6 +16,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo {
@@ -53,6 +54,11 @@ const Area::Spec& Area::spec() const {
     }
 
     return *spec_;
+}
+
+
+std::string Area::uid() const {
+    return MD5{spec_str()}.digest();
 }
 
 
@@ -142,9 +148,23 @@ Area::Spec* AreaFactory::make_spec(const Area::Spec& spec) {
 
 void AreaFactory::add_library(const std::string& lib, Area::Spec* spec) {
     lock_type lock;
+
+    libraries()[lib].reset(spec);
+}
+
+
+spec::Custom* AreaFactory::library(const std::string& lib) {
+    lock_type lock;
     share::Area::instance();
 
-    libraries().emplace(lib, spec);
+    auto it = libraries().find(lib);
+    if (it == libraries().end()) {
+        throw exception::AreaError("AreaFactory: unknown area library '" + lib + "'", Here());
+    }
+
+    const auto* custom = dynamic_cast<const spec::Custom*>(it->second.get());
+    ASSERT(custom != nullptr);
+    return new spec::Custom(custom->container());
 }
 
 

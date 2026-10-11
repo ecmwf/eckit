@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <cctype>
 #include <ostream>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/Search.h"
+#include "eckit/geo/cache/CropCache.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
@@ -264,8 +266,8 @@ const Area& Grid::area() const {
 }
 
 
-Grid::renumber_type Grid::crop(const Area&) const {
-    throw exception::NotImplemented("Grid: crop() is not implemented for type '" + type() + "'", Here());
+Grid::renumber_type Grid::crop(const Area& area) const {
+    return cache::CropCache::instance().get(*this, area)->indices;
 }
 
 
@@ -275,8 +277,30 @@ const Projection& Grid::projection() const {
 }
 
 
-Grid* Grid::make_grid_cropped(const Area&) const {
-    throw exception::NotImplemented("Grid: make_grid_cropped() is not implemented for type '" + type() + "'", Here());
+Grid* Grid::make_grid_cropped(const Area& area) const {
+    return make_grid_cropped_unstructured_ll(area);
+}
+
+
+Grid* Grid::make_grid_cropped_unstructured_ll(const Area& area) const {
+    const auto indices = crop(area);
+    if (indices.empty()) {
+        throw exception::GridError("Grid: cannot crop grid (empty intersection)", Here());
+    }
+
+    const auto [lat, lon] = to_latlons();
+
+    std::vector<double> cropped_lat;
+    std::vector<double> cropped_lon;
+    cropped_lat.reserve(indices.size());
+    cropped_lon.reserve(indices.size());
+
+    for (auto i : indices) {
+        cropped_lat.push_back(lat[i]);
+        cropped_lon.push_back(lon[i]);
+    }
+
+    return new grid::Unstructured(cropped_lon, cropped_lat);
 }
 
 

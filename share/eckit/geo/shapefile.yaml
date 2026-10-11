@@ -1,296 +1,1265 @@
 ---
 
+# GISCO (Eurostat) region polygons, as shapefiles (EPSG:4326), at scales 1:100k (100k) and 1:1M (01m) to 1:60M (60m)
 url_prefix: https://gisco-services.ec.europa.eu/distribution/v2/
 
 area_libraries:
-  coas-rg-01m:
+  cntr-rg-01m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_01M_2016_4326.shp.zip
+    url: countries/shp/CNTR_RG_01M_2001_4326.shp.zip
+    name_field: CNTR_NAME
 
-  coas-rg-03m:
+  cntr-rg-03m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_03M_2016_4326.shp.zip
+    url: countries/shp/CNTR_RG_03M_2001_4326.shp.zip
+    name_field: CNTR_NAME
 
-  coas-rg-10m:
+  cntr-rg-10m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_10M_2016_4326.shp.zip
+    url: countries/shp/CNTR_RG_10M_2001_4326.shp.zip
+    name_field: CNTR_NAME
 
-  coas-rg-20m:
+  cntr-rg-20m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_20M_2016_4326.shp.zip
+    url: countries/shp/CNTR_RG_20M_2001_4326.shp.zip
+    name_field: CNTR_NAME
 
-  coas-rg-60m:
+  cntr-rg-01m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_60M_2016_4326.shp.zip
+    url: countries/shp/CNTR_RG_01M_2006_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-03m-2006:
+    type: shapefile
+    url: countries/shp/CNTR_RG_03M_2006_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-10m-2006:
+    type: shapefile
+    url: countries/shp/CNTR_RG_10M_2006_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-20m-2006:
+    type: shapefile
+    url: countries/shp/CNTR_RG_20M_2006_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-60m-2006:
+    type: shapefile
+    url: countries/shp/CNTR_RG_60M_2006_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-01m-2010:
+    type: shapefile
+    url: countries/shp/CNTR_RG_01M_2010_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-03m-2010:
+    type: shapefile
+    url: countries/shp/CNTR_RG_03M_2010_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-10m-2010:
+    type: shapefile
+    url: countries/shp/CNTR_RG_10M_2010_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-20m-2010:
+    type: shapefile
+    url: countries/shp/CNTR_RG_20M_2010_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-60m-2010:
+    type: shapefile
+    url: countries/shp/CNTR_RG_60M_2010_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-01m-2013:
+    type: shapefile
+    url: countries/shp/CNTR_RG_01M_2013_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-03m-2013:
+    type: shapefile
+    url: countries/shp/CNTR_RG_03M_2013_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-10m-2013:
+    type: shapefile
+    url: countries/shp/CNTR_RG_10M_2013_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-20m-2013:
+    type: shapefile
+    url: countries/shp/CNTR_RG_20M_2013_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-60m-2013:
+    type: shapefile
+    url: countries/shp/CNTR_RG_60M_2013_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-01m-2016:
+    type: shapefile
+    url: countries/shp/CNTR_RG_01M_2016_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-03m-2016:
+    type: shapefile
+    url: countries/shp/CNTR_RG_03M_2016_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-10m-2016:
+    type: shapefile
+    url: countries/shp/CNTR_RG_10M_2016_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-20m-2016:
+    type: shapefile
+    url: countries/shp/CNTR_RG_20M_2016_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-60m-2016:
+    type: shapefile
+    url: countries/shp/CNTR_RG_60M_2016_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-01m-2020:
+    type: shapefile
+    url: countries/shp/CNTR_RG_01M_2020_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-03m-2020:
+    type: shapefile
+    url: countries/shp/CNTR_RG_03M_2020_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-10m-2020:
+    type: shapefile
+    url: countries/shp/CNTR_RG_10M_2020_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-20m-2020:
+    type: shapefile
+    url: countries/shp/CNTR_RG_20M_2020_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-60m-2020:
+    type: shapefile
+    url: countries/shp/CNTR_RG_60M_2020_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-01m-2024:
+    type: shapefile
+    url: countries/shp/CNTR_RG_01M_2024_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-03m-2024:
+    type: shapefile
+    url: countries/shp/CNTR_RG_03M_2024_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-10m-2024:
+    type: shapefile
+    url: countries/shp/CNTR_RG_10M_2024_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-20m-2024:
+    type: shapefile
+    url: countries/shp/CNTR_RG_20M_2024_4326.shp.zip
+    name_field: CNTR_NAME
+
+  cntr-rg-60m-2024:
+    type: shapefile
+    url: countries/shp/CNTR_RG_60M_2024_4326.shp.zip
+    name_field: CNTR_NAME
+
+  coas-rg-01m-2006:
+    type: shapefile
+    url: coas/shp/COAS_RG_01M_2006_4326.shp.zip
+
+  coas-rg-03m-2006:
+    type: shapefile
+    url: coas/shp/COAS_RG_03M_2006_4326.shp.zip
+
+  coas-rg-10m-2006:
+    type: shapefile
+    url: coas/shp/COAS_RG_10M_2006_4326.shp.zip
+
+  coas-rg-20m-2006:
+    type: shapefile
+    url: coas/shp/COAS_RG_20M_2006_4326.shp.zip
+
+  coas-rg-60m-2006:
+    type: shapefile
+    url: coas/shp/COAS_RG_60M_2006_4326.shp.zip
+
+  coas-rg-01m-2010:
+    type: shapefile
+    url: coas/shp/COAS_RG_01M_2010_4326.shp.zip
+
+  coas-rg-03m-2010:
+    type: shapefile
+    url: coas/shp/COAS_RG_03M_2010_4326.shp.zip
+
+  coas-rg-10m-2010:
+    type: shapefile
+    url: coas/shp/COAS_RG_10M_2010_4326.shp.zip
+
+  coas-rg-20m-2010:
+    type: shapefile
+    url: coas/shp/COAS_RG_20M_2010_4326.shp.zip
+
+  coas-rg-60m-2010:
+    type: shapefile
+    url: coas/shp/COAS_RG_60M_2010_4326.shp.zip
+
+  coas-rg-01m-2013:
+    type: shapefile
+    url: coas/shp/COAS_RG_01M_2013_4326.shp.zip
+
+  coas-rg-03m-2013:
+    type: shapefile
+    url: coas/shp/COAS_RG_03M_2013_4326.shp.zip
+
+  coas-rg-10m-2013:
+    type: shapefile
+    url: coas/shp/COAS_RG_10M_2013_4326.shp.zip
+
+  coas-rg-20m-2013:
+    type: shapefile
+    url: coas/shp/COAS_RG_20M_2013_4326.shp.zip
+
+  coas-rg-60m-2013:
+    type: shapefile
+    url: coas/shp/COAS_RG_60M_2013_4326.shp.zip
+
+  coas-rg-01m-2016:
+    type: shapefile
+    url: coas/shp/COAS_RG_01M_2016_4326.shp.zip
+
+  coas-rg-03m-2016:
+    type: shapefile
+    url: coas/shp/COAS_RG_03M_2016_4326.shp.zip
+
+  coas-rg-10m-2016:
+    type: shapefile
+    url: coas/shp/COAS_RG_10M_2016_4326.shp.zip
+
+  coas-rg-20m-2016:
+    type: shapefile
+    url: coas/shp/COAS_RG_20M_2016_4326.shp.zip
+
+  coas-rg-60m-2016:
+    type: shapefile
+    url: coas/shp/COAS_RG_60M_2016_4326.shp.zip
+
+  comm-rg-01m-2001:
+    type: shapefile
+    url: communes/shp/COMM_RG_01M_2001_4326.shp.zip
+    name_field: COMM_ID
+
+  comm-rg-2004:
+    type: shapefile
+    url: communes/shp/COMM_RG_2004_4326.shp.zip
+    name_field: COMM_ID
+
+  comm-rg-2006:
+    type: shapefile
+    url: communes/shp/COMM_RG_2006_4326.shp.zip
+    name_field: COMM_ID
+
+  comm-rg-2008:
+    type: shapefile
+    url: communes/shp/COMM_RG_2008_4326.shp.zip
+    name_field: COMM_ID
+
+  comm-rg-01m-2010:
+    type: shapefile
+    url: communes/shp/COMM_RG_01M_2010_4326.shp.zip
+    name_field: COMM_ID
+
+  comm-rg-01m-2013:
+    type: shapefile
+    url: communes/shp/COMM_RG_01M_2013_4326.shp.zip
+    name_field: COMM_ID
+
+  comm-rg-01m-2016:
+    type: shapefile
+    url: communes/shp/COMM_RG_01M_2016_4326.shp.zip
+    name_field: COMM_ID
+
+  lau-rg-01m-2011:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2011_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2012:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2012_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2013:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2013_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2014:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2014_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2015:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2015_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2016:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2016_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2017:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2017_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2018:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2018_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2019:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2019_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2020:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2020_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2021:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2021_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2022:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2022_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2023:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2023_4326.shp.zip
+    name_field: GISCO_ID
+
+  lau-rg-01m-2024:
+    type: shapefile
+    url: lau/shp/LAU_RG_01M_2024_4326.shp.zip
+    name_field: GISCO_ID
 
   nuts-rg-01m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2003_4326.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-01m-2006:
+  nuts-rg-01m-2003-levl-0:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2003_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-01m-2010:
+  nuts-rg-01m-2003-levl-1:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2003_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-01m-2013:
+  nuts-rg-01m-2003-levl-2:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2003_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-01m-2016:
+  nuts-rg-01m-2003-levl-3:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2016_4326.shp.zip
-
-  nuts-rg-01m-2021:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2021_4326.shp.zip
-
-  nuts-rg-01m-2024:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2003_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-03m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2003_4326.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-03m-2006:
+  nuts-rg-03m-2003-levl-0:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2003_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-03m-2010:
+  nuts-rg-03m-2003-levl-1:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2003_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-03m-2013:
+  nuts-rg-03m-2003-levl-2:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2003_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-03m-2016:
+  nuts-rg-03m-2003-levl-3:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2016_4326.shp.zip
-
-  nuts-rg-03m-2021:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2021_4326.shp.zip
-
-  nuts-rg-03m-2024:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2003_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-10m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2003_4326.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-10m-2006:
+  nuts-rg-10m-2003-levl-0:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2003_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-10m-2010:
+  nuts-rg-10m-2003-levl-1:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2003_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-10m-2013:
+  nuts-rg-10m-2003-levl-2:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2003_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-10m-2016:
+  nuts-rg-10m-2003-levl-3:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2016_4326.shp.zip
-
-  nuts-rg-10m-2021:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2021_4326.shp.zip
-
-  nuts-rg-10m-2024:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2003_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-20m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2003_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2003-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2003_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2003-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2003_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2003-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2003_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2003-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2003_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2006:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2006_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2006-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2006_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2006-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2006_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2006-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2006_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2006-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2006_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2006:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2006_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2006-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2006_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2006-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2006_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2006-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2006_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2006-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2006_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2006:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2006_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2006-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2006_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2006-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2006_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2006-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2006_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2006-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2006_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-20m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2006_4326.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-20m-2010:
+  nuts-rg-20m-2006-levl-0:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2006_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-20m-2013:
+  nuts-rg-20m-2006-levl-1:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2006_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-20m-2016:
+  nuts-rg-20m-2006-levl-2:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2006_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
 
-  nuts-rg-20m-2021:
+  nuts-rg-20m-2006-levl-3:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2021_4326.shp.zip
-
-  nuts-rg-20m-2024:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2006_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-60m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2006_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2006-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2006_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2006-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2006_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2006-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2006_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2006-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2006_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2010:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2010_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2010-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2010_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2010-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2010_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2010-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2010_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2010-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2010_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2010:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2010_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2010-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2010_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2010-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2010_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2010-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2010_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2010-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2010_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2010:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2010_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2010-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2010_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2010-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2010_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2010-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2010_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2010-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2010_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2010:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2010_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2010-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2010_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2010-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2010_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2010-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2010_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2010-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2010_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-60m-2010:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2010_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2010-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2010_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2010-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2010_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2010-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2010_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2010-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2010_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2013:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2013_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2013-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2013_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2013-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2013_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2013-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2013_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2013-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2013_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2013:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2013_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2013-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2013_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2013-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2013_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2013-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2013_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2013-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2013_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2013:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2013_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2013-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2013_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2013-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2013_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2013-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2013_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2013-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2013_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2013:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2013_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2013-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2013_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2013-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2013_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2013-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2013_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2013-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2013_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-60m-2013:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2013_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2013-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2013_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2013-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2013_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2013-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2013_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2013-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2013_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2016:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2016_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2016-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2016_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2016-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2016_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2016-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2016_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2016-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2016_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2016:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2016_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2016-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2016_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2016-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2016_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2016-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2016_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2016-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2016_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2016:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2016_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2016-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2016_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2016-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2016_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2016-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2016_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2016-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2016_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2016:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2016_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2016-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2016_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2016-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2016_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2016-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2016_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2016-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2016_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-60m-2016:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2016_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2016-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2016_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2016-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2016_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2016-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2016_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2016-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2016_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2021:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2021_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2021-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2021_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2021-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2021_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2021-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2021_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2021-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2021_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2021:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2021_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2021-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2021_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2021-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2021_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2021-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2021_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2021-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2021_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2021:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2021_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2021-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2021_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2021-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2021_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2021-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2021_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2021-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2021_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2021:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2021_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2021-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2021_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2021-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2021_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2021-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2021_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2021-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2021_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-60m-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2021_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2021_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2021-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2021_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2021-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2021_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2021-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2021_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-60m-2021-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_60M_2021_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2024:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2024_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2024-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2024_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2024-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2024_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2024-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2024_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-01m-2024-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_01M_2024_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2024:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2024_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2024-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2024_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2024-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2024_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2024-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2024_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-03m-2024-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_03M_2024_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2024:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2024_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2024-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2024_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2024-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2024_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2024-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2024_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-10m-2024-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_10M_2024_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2024:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2024_4326.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2024-levl-0:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2024_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2024-levl-1:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2024_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2024-levl-2:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2024_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
+
+  nuts-rg-20m-2024-levl-3:
+    type: shapefile
+    url: nuts/shp/NUTS_RG_20M_2024_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
   nuts-rg-60m-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2024_4326.shp.zip
+    name_field: NUTS_ID
 
-  ref-nuts-2003-01m:
+  nuts-rg-60m-2024-levl-0:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-01m.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2024_4326_LEVL_0.shp.zip
+    name_field: NUTS_ID
 
-  ref-nuts-2003-03m:
+  nuts-rg-60m-2024-levl-1:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-03m.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2024_4326_LEVL_1.shp.zip
+    name_field: NUTS_ID
 
-  ref-nuts-2003-10m:
+  nuts-rg-60m-2024-levl-2:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-10m.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2024_4326_LEVL_2.shp.zip
+    name_field: NUTS_ID
 
-  ref-nuts-2003-20m:
+  nuts-rg-60m-2024-levl-3:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-20m.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2024_4326_LEVL_3.shp.zip
+    name_field: NUTS_ID
 
-  ref-nuts-2006-01m:
+  urau-rg-100k-2014:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-01m.shp.zip
+    url: urau/shp/URAU_RG_100K_2014_4326.shp.zip
+    name_field: URAU_CODE
 
-  ref-nuts-2006-03m:
+  urau-rg-100k-2018:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-03m.shp.zip
+    url: urau/shp/URAU_RG_100K_2018_4326.shp.zip
+    name_field: URAU_CODE
 
-  ref-nuts-2006-10m:
+  urau-rg-100k-2020:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-10m.shp.zip
+    url: urau/shp/URAU_RG_100K_2020_4326.shp.zip
+    name_field: URAU_CODE
 
-  ref-nuts-2006-20m:
+  urau-rg-100k-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-20m.shp.zip
+    url: urau/shp/URAU_RG_100K_2021_4326.shp.zip
+    name_field: URAU_CODE
 
-  ref-nuts-2006-60m:
+  urau-rg-100k-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-60m.shp.zip
+    url: urau/shp/URAU_RG_100K_2024_4326.shp.zip
+    name_field: URAU_CODE
 
-  ref-nuts-2010-01m:
+  urau-city-rg-03m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-01m.shp.zip
+    url: urau/shp/URAU_CITY_RG_03M_2001_4326.shp.zip
+    name_field: CITY_CODE
 
-  ref-nuts-2010-03m:
+  urau-city-rg-03m-2004:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-03m.shp.zip
+    url: urau/shp/URAU_CITY_RG_03M_2004_4326.shp.zip
+    name_field: CITY_CODE
 
-  ref-nuts-2010-10m:
+  urau-kern-rg-03m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-10m.shp.zip
+    url: urau/shp/URAU_KERN_RG_03M_2001_4326.shp.zip
+    name_field: KERN_CODE
 
-  ref-nuts-2010-20m:
+  urau-kern-rg-03m-2004:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-20m.shp.zip
+    url: urau/shp/URAU_KERN_RG_03M_2004_4326.shp.zip
+    name_field: KERN_CODE
 
-  ref-nuts-2010-60m:
+  urau-luz-rg-03m-2001:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-60m.shp.zip
+    url: urau/shp/URAU_LUZ_RG_03M_2001_4326.shp.zip
+    name_field: LUZ_CODE
 
-  ref-nuts-2013-01m:
+  urau-luz-rg-03m-2004:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-01m.shp.zip
-
-  ref-nuts-2013-03m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-03m.shp.zip
-
-  ref-nuts-2013-10m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-10m.shp.zip
-
-  ref-nuts-2013-20m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-20m.shp.zip
-
-  ref-nuts-2013-60m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-60m.shp.zip
-
-  ref-nuts-2016-01m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-01m.shp.zip
-
-  ref-nuts-2016-03m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-03m.shp.zip
-
-  ref-nuts-2016-10m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-10m.shp.zip
-
-  ref-nuts-2016-20m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-20m.shp.zip
-
-  ref-nuts-2016-60m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-60m.shp.zip
-
-  ref-nuts-2021-01m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-01m.shp.zip
-
-  ref-nuts-2021-03m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-03m.shp.zip
-
-  ref-nuts-2021-10m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-10m.shp.zip
-
-  ref-nuts-2021-20m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-20m.shp.zip
-
-  ref-nuts-2021-60m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-60m.shp.zip
-
-  ref-nuts-2024-01m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-01m.shp.zip
-
-  ref-nuts-2024-03m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-03m.shp.zip
-
-  ref-nuts-2024-10m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-10m.shp.zip
-
-  ref-nuts-2024-20m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-20m.shp.zip
-
-  ref-nuts-2024-60m:
-    type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-60m.shp.zip
+    url: urau/shp/URAU_LUZ_RG_03M_2004_4326.shp.zip
+    name_field: LUZ_CODE

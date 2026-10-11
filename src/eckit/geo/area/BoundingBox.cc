@@ -446,16 +446,18 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_typ
         s = SOUTH_POLE.lat();
     }
 
-    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
+    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[ (periodic, as the constructor, if spanning 2 pi)
     const auto min  = -PointLonLat::FLAT_ANGLE;
     const auto same = is_approximately_equal(w, e);
+    const auto periodic =
+        !same && (e - w > PointLonLat::FULL_ANGLE || is_approximately_equal(e - w, PointLonLat::FULL_ANGLE));
 
     w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
             ? min
             : PointLonLat::normalise_angle_to_minimum(w, min);
 
     auto a = PointLonLat::normalise_angle_to_minimum(e, w);
-    e      = same ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+    e      = same ? w : periodic || is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
 
     return std::make_unique<BoundingBox>(n, w, s, e);
 }
@@ -506,7 +508,9 @@ bool BoundingBox::contains(const Point& p) const {
 
     if ((south() < q.lat() && q.lat() < north()) || is_approximately_equal(q.lat(), north()) ||
         is_approximately_equal(q.lat(), south())) {
-        return PointLonLat::normalise_angle_to_minimum(q.lon(), west()) <= east();
+        // as latitudes, longitudes at the edges are approximate
+        const auto lon = PointLonLat::normalise_angle_to_minimum(q.lon(), west() - PointLonLat::EPS);
+        return lon <= east() || is_approximately_equal(lon, east());
     }
 
     return false;
@@ -544,8 +548,9 @@ bool BoundingBox::intersects(BoundingBox& other) const {
         n = s;
     }
 
+    // both periodic, from this west
     if (periodic() && other.periodic()) {
-        other = {n, other.west(), s, other.east()};
+        other = {n, west(), s, west() + PointLonLat::FULL_ANGLE};
         return intersectsSN;
     }
 

@@ -2,9 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from pathlib import Path
+
 import pytest
 
 from eckit.geo import Area
+from eckit.geo import Grid
+from eckit.geo import features
+
+# as the C++ tests (in the source tree)
+SHAPEFILE = Path(__file__).resolve().parents[4] / "tests" / "geo" / "CNTR_RG_60M_2024_4326.shp.zip"
 
 
 @pytest.mark.parametrize(
@@ -34,3 +41,80 @@ def test_area_equality():
     # equality is by spec, however the area is described
     assert Area(north=90, west=0, south=-90, east=360) == Area(area=[90, 0, -90, 360])
     assert Area(area=[10, 1, 0, 10]) != Area(area=[10, 0, 0, 10])
+
+
+def test_polygon():
+    lat, lon = [0.5, 0.5, 10.5, 10.5], [0.5, 10.5, 10.5, 0.5]
+    ring = Grid(latitudes=lat, longitudes=lon)
+    assert ring.type == "unstructured_ll"
+
+    polygon = Area(type="polygon", latitudes=lat, longitudes=lon)
+    assert polygon.type == "polygon"
+    assert polygon.spec == dict(type="polygon", uid=ring.uid)
+    assert Area(polygon.spec) == polygon
+    assert Area(type="polygon", uid=ring.uid) == polygon
+
+    with pytest.raises(ValueError):
+        Area(type="polygon", latitudes=[0, 0, 10], longitudes=[0, 10])
+
+
+def test_polygon_rings():
+    np = pytest.importorskip("numpy")
+
+    # rings as dicts (of lists or arrays), or grids
+    first = dict(latitudes=np.array([0.5, 0.5, 10.5, 10.5]), longitudes=np.array([0.5, 10.5, 10.5, 0.5]))
+    second = Grid(latitudes=[-19.5, -19.5, -10.5, -10.5], longitudes=[100.5, 110.5, 110.5, 100.5])
+
+    polygon = Area(type="polygon", rings=[first, second])
+    assert polygon.spec == dict(type="polygon", uid=[Grid(first).uid, second.uid])
+    assert Area(polygon.spec) == polygon
+
+    grid = Grid(grid=[1, 1])
+    assert len(grid.crop(polygon)) == 10 * 10 + 10 * 9
+
+
+NEEDS_SHAPEFILE_DOWNLOAD = pytest.mark.skipif(
+    not {"shapefile", "download"} <= features(), reason="eckit without shapefile or download support"
+)
+
+
+@NEEDS_SHAPEFILE_DOWNLOAD
+@pytest.mark.skipif(not SHAPEFILE.exists(), reason="shapefile not found")
+def test_shapefile():
+    # multiple rings (mainland and islands), by name or index
+    spec = dict(type="shapefile", file=str(SHAPEFILE), name_field="CNTR_NAME", name="Portugal")
+    portugal = Area(spec)
+    assert portugal.type == "shapefile"
+    assert portugal.spec == spec
+    assert Area(portugal.spec) == portugal
+
+    # from a URL (downloaded and cached, transparently), the same polygons
+    url = dict(type="shapefile", url=SHAPEFILE.as_uri(), name_field="CNTR_NAME", name="Portugal")
+    from_url = Area(url)
+    assert from_url.spec == url
+    assert from_url.uid == portugal.uid
+    assert from_url == portugal
+
+    grid = Grid(grid=[0.5, 0.5])
+    assert grid.crop(portugal)
+
+
+@NEEDS_SHAPEFILE_DOWNLOAD
+def test_shapefile_library():
+    # registered (see share/eckit/geo/shapefile.yaml), downloaded and cached transparently
+    try:
+        portugal = Area(type="shapefile", library="cntr-rg-60m-2024", name="Portugal")
+    except RuntimeError as e:
+        if "Download" not in str(e):
+            raise
+        pytest.skip(f"download not possible: {e}")
+
+    assert portugal.type == "shapefile"
+    assert portugal.spec == dict(type="shapefile", library="cntr-rg-60m-2024", name_field="CNTR_NAME", name="Portugal")
+    assert Area(portugal.spec) == portugal
+
+    # the same polygons, by the library's url
+    url = "https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip"
+    from_url = Area(type="shapefile", url=url, name_field="CNTR_NAME", name="Portugal")
+    assert from_url.spec == dict(type="shapefile", url=url, name_field="CNTR_NAME", name="Portugal")
+    assert from_url == portugal

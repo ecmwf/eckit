@@ -131,8 +131,14 @@ Point RegularLL::last_point() const {
 
 
 Grid* RegularLL::make_grid_cropped(const Area& crop) const {
+    // of the same type by a bounding box (unprojected), otherwise unstructured
+    if (!projection().is_default() || dynamic_cast<const area::BoundingBox*>(&crop) == nullptr) {
+        return make_grid_cropped_unstructured_ll(crop);
+    }
+
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularLL({dx(), dy()}, cropped);
+        // as the grid points (reference) and order
+        return new RegularLL({std::abs(dx()), std::abs(dy())}, cropped, reference(), scan());
     }
 
     throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());

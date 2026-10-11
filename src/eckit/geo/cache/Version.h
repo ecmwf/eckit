@@ -8,6 +8,7 @@
 namespace eckit::geo::cache::version {
 
 
+inline constexpr int CROP     = 1;
 inline constexpr int DOWNLOAD = 1;
 inline constexpr int LATLON   = 1;
 inline constexpr int SEARCH   = 1;

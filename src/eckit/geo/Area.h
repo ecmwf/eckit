@@ -51,6 +51,9 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
+    /// Identifies the area (for equality), independently of how it is specified
+    virtual std::string uid() const;
+
     /// Spec on its own
     virtual void fill_spec(spec::Custom&) const = 0;
 
@@ -80,7 +83,7 @@ private:
 
     // -- Friends
 
-    friend bool operator==(const Area& a, const Area& b) { return a.spec_str() == b.spec_str(); }
+    friend bool operator==(const Area& a, const Area& b) { return a.uid() == b.uid(); }
     friend bool operator!=(const Area& a, const Area& b) { return !(a == b); }
 };
 
@@ -101,6 +104,7 @@ struct AreaFactory {
     [[nodiscard]] static Area::Spec* make_spec(const Area::Spec&);
 
     static void add_library(const std::string& lib, Area::Spec*);
+    [[nodiscard]] static spec::Custom* library(const std::string& lib);
 
     static std::ostream& list(std::ostream&);
 };

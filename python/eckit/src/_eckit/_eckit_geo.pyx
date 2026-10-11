@@ -3,12 +3,43 @@
 
 
 cimport eckit_geo
+from libcpp cimport bool
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 cimport eckit
 
 eckit.eckit_main_initialise()
+
+
+cdef extern from *:
+    """
+    #include "eckit/eckit_config.h"
+    #include "eckit/geo/eckit_geo_config.h"
+
+    #if eckit_HAVE_CURL
+    inline bool eckit_geo_has_download() { return true; }
+    #else
+    inline bool eckit_geo_has_download() { return false; }
+    #endif
+
+    #if eckit_HAVE_GEO_AREA_SHAPEFILE
+    inline bool eckit_geo_has_shapefile() { return true; }
+    #else
+    inline bool eckit_geo_has_shapefile() { return false; }
+    #endif
+    """
+    bool eckit_geo_has_download()
+    bool eckit_geo_has_shapefile()
+
+
+def features() -> set:
+    """Optional features compiled in ("download", "shapefile")"""
+    available = {
+        "download": eckit_geo_has_download(),
+        "shapefile": eckit_geo_has_shapefile(),
+    }
+    return {name for name, have in available.items() if have}
 
 
 def version() -> str:

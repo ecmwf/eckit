@@ -28,7 +28,7 @@ static inline double calculate_C(double lat_1, double n) {
 
 
 static inline double calculate_n(double lat_1, double lat_2) {
-    if (auto n = 0.5 * (std::sin(lat_1 * util::DEGREE_TO_RADIAN) / std::sin(lat_2 * util::DEGREE_TO_RADIAN));
+    if (auto n = 0.5 * (std::sin(lat_1 * util::DEGREE_TO_RADIAN) + std::sin(lat_2 * util::DEGREE_TO_RADIAN));
         !types::is_approximately_equal(n, 0.)) {
         return n;
     }
@@ -60,9 +60,9 @@ AlbersEqualArea::AlbersEqualArea(double lon_0, double lat_0, double lat_1, doubl
 
 
 PointXY AlbersEqualArea::fwd(const PointLonLat& p) const {
-    auto pr     = PointLonLatR::make_from_lonlat(p.lon(), p.lat());
-    auto rho    = calculate_rho(R_, n_, C_, pr.latr());
-    auto thetar = n_ * (pr.lonr() - centre_r_.lonr());
+    auto rho    = calculate_rho(R_, n_, C_, p.lat() * util::DEGREE_TO_RADIAN);
+    auto thetar = n_ * PointLonLat::normalise_angle_to_minimum(p.lon() - centre_.lon(), -PointLonLat::FLAT_ANGLE) *
+                  util::DEGREE_TO_RADIAN;
 
     return PointXY{rho * std::sin(thetar), rho0_ - rho * std::cos(thetar)} + falseXY();
 }

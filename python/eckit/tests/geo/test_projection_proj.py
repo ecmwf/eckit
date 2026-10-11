@@ -72,6 +72,10 @@ def test_projdb_bad_env():
 
 @pytest.mark.skipif(db_path() is None, reason="no bundled proj.db")
 def test_projdb_fallback():
+    projdb_set_search_paths("", [])
+    if projdb_is_available():
+        pytest.skip("proj.db resolved without the bundled fallback")
+
     db = db_path()
 
     projdb_set_search_paths(BAD_DB, [BAD_DIR])

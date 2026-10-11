@@ -3,6 +3,7 @@
 
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
@@ -53,8 +54,21 @@ CASE("AlbersEqualArea") {
             auto bbbb  = std::get<PointXY>(proj2->fwd(b));
             auto bbbbb = std::get<PointLonLat>(proj2->inv(bbbb));
 
-            // EXPECT(points_equal(bb, bbbb, eps));
+            EXPECT(points_equal(bb, bbbb, 1e-6));
             EXPECT(points_equal(b, bbbbb));
+        }
+    }
+
+
+    SECTION("longitudes either side of the central meridian") {
+        for (const auto& p : std::vector<PointLonLat>{{0., 30.}, {-170., 40.}, {100., 50.}, {-300., 35.}}) {
+            const auto q = proj1.fwd(p);
+            EXPECT(points_equal(proj1.fwd(PointLonLat{p.lon() + 360., p.lat()}), q, 1e-6));
+            EXPECT(points_equal(proj1.inv(q), p));
+
+            if (proj2) {
+                EXPECT(points_equal(std::get<PointXY>(proj2->fwd(p)), q, 1e-6));
+            }
         }
     }
 }

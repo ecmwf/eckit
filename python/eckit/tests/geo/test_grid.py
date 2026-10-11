@@ -254,3 +254,38 @@ def test_grid_search_loaders(loader, usage):
     reference = grid.search(loader="memory")
     for point in ((14, 1), (-100, 44), (170, -50)):
         assert indices(search.search_knn(point, 4)) == indices(reference.search_knn(point, 4))
+
+
+@pytest.mark.parametrize(
+    "spec, first_last",
+    [
+        (
+            dict(
+                x=[0, 44961.0033558134, 2997.40022372089],
+                y=[0, -44961.0033558134, -2997.40022372089],
+                false=[1067074.48, -467594.435],
+                projection=dict(type="space_view", h=35747054.5503, reverse=True),
+            ),
+            [(4.223693723, 350.299524805), (3.815601110, 350.719698129)],
+        ),
+        (
+            dict(
+                x=[0, 45009.7522881123, 3000.65015254082],
+                y=[0, -33005.8361442917, -3000.53055857197],
+                false=[-1632353.683, -1968348.046],
+                projection=dict(type="space_view", h=35785813.2659, lon_0=-75, figure="wgs84", reverse=True),
+            ),
+            [(18.425011761, 300.905565350), (18.106822780, 301.327135202)],
+        ),
+    ],
+)
+def test_grid_space_view(spec, first_last):
+    # as GRIB space_view (by eccodes), points as the eccodes iterator
+    grid = Grid(spec)
+    assert grid.spec == spec
+    assert grid.shape in ((16, 16), (12, 16))
+
+    lat, lon = grid.to_latlons()
+    for (lat0, lon0), i in zip(first_last, (0, -1)):
+        assert lat[i] == pytest.approx(lat0, abs=1e-6)
+        assert (lon[i] - lon0 + 180.0) % 360.0 - 180.0 == pytest.approx(0.0, abs=1e-6)

@@ -65,14 +65,9 @@ public:
     const std::vector<std::string>& target_point_coordinates() const;
 
     /// Map a grid's (x, y) coordinates to geographic coordinates
-    virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
-
-    const PointXY& falseXY() const { return false_; }
+    Point from_grid_xy(double x, double y) const;
 
     const Figure& figure() const { return *figure_; }
-
-    /// Figure of the source coordinates, which PROJ can have different from the target's
-    virtual const Figure& source_figure() const { return figure(); }
 
     /// Spec on its own, with the figure unless the default
     virtual void fill_spec(spec::Custom&) const;
@@ -123,7 +118,6 @@ private:
 
     std::shared_ptr<const Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
-    PointXY false_;
     size_t source_;  // point types (as Point alternatives)
     size_t target_;
 
@@ -140,10 +134,6 @@ struct ProjectionSpecGenerator : spec::SpecGeneratorT1<const std::string&> {};
 using ProjectionSpecByName = spec::GeneratorT<ProjectionSpecGenerator>;
 
 
-template <typename T>
-using ProjectionRegisterType = ConcreteBuilderT1<Projection, T>;
-
-
 struct ProjectionFactory {
     // This is 'const' as Projection should always be immutable
     [[nodiscard]] static const Projection* build(const Projection::Spec&);
@@ -153,6 +143,25 @@ struct ProjectionFactory {
     [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec&);
     static std::ostream& list(std::ostream&);
     static bool has_type(const std::string& type) { return Factory<Projection>::instance().exists(type); }
+
+    /// Projection types interpreting "reverse": true themselves, others are wrapped (see projection::Reverse)
+    static void register_self_reversing(const std::string& type);
+};
+
+
+template <typename T>
+class ProjectionRegisterType {
+public:
+
+    explicit ProjectionRegisterType(const std::string& type, bool self_reversing = false) : builder_(type) {
+        if (self_reversing) {
+            ProjectionFactory::register_self_reversing(type);
+        }
+    }
+
+private:
+
+    ConcreteBuilderT1<Projection, T> builder_;
 };
 
 

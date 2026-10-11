@@ -10,12 +10,14 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/share/Grid.h"
+#include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -222,9 +224,8 @@ std::vector<std::vector<double>> Grid::to_xyz() const {
         return xyz;
     }
 
-    const auto& figure    = projection().source_figure();
     const auto [lat, lon] = to_latlons();
-    return projection::LonLatToXYZ(figure.a(), figure.b()).fwd(lon, lat);
+    return projection::LonLatToXYZ(figure().a(), figure().b()).fwd(lon, lat);
 }
 
 
@@ -444,6 +445,19 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
 
     if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
         cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
+    }
+
+    // x and y (also of a named grid) are of a regular_xy
+    if (!cfg->has("type") && cfg->has("x") && cfg->has("y")) {
+        cfg->push_back(new spec::Custom{{"type", "regular_xy"}});
+    }
+
+    // a projection name as type is of a regular_xy, of that projection
+    if (std::string type; cfg->get("type", type) && !Factory<Grid>::instance().exists(type)) {
+        share::Projection::instance();
+        if (ProjectionSpecByName::instance().matches(type)) {
+            cfg->push_front(new spec::Custom{{"type", "regular_xy"}, {"projection", type}});
+        }
     }
 
     return cfg;

@@ -67,4 +67,4 @@ def _spec_str(spec) -> str:
             return [_safe_str(v) for v in value]
         return value
 
-    return dump(_safe_str(spec), default_flow_style=True).strip()
+    return dump(_safe_str(spec), default_flow_style=True, width=float("inf")).strip()

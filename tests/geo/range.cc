@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <memory>
 #include <ostream>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "eckit/geo/grid/regular/RegularXY.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/geo/range/RegularXY.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -25,13 +27,13 @@ namespace eckit::geo::test {
 
 CASE("range::RegularXY") {
     SECTION("make_xy_range") {
-        range::RegularXY range(1., -1., 2., -1.);
+        range::RegularXY range(1., -1., 2.);
 
         EXPECT(range.size() == 4);
 
         EXPECT_APPROX(range.a(), -1.);
         EXPECT_APPROX(range.b(), 2.);
-        EXPECT_APPROX(range.increment(), 1.);
+        EXPECT_APPROX(range.inc(), 1.);
 
         const auto& values = range.values();
 
@@ -39,6 +41,31 @@ CASE("range::RegularXY") {
         EXPECT_APPROX(values[1], 0.);
         EXPECT_APPROX(values[2], 1.);
         EXPECT_APPROX(values[3], 2.);
+    }
+
+
+    SECTION("irrational step (as space_view), without drift") {
+        constexpr double inc = 2997.400223720893;
+
+        // the end is included to a small fraction of the step (descending, and cropped)
+        for (const auto& [a, b, size] : std::vector<std::tuple<double, double, size_t>>{
+                 {0., 15. * inc, 16},
+                 {0., 15. * inc * (1. - 1e-12), 16},
+                 {0., 15. * inc - 0.5 * inc, 15},
+                 {-356. * inc, (15. - 356.) * inc, 16},
+             }) {
+            range::RegularXY range(inc, a, b);
+            EXPECT_EQUAL(range.size(), size);
+            EXPECT(range.values()[size - 1] == a + static_cast<double>(size - 1) * inc);
+
+            range::RegularXY reverse(-inc, b, a);
+            EXPECT_EQUAL(reverse.size(), size);
+        }
+
+        std::unique_ptr<range::RegularXY> cropped(
+            range::RegularXY(inc, 0., 15. * inc).make_cropped_range(inc, 10. * inc));
+        EXPECT_EQUAL(cropped->size(), 10);
+        EXPECT(cropped->a() == inc);
     }
 
 

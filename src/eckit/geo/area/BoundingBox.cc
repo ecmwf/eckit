@@ -18,7 +18,6 @@
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Tokenizer.h"
@@ -108,6 +107,23 @@ private:
     bool includesNorthPole_ = false;
     bool includesSouthPole_ = false;
     bool first_             = true;
+};
+
+
+/// Projection inverted, by reference
+class Inverse final : public Projection {
+public:
+
+    explicit Inverse(const Projection& projection) : projection_(projection) {}
+
+    Point fwd(const Point& p) const override { return projection_.inv(p); }
+    Point inv(const Point& q) const override { return projection_.fwd(q); }
+
+    const std::string& type() const override { return projection_.type(); }
+
+private:
+
+    const Projection& projection_;
 };
 
 
@@ -373,24 +389,45 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
-    constexpr double precision_ll = 0.5e-6;  // to microdegrees
-    constexpr double precision_xy = 0.5e-1;  // to decimeters
+    const auto& ll = point_coordinates<PointLonLat>();
+    const auto& xy = point_coordinates<PointXY>();
 
-    // not (lon, lat) points (e.g. geocentric), all of them are included
-    if (projection.source_point_coordinates() != point_coordinates<PointLonLat>()) {
-        return std::make_unique<BoundingBox>();
+    // (lon, lat) to (x, y), or the reverse
+    if (projection.source_point_coordinates() == ll && projection.target_point_coordinates() == xy) {
+        return make_bounding_box(min, max, projection, PRECISION_LL, PRECISION_XY);
     }
 
-    return make_bounding_box(min, max, projection, precision_ll, precision_xy);
+    if (projection.source_point_coordinates() == xy && projection.target_point_coordinates() == ll) {
+        return make_bounding_box(min, max, Inverse{projection}, PRECISION_LL, PRECISION_XY);
+    }
+
+    if (projection.source_point_coordinates() == ll || projection.target_point_coordinates() == ll) {
+        throw exception::ProjectionError("BoundingBox: projection between (lon, lat) and (x, y) expected", Here());
+    }
+
+    // not geographic points (e.g. geocentric), all of them are included
+    return std::make_unique<BoundingBox>();
 }
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, PointLonLat max,
-                                                               const projection::Rotation& rotation) {
-    projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                    new projection::EquidistantCylindrical};
+                                                               const Projection& projection) {
+    const auto& ll = point_coordinates<PointLonLat>();
+    if (projection.source_point_coordinates() != ll || projection.target_point_coordinates() != ll) {
+        throw exception::ProjectionError("BoundingBox: projection from (lon, lat) to (lon, lat) expected", Here());
+    }
 
-    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, projection);
+    // (lon, lat) to the projection's source (lon, lat) as (x, y), reversing a copy of the projection
+    spec::Custom copy;
+    projection.fill_spec(copy);
+    if (!copy.has("type")) {
+        copy.set("type", projection.type());
+    }
+
+    projection::Composer composer{new projection::Reverse(ProjectionFactory::build(copy)),
+                                  new projection::EquidistantCylindrical};
+
+    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     if (after->periodic()) {
         return std::make_unique<BoundingBox>(after->north(), 0, after->south(), PointLonLat::FULL_ANGLE);
     }

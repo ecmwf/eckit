@@ -30,7 +30,7 @@ struct RegularInstance : Instance, Regular {
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    projection_(grid.projection()),
+    grid_(grid),
     xy_(grid.scan().is_scan_i_then_j()),
     x_((xy_ ? grid.x() : grid.y()).values()),
     y_((xy_ ? grid.y() : grid.x()).values()),
@@ -82,7 +82,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return xy_ ? projection_.from_grid_xy(x_.at(ix_), y_.at(iy_)) : projection_.from_grid_xy(y_.at(iy_), x_.at(ix_));
+    return xy_ ? grid_.point(x_.at(ix_), y_.at(iy_)) : grid_.point(y_.at(iy_), x_.at(ix_));
 }
 
 

@@ -9,18 +9,24 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/Conformal.h"
 
 
 namespace eckit::geo::projection {
 
 
+/**
+ * @brief Polar stereographic projection, as PROJ (stere) of lat_0 = 90 or -90
+ * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+ */
 class PolarStereographic : public Projection {
 public:
 
     // -- Constructors
 
+    /// The latitude of true scale lat_ts is the pole lat_0 if not given
+    explicit PolarStereographic(double lat_0, double lat_ts, double lon_0 = 0., Figure* = nullptr);
     explicit PolarStereographic(const Spec&);
-    PolarStereographic(PointLonLat centre, PointLonLat first, Figure* = nullptr);
 
     // -- Methods
 
@@ -44,16 +50,17 @@ private:
 
     // -- Members
 
-    const PointLonLat centre_;     // projection centre [degree]
-    const PointLonLatR centre_r_;  // projection centre [radian]
+    const double lat_0_;
+    const double lat_ts_;
+    const double lon_0_;
 
-    const PointLonLat first_;     // first point [degree]
-    const PointLonLatR first_r_;  // first point [radian]
-
+    /// 1 for the North Pole, -1 for the South Pole
     const double sign_;
-    const double F_;
-    double x0_;
-    double y0_;
+
+    const Conformal conformal_;
+
+    /// Radius from the pole is k t, Snyder (21-33, 21-34)
+    double k_;
 };
 
 

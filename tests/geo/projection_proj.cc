@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
@@ -71,7 +72,102 @@ CASE("PROJ::proj_str") {
     EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lat_ts", 14}, {"figure", "wgs84"}}),
                  "+proj=merc +lat_ts=14 +ellps=WGS84");
     EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "lcc"}, {"lat_1", 30}, {"a", 6378206.4}, {"b", 6356583.8}}),
-                 "+proj=lcc +lat_1=30 +a=6378206.4 +b=6356583.8");
+                 "+proj=lcc +lat_0=0 +lat_1=30 +a=6378206.4 +b=6356583.8");
+}
+
+
+CASE("PROJ strings of grids") {
+    struct test_t {
+        std::string grid;
+        std::string proj_str;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{grid: [1, 1]}", "+proj=longlat +R=6371229"},
+             {"{grid: [1, 1], figure: wgs84}", "+proj=longlat +ellps=WGS84"},
+             {"{grid: o32}", "+proj=longlat +R=6371229"},
+             {"{grid: [1, 1], rotation: [-40, 10]}", "+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229"},
+             {"{grid: o32, rotation: [-30, -20]}", "+proj=ob_tran +lon_0=-20 +o_lat_p=30 +o_proj=longlat +R=6371229"},
+             {"{grid: [1, 1], projection: {type: rotation, south_pole: [10, -40], rotation_angle: 25}}",
+              "+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229"},
+             {"{x: [0, 2, 1], y: [0, 2, 1], projection: {type: proj, source: '+proj=lcc +lat_1=30 +R=6371229'}}",
+              "+proj=lcc +lat_1=30 +R=6371229"},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
+        const auto& projection = grid->projection();
+        EXPECT_EQUAL(projection.proj_str(), test.proj_str);
+
+        // rotations as PROJ (ob_tran), from the rotated (lon, lat)
+        if (projection.type() == "rotation") {
+            P proj(ProjectionFactory::build(
+                spec::Custom{{"type", "proj"}, {"source", test.proj_str}, {"target", "+proj=longlat +R=6371229"}}));
+
+            for (const auto& p : std::vector<PointLonLat>{{0., 0.}, {10., 20.}, {-35., 50.}, {120., -30.}}) {
+                EXPECT(points_equal(projection.fwd(p), proj->fwd(p), 1e-6));
+            }
+        }
+    }
+}
+
+
+CASE("PROJ strings of projections") {
+    struct test_t {
+        std::string spec;
+        std::string proj_str;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{type: none}", "+proj=longlat +R=6371229"},
+             {"{type: eqc, lat_ts: 30, lat_0: 10}",
+              "+proj=eqc +lat_0=10 +lat_ts=30 +to_meter=111198.923448546 +R=6371229"},
+             {"{type: plate-carree, lat_ts: 30, figure: wgs84}",
+              "+proj=eqc +lat_ts=30 +to_meter=111319.490793274 +R=6378137"},
+             {"{type: aea, lat_0: 23, lat_1: 29.5, lat_2: 45.5, lon_0: -96}",
+              "+proj=aea +lat_0=23 +lat_1=29.5 +lat_2=45.5 +lon_0=-96 +R=6371229"},
+             {"{type: laea, lat_0: 52, lon_0: 10, figure: grs80}", "+proj=laea +lat_0=52 +lon_0=10 +ellps=GRS80"},
+             {"{type: lambert_azimuthal_equal_area, lat_0: 90}", "+proj=laea +lat_0=90 +R=6371229"},
+             {"{type: lcc, lat_1: 33, lat_2: 45, lon_0: -90, figure: wgs84}",
+              "+proj=lcc +lat_0=0 +lat_1=33 +lat_2=45 +lon_0=-90 +ellps=WGS84"},
+             {"{type: lambert_lam, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true}",
+              "+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229"},
+             {"{type: lcc, lat_1: 40, lon_0: 357.5, figure: grib1}",
+              "+proj=lcc +lat_0=0 +lat_1=40 +lon_0=357.5 +R=6367470"},
+             {"{type: merc, lat_ts: 14}", "+proj=merc +lat_ts=14 +R=6371229"},
+             {"{type: mercator, lon_0: -90, figure: wgs84}", "+proj=merc +lon_0=-90 +ellps=WGS84"},
+             {"{type: stere, lat_0: 90, lat_ts: 60, lon_0: 280}",
+              "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=280 +R=6371229"},
+             {"{type: polar_stereographic, lat_0: 90, lon_0: -45, figure: wgs84}",
+              "+proj=stere +lat_0=90 +lon_0=-45 +ellps=WGS84"},
+             {"{type: ll-to-xyz}", "+proj=cart +R=6371229"},
+             {"{type: ll-to-xyz, figure: wgs84}", "+proj=cart +ellps=WGS84"},
+             {"{type: rotation, south_pole: [10, -40]}",
+              "+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229"},
+             {"{type: proj, source: '+proj=lcc +lat_1=30 +R=6371229'}", "+proj=lcc +lat_1=30 +R=6371229"},
+         }) {
+        P projection(ProjectionFactory::make_from_string(test.spec));
+        EXPECT_EQUAL(projection->proj_str(), test.proj_str);
+
+        // the same coordinates as PROJ, from (lon, lat) (rotations are tested with grids)
+        if (!LibEcKitGeo::projdb_is_available() || projection->type() == "rotation" || projection->type() == "proj" ||
+            projection->reverse()) {
+            continue;
+        }
+
+        P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", test.proj_str}}));
+
+        for (const auto& p : std::vector<PointLonLat>{{0., 30.}, {-12., 45.}, {-100., 60.}, {20., 80.}}) {
+            EXPECT(points_equal(projection->fwd(p), proj->fwd(p), 1e-6));
+        }
+    }
+
+    // no PROJ equivalent
+    for (const auto& spec : std::vector<std::string>{
+             "{type: space_view, h: 35785831}",
+             "{type: stretch, stretching_factor: 2}",
+         }) {
+        P projection(ProjectionFactory::make_from_string(spec));
+        EXPECT_THROWS_AS(projection->proj_str(), exception::ProjectionError);
+    }
 }
 
 
@@ -202,8 +298,8 @@ CASE("projection: proj vectors") {
                std::equal(a.begin(), a.end(), b.begin(), [eps](double x, double y) { return std::abs(x - y) < eps; });
     };
 
-    constexpr double eps_ll = 1e-9;  // [degree]
-    constexpr double eps_xy = 1e-6;  // [m]
+    constexpr double eps_ll = PointLonLat::EPS;  // [degree]
+    constexpr double eps_xy = 1e-6;              // [m]
     constexpr double A      = 6378137.;
 
 
@@ -260,6 +356,78 @@ CASE("projection: proj vectors") {
 
         const auto lonlat = ll->fwd(v{190., -10.}, v{0., 0.});
         EXPECT(approx(lonlat[0], v{-170., -10.}, eps_ll));
+    }
+}
+
+
+CASE("projection: proj, reverse from spec") {
+    const std::string spec = "{type: proj, source: 'EPSG:4326', target: 'EPSG:3035'}";
+
+    P plain(ProjectionFactory::make_from_string(spec));
+    P reverse(ProjectionFactory::make_from_string(spec.substr(0, spec.size() - 1) + ", reverse: true}"));
+
+    // the source is the default
+    EXPECT_EQUAL(plain->spec_str(), R"({"target":"EPSG:3035","type":"proj"})");
+    EXPECT_EQUAL(reverse->spec_str(), R"({"source":"EPSG:3035","type":"proj"})");
+    EXPECT_NOT(plain->reverse());
+    EXPECT_NOT(reverse->reverse());
+
+    // identical, if built from the spec of another
+    for (const auto* projection : {plain.get(), reverse.get()}) {
+        P same(ProjectionFactory::build(projection->spec()));
+        EXPECT(*same == *projection);
+        EXPECT_EQUAL(same->reverse(), projection->reverse());
+    }
+
+    // reversed: fwd as inv, and inv as fwd
+    const PointLonLat p{10., 50.};
+    const auto q = plain->fwd(p);
+    EXPECT(points_equal(reverse->fwd(q), p));
+    EXPECT(points_equal(reverse->inv(p), q, PointXY::EPS));
+}
+
+
+CASE("projection: rotation, as PROJ") {
+    struct test_t {
+        std::string rotation;
+        std::string spec;
+        std::string spec_as_proj;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
+              R"({"source":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229",)"
+              R"("target":"+proj=longlat +R=6371229","type":"proj"})"},
+             {"{type: rotation, south_pole: [10, -40], rotation_angle: 25}",
+              R"({"rotation_angle":25,"south_pole":[10,-40],"type":"rotation"})",
+              R"({"source":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229",)"
+              R"("target":"+proj=longlat +R=6371229","type":"proj"})"},
+         }) {
+        P rotation(ProjectionFactory::make_from_string(test.rotation));
+        EXPECT_EQUAL(rotation->spec_str(), test.spec);
+
+        // from the rotated (lon, lat) to (lon, lat), on the figure
+        P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"},
+                                                     {"source", rotation->proj_str()},
+                                                     {"target", "+proj=longlat " + rotation->figure().proj_str()}}));
+        EXPECT_EQUAL(proj->spec_str(), test.spec_as_proj);
+
+        // rebuilt from either spec, the same
+        P from_spec(ProjectionFactory::build(rotation->spec()));
+        P from_spec_as_proj(ProjectionFactory::build(proj->spec()));
+        EXPECT_EQUAL(from_spec->spec_str(), test.spec);
+        EXPECT_EQUAL(from_spec_as_proj->spec_str(), test.spec_as_proj);
+
+        // the same coordinates, by all
+        for (const auto& p : std::vector<PointLonLat>{{0., 0.}, {10., 20.}, {-35., 50.}, {120., -30.}}) {
+            const auto q = rotation->fwd(p);
+            const auto r = rotation->inv(p);
+
+            for (const auto* projection : {proj.get(), from_spec.get(), from_spec_as_proj.get()}) {
+                EXPECT(points_equal(projection->fwd(p), q, 1e-6));
+                EXPECT(points_equal(projection->inv(p), r, 1e-6));
+            }
+        }
     }
 }
 

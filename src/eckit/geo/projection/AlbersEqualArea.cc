@@ -64,13 +64,11 @@ PointXY AlbersEqualArea::fwd(const PointLonLat& p) const {
     auto thetar = n_ * PointLonLat::normalise_angle_to_minimum(p.lon() - centre_.lon(), -PointLonLat::FLAT_ANGLE) *
                   util::DEGREE_TO_RADIAN;
 
-    return PointXY{rho * std::sin(thetar), rho0_ - rho * std::cos(thetar)} + falseXY();
+    return PointXY{rho * std::sin(thetar), rho0_ - rho * std::cos(thetar)};
 }
 
 
-PointLonLat AlbersEqualArea::inv(const PointXY& p) const {
-    auto q = p - falseXY();
-
+PointLonLat AlbersEqualArea::inv(const PointXY& q) const {
     auto rho    = std::sqrt(q.X() * q.X() + (rho0_ - q.Y()) * (rho0_ - q.Y()));
     auto thetar = std::atan2(q.X(), rho0_ - q.Y());
 

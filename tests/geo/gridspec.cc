@@ -203,17 +203,22 @@ CASE("user -> type") {
 }
 
 
-CASE("grid: name -> spec -> grid: name") {
-// FIXME
-#if 0
+CASE("grid: name -> spec -> grid") {
     for (const std::string& name : {"LAEA-EFAS-5km", "SMUFF-OPERA-2km"}) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", name}})));
-        EXPECT(grid);
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
 
-        auto gridspec = grid->spec_str();
-        EXPECT(gridspec == R"({"grid":")" + name + R"("})");
+        EXPECT_EQUAL(grid->type(), "regular_xy");
+        EXPECT(*same == *grid);
     }
-#endif
+
+    // as GRIB opera.grib2, to microdegrees
+    constexpr double microdegree = 1e-6;
+
+    std::unique_ptr<const Grid> efas(GridFactory::build(spec::Custom({{"grid", "LAEA-EFAS-5km"}})));
+    const std::vector<size_t> shape{950, 1000};
+    EXPECT(efas->shape() == shape);
+    EXPECT(points_equal(efas->first_point(), PointLonLat{-35.034024, 66.982143}, microdegree));
 }
 
 

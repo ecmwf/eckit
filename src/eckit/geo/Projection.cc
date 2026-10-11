@@ -6,21 +6,23 @@
 
 #include <array>
 #include <limits>
+#include <memory>
 #include <ostream>
+#include <set>
+#include <string>
 #include <utility>
 #include <variant>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
-#include "eckit/types/FloatCompare.h"
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
@@ -37,6 +39,42 @@ class lock_type {
     inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
+
+
+/// Registered during static initialisation
+struct SelfReversing {
+    util::recursive_mutex mutex;
+    std::set<std::string> types;
+
+    static SelfReversing& instance() {
+        static SelfReversing self_reversing;
+        return self_reversing;
+    }
+};
+
+
+/// Projection of a type, reversed if the spec has "reverse": true
+const Projection* make(const std::string& type, const Projection::Spec& spec) {
+    if (spec.has("x_0") || spec.has("y_0")) {
+        throw exception::SpecError("ProjectionFactory: no false easting/northing (x_0, y_0), see the grid's 'false'",
+                                   Here());
+    }
+
+    // e.g. 'proj' without PROJ
+    if (!Factory<Projection>::instance().exists(type)) {
+        throw exception::ProjectionError("ProjectionFactory: unknown projection type '" + type + "'", Here());
+    }
+
+    const auto* projection = Factory<Projection>::instance().get(type).create(spec);
+    if (!spec.get_bool("reverse", false)) {
+        return projection;
+    }
+
+    auto& self_reversing = SelfReversing::instance();
+    util::lock_guard<util::recursive_mutex> lock(self_reversing.mutex);
+
+    return self_reversing.types.count(type) == 0 ? new projection::Reverse(projection) : projection;
+}
 
 
 /// Tag carrying a point type, see visit_point_type
@@ -169,6 +207,16 @@ const std::vector<std::string>& Projection::target_point_coordinates() const {
 }
 
 
+Point Projection::from_grid_xy(double x, double y) const {
+    // between (lon, lat), e.g. rotations, the grid's (x, y) are (lon, lat) on the source (e.g. the rotated sphere)
+    if (static const auto LL = Point{PointLonLat{}}.index(); source_ == LL && target_ == LL) {
+        return fwd(PointLonLat{x, y});
+    }
+
+    return inv(PointXY{x, y});
+}
+
+
 void Projection::point_types(const Point& source, const Point& target) {
     // validates the point types (the empty point is not a point type)
     dims(source.index());
@@ -221,7 +269,11 @@ const Projection::Spec& Projection::spec() const {
 
 std::string Projection::proj_str() const {
 #if eckit_HAVE_PROJ
-    return projection::PROJ::proj_str(dynamic_cast<const spec::Custom&>(spec()));
+    // not spec(), which can be a projection name, and the figure (even if a default, omitted from spec)
+    spec::Custom custom;
+    fill_spec(custom);
+    figure().fill_spec(custom);
+    return projection::PROJ::proj_str(custom);
 #else
     NOTIMP;
 #endif
@@ -246,14 +298,6 @@ const Projection* ProjectionFactory::make_default() {
 
 void Projection::fill_spec(spec::Custom& custom) const {
     figure_->fill_projection_spec(custom);
-
-    if (!types::is_approximately_equal(false_.X(), 0.)) {
-        custom.set("x_0", false_.X());
-    }
-
-    if (!types::is_approximately_equal(false_.Y(), 0.)) {
-        custom.set("y_0", false_.Y());
-    }
 }
 
 
@@ -270,6 +314,11 @@ void Projection::fill_grid_spec(spec::Custom& custom) const {
         return;
     }
 
+    if (std::string name; ProjectionSpecByName::instance().match(projection_spec, name)) {
+        custom.set(className(), name);
+        return;
+    }
+
     custom.set(className(), projection_spec);
 }
 
@@ -283,10 +332,20 @@ const Projection* ProjectionFactory::make_from_string(const std::string& str) {
 const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
     lock_type lock;
 
-    // an explicit 'projection' has to name its type
+    // an explicit 'projection' has to name its type, or be a name (see projection.yaml)
     if (spec.has("projection")) {
+        if (std::string name; spec.get("projection", name)) {
+            share::Projection::instance();
+            if (!ProjectionSpecByName::instance().matches(name)) {
+                throw exception::ProjectionError("ProjectionFactory: unknown projection name '" + name + "'", Here());
+            }
+
+            std::unique_ptr<Projection::Spec> cfg(ProjectionSpecByName::instance().match(name).spec(name));
+            return make(cfg->get_string("type"), *cfg);
+        }
+
         const auto& cfg = spec.spec("projection");
-        return Factory<Projection>::instance().get(cfg.get_string("type")).create(cfg);
+        return make(cfg.get_string("type"), cfg);
     }
 
     if (spec.has("rotation")) {
@@ -299,10 +358,18 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
 
     // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)
     if (std::string type; cfg->get("type", type) && has_type(type)) {
-        return Factory<Projection>::instance().get(type).create(*cfg);
+        return make(type, *cfg);
     }
 
-    return new projection::EquidistantCylindrical(*cfg);
+    return make("eqc", *cfg);  // the default
+}
+
+
+void ProjectionFactory::register_self_reversing(const std::string& type) {
+    auto& self_reversing = SelfReversing::instance();
+    util::lock_guard<util::recursive_mutex> lock(self_reversing.mutex);
+
+    ASSERT(self_reversing.types.insert(type).second);
 }
 
 

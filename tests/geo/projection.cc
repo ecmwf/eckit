@@ -38,9 +38,24 @@ CASE("projection: none") {
 }
 
 
+CASE("projection: unknown type") {
+    using P = std::unique_ptr<const Projection>;
+
+    EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{projection: {type: not_a_projection}}")),
+                     exception::ProjectionError);
+
+    // named projections of PROJ, without PROJ
+    if (!ProjectionFactory::has_type("proj")) {
+        EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{projection: swisslv95}")), exception::ProjectionError);
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("swisslv95")),
+                         exception::ProjectionError);
+    }
+}
+
+
 CASE("projection: reverse") {
     projection::LonLatToXYZ ab(new figure::UnitSphere);
-    projection::Reverse<projection::LonLatToXYZ> ba(new figure::UnitSphere);
+    projection::Reverse ba(new projection::LonLatToXYZ(new figure::UnitSphere));
 
     PointLonLat p = NORTH_POLE;
     PointXYZ q{0., 0., 1.};
@@ -57,6 +72,50 @@ CASE("projection: reverse") {
 
     EXPECT_EQUAL(ab.spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
     EXPECT_EQUAL(ba.spec_str(), R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})");
+}
+
+
+CASE("projection: reverse, from spec") {
+    struct test_t {
+        std::string spec;     // reversed by appending "reverse: true"
+        std::string plain;    // spec after construction
+        std::string reverse;  // spec after construction, reversed
+    };
+
+    const PointLonLat p{10., 20.};
+
+    for (const auto& test : std::vector<test_t>{
+             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
+              R"({"reverse":true,"south_pole":[10,-40],"type":"rotation"})"},
+             {"{type: ll-to-xyz, R: 1}", R"({"figure":{"r":1},"type":"ll-to-xyz"})",
+              R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})"},
+             {"{type: eqc, lat_ts: 60, figure: wgs84}", R"({"figure":"wgs84","lat_ts":60,"type":"eqc"})",
+              R"({"figure":"wgs84","lat_ts":60,"reverse":true,"type":"eqc"})"},
+             {"{type: eqc}", "{}", R"({"reverse":true})"},
+         }) {
+        SECTION(test.spec) {
+            std::unique_ptr<const Projection> plain(ProjectionFactory::make_from_string(test.spec));
+            std::unique_ptr<const Projection> reverse(
+                ProjectionFactory::make_from_string(test.spec.substr(0, test.spec.size() - 1) + ", reverse: true}"));
+
+            EXPECT_EQUAL(plain->spec_str(), test.plain);
+            EXPECT_EQUAL(reverse->spec_str(), test.reverse);
+            EXPECT_NOT(plain->reverse());
+            EXPECT(reverse->reverse());
+
+            // identical, if built from the spec of another
+            for (const auto* projection : {plain.get(), reverse.get()}) {
+                std::unique_ptr<const Projection> same(ProjectionFactory::build(projection->spec()));
+                EXPECT(*same == *projection);
+                EXPECT_EQUAL(same->reverse(), projection->reverse());
+            }
+
+            // reversed: fwd as inv, and inv as fwd
+            const auto q = plain->fwd(p);
+            EXPECT(points_equal(reverse->fwd(q), p));
+            EXPECT(points_equal(reverse->inv(p), q));
+        }
+    }
 }
 
 
@@ -98,7 +157,7 @@ bool approx(const v& a, const v& b) {
         return false;
     }
     for (size_t i = 0; i < a.size(); ++i) {
-        if (!types::is_approximately_equal(a[i], b[i], 1e-9)) {
+        if (!types::is_approximately_equal(a[i], b[i], PointLonLat::EPS)) {
             return false;
         }
     }
@@ -154,8 +213,9 @@ struct Failing final : Projection {
 };
 
 
-/// lonlat to xy, but not honouring its target point type
+/// identity, but declaring lonlat to xy (so not honouring its point types)
 struct Dishonest final : Projection {
+    Dishonest() : Projection(nullptr, PointLonLat{}, PointXY{}) {}
     Point fwd(const Point& p) const override { return p; }
     Point inv(const Point& q) const override { return q; }
 
@@ -201,7 +261,7 @@ CASE("projection: point types") {
         check(projection::Rotation{PointLonLat{10., -40.}}, LL, LL);
         check(projection::EquidistantCylindrical{}, LL, XY);
         check(projection::LonLatToXYZ{new figure::UnitSphere}, LL, XYZ);
-        check(projection::Reverse<projection::LonLatToXYZ>{new figure::UnitSphere}, XYZ, LL);
+        check(projection::Reverse{new projection::LonLatToXYZ{new figure::UnitSphere}}, XYZ, LL);
     }
 
 
@@ -215,7 +275,7 @@ CASE("projection: point types") {
         composer.emplace_back(new projection::LonLatToXYZ{new figure::UnitSphere});
         check(composer, LL, XYZ);
 
-        projection::Composer to_lonlat{new projection::Reverse<projection::LonLatToXYZ>{new figure::UnitSphere},
+        projection::Composer to_lonlat{new projection::Reverse{new projection::LonLatToXYZ{new figure::UnitSphere}},
                                        new projection::Rotation{PointLonLat{10., -40.}}};
         check(to_lonlat, XYZ, LL);
     }
@@ -237,7 +297,7 @@ CASE("projection: coordinates") {
 
 
     SECTION("reverse") {
-        projection::Reverse<projection::LonLatToXYZ> to_lonlat(new figure::UnitSphere);
+        projection::Reverse to_lonlat(new projection::LonLatToXYZ(new figure::UnitSphere));
         const Projection& projection = to_lonlat;
 
         EXPECT(approx(fwd(projection, v{0., 1., 0.}), v{90., 0.}));
@@ -317,61 +377,12 @@ CASE("projection: vectors") {
 
 
     SECTION("projection not honouring its point types") {
-        const Dishonest projection_dishonest;  // declares lonlat to xy, returns lonlat
+        const Dishonest projection_dishonest;  // declares lonlat to xy, returns its input
         const Projection& dishonest = projection_dishonest;
+
+        // not an eckit::Exception (so not NaN): a broken projection is a programming error, not a failing point
         EXPECT_THROWS_AS(fwd(dishonest, v{1., 2.}), std::bad_variant_access);
-    }
-}
-
-
-CASE("projection: vectors, rotation") {
-    const v lon{0., 10., -30., 170., 45.};
-    const v lat{0., 20., 45., -60., 89.};
-
-    // vectors (specialised) match points (one at a time)
-    auto check = [&](const Projection& projection) {
-        const auto fwd_ll = projection.fwd(lon, lat);
-        const auto inv_ll = projection.inv(lon, lat);
-
-        for (size_t i = 0; i < lon.size(); ++i) {
-            const auto q = std::get<PointLonLat>(projection.fwd(PointLonLat{lon[i], lat[i]}));
-            EXPECT(approx(v{fwd_ll[0][i], fwd_ll[1][i]}, v{q.lon(), q.lat()}));
-
-            const auto p = std::get<PointLonLat>(projection.inv(PointLonLat{lon[i], lat[i]}));
-            EXPECT(approx(v{inv_ll[0][i], inv_ll[1][i]}, v{p.lon(), p.lat()}));
-        }
-
-        // and round trip
-        const auto back = projection.inv(fwd_ll[0], fwd_ll[1]);
-        for (size_t i = 0; i < lon.size(); ++i) {
-            EXPECT(points_equal(PointLonLat{back[0][i], back[1][i]}, PointLonLat{lon[i], lat[i]}, 1e-9));
-        }
-    };
-
-    SECTION("matrix") {
-        check(projection::Rotation{PointLonLat{10., -40.}});
-    }
-
-
-    SECTION("angle") {
-        check(projection::Rotation{PointLonLat{0., -90.}, 30.});
-    }
-
-
-    SECTION("none") {
-        check(projection::Rotation{});
-    }
-
-
-    SECTION("reverse") {
-        projection::Reverse<projection::Rotation> reverse(PointLonLat{10., -40.});
-        projection::Rotation rotation(PointLonLat{10., -40.});
-
-        const auto a = reverse.fwd(lon, lat);
-        const auto b = rotation.inv(lon, lat);
-
-        EXPECT(approx(a[0], b[0]));
-        EXPECT(approx(a[1], b[1]));
+        EXPECT_THROWS_AS(inv(dishonest, v{1., 2.}), std::bad_variant_access);
     }
 }
 

@@ -43,9 +43,14 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
+        projection_laea
+        projection_lcc
         projection_ll_to_xyz
+        projection_mercator
         projection_plate-caree
         projection_rotation
+        projection_space_view
+        projection_stere
         range
         search
         search_kdtree
@@ -66,7 +71,6 @@ foreach(_test
         grid_regular_xy_swisslv03
         grid_regular_xy_swisslv95
         projection_albers
-        projection_mercator
         projection_proj)
     eckit_geo_add_test(${_test} CONDITION eckit_HAVE_PROJ)
 endforeach()

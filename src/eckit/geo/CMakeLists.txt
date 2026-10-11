@@ -123,6 +123,8 @@ list(APPEND eckit_geo_srcs
     projection/AlbersEqualArea.h
     projection/Composer.cc
     projection/Composer.h
+    projection/Conformal.cc
+    projection/Conformal.h
     projection/EquidistantCylindrical.cc
     projection/EquidistantCylindrical.h
     projection/LambertAzimuthalEqualArea.cc
@@ -137,6 +139,7 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/PolarStereographic.cc
     projection/PolarStereographic.h
+    projection/Reverse.cc
     projection/Reverse.h
     projection/Rotation.cc
     projection/Rotation.h
@@ -148,6 +151,8 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
+    range/RegularXY.cc
+    range/RegularXY.h
     search/FileIO.cc
     search/FileIO.h
     search/KDTree.cc
@@ -202,8 +207,6 @@ set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs
-        grid/regular/SwissLV03.cc
-        grid/regular/SwissLV95.cc
         projection/PROJ.cc
         projection/PROJ.h
     )

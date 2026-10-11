@@ -12,7 +12,7 @@ from eckit_geo_figure cimport Figure
 cdef extern from "eckit/geo/Projection.h" namespace "eckit::geo":
     cdef cppclass Projection:
         string spec_str() const
-        string proj_str() const
+        string proj_str() except +
         const string& type() const
         bool reverse() const
         const vector[string]& source_point_coordinates() const

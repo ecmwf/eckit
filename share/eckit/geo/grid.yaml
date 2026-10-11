@@ -2,17 +2,23 @@
 
 grid_names:
     - LAEA-EFAS-5km:
-          type: lambert_azimuthal_equal_area
-          proj: +proj=laea +lat_0=52 +lon_0=10 +ellps=GRS80 +units=m +no_defs
-          figure: grs80
-          first_lonlat: [-35.034024, 66.982143]
-          grid: [5000., 5000.]
-          shape: [1000, 950]
+          x: [0, 4995000, 5000]
+          y: [0, -4745000, -5000]
+          false: [1818500.021, -2287499.955]
+          projection: {type: laea, lat_0: 52, lon_0: 10, figure: grs80, reverse: true}
 
     - SMUFF-OPERA-2km:
-          type: lambert_azimuthal_equal_area
-          proj: +proj=laea +lat_0=55 +lon_0=10 +ellps=WGS84 +units=m +no_defs
-          figure: wgs84
-          first_lonlat: [-39.535385563614, 67.035186732680]
-          grid: [2000., 2000.]
-          shape: [1900, 2200]
+          x: [0, 3798000, 2000]
+          y: [0, -4398000, -2000]
+          false: [1949000, -2101000]
+          projection: {type: laea, lat_0: 55, lon_0: 10, figure: wgs84, reverse: true}
+
+    - swisslv95:
+          x: [2439000, 2867000, 1000]
+          y: [1040500, 1333500, 1000]
+          projection: swisslv95
+
+    - swisslv03:
+          x: [255500, 964500, 1000]
+          y: [-159500, 479500, 1000]
+          projection: swisslv03

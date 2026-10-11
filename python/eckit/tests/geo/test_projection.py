@@ -167,6 +167,37 @@ def test_projection_spec(spec, expected):
     assert not projection.reverse
 
 
+@pytest.mark.parametrize(
+    "spec, expected",
+    [
+        (dict(type="rotation", south_pole=[10, -40]), dict(type="rotation", south_pole=[10, -40])),
+        (dict(type="ll-to-xyz", R=1.0), dict(type="ll-to-xyz", figure=dict(r=1))),
+        (dict(type="eqc", lat_ts=60.0, figure="wgs84"), dict(type="eqc", lat_ts=60, figure="wgs84")),
+        (dict(type="eqc"), dict()),
+    ],
+)
+def test_projection_reverse(spec, expected):
+    plain = Projection(spec)
+    reverse = Projection({**spec, "reverse": True})
+
+    assert plain.spec == expected
+    assert reverse.spec == {**expected, "reverse": True}
+    assert not plain.reverse
+    assert reverse.reverse
+
+    # identical, if built from the spec of another
+    for projection in (plain, reverse):
+        same = Projection(projection.spec)
+        assert same == projection
+        assert same.reverse == projection.reverse
+
+    # reversed: fwd as inv, and inv as fwd
+    p = (10.0, 20.0)
+    q = plain.fwd(*p)
+    assert reverse.fwd(*q) == pytest.approx(p)
+    assert reverse.inv(*p) == pytest.approx(q)
+
+
 @pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_coordinates_forms():
     # the same point, given in all the supported forms

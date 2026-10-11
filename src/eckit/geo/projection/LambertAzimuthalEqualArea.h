@@ -9,19 +9,22 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/util/sincos.h"
 
 
 namespace eckit::geo::projection {
 
 
+/**
+ * @brief Lambert azimuthal equal-area projection, as PROJ (laea)
+ * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+ */
 class LambertAzimuthalEqualArea : public Projection {
 public:
 
     // -- Constructors
 
+    explicit LambertAzimuthalEqualArea(double lat_0 = 0., double lon_0 = 0., Figure* = nullptr);
     explicit LambertAzimuthalEqualArea(const Spec&);
-    LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first, Figure* = nullptr);
 
     // -- Methods
 
@@ -43,17 +46,36 @@ protected:
 
 private:
 
+    // -- Types
+
+    enum class Aspect {
+        NORTH_POLE,
+        SOUTH_POLE,
+        OBLIQUE,  // and equatorial
+    };
+
     // -- Members
 
-    const PointLonLat centre_;     // central meridian/standard parallel [degree]
-    const PointLonLatR centre_r_;  // central meridian/standard parallel [radian]
+    const double lat_0_;
+    const double lon_0_;
+    const double a_;
+    const double e_;
+    const Aspect aspect_;
 
-    const PointLonLat first_;     // first point [degree]
-    const PointLonLatR first_r_;  // first point [radian]
+    /// Authalic: q at the pole, radius, and sine/cosine of the latitude of the origin, Snyder (24-11 to 24-14)
+    double qp_;
+    double rq_;
+    double sinb_0_;
+    double cosb_0_;
+    double d_;
 
-    const util::sincos_t phi0_;
-    const util::sincos_t phi_;
-    const util::sincos_t dlam_;
+    // -- Methods
+
+    /// Snyder (3-12)
+    double q(double sinphi) const;
+
+    /// The latitude of the authalic latitude beta, Snyder (3-16)
+    double phi(double beta) const;
 };
 
 

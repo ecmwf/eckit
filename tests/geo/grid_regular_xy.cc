@@ -12,6 +12,7 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -67,11 +68,14 @@ CASE("RegularXY: projection on top") {
     const auto [lat, lon] = grid->to_latlons();
     EXPECT_EQUAL(lon.size(), grid->size());
 
+    // outwards, to its precision
     const auto& bbox = grid->boundingBox();
-    EXPECT(types::is_approximately_equal(bbox.north(), 0., 1e-6));
-    EXPECT(types::is_approximately_equal(bbox.south(), -10., 1e-6));
-    EXPECT(types::is_approximately_equal(bbox.west(), -20., 1e-6));
-    EXPECT(types::is_approximately_equal(bbox.east(), 20., 1e-6));
+    const auto h     = area::BoundingBox::PRECISION_LL;
+
+    EXPECT(types::is_approximately_equal(bbox.north(), 0. + h, PointLonLat::EPS));
+    EXPECT(types::is_approximately_equal(bbox.south(), -10. - h, PointLonLat::EPS));
+    EXPECT(types::is_approximately_equal(bbox.west(), -20. - h, PointLonLat::EPS));
+    EXPECT(types::is_approximately_equal(bbox.east(), 20. + h, PointLonLat::EPS));
 
     // identical, if built from its spec
     std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
@@ -91,7 +95,10 @@ CASE("RegularXY: projection on top") {
 
 
 CASE("RegularXY: as GRIB") {
-    // grids as GRIB examples (by eccodes): the false easting/northing places the first grid point at (0, 0)
+    // grids as GRIB examples (by eccodes): the false easting/northing places the first grid point at (0, 0); points
+    // are as GRIB, to microdegrees
+    constexpr double microdegree = 1e-6;
+
     struct test_t {
         std::string name;
         std::string xy;
@@ -145,9 +152,9 @@ CASE("RegularXY: as GRIB") {
                     GridFactory::make_from_string("{" + test.xy + ", projection: {" + projection + "}}"));
 
                 const auto points = grid->to_points();
-                EXPECT(points_equal(points.front(), test.first_second_last[0], 1e-6));
-                EXPECT(points_equal(points[1], test.first_second_last[1], 1e-6));
-                EXPECT(points_equal(points.back(), test.first_second_last[2], 1e-6));
+                EXPECT(points_equal(points.front(), test.first_second_last[0], microdegree));
+                EXPECT(points_equal(points[1], test.first_second_last[1], microdegree));
+                EXPECT(points_equal(points.back(), test.first_second_last[2], microdegree));
 
                 return grid->spec_str();
             };

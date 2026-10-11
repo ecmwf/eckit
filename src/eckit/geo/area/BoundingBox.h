@@ -99,6 +99,10 @@ public:
                                                                      value_type e);
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_spec(const Spec&);
 
+    /// Precision of bounding boxes of projections, to microdegrees and decimeters
+    static constexpr value_type PRECISION_LL = 0.5e-6;
+    static constexpr value_type PRECISION_XY = 0.5e-1;
+
     /// Of the (x, y) rectangle [min, max], projected between (lon, lat) and (x, y) in either direction
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointXY min, PointXY max, const Projection&);
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointLonLat min, PointLonLat max,

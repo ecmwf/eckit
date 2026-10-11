@@ -202,8 +202,8 @@ CASE("projection: proj vectors") {
                std::equal(a.begin(), a.end(), b.begin(), [eps](double x, double y) { return std::abs(x - y) < eps; });
     };
 
-    constexpr double eps_ll = 1e-9;  // [degree]
-    constexpr double eps_xy = 1e-6;  // [m]
+    constexpr double eps_ll = PointLonLat::EPS;  // [degree]
+    constexpr double eps_xy = 1e-6;              // [m]
     constexpr double A      = 6378137.;
 
 
@@ -286,8 +286,8 @@ CASE("projection: proj, reverse from spec") {
     // reversed: fwd as inv, and inv as fwd
     const PointLonLat p{10., 50.};
     const auto q = plain->fwd(p);
-    EXPECT(points_equal(reverse->fwd(q), p, 1e-9));
-    EXPECT(points_equal(reverse->inv(p), q, 1e-6));
+    EXPECT(points_equal(reverse->fwd(q), p));
+    EXPECT(points_equal(reverse->inv(p), q, PointXY::EPS));
 }
 
 

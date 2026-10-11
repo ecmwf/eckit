@@ -142,7 +142,7 @@ bool approx(const v& a, const v& b) {
         return false;
     }
     for (size_t i = 0; i < a.size(); ++i) {
-        if (!types::is_approximately_equal(a[i], b[i], 1e-9)) {
+        if (!types::is_approximately_equal(a[i], b[i], PointLonLat::EPS)) {
             return false;
         }
     }

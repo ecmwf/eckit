@@ -66,7 +66,7 @@ CASE("laea: fwd, inv") {
         EXPECT(points_equal(laea->fwd(test.origin), PointXY{0., 0.}));
 
         for (const auto& p : test.points) {
-            EXPECT(points_equal(laea->inv(laea->fwd(p)), p, 1e-9));
+            EXPECT(points_equal(laea->inv(laea->fwd(p)), p));
         }
     }
 }
@@ -82,7 +82,8 @@ CASE("laea: as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", laea->proj_str()}}));
 
         for (const auto& p : test.points) {
-            EXPECT(points_equal(proj->fwd(p), laea->fwd(p), 1e-6));
+            EXPECT(points_equal(proj->inv(laea->fwd(p)), p));
+            EXPECT(points_equal(laea->inv(proj->fwd(p)), p));
         }
     }
 }

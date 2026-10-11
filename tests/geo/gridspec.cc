@@ -212,11 +212,13 @@ CASE("grid: name -> spec -> grid") {
         EXPECT(*same == *grid);
     }
 
-    // as GRIB opera.grib2
+    // as GRIB opera.grib2, to microdegrees
+    constexpr double microdegree = 1e-6;
+
     std::unique_ptr<const Grid> efas(GridFactory::build(spec::Custom({{"grid", "LAEA-EFAS-5km"}})));
     const std::vector<size_t> shape{950, 1000};
     EXPECT(efas->shape() == shape);
-    EXPECT(points_equal(efas->first_point(), PointLonLat{-35.034024, 66.982143}, 1e-6));
+    EXPECT(points_equal(efas->first_point(), PointLonLat{-35.034024, 66.982143}, microdegree));
 }
 
 

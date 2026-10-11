@@ -390,19 +390,16 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
-    constexpr double precision_ll = 0.5e-6;  // to microdegrees
-    constexpr double precision_xy = 0.5e-1;  // to decimeters
-
     const auto& ll = point_coordinates<PointLonLat>();
     const auto& xy = point_coordinates<PointXY>();
 
     // (lon, lat) to (x, y), or the reverse
     if (projection.source_point_coordinates() == ll && projection.target_point_coordinates() == xy) {
-        return make_bounding_box(min, max, projection, precision_ll, precision_xy);
+        return make_bounding_box(min, max, projection, PRECISION_LL, PRECISION_XY);
     }
 
     if (projection.source_point_coordinates() == xy && projection.target_point_coordinates() == ll) {
-        return make_bounding_box(min, max, Inverse{projection}, precision_ll, precision_xy);
+        return make_bounding_box(min, max, Inverse{projection}, PRECISION_LL, PRECISION_XY);
     }
 
     if (projection.source_point_coordinates() == ll || projection.target_point_coordinates() == ll) {

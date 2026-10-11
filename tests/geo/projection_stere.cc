@@ -81,7 +81,7 @@ CASE("stere: fwd, inv") {
         EXPECT(points_equal(stere->fwd(pole), PointXY{0., 0.}));
 
         for (const auto& p : points(spec)) {
-            EXPECT(points_equal(stere->inv(stere->fwd(p)), p, 1e-9));
+            EXPECT(points_equal(stere->inv(stere->fwd(p)), p));
         }
     }
 }
@@ -97,7 +97,8 @@ CASE("stere: as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", stere->proj_str()}}));
 
         for (const auto& p : points(spec)) {
-            EXPECT(points_equal(proj->fwd(p), stere->fwd(p), 1e-6));
+            EXPECT(points_equal(proj->inv(stere->fwd(p)), p));
+            EXPECT(points_equal(stere->inv(proj->fwd(p)), p));
         }
     }
 }

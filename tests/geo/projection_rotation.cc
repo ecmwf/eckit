@@ -338,7 +338,7 @@ bool approx(const v& a, const v& b) {
         return false;
     }
     for (size_t i = 0; i < a.size(); ++i) {
-        if (!types::is_approximately_equal(a[i], b[i], 1e-9)) {
+        if (!types::is_approximately_equal(a[i], b[i], PointLonLat::EPS)) {
             return false;
         }
     }
@@ -366,7 +366,7 @@ CASE("rotation: vectors") {
         // and round trip
         const auto back = projection.inv(fwd_ll[0], fwd_ll[1]);
         for (size_t i = 0; i < lon.size(); ++i) {
-            EXPECT(points_equal(PointLonLat{back[0][i], back[1][i]}, PointLonLat{lon[i], lat[i]}, 1e-9));
+            EXPECT(points_equal(PointLonLat{back[0][i], back[1][i]}, PointLonLat{lon[i], lat[i]}));
         }
     };
 

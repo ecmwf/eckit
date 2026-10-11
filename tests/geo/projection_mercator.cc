@@ -56,7 +56,7 @@ CASE("merc: fwd, inv") {
         P merc(ProjectionFactory::make_from_string(spec));
 
         const PointLonLat p{-75., 35.};
-        EXPECT(points_equal(merc->inv(merc->fwd(p)), p, 1e-9));
+        EXPECT(points_equal(merc->inv(merc->fwd(p)), p));
 
         EXPECT(std::get<PointXY>(merc->fwd(NORTH_POLE)).Y() > std::numeric_limits<double>::max());
         EXPECT(std::get<PointXY>(merc->fwd(SOUTH_POLE)).Y() < std::numeric_limits<double>::lowest());
@@ -74,9 +74,8 @@ CASE("merc: as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", merc->proj_str()}}));
 
         for (const auto& p : std::vector<PointLonLat>{{-75., 35.}, {262.036499, 14.736453}, {10., -60.}}) {
-            const auto q = merc->fwd(p);
-            EXPECT(points_equal(proj->fwd(p), q, 1e-6));
-            EXPECT(points_equal(merc->inv(q), p, 1e-9));
+            EXPECT(points_equal(proj->inv(merc->fwd(p)), p));
+            EXPECT(points_equal(merc->inv(proj->fwd(p)), p));
         }
     }
 }

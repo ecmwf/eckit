@@ -151,6 +151,8 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
+    range/RegularXY.cc
+    range/RegularXY.h
     search/FileIO.cc
     search/FileIO.h
     search/KDTree.cc

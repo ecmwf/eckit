@@ -45,8 +45,13 @@ size_t N(Fraction inc, Fraction a, Fraction b) {
 }
 
 
-struct RegularXY final : Regular::Implementation {
+struct Plain final : Regular::Implementation {
     using Implementation::Implementation;
+};
+
+
+struct Cropped final : Regular {
+    explicit Cropped(Implementation* impl) : Regular(impl) {}
 };
 
 
@@ -148,11 +153,11 @@ Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_
     const bool up = a_ <= b_;
     ASSERT(up ? crop_a <= crop_b : crop_a > crop_b);
 
-    detail::RegularXY other(inc_, Fraction{crop_a}, Fraction{crop_b}, a_);
+    detail::Plain other(inc_, Fraction{crop_a}, Fraction{crop_b}, a_);
     auto _min = std::max(min(), other.min());
     auto _max = std::min(max(), other.max());
 
-    return new range::RegularXY{inc_, up ? _min : _max, up ? _max : _min, a_};
+    return new detail::Cropped(new detail::Plain{inc_, up ? _min : _max, up ? _max : _min, a_});
 }
 
 
@@ -220,19 +225,6 @@ RegularLongitude* RegularLongitude::make_empty_range(Fraction a, Fraction b) {
 
 RegularLongitude* RegularLongitude::make_cropped_range(double crop_a, double crop_b) const {
     auto* ptr = dynamic_cast<RegularLongitude*>(Regular::make_cropped_range(crop_a, crop_b));
-    ASSERT(ptr != nullptr);
-    return ptr;
-}
-
-
-RegularXY::RegularXY(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
-    Regular(new detail::RegularXY(inc, _a, _b, ref)) {
-    ASSERT(types::is_approximately_equal(a(), b()) ? size() == 1 : size() > 1);
-}
-
-
-RegularXY* RegularXY::make_cropped_range(double crop_a, double crop_b) const {
-    auto* ptr = dynamic_cast<RegularXY*>(Regular::make_cropped_range(crop_a, crop_b));
     ASSERT(ptr != nullptr);
     return ptr;
 }

@@ -4,6 +4,7 @@
 
 #include "eckit/geo/grid/regular/RegularXY.h"
 
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -65,22 +66,14 @@ PointXY false_from_spec(const Spec& spec) {
 
 
 std::vector<double> range_spec(const range::RegularXY& range) {
-    return {range.values().front(), range.values().back(), static_cast<double>(range.increment())};
+    return {range.a(), range.b(), range.inc()};
 }
 
 
 }  // namespace
 
 
-RegularXY::RangeXY::RangeXY(double start, double stop_included, double step) :
-    RegularXY{step, start,
-              stop_included +
-                  [](double step) {
-                      return types::is_strictly_greater(step, 0.)   ? PointXY::EPS
-                             : types::is_strictly_greater(0., step) ? -PointXY::EPS
-                                                                    : 0;
-                  }(step),
-              start} {}
+RegularXY::RangeXY::RangeXY(double start, double stop_included, double step) : RegularXY{step, start, stop_included} {}
 
 
 RegularXY::RangeXY RegularXY::RangeXY::make_from_spec(const Spec& spec, const std::string& key) {

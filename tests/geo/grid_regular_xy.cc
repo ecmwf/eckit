@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -64,6 +66,20 @@ CASE("RegularXY: x and y") {
         std::unique_ptr<const Grid> without_false(
             GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false: [0, 0]}"));
         EXPECT_EQUAL(without_false->spec_str(), grid->spec_str());
+    }
+}
+
+
+CASE("RegularXY: x and y, any step") {
+    // the stop is included to a small fraction of the step, so it can be as written (to 15 significant digits)
+    for (const auto& [spec, size, last] : std::vector<std::tuple<std::string, size_t, PointXY>>{
+             {"{x: [0, 29974.0379635747, 2997.40379635747], y: [0, 1, 1]}", 22, {29974.0379635747, 1.}},
+             {"{x: [0, 33005.841, 3000.531], y: [0, -1067074.4, -1067074.4]}", 24, {33005.841, -1067074.4}},
+             {"{x: [0, 33005.8361490001, 3000.53055900001], y: [0, -1, -1]}", 24, {33005.8361490001, -1.}},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        EXPECT_EQUAL(grid->size(), size);
+        EXPECT(points_equal(grid->to_points().back(), last, 1e-6));
     }
 }
 

@@ -9,7 +9,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/Regular.h"
-#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/range/RegularXY.h"
 
 
 namespace eckit::geo::grid::regular {

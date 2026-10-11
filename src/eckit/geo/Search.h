@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "eckit/geo/Point.h"
-#include "eckit/geo/search/Tree.h"
+#include "eckit/geo/search/KDTree.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -29,12 +29,12 @@ namespace eckit::geo {
 /**
  * @brief Search in point clouds, following k-d tree algorithms
  *
- * @details Points are geocentric (X, Y, Z): grid points after the grid projection, on the grid figure (on the
- * geographic CRS, for PROJ projections), and queries either (X, Y, Z) or (lon, lat) likewise. Distances are chord
- * lengths (metres, on the Earth). Results are by increasing distance, then index.
+ * @details Points are geocentric (X, Y, Z): grid points as Grid::to_xyz, and queries either (X, Y, Z) or (lon, lat) on
+ * the same figure. Distances are chord lengths (metres, on the Earth). Results are by increasing distance, then index.
  *
  * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius), search-k, search-radius.
- * Spec, of the k-d tree: search-tree (see search::TreeFactory), caching, search-fast-build (defaults in LibEcKitGeo).
+ * Spec, of the k-d tree: search-loader (see search::KDTreeFactory), caching, search-fast-build (defaults in
+ * LibEcKitGeo).
  */
 class Search {
 public:
@@ -81,7 +81,7 @@ public:
 
     MemoryUsage footprint() const;
 
-    const geo::search::Tree& tree() const;
+    const geo::search::KDTree& kdtree() const;
 
     // -- Friends
 
@@ -129,7 +129,10 @@ private:
     // -- Class methods
 
     /// k-d tree configuration, so searches of other behaviours can share it
-    static std::unique_ptr<spec::Custom> spec_tree(const Spec&);
+    static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
+
+    /// Footprint of a search of size points, before building or loading it
+    static MemoryUsage estimate(size_t size, const Spec&);
     static bool spec_has_behaviour(const Spec&);
 };
 

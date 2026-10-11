@@ -230,6 +230,10 @@ endif()
 set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
+# in-memory cache capacities, as "in-process[,shared]" (bytes)
+math( EXPR _one_GiB "1024 * 1024 * 1024" )
+set( eckit_GEO_CACHE_SEARCH_CAPACITY "${_one_GiB},0" CACHE STRING "eckit::geo cache search capacity default" )
+
 ### LAPACK
 
 if( eckit_HAVE_MKL )

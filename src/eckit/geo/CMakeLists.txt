@@ -148,18 +148,18 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
-    search/Tree.cc
-    search/Tree.h
-    search/TreeMapped.cc
-    search/TreeMapped.h
-    search/TreeMappedAnonymousMemory.cc
-    search/TreeMappedAnonymousMemory.h
-    search/TreeMappedFile.cc
-    search/TreeMappedFile.h
-    search/TreeMemory.cc
-    search/TreeMemory.h
-    search/TreeSharedMemory.cc
-    search/TreeSharedMemory.h
+    search/FileIO.cc
+    search/FileIO.h
+    search/KDTree.cc
+    search/KDTree.h
+    search/LoadedFile.cc
+    search/LoadedFile.h
+    search/MappedFile.cc
+    search/MappedFile.h
+    search/Memory.cc
+    search/Memory.h
+    search/SharedMemory.cc
+    search/SharedMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc

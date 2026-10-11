@@ -376,6 +376,11 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, Poin
     constexpr double precision_ll = 0.5e-6;  // to microdegrees
     constexpr double precision_xy = 0.5e-1;  // to decimeters
 
+    // not (lon, lat) points (e.g. geocentric), all of them are included
+    if (projection.source_point_coordinates() != point_coordinates<PointLonLat>()) {
+        return std::make_unique<BoundingBox>();
+    }
+
     return make_bounding_box(min, max, projection, precision_ll, precision_xy);
 }
 

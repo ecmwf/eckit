@@ -10,19 +10,13 @@
 #include <string>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Trace.h"
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/MD5.h"
-
-#if eckit_HAVE_PROJ
-#include "eckit/geo/projection/PROJ.h"
-#endif
 
 
 namespace eckit::geo {
@@ -31,52 +25,17 @@ namespace eckit::geo {
 namespace {
 
 
-using Tree = search::Tree;
+using KDTree = search::KDTree;
 
 
-std::string tree_type(const spec::Spec& spec) {
-    return spec.get_string("search-tree",
-                           spec.get_bool("caching", LibEcKitGeo::caching()) ? LibEcKitGeo::searchTree() : "memory");
+std::string loader(const spec::Spec& spec) {
+    return spec.get_string("search-loader",
+                           spec.get_bool("caching", LibEcKitGeo::caching()) ? LibEcKitGeo::searchLoader() : "memory");
 }
 
 
 bool fast_build(const spec::Spec& spec) {
     return spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild());
-}
-
-
-const Projection* make_projection_to_xyz(const Figure& figure) {
-#if eckit_HAVE_PROJ
-    try {
-        const auto ellipsoid = figure.proj_str();
-        return new projection::PROJ("+proj=longlat " + ellipsoid, "+proj=cart " + ellipsoid);
-    }
-    catch (const std::exception& e) {
-        // e.g. PROJ without its database, the fallback is equivalent
-        Log::debug() << "Search: PROJ not used: " << e.what() << std::endl;
-    }
-#endif
-
-    return new projection::LonLatToXYZ(figure.a(), figure.b());
-}
-
-
-const Projection* make_projection_to_xyz(const Grid& grid) {
-#if eckit_HAVE_PROJ
-    if (const auto* proj = dynamic_cast<const projection::PROJ*>(&grid.projection());
-        proj != nullptr && proj->source_point_coordinates() == point_coordinates<PointLonLat>()) {
-        try {
-            // (lon, lat) are on the PROJ source CRS, whose ellipsoid can differ from the grid figure (target CRS)
-            const projection::PROJ geographic(proj->source(), proj->source());
-            return new projection::PROJ(proj->source(), "+proj=cart " + geographic.figure().proj_str());
-        }
-        catch (const std::exception& e) {
-            Log::debug() << "Search: PROJ not used: " << e.what() << std::endl;
-        }
-    }
-#endif
-
-    return make_projection_to_xyz(grid.figure());
 }
 
 
@@ -110,62 +69,61 @@ void check_radius(double radius) {
 
 
 struct Search::Shared {
-    std::unique_ptr<Tree> tree;
-    std::unique_ptr<const Projection> to_xyz;
+    std::unique_ptr<KDTree> kdtree;
+    std::unique_ptr<const projection::LonLatToXYZ> to_xyz;
 
-    // queries update the tree statistics, and PROJ objects are not thread-safe
+    // queries update the k-d tree statistics
     util::recursive_mutex mutex;
 };
 
 
 template <typename Fill>
 void Search::build(const std::string& uid, size_t size, const Spec& spec, const Fill& fill) {
-    auto& tree = shared_->tree;
-    tree.reset(geo::search::TreeFactory::build(tree_type(spec), uid, size));
+    auto& kdtree = shared_->kdtree;
+    kdtree.reset(geo::search::KDTreeFactory::build(loader(spec), uid, size));
 
-    util::lock_guard<Tree> lock(*tree);
+    util::lock_guard<KDTree> lock(*kdtree);
 
-    if (tree->ready()) {
-        Log::debug() << "Search: loaded " << *tree << std::endl;
+    if (kdtree->ready()) {
+        Log::debug() << "Search: loaded " << *kdtree << std::endl;
         return;
     }
 
     Trace trace("Search: build " + uid);
 
-    std::vector<Tree::Value> values;
+    std::vector<KDTree::Value> values;
     fill(values);
     ASSERT(values.size() == size);
 
     if (fast_build(spec)) {
-        tree->build(values);
+        kdtree->build(values);
     }
     else {
         for (const auto& value : values) {
-            tree->insert(value);
+            kdtree->insert(value);
         }
     }
 
-    tree->commit();
+    kdtree->commit();
 }
 
 
 Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Shared>()) {
     configure(spec);
 
-    shared_->to_xyz.reset(make_projection_to_xyz(grid));
-    const auto& projection = *shared_->to_xyz;
+    // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
+    const auto& figure = grid.projection().source_figure();
+    shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
 
-    // the tree depends on the grid points and their conversion
-    const auto uid = MD5{grid.uid() + projection.spec_str()}.digest();
+    // the k-d tree depends on the grid points and the figure they're converted on
+    const auto uid = MD5{grid.uid() + shared_->to_xyz->spec_str()}.digest();
 
-    build(uid, grid.size(), spec, [&grid, &projection](std::vector<Tree::Value>& values) {
-        // all at once, as projections convert vectors efficiently (PROJ)
-        const auto [lat, lon] = grid.to_latlons();
-        const auto xyz        = projection.fwd(lon, lat);
-        ASSERT(xyz.size() == 3 && xyz[0].size() == lat.size());
+    build(uid, grid.size(), spec, [&grid](std::vector<KDTree::Value>& values) {
+        const auto xyz = grid.to_xyz();
+        ASSERT(xyz.size() == 3);
 
-        values.reserve(lat.size());
-        for (size_t i = 0; i < lat.size(); ++i) {
+        values.reserve(xyz[0].size());
+        for (size_t i = 0; i < xyz[0].size(); ++i) {
             values.emplace_back(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, i);
         }
     });
@@ -175,9 +133,9 @@ Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Sh
 Search::Search(const std::vector<PointXYZ>& points, const Spec& spec) : shared_(std::make_shared<Shared>()) {
     configure(spec);
 
-    shared_->to_xyz.reset(make_projection_to_xyz(*std::unique_ptr<const Figure>(FigureFactory::build(spec))));
+    shared_->to_xyz = std::make_unique<projection::LonLatToXYZ>(spec);
 
-    build(points_uid(points), points.size(), spec, [&points](std::vector<Tree::Value>& values) {
+    build(points_uid(points), points.size(), spec, [&points](std::vector<KDTree::Value>& values) {
         values.reserve(points.size());
         for (size_t i = 0; i < points.size(); ++i) {
             values.emplace_back(points[i], i);
@@ -195,34 +153,39 @@ Search::~Search() = default;
 
 
 size_t Search::size() const {
-    return shared_->tree->size();
+    return shared_->kdtree->size();
 }
 
 
 Search::MemoryUsage Search::footprint() const {
-    return shared_->tree->footprint();
+    return shared_->kdtree->footprint();
 }
 
 
-const search::Tree& Search::tree() const {
-    return *shared_->tree;
+const search::KDTree& Search::kdtree() const {
+    return *shared_->kdtree;
 }
 
 
-std::unique_ptr<spec::Custom> Search::spec_tree(const Spec& spec) {
-    auto tree = std::make_unique<spec::Custom>();
+Search::MemoryUsage Search::estimate(size_t size, const Spec& spec) {
+    return geo::search::KDTreeFactory::estimate(loader(spec), size);
+}
 
-    if (spec.has("search-tree")) {
-        tree->set("search-tree", spec.get_string("search-tree"));
+
+std::unique_ptr<spec::Custom> Search::spec_kdtree(const Spec& spec) {
+    auto kdtree = std::make_unique<spec::Custom>();
+
+    if (spec.has("search-loader")) {
+        kdtree->set("search-loader", spec.get_string("search-loader"));
     }
 
     for (const std::string key : {"caching", "search-fast-build"}) {
         if (spec.has(key)) {
-            tree->set(key, spec.get_bool(key));
+            kdtree->set(key, spec.get_bool(key));
         }
     }
 
-    return tree;
+    return kdtree;
 }
 
 
@@ -287,7 +250,7 @@ Search::Neighbour Search::search_nn(const Point& p) const {
     const auto q = to_xyz(p);
 
     util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-    return shared_->tree->nearest_neighbour(q);
+    return shared_->kdtree->nearest_neighbour(q);
 }
 
 
@@ -305,7 +268,7 @@ Search::Neighbours Search::search_knn(const Point& p, size_t k) const {
     Neighbours result;
     {
         util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        result = shared_->tree->k_nearest_neighbours(q, k);
+        result = shared_->kdtree->k_nearest_neighbours(q, k);
     }
 
     sort(result);
@@ -321,7 +284,7 @@ Search::Neighbours Search::search_radius(const Point& p, double radius) const {
     Neighbours result;
     {
         util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        result = shared_->tree->find_in_sphere(q, radius);
+        result = shared_->kdtree->find_in_sphere(q, radius);
     }
 
     sort(result);
@@ -361,9 +324,8 @@ PointXYZ Search::to_xyz(const Point& p) const {
         return std::get<PointXYZ>(p);
     }
 
-    if (std::holds_alternative<PointLonLat>(p)) {
-        util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        return std::get<PointXYZ>(shared_->to_xyz->fwd(p));
+    if (const auto* q = std::get_if<PointLonLat>(&p); q != nullptr) {
+        return shared_->to_xyz->fwd(*q);
     }
 
     throw exception::SearchError("Search: unsupported point type (supported: PointXYZ, PointLonLat)", Here());
@@ -371,7 +333,7 @@ PointXYZ Search::to_xyz(const Point& p) const {
 
 
 void Search::print(std::ostream& out) const {
-    out << "Search[tree=" << *shared_->tree << "]";
+    out << "Search[kdtree=" << *shared_->kdtree << "]";
 }
 
 

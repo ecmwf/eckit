@@ -21,8 +21,9 @@ namespace eckit::geo::cache {
 
 /**
  * @brief Searches shared in the process, by grid and k-d tree configuration (see Search), within a capacity
- * @details Searches of other behaviours share the cached k-d tree. Capacity is from resource
- * eckit-geo-search-cache-capacity;$ECKIT_GEO_SEARCH_CACHE_CAPACITY, as "memory[,shared]" (bytes).
+ * @details Searches of other behaviours share the cached k-d tree. Room is made for a search before building or loading
+ * its k-d tree (see search::KDTreeFactory::estimate). Capacity is from resource
+ * eckit-geo-cache-search-capacity;$ECKIT_GEO_CACHE_SEARCH_CAPACITY, as "memory[,shared]" (bytes).
  */
 class SearchCache final : public InMemoryCache<Search> {
 public:

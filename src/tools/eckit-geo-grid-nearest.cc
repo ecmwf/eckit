@@ -5,11 +5,9 @@
 #include <string>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
-#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
@@ -53,11 +51,9 @@ private:
             std::unique_ptr<const geo::Grid> grid(
                 geo::GridFactory::build(spec::Custom({{uid ? "uid" : "grid", std::string(arg)}})));
 
-            const geo::Search search(*grid);
-            geo::projection::LonLatToXYZ to_xyz(grid->figure().a(), grid->figure().b());
-
-            for (const auto& near : search.search_knn(nearest_point, nearest_k)) {
-                out << near.index << ", " << to_xyz.inv(near.point) << ", " << near.distance << std::endl;
+            const auto points = grid->to_points();
+            for (const auto& near : grid->search().search_knn(nearest_point, nearest_k)) {
+                out << near.index << ", " << points[near.index] << ", " << near.distance << std::endl;
             }
         }
     }

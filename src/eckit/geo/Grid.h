@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +18,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
@@ -138,6 +138,10 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
+    /// Geocentric coordinates (one vector per coordinate), as the grid points or on their figure (see
+    /// Projection::source_figure)
+    [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
+
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
 
     /// Shared (cache::SearchCache), valid for the grid lifetime
@@ -207,7 +211,7 @@ private:
     mutable uid_type uid_;
 
     mutable std::shared_ptr<const Search> search_;
-    mutable std::once_flag search_once_;
+    mutable util::once_flag search_once_;
 
     // -- Methods
 

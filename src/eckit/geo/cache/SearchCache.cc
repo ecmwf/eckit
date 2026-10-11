@@ -24,15 +24,15 @@ SearchCache::SearchCache() : InMemoryCache(MemoryUsage{LibEcKitGeo::searchCacheC
 
 
 std::shared_ptr<const Search> SearchCache::get(const Grid& grid, const spec::Spec& spec) {
-    const auto tree = Search::spec_tree(spec);
-    const auto search =
-        InMemoryCache::get(grid.uid() + tree->str(), [&]() { return std::make_shared<const Search>(grid, *tree); });
+    const auto kdtree = Search::spec_kdtree(spec);
+    const auto search = InMemoryCache::get(grid.uid() + kdtree->str(), Search::estimate(grid.size(), *kdtree),
+                                           [&]() { return std::make_shared<const Search>(grid, *kdtree); });
 
     if (!Search::spec_has_behaviour(spec)) {
         return search;
     }
 
-    // the cached search stays in use (not evicted) while its tree is shared
+    // the cached search stays in use (not evicted) while its k-d tree is shared
     return {new Search(*search, spec), [search](const Search* ptr) { delete ptr; }};
 }
 

@@ -5,22 +5,26 @@
 #pragma once
 
 #include "eckit/container/KDTree.h"
-#include "eckit/geo/search/Tree.h"
+#include "eckit/geo/search/KDTree.h"
 
 
 namespace eckit::geo::search {
 
 
-class TreeMemory final : public Tree {
+class Memory final : public KDTree {
 public:
 
     // -- Types
 
-    using KDTree = KDTreeMemory<Traits>;
+    using Container = KDTreeMemory<Traits>;
 
     // -- Constructors
 
-    TreeMemory(const std::string& uid, size_t size);
+    Memory(const std::string& uid, size_t size);
+
+    // -- Class methods
+
+    static MemoryUsage estimate(size_t size) { return {size * sizeof(Container::Node), 0}; }
 
     // -- Overridden methods
 
@@ -34,16 +38,17 @@ public:
     bool ready() override { return false; }
     void commit() override {}
 
+
     void stats_print(std::ostream&, bool pretty) const override;
     void stats_reset() override;
 
-    MemoryUsage footprint() const override { return {count_ * sizeof(KDTree::Node), 0}; }
+    MemoryUsage footprint() const override { return {count_ * sizeof(Container::Node), 0}; }
 
 private:
 
     // -- Members
 
-    KDTree tree_;
+    Container tree_;
     size_t count_ = 0;
 
     // -- Overridden methods

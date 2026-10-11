@@ -48,7 +48,7 @@ foreach(_test
         projection_rotation
         range
         search
-        search_tree
+        search_kdtree
         sh
         util)
     eckit_geo_add_test(${_test})

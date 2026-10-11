@@ -34,8 +34,8 @@ public:
     static bool caching();
     static std::string cacheDir();
 
-    /// k-d tree when caching
-    static std::string searchTree();
+    /// Search loader when caching (see search::KDTreeFactory)
+    static std::string searchLoader();
     static bool searchFastBuild();
     static std::string searchCacheCapacity();
 

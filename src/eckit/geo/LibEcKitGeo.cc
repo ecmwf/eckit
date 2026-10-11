@@ -129,10 +129,10 @@ std::string LibEcKitGeo::cacheDir() {
 }
 
 
-std::string LibEcKitGeo::searchTree() {
-    static const std::string tree{
-        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-tree;$ECKIT_GEO_SEARCH_TREE", "mapped-cache-file")};
-    return tree;
+std::string LibEcKitGeo::searchLoader() {
+    static const std::string loader{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-memory")};
+    return loader;
 }
 
 
@@ -144,9 +144,8 @@ bool LibEcKitGeo::searchFastBuild() {
 
 
 std::string LibEcKitGeo::searchCacheCapacity() {
-    // as mir's in-memory caches, "memory,shared" (bytes)
     static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
-        "eckit-geo-search-cache-capacity;$ECKIT_GEO_SEARCH_CACHE_CAPACITY", "536870912,536870912")};
+        "eckit-geo-cache-search-capacity;$ECKIT_GEO_CACHE_SEARCH_CAPACITY", eckit_GEO_CACHE_SEARCH_CAPACITY)};
     return capacity;
 }
 

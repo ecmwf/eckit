@@ -26,7 +26,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<PROJ> PROJECTION("proj");
+static ProjectionRegisterType<PROJ> PROJECTION("proj", true);
 
 
 namespace {
@@ -175,6 +175,16 @@ Figure* make_figure(const std::string& proj_str) {
 }
 
 
+std::string spec_source(const Projection::Spec& spec) {
+    return spec.get_string("source", PROJ::proj_default());
+}
+
+
+std::string spec_target(const Projection::Spec& spec) {
+    return spec.get_string("target", spec.get_string("proj", PROJ::proj_default()));
+}
+
+
 }  // namespace
 
 
@@ -276,8 +286,11 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 }
 
 
-PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", proj_default()), spec.get_string("target", spec.get_string("proj", proj_default())),
+PROJ::PROJ(const Spec& spec) : PROJ(spec, spec.get_bool("reverse", false)) {}
+
+
+PROJ::PROJ(const Spec& spec, bool reverse) :
+    PROJ(reverse ? spec_target(spec) : spec_source(spec), reverse ? spec_source(spec) : spec_target(spec),
          spec.get_double("lon_minimum", 0)) {}
 
 

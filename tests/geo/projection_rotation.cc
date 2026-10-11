@@ -386,7 +386,7 @@ CASE("rotation: vectors") {
 
 
     SECTION("reverse") {
-        projection::Reverse<projection::Rotation> reverse(PointLonLat{10., -40.});
+        projection::Reverse reverse(new projection::Rotation(PointLonLat{10., -40.}));
         projection::Rotation rotation(PointLonLat{10., -40.});
 
         const auto a = reverse.fwd(lon, lat);

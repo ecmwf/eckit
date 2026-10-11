@@ -18,7 +18,6 @@
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Tokenizer.h"
@@ -412,11 +411,23 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, Poin
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, PointLonLat max,
-                                                               const projection::Rotation& rotation) {
-    projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                    new projection::EquidistantCylindrical};
+                                                               const Projection& projection) {
+    const auto& ll = point_coordinates<PointLonLat>();
+    if (projection.source_point_coordinates() != ll || projection.target_point_coordinates() != ll) {
+        throw exception::ProjectionError("BoundingBox: projection from (lon, lat) to (lon, lat) expected", Here());
+    }
 
-    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, projection);
+    // (lon, lat) to the projection's source (lon, lat) as (x, y), reversing a copy of the projection
+    spec::Custom copy;
+    projection.fill_spec(copy);
+    if (!copy.has("type")) {
+        copy.set("type", projection.type());
+    }
+
+    projection::Composer composer{new projection::Reverse(ProjectionFactory::build(copy)),
+                                  new projection::EquidistantCylindrical};
+
+    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     if (after->periodic()) {
         return std::make_unique<BoundingBox>(after->north(), 0, after->south(), PointLonLat::FULL_ANGLE);
     }

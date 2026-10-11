@@ -147,30 +147,19 @@ struct ProjectionFactory {
     static std::ostream& list(std::ostream&);
     static bool has_type(const std::string& type) { return Factory<Projection>::instance().exists(type); }
 
-    /// Reverse of a projection type (see projection::Reverse), built if the spec has "reverse": true
-    using reverse_builder_t = const Projection* (*)(const Projection::Spec&);
-    static void register_reverse(const std::string& type, reverse_builder_t);
+    /// Projection types interpreting "reverse": true themselves, others are wrapped (see projection::Reverse)
+    static void register_self_reversing(const std::string& type);
 };
 
 
-}  // namespace eckit::geo
-
-
-// once Projection is defined, for ProjectionRegisterType
-#include "eckit/geo/projection/Reverse.h"
-
-
-namespace eckit::geo {
-
-
-/// Registers a projection type, and its reverse (see projection::Reverse)
 template <typename T>
 class ProjectionRegisterType {
 public:
 
-    explicit ProjectionRegisterType(const std::string& type) : builder_(type) {
-        ProjectionFactory::register_reverse(
-            type, [](const Projection::Spec& spec) -> const Projection* { return new projection::Reverse<T>(spec); });
+    explicit ProjectionRegisterType(const std::string& type, bool self_reversing = false) : builder_(type) {
+        if (self_reversing) {
+            ProjectionFactory::register_self_reversing(type);
+        }
     }
 
 private:

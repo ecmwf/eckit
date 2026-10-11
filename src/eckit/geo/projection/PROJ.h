@@ -68,6 +68,10 @@ protected:
 
 private:
 
+    // -- Constructors
+
+    PROJ(const Spec&, bool reverse);
+
     // -- Types
 
     struct Implementation;

@@ -6,8 +6,9 @@
 
 #include <array>
 #include <limits>
-#include <map>
 #include <ostream>
+#include <set>
+#include <string>
 #include <utility>
 #include <variant>
 
@@ -15,6 +16,7 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
@@ -38,14 +40,14 @@ class lock_type {
 };
 
 
-/// Reverses of the projection types (see projection::Reverse), registered during static initialisation
-struct ReverseRegistry {
+/// Registered during static initialisation
+struct SelfReversing {
     util::recursive_mutex mutex;
-    std::map<std::string, ProjectionFactory::reverse_builder_t> builders;
+    std::set<std::string> types;
 
-    static ReverseRegistry& instance() {
-        static ReverseRegistry registry;
-        return registry;
+    static SelfReversing& instance() {
+        static SelfReversing self_reversing;
+        return self_reversing;
     }
 };
 
@@ -57,19 +59,15 @@ const Projection* make(const std::string& type, const Projection::Spec& spec) {
                                    Here());
     }
 
+    const auto* projection = Factory<Projection>::instance().get(type).create(spec);
     if (!spec.get_bool("reverse", false)) {
-        return Factory<Projection>::instance().get(type).create(spec);
+        return projection;
     }
 
-    auto& registry = ReverseRegistry::instance();
-    util::lock_guard<util::recursive_mutex> lock(registry.mutex);
+    auto& self_reversing = SelfReversing::instance();
+    util::lock_guard<util::recursive_mutex> lock(self_reversing.mutex);
 
-    auto it = registry.builders.find(type);
-    if (it == registry.builders.end()) {
-        throw exception::ProjectionError("ProjectionFactory: unknown reverse of '" + type + "'", Here());
-    }
-
-    return it->second(spec);
+    return self_reversing.types.count(type) == 0 ? new projection::Reverse(projection) : projection;
 }
 
 
@@ -332,11 +330,11 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
 }
 
 
-void ProjectionFactory::register_reverse(const std::string& type, reverse_builder_t builder) {
-    auto& registry = ReverseRegistry::instance();
-    util::lock_guard<util::recursive_mutex> lock(registry.mutex);
+void ProjectionFactory::register_self_reversing(const std::string& type) {
+    auto& self_reversing = SelfReversing::instance();
+    util::lock_guard<util::recursive_mutex> lock(self_reversing.mutex);
 
-    ASSERT(registry.builders.try_emplace(type, builder).second);
+    ASSERT(self_reversing.types.insert(type).second);
 }
 
 

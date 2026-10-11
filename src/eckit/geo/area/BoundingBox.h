@@ -18,9 +18,6 @@ class BoundingBox;
 bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
 }  // namespace area
 class Projection;
-namespace projection {
-class Rotation;
-}
 }  // namespace eckit::geo
 
 
@@ -105,8 +102,10 @@ public:
 
     /// Of the (x, y) rectangle [min, max], projected between (lon, lat) and (x, y) in either direction
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointXY min, PointXY max, const Projection&);
+
+    /// Of the (lon, lat) rectangle [min, max], projected from (lon, lat) to (lon, lat)
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointLonLat min, PointLonLat max,
-                                                                           const projection::Rotation&);
+                                                                           const Projection&);
 
     // -- Members
 

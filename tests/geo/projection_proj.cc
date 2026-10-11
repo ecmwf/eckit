@@ -272,9 +272,9 @@ CASE("projection: proj, reverse from spec") {
 
     // the source is the default
     EXPECT_EQUAL(plain->spec_str(), R"({"target":"EPSG:3035","type":"proj"})");
-    EXPECT_EQUAL(reverse->spec_str(), R"({"reverse":true,"target":"EPSG:3035","type":"proj"})");
+    EXPECT_EQUAL(reverse->spec_str(), R"({"source":"EPSG:3035","type":"proj"})");
     EXPECT_NOT(plain->reverse());
-    EXPECT(reverse->reverse());
+    EXPECT_NOT(reverse->reverse());
 
     // identical, if built from the spec of another
     for (const auto* projection : {plain.get(), reverse.get()}) {

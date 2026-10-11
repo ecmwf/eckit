@@ -40,7 +40,7 @@ CASE("projection: none") {
 
 CASE("projection: reverse") {
     projection::LonLatToXYZ ab(new figure::UnitSphere);
-    projection::Reverse<projection::LonLatToXYZ> ba(new figure::UnitSphere);
+    projection::Reverse ba(new projection::LonLatToXYZ(new figure::UnitSphere));
 
     PointLonLat p = NORTH_POLE;
     PointXYZ q{0., 0., 1.};
@@ -62,9 +62,9 @@ CASE("projection: reverse") {
 
 CASE("projection: reverse, from spec") {
     struct test_t {
-        std::string spec;     // reversed with "reverse: true"
+        std::string spec;     // reversed by appending "reverse: true"
         std::string plain;    // spec after construction
-        std::string reverse;  // ...
+        std::string reverse;  // spec after construction, reversed
     };
 
     const PointLonLat p{10., 20.};
@@ -198,8 +198,9 @@ struct Failing final : Projection {
 };
 
 
-/// lonlat to xy, but not honouring its target point type
+/// identity, but declaring lonlat to xy (so not honouring its point types)
 struct Dishonest final : Projection {
+    Dishonest() : Projection(nullptr, PointLonLat{}, PointXY{}) {}
     Point fwd(const Point& p) const override { return p; }
     Point inv(const Point& q) const override { return q; }
 
@@ -245,7 +246,7 @@ CASE("projection: point types") {
         check(projection::Rotation{PointLonLat{10., -40.}}, LL, LL);
         check(projection::EquidistantCylindrical{}, LL, XY);
         check(projection::LonLatToXYZ{new figure::UnitSphere}, LL, XYZ);
-        check(projection::Reverse<projection::LonLatToXYZ>{new figure::UnitSphere}, XYZ, LL);
+        check(projection::Reverse{new projection::LonLatToXYZ{new figure::UnitSphere}}, XYZ, LL);
     }
 
 
@@ -259,7 +260,7 @@ CASE("projection: point types") {
         composer.emplace_back(new projection::LonLatToXYZ{new figure::UnitSphere});
         check(composer, LL, XYZ);
 
-        projection::Composer to_lonlat{new projection::Reverse<projection::LonLatToXYZ>{new figure::UnitSphere},
+        projection::Composer to_lonlat{new projection::Reverse{new projection::LonLatToXYZ{new figure::UnitSphere}},
                                        new projection::Rotation{PointLonLat{10., -40.}}};
         check(to_lonlat, XYZ, LL);
     }
@@ -281,7 +282,7 @@ CASE("projection: coordinates") {
 
 
     SECTION("reverse") {
-        projection::Reverse<projection::LonLatToXYZ> to_lonlat(new figure::UnitSphere);
+        projection::Reverse to_lonlat(new projection::LonLatToXYZ(new figure::UnitSphere));
         const Projection& projection = to_lonlat;
 
         EXPECT(approx(fwd(projection, v{0., 1., 0.}), v{90., 0.}));
@@ -361,9 +362,12 @@ CASE("projection: vectors") {
 
 
     SECTION("projection not honouring its point types") {
-        const Dishonest projection_dishonest;  // declares lonlat to xy, returns lonlat
+        const Dishonest projection_dishonest;  // declares lonlat to xy, returns its input
         const Projection& dishonest = projection_dishonest;
+
+        // not an eckit::Exception (so not NaN): a broken projection is a programming error, not a failing point
         EXPECT_THROWS_AS(fwd(dishonest, v{1., 2.}), std::bad_variant_access);
+        EXPECT_THROWS_AS(inv(dishonest, v{1., 2.}), std::bad_variant_access);
     }
 }
 

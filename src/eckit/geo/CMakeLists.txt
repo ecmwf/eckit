@@ -139,6 +139,7 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/PolarStereographic.cc
     projection/PolarStereographic.h
+    projection/Reverse.cc
     projection/Reverse.h
     projection/Rotation.cc
     projection/Rotation.h

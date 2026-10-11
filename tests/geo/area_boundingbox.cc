@@ -101,6 +101,21 @@ CASE("longitude (normalisation)") {
 }
 
 
+CASE("longitude (periodic, spanning 2 pi or more, from any west)") {
+    for (const auto& [w, e] : std::vector<std::pair<double, double>>{{-180, 180}, {-180, 360}, {0, 360}, {10, 1000}}) {
+        area::BoundingBox a{90, w, -90, e};
+        auto b = area::BoundingBox::make_from_area(90, w, -90, e);
+        ASSERT(b);
+
+        for (const auto& c : {a, *b}) {
+            EXPECT(c.periodic());
+            EXPECT_EQUAL(c.east(), c.west() + PointLonLat::FULL_ANGLE);
+        }
+        EXPECT_EQUAL(b->west(), PointLonLat::normalise_angle_to_minimum(w, -PointLonLat::FLAT_ANGLE));
+    }
+}
+
+
 CASE("assignment") {
     area::BoundingBox a(10, 1, -10, 100);
     area::BoundingBox b(20, 2, -20, 200);
@@ -149,6 +164,13 @@ CASE("comparison") {
                                   c.east() + 41 * PointLonLat::FULL_ANGLE};
         EXPECT(area::bounding_box_equal(c, d));
     }
+
+    // both periodic: the intersection is from this west (e.g. the area cropping a grid)
+    const area::BoundingBox crop{90, -180, -90, 360};
+    area::BoundingBox grid{90, 0, -90, 360};
+    EXPECT(crop.intersects(grid));
+    EXPECT_EQUAL(grid.west(), -180.);
+    EXPECT_EQUAL(grid.east(), 180.);
 }
 
 
@@ -184,6 +206,13 @@ CASE("intersects") {
                                   c.east() + 41 * PointLonLat::FULL_ANGLE};
         EXPECT(area::bounding_box_equal(c, d));
     }
+
+    // both periodic: the intersection is from this west (e.g. the area cropping a grid)
+    const area::BoundingBox crop{90, -180, -90, 360};
+    area::BoundingBox grid{90, 0, -90, 360};
+    EXPECT(crop.intersects(grid));
+    EXPECT_EQUAL(grid.west(), -180.);
+    EXPECT_EQUAL(grid.east(), 180.);
 }
 
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Point.h"
@@ -240,6 +241,13 @@ CASE("PointLonLat comparison") {
     Point f1 = PointLonLat(-0., -90.);
     Point f2 = PointLonLat(-180., -90.);
     EXPECT(points_equal(f1, f2));
+
+    for (const auto& [lon1, lon2] : std::vector<std::pair<double, double>>{
+             {0., -8.8817841970012523e-16}, {0., 360. - 1e-12}, {359.9999999999, -1e-10}}) {
+        EXPECT(points_equal(PointLonLat{lon1, 41.}, PointLonLat{lon2, 41.}));
+    }
+
+    EXPECT(!points_equal(PointLonLat{0., 41.}, PointLonLat{-1e-6, 41.}));
 }
 
 
@@ -256,6 +264,9 @@ CASE("PointLonLat normalise angles") {
     EXPECT(14. == PointLonLat::normalise_angle_to_minimum(360. * 1e12 + 14, 0.));
     EXPECT(0. == PointLonLat::normalise_angle_to_minimum(-360. * 1e12, 0.));
     EXPECT(14. == PointLonLat::normalise_angle_to_minimum(-360. * 1e12 + 14, 0.));
+
+    EXPECT(0. == PointLonLat::normalise_angle_to_minimum(-8.8817841970012523e-16, 0.));
+    EXPECT(0. == PointLonLat::normalise_angle_to_maximum(8.8817841970012523e-16, 0.));
 }
 
 

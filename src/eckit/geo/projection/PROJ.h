@@ -38,7 +38,6 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
-    const Figure& source_figure() const override { return *source_figure_; }
 
     using Projection::fwd;
     using Projection::inv;
@@ -82,7 +81,6 @@ private:
 
     const std::string source_;
     const std::string target_;
-    const std::shared_ptr<const Figure> source_figure_;
 };
 
 

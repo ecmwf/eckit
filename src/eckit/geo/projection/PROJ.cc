@@ -10,7 +10,6 @@
 #include <limits>
 #include <map>
 #include <memory>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -19,6 +18,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 
@@ -256,7 +256,7 @@ private:
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    Projection(make_figure(target)), source_(source), target_(target), source_figure_(make_figure(source)) {
+    Projection(make_figure(target)), source_(source), target_(target) {
     ASSERT(!source_.empty());
     ASSERT(!target_.empty());
 
@@ -326,48 +326,91 @@ std::vector<std::vector<double>> PROJ::inv_vector(const std::vector<double>& v1,
 
 
 std::string PROJ::proj_str(const spec::Custom& custom) {
-    using key_value_type = std::pair<std::string, std::string>;
+    const auto type = custom.get_string("type", "");
+
+    // the coordinate reference system other than (lon, lat)
+    if (type == "proj") {
+        const auto source = custom.get_string("source", proj_default());
+        return source != proj_default() ? source : custom.get_string("target", proj_default());
+    }
+
+    // projection types with a PROJ equivalent
+    static const std::map<std::string, std::string> NAMES{
+        {"", "longlat"},  // the default projection
+        {"none", "longlat"},
+        {"aea", "aea"},
+        {"albers", "aea"},
+        {"eqc", "eqc"},
+        {"plate-carree", "eqc"},
+        {"laea", "laea"},
+        {"lambert_azimuthal_equal_area", "laea"},
+        {"lcc", "lcc"},
+        {"lambert", "lcc"},
+        {"lambert_lam", "lcc"},
+        {"ll-to-xyz", "cart"},
+        {"merc", "merc"},
+        {"mercator", "merc"},
+        {"rotation", "ob_tran"},
+        {"stere", "stere"},
+        {"polar_stereographic", "stere"},
+    };
+
+    const auto name = NAMES.find(type);
+    if (name == NAMES.end()) {
+        throw exception::ProjectionError("PROJ: no equivalent to projection type '" + type + "'", Here());
+    }
 
     // key "proj" comes first in string, then the others (sorted)
-    struct key_value_compare {
-        bool operator()(const key_value_type& a, const key_value_type& b) const {
-            if (a.first != b.first && (a.first == "proj" || b.first == "proj")) {
-                return a.first == "proj";
-            }
-            return a < b;
-        };
+    auto compare = [](const std::string& a, const std::string& b) {
+        return a != b && (a == "proj" || b == "proj") ? a == "proj" : a < b;
     };
 
-    static const std::map<std::string, std::string> KEYS{
-        {"type", "proj"},
-    };
-
-    static const std::map<std::string, std::string> VALUES{
-        {"mercator", "merc"},
-    };
-
-    auto rename = [](const std::map<std::string, std::string>& map, const std::string& key) {
-        const auto it = map.find(key);
-        return it != map.end() ? it->second : key;
-    };
-
-    std::set<key_value_type, key_value_compare> set;
-    for (const auto& [k, v] : custom.container()) {
-        if (FigureFactory::keys().count(k) == 0 && k != "reverse") {
-            set.emplace(rename(KEYS, k), rename(VALUES, to_string(v)));
-        }
-    }
-
-    std::string str;
-    for (const auto& [key, value] : set) {
-        str += "+" + key + "=" + value + " ";
-    }
+    std::map<std::string, std::string, decltype(compare)> keys(compare);
+    auto str = [](double value) { return to_string(spec::Custom::value_type{value}); };
 
     // figure comes last in string (default figure if not specified)
     std::unique_ptr<const Figure> figure(FigureFactory::build(custom));
     ASSERT(figure);
+    auto figure_str = figure->proj_str();
 
-    return str + figure->proj_str();
+    keys["proj"] = name->second;
+
+    if (name->second == "ob_tran") {
+        const auto south_pole = custom.get_double_vector("south_pole", {0., -90.});
+        const auto angle      = custom.get_double("rotation_angle", 0.);
+
+        keys["o_proj"]  = "longlat";
+        keys["lon_0"]   = str(south_pole[0]);
+        keys["o_lat_p"] = str(-south_pole[1]);
+        if (angle != 0.) {
+            keys["o_lon_p"] = str(angle);
+        }
+    }
+    else {
+        for (const auto& [k, v] : custom.container()) {
+            if (k != "type" && k != "reverse" && FigureFactory::keys().count(k) == 0) {
+                keys[k] = to_string(v);
+            }
+        }
+
+        if (name->second == "lcc" && keys.count("lat_0") == 0) {
+            keys["lat_0"] = "0";  // (PROJ defaults to lat_1, without lat_2)
+        }
+
+        if (name->second == "eqc") {
+            // (x, y) in degrees, independent of the figure: on the sphere of its semi-major axis (PROJ eqc is on the
+            // ellipsoid, and a sphere of radius 180/pi is not of Earth)
+            keys["to_meter"] = str(figure->a() * util::DEGREE_TO_RADIAN);
+            figure_str       = "+R=" + str(figure->a());
+        }
+    }
+
+    std::string proj;
+    for (const auto& [key, value] : keys) {
+        proj += "+" + key + "=" + value + " ";
+    }
+
+    return proj + figure_str;
 }
 
 

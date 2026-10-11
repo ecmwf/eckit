@@ -65,12 +65,9 @@ public:
     const std::vector<std::string>& target_point_coordinates() const;
 
     /// Map a grid's (x, y) coordinates to geographic coordinates
-    virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
+    Point from_grid_xy(double x, double y) const;
 
     const Figure& figure() const { return *figure_; }
-
-    /// Figure of the source coordinates, which PROJ can have different from the target's
-    virtual const Figure& source_figure() const { return figure(); }
 
     /// Spec on its own, with the figure unless the default
     virtual void fill_spec(spec::Custom&) const;

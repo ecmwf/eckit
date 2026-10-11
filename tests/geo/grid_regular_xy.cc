@@ -154,6 +154,16 @@ CASE("RegularXY: as GRIB") {
              R"("projection":{"lat_0":51.967,"lat_1":51.967,"lon_0":4.9,"reverse":true,"type":"lcc"},)"
              R"("x":[0,120000,2500],"y":[0,170000,2500]})",
              {{4.038959, 51.199433}, {4.074832551, 51.199693547}, {5.790918449, 52.728068627}}},
+            // gridType=lambert, Nx=181, Ny=139, Dx=Dy=8000 m, LoV=308.65, LaD=Latin1=Latin2=5.12, jScansPositively=0
+            // (points as PROJ, the eccodes iterator assumes latitudes increasing from the first grid point)
+            {"PFFPOS000+0000_guyane.grb",
+             "x: [0, 1440000, 8000], y: [0, -1104000, -8000], false: [720000.044, -552000.009]",
+             "type: lcc, lat_0: 5.12, lat_1: 5.12, lon_0: 308.65",
+             "+proj=lcc +lat_0=5.12 +lat_1=5.12 +lon_0=308.65 +R=6371229",
+             R"({"false":[720000.044,-552000.009],)"
+             R"("projection":{"lat_0":5.12,"lat_1":5.12,"lon_0":308.65,"reverse":true,"type":"lcc"},)"
+             R"("x":[0,1440000,8000],"y":[0,-1104000,-8000]})",
+             {{302.098546001, 10.044953002}, {302.17133496, 10.045680339}, {315.100527634, 0.129704986}}},
             // gridType=mercator, Ni=56, Nj=44, Di=Dj=45000 m, LaD=14
             {"test_mercator.temp.grib2",
              "x: [0, 2475000, 45000], y: [0, 1935000, 45000], false: [10569854.248, -1607827.789]",
@@ -201,7 +211,16 @@ CASE("RegularXY: as GRIB") {
             std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + test.xy + "}"));
             EXPECT(points_equal(plane->first_point(), PointXY{0., 0.}));
 
+            // from its own spec, the same grid
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec_str));
+            EXPECT_EQUAL(grid->spec_str(), test.spec_str);
+
             if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+                // PROJ string from the grid, and from its projection spec
+                EXPECT_EQUAL(grid->projection().proj_str(), test.proj);
+                std::unique_ptr<const Projection> projection(
+                    ProjectionFactory::make_from_string("{" + test.projection + "}"));
+                EXPECT_EQUAL(projection->proj_str(), test.proj);
                 check("type: proj, source: '" + test.proj + "'");
             }
         }

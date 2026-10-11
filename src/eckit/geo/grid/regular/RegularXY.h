@@ -43,7 +43,6 @@ public:
     [[nodiscard]] Point last_point() const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
-    const Figure& figure() const override;
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }

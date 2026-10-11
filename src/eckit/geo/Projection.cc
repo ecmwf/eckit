@@ -201,6 +201,16 @@ const std::vector<std::string>& Projection::target_point_coordinates() const {
 }
 
 
+Point Projection::from_grid_xy(double x, double y) const {
+    // between (lon, lat), e.g. rotations, the grid's (x, y) are (lon, lat) on the source (e.g. the rotated sphere)
+    if (static const auto LL = Point{PointLonLat{}}.index(); source_ == LL && target_ == LL) {
+        return fwd(PointLonLat{x, y});
+    }
+
+    return inv(PointXY{x, y});
+}
+
+
 void Projection::point_types(const Point& source, const Point& target) {
     // validates the point types (the empty point is not a point type)
     dims(source.index());
@@ -253,7 +263,11 @@ const Projection::Spec& Projection::spec() const {
 
 std::string Projection::proj_str() const {
 #if eckit_HAVE_PROJ
-    return projection::PROJ::proj_str(dynamic_cast<const spec::Custom&>(spec()));
+    // not spec(), which can be a projection name, and the figure (even if a default, omitted from spec)
+    spec::Custom custom;
+    fill_spec(custom);
+    figure().fill_spec(custom);
+    return projection::PROJ::proj_str(custom);
 #else
     NOTIMP;
 #endif

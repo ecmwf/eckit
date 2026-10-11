@@ -144,11 +144,6 @@ Grid::BoundingBox* RegularXY::calculate_bbox() const {
 }
 
 
-const Figure& RegularXY::figure() const {
-    return projection().figure();
-}
-
-
 Point RegularXY::point(double x, double y) const {
     const PointXY p{x, y};
     return projected_ ? projection().fwd(p - false_) : p;

@@ -11,6 +11,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
 #include "eckit/geo/order/Scan.h"
@@ -133,7 +134,7 @@ CASE("rotated") {
 
 
     SECTION("compare") {
-        constexpr double EPS = 1e-6;  // comparison tolerance
+        constexpr double EPS = 1e-6;
         const std::vector<PointLonLat> points_ref{
             {-30.37923437901262, 54.30167983367708}, {-30.21461696695217, 54.28605285392668},
             {-30.05013625049183, 54.27016346802356}, {-29.88579431820473, 54.25401202651201},
@@ -680,6 +681,44 @@ CASE("scanning orders: same points and bounding box") {
 
             const auto [lats, lons] = grid->to_latlons();
             EXPECT(points_equal(PointLonLat{lons.front(), lats.front()}, first));
+        }
+    }
+}
+
+
+CASE("RegularLL: rotated, projection as PROJ") {
+    if (!ProjectionFactory::has_type("proj")) {
+        return;
+    }
+
+    // rotated_ll (GRIB2.tmpl, latitudeOfSouthernPole=-40, longitudeOfSouthernPole=10)
+    const std::string spec =
+        R"({"area":[60,0,0,30],"grid":[2,2],"projection":{"south_pole":[10,-40],"type":"rotation"}})";
+    const std::string spec_as_proj = R"({"area":[60,0,0,30],"grid":[2,2],"projection":{)"
+                                     R"("source":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229",)"
+                                     R"("target":"+proj=longlat +R=6371229","type":"proj"}})";
+
+    std::unique_ptr<const Grid> rotated(GridFactory::make_from_string(spec));
+    std::unique_ptr<const Grid> rotated_as_proj(GridFactory::make_from_string(spec_as_proj));
+    EXPECT_EQUAL(rotated->spec_str(), spec);
+    EXPECT_EQUAL(rotated_as_proj->spec_str(), spec_as_proj);
+
+    // rebuilt from either spec, the same
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(rotated->spec_str()));
+    std::unique_ptr<const Grid> from_spec_as_proj(GridFactory::make_from_string(rotated_as_proj->spec_str()));
+    EXPECT(*from_spec == *rotated);
+    EXPECT(*from_spec_as_proj == *rotated_as_proj);
+
+    // the same points, by all (first and last as GRIB)
+    const auto points = rotated->to_points();
+    EXPECT(points_equal(points.front(), PointLonLat{190., 70.}, 1e-6));
+    EXPECT(points_equal(points.back(), PointLonLat{51.93010519, 41.56076257}, 1e-6));
+
+    for (const auto* grid : {rotated_as_proj.get(), from_spec.get(), from_spec_as_proj.get()}) {
+        const auto other = grid->to_points();
+        EXPECT_EQUAL(other.size(), points.size());
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(other[i], points[i], 1e-6));
         }
     }
 }

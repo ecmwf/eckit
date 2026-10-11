@@ -138,8 +138,7 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    /// Geocentric coordinates (one vector per coordinate), as the grid points or on their figure (see
-    /// Projection::source_figure)
+    /// Geocentric coordinates (one vector per coordinate), as the grid points or on their figure
     [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
 
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
@@ -156,8 +155,8 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
-    /// Figure of the grid points (by default, the projection source's)
-    virtual const Figure& figure() const { return projection().source_figure(); }
+    /// Figure of the grid points (lon, lat), as the projection's
+    virtual const Figure& figure() const { return projection().figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;

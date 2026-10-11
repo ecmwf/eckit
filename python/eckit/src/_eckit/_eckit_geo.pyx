@@ -19,6 +19,11 @@ def git_sha1() -> str:
     return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
 
 
+def cache_dir() -> str:
+    """Cache directory (resolved once, eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH)"""
+    return eckit_geo.LibEcKitGeo.cacheDir()
+
+
 def cache_dir_purge() -> None:
     eckit_geo.LibEcKitGeo.purgeCacheDir()
 

@@ -10,12 +10,13 @@
 
 #include "eckit/codec/codec.h"
 #include "eckit/config/Resource.h"
+#include "eckit/container/CacheManager.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/os/AutoUmask.h"
 #include "eckit/spec/Spec.h"
 
 
@@ -51,9 +52,7 @@ struct Loader final : Cache::Loader {
         }
 
         if (spec->has("url")) {
-            static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "latlon" /
-                                            std::to_string(cache::Download::version()));
-
+            static const Download download;
             record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }
@@ -121,24 +120,38 @@ void LatitudeLongitude::write(const PathName& p) const {
 
 
 PathName LatitudeLongitude::to_cached_path() const {
-    auto uid  = grid::Unstructured::uid_from_latlons(latitude(), longitude());
-    auto path = PathName(LibEcKitGeo::cacheDir()) / "latlon" / (uid + ".ek");
+    // the cache file (as Download, not in memory), created exclusively across processes (eckit::CacheManager: the
+    // creation is locked, written to a process-specific file then renamed, so other processes never read a partial
+    // file)
+    struct Traits {
+        using value_type = PathName;
+        using Locker     = CacheManagerFileFlock;
 
-    if (auto dir = path.dirName(); !dir.exists()) {
-        try {
-            // use umask = 0 so mkdir creates the directory with the correct permissions
-            AutoUmask umask(0);
-            dir.mkdir(0777);
+        static const char* name() { return "latlon"; }
+        static int version() { return version::LATLON; }
+        static const char* extension() { return ".ek"; }
+
+        static void save(const CacheManagerBase&, const value_type&, const PathName&) {}  // by the creator
+        static void load(const CacheManagerBase&, value_type& path, const PathName& cached) { path = cached; }
+    };
+
+    using LatLonCache = CacheManager<Traits>;
+    static const LatLonCache CACHE(Traits::name(), LibEcKitGeo::cacheDir(), false, 0);
+
+    struct Creator final : LatLonCache::CacheContentCreator {
+        explicit Creator(const LatitudeLongitude& ll) : ll_(ll) {}
+        void create(const PathName& path, PathName&, bool& saved) override {
+            ll_.write(path);
+            saved = true;
         }
-        catch (FailedSystemCall&) {
-            // possibly failing later is more meaningful
-        }
-    }
+        const LatitudeLongitude& ll_;
+    } creator(*this);
 
-    if (!path.exists()) {
-        write(path);
-    }
+    // the file lock is per process
+    lock_type lock;
 
+    PathName path;
+    CACHE.getOrCreate(grid::Unstructured::uid_from_latlons(latitude(), longitude()), creator, path);
     return path;
 }
 

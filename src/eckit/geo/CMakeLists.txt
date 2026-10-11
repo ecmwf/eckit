@@ -66,6 +66,7 @@ list(APPEND eckit_geo_srcs
     cache/RecordCache.h
     cache/SearchCache.cc
     cache/SearchCache.h
+    cache/Version.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc

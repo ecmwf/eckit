@@ -13,6 +13,9 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         LibEcKitGeo& instance()
 
         @staticmethod
+        string cacheDir() except +
+
+        @staticmethod
         void purgeCacheDir() except +
 
         @staticmethod

@@ -55,10 +55,6 @@ public:
     /// File-backed storage is shared (page cache)
     MemoryUsage footprint() const override { return {0, TreeMapped::footprint().memory()}; }
 
-    // -- Class members
-
-    static const int VERSION;
-
     // -- Class methods
 
     static PathName tree_path(const std::string& uid, const std::vector<PathName>& roots);

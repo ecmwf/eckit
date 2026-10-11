@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import sys
 from json import loads
 
 import pytest
@@ -9,6 +10,8 @@ import pytest
 from eckit.geo import Figure
 from eckit.geo import Grid
 from eckit.geo import Projection
+from eckit.geo import search_cache_clear
+from eckit.geo import search_cache_statistics
 
 SPECS = [
     (dict(grid="1/1"), (181, 360)),
@@ -148,3 +151,74 @@ def test_grid_projection():
 
     del grid
     assert projection.spec_str
+
+
+def indices(neighbours):
+    return [index for index, _ in neighbours]
+
+
+def test_grid_search():
+    grid = Grid(grid=[30, 30])
+    search = grid.search()
+    assert len(search) == len(grid)
+
+    # rows of 12 points from the North Pole: (lon, lat) = (0, 0) is point 36
+    index, distance = search.search_nn((0, 0))
+    assert index == 36
+    assert distance == pytest.approx(0, abs=1e-6)
+
+    # equidistant to (0, 0) and (30, 0), in metres (chord on the Earth)
+    knn = search.search_knn((15, 0), 2)
+    assert sorted(indices(knn)) == [36, 37]
+    assert knn[0][1] == pytest.approx(knn[1][1])
+    assert knn[0][1] == pytest.approx(1.663e6, rel=1e-3)
+
+    radius = knn[0][1] * 1.001
+    assert sorted(indices(search.search_radius((15, 0), radius))) == [36, 37]
+    assert sorted(indices(search.search_knn_and_radius((15, 0), 4, radius))) == [36, 37]
+    assert len(search.search_knn_or_radius((15, 0), 4, 1.0)) == 4
+
+
+def test_grid_search_spec():
+    grid = Grid(grid=[30, 30])
+
+    search = grid.search(tree="memory", search="knn", k=3)
+    assert search.search((15, 0)) == search.search_knn((15, 0), 3)
+
+    with pytest.raises(RuntimeError):
+        grid.search(search="knn")  # k is required
+
+
+LOADERS = [
+    ("memory", "memory"),
+    ("mapped-anonymous-memory", "memory"),
+    ("mapped-temporary-file", "shared"),
+    ("mapped-cache-file", "shared"),  # the default, as mir
+    pytest.param(
+        "shared-memory",
+        "shared",
+        marks=pytest.mark.skipif(
+            sys.platform == "darwin", reason="System V shared memory limits on macOS"
+        ),
+    ),
+]
+
+
+@pytest.mark.parametrize("tree, usage", LOADERS)
+def test_grid_search_loaders(tree, usage):
+    grid = Grid(grid=[30, 30])
+
+    search_cache_clear()
+    before = search_cache_statistics()
+
+    search = grid.search(tree=tree)
+
+    # the cache accounts for the loaded search, in process memory or shared
+    after = search_cache_statistics()
+    assert after["misses"] == before["misses"] + 1
+    assert after[usage] - before[usage] == search.footprint[usage] > 0
+
+    # whatever the loader, the same results
+    reference = grid.search(tree="memory")
+    for point in ((14, 1), (-100, 44), (170, -50)):
+        assert indices(search.search_knn(point, 4)) == indices(reference.search_knn(point, 4))

@@ -341,7 +341,7 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 
     std::set<key_value_type, key_value_compare> set;
     for (const auto& [k, v] : custom.container()) {
-        if (FigureFactory::keys().count(k) == 0) {
+        if (FigureFactory::keys().count(k) == 0 && k != "reverse") {
             set.emplace(rename(KEYS, k), rename(VALUES, to_string(v)));
         }
     }

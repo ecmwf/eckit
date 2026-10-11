@@ -23,11 +23,11 @@ static const ProjectionRegisterType<LambertConformalConic> PROJECTION_3("lambert
 
 
 LambertConformalConic::LambertConformalConic(const Spec& spec) :
-    LambertConformalConic(spec.get_double("lat_1"), spec.get_double("lon_0", 0.), spec.get_double("lat_0", 0.),
-                          spec.get_double("lat_2", 0.), FigureFactory::build(spec)) {}
+    LambertConformalConic(spec.get_double("lat_1"), spec.get_double("lat_2", spec.get_double("lat_1")),
+                          spec.get_double("lon_0", 0.), spec.get_double("lat_0", 0.), FigureFactory::build(spec)) {}
 
 
-LambertConformalConic::LambertConformalConic(double lat_1, double lon_0, double lat_0, double lat_2, Figure* fig) :
+LambertConformalConic::LambertConformalConic(double lat_1, double lat_2, double lon_0, double lat_0, Figure* fig) :
     Projection(fig), lon_0_(lon_0), lat_0_(lat_0), lat_1_(lat_1), lat_2_(lat_2) {
     ASSERT(types::is_strictly_greater(figure().R(), 0.));
 
@@ -54,11 +54,12 @@ LambertConformalConic::LambertConformalConic(double lat_1, double lon_0, double 
 
 
 PointXY LambertConformalConic::fwd(const PointLonLat& p) const {
-    auto q = PointLonLatR::make_from_lonlat(p.lon(), p.lat());
+    // from the central meridian, in [-180, 180[
+    auto dlam =
+        PointLonLat::normalise_angle_to_minimum(p.lon() - lon_0_, -PointLonLat::FLAT_ANGLE) * util::DEGREE_TO_RADIAN;
 
-    auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr() / 2.), -n_);
+    auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + p.lat() * util::DEGREE_TO_RADIAN / 2.), -n_);
     auto rho0 = figure().R() * rho0_bare_;  // scaled
-    auto dlam = q.lonr() - lon_0_ * util::DEGREE_TO_RADIAN;
 
     return {rho * std::sin(n_ * dlam), rho0 - rho * std::cos(n_ * dlam)};
 }
@@ -96,14 +97,14 @@ void LambertConformalConic::fill_spec(spec::Custom& custom) const {
     custom.set("type", type());
 
     custom.set("lat_1", lat_1_);
+    if (!types::is_approximately_equal(lat_2_, lat_1_)) {
+        custom.set("lat_2", lat_2_);
+    }
     if (!types::is_approximately_equal(lon_0_, 0.)) {
         custom.set("lon_0", lon_0_);
     }
     if (!types::is_approximately_equal(lat_0_, 0.)) {
         custom.set("lat_0", lat_0_);
-    };
-    if (!types::is_approximately_equal(lat_2_, 0.)) {
-        custom.set("lat_2", lat_2_);
     }
 }
 

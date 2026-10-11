@@ -43,6 +43,7 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
+        projection_lcc
         projection_ll_to_xyz
         projection_plate-caree
         projection_rotation

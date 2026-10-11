@@ -26,8 +26,8 @@ public:
 
     explicit LambertConformalConic(const Spec&);
 
-    explicit LambertConformalConic(double lat_1, double lon_0 = 0., double lat_0 = 0., double lat_2 = 0.,
-                                   Figure* = nullptr);
+    /// As PROJ (lcc), with lat_2 = lat_1 for one standard parallel
+    explicit LambertConformalConic(double lat_1, double lat_2, double lon_0 = 0., double lat_0 = 0., Figure* = nullptr);
 
     // -- Methods
 

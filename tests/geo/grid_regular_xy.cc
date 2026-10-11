@@ -9,6 +9,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/testing/Test.h"
@@ -85,6 +86,54 @@ CASE("RegularXY: projection on top") {
         EXPECT_THROWS_AS(GridFactory::make_from_string(
                              "{x: [0, 20, 10], y: [0, 10, 10], projection: {type: eqc, reverse: true, x_0: 1}}"),
                          exception::SpecError);
+    }
+}
+
+
+CASE("RegularXY: lambert_lam.grib2") {
+    // GRIB gridType=lambert_lam (as lambert): Nx=49, Ny=69, Dx=Dy=2500 m, LoV=4.9, LaD=Latin1=Latin2=51.967, sphere of
+    // radius 6371229 m, first grid point (4.038959, 51.199433), jScansPositively=1; the false easting/northing places
+    // the first grid point at (0, 0)
+    const std::string projection = "type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true";
+    const std::string xy         = "x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055]";
+
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + xy + ", projection: {" + projection + "}}"));
+
+    const std::vector<size_t> shape{69, 49};
+    EXPECT(grid->shape() == shape);
+    EXPECT_EQUAL(grid->spec_str(),
+                 R"({"false":[60000.021,85000.055],)"
+                 R"("projection":{"lat_0":51.967,"lat_1":51.967,"lon_0":4.9,"reverse":true,"type":"lcc"},)"
+                 R"("x":[0,120000,2500],"y":[0,170000,2500]})");
+
+    // as GRIB (eccodes)
+    const std::vector<PointLonLat> expected{
+        {4.038959, 51.199433}, {4.074832551, 51.199693547}, {5.790918449, 52.728068627}};
+
+    auto check = [&expected](const Grid& grid) {
+        const auto points = grid.to_points();
+        EXPECT(points_equal(points.front(), expected[0], 1e-6));
+        EXPECT(points_equal(points[1], expected[1], 1e-6));
+        EXPECT(points_equal(points.back(), expected[2], 1e-6));
+    };
+
+    check(*grid);
+
+    SECTION("without projection") {
+        std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + xy + "}"));
+        EXPECT(points_equal(plane->first_point(), PointXY{0., 0.}));
+        EXPECT(points_equal(plane->last_point(), PointXY{120000., 170000.}));
+    }
+
+    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+        return;
+    }
+
+    SECTION("as PROJ") {
+        std::unique_ptr<const Grid> proj(GridFactory::make_from_string(
+            "{" + xy +
+            ", projection: {type: proj, source: '+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229'}}"));
+        check(*proj);
     }
 }
 

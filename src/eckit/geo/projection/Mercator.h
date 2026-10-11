@@ -4,25 +4,27 @@
 
 #pragma once
 
-#include <cstddef>
 #include <string>
 
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/Conformal.h"
 
 
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a Mercator projection, given the projection centre and first point
+/**
+ * @brief Mercator projection, as PROJ (merc)
+ * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+ */
 class Mercator : public Projection {
 public:
 
     // -- Constructors
 
-    explicit Mercator(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
-
+    explicit Mercator(double lon_0 = 0., double lat_ts = 0., Figure* = nullptr);
     explicit Mercator(const Spec&);
 
     // -- Methods
@@ -47,23 +49,16 @@ private:
 
     // -- Members
 
-    const PointLonLat centre_;  // angle [degree] between Eastward direction and the Equator, range [0, 90], latitude
-                                // [degree] of projection intersecting ellipsoid
-    const PointLonLat first_;
+    /// Central meridian
+    const double lon_0_;
 
-    const double eps_;
-    const size_t max_iter_;
+    /// Latitude of true scale
+    const double lat_ts_;
 
-    double lam0_;
-    double x0_;
-    double y0_;
-    double e_;
-    double m_;
-    double w_;
+    const Conformal conformal_;
 
-    // -- Methods
-
-    double calculate_phi(double t) const;
+    /// Semi-major axis, scaled at the latitude of true scale
+    const double k_;
 };
 
 

@@ -83,6 +83,29 @@ CASE("lcc: proj_str") {
 }
 
 
+CASE("lcc: on an ellipsoid, as PROJ") {
+    for (const auto& spec :
+         std::vector<std::string>{"{type: lcc, lat_1: 33, lat_2: 45, lon_0: -90, figure: wgs84}",
+                                  "{type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, figure: wgs84}"}) {
+        P lcc(ProjectionFactory::make_from_string(spec));
+
+        for (const auto& p : std::vector<PointLonLat>{{4.038959, 51.199433}, {-20., 30.}, {-100., 70.}}) {
+            EXPECT(points_equal(lcc->inv(lcc->fwd(p)), p, 1e-9));
+        }
+
+        if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+            continue;
+        }
+
+        P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", lcc->proj_str()}}));
+
+        for (const auto& p : std::vector<PointLonLat>{{4.038959, 51.199433}, {-20., 30.}, {-100., 70.}}) {
+            EXPECT(points_equal(proj->fwd(p), lcc->fwd(p), 1e-6));
+        }
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

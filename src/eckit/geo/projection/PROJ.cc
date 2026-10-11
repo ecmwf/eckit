@@ -331,7 +331,6 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 
     static const std::map<std::string, std::string> VALUES{
         {"mercator", "merc"},
-        {"reverse_mercator", "merc"},
     };
 
     auto rename = [](const std::map<std::string, std::string>& map, const std::string& key) {

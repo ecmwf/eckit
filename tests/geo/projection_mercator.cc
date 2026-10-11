@@ -3,55 +3,81 @@
 
 
 #include <limits>
+#include <memory>
+#include <string>
+#include <variant>
+#include <vector>
 
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/projection/Mercator.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("Mercator: spec_str, proj_str") {
-    constexpr auto eps = 10. * PointXY::EPS;  // FIXME improve floating-point errors
-
-    projection::Mercator proj1({0., 14.}, {262.036, 14.7365});
-    projection::Mercator proj2({0., 14.}, {0., 0.});
-    projection::Mercator proj3({-180., 0.}, {0., 0.});
+using P = std::unique_ptr<const Projection>;
 
 
-    SECTION("inv(fwd(.)) == . and fwd(inv(.)) == .") {
-        for (const auto& projection : {
-                 proj1,
-                 proj2,
-                 proj3,
-             }) {
-            PointXY a{0., 0.};
-            EXPECT(points_equal(a, projection.fwd(projection.inv(a)), eps));
+const std::vector<std::string> SPECS{
+    "{type: merc, lat_ts: 14}",
+    "{type: merc, lon_0: -180}",
+    "{type: merc, lat_ts: 14, figure: wgs84}",
+};
 
-            PointLonLat b{-75., 35.};
-            EXPECT(points_equal(b, projection.inv(projection.fwd(b)), eps));
 
-            PointXY c = projection.fwd(NORTH_POLE);
-            EXPECT(c.Y() > std::numeric_limits<double>::max());
+CASE("merc: spec, proj_str") {
+    struct test_t {
+        std::string spec;
+        std::string spec_str;
+        std::string proj_str;
+    };
 
-            PointXY d = projection.fwd(SOUTH_POLE);
-            EXPECT(d.Y() < std::numeric_limits<double>::lowest());
+    for (const auto& test : std::vector<test_t>{
+             {SPECS[0], R"({"lat_ts":14,"type":"merc"})", "+proj=merc +lat_ts=14 +R=6371229"},
+             {SPECS[1], R"({"lon_0":-180,"type":"merc"})", "+proj=merc +lon_0=-180 +R=6371229"},
+             {SPECS[2], R"({"figure":"wgs84","lat_ts":14,"type":"merc"})", "+proj=merc +lat_ts=14 +ellps=WGS84"},
+             {"{type: mercator, lat_ts: 14}", R"({"lat_ts":14,"type":"merc"})", "+proj=merc +lat_ts=14 +R=6371229"},
+         }) {
+        P projection(ProjectionFactory::make_from_string(test.spec));
+        EXPECT_EQUAL(projection->spec_str(), test.spec_str);
+        EXPECT_EQUAL(projection->proj_str(), test.proj_str);
+
+        P same(ProjectionFactory::build(projection->spec()));
+        EXPECT(*same == *projection);
+    }
+}
+
+
+CASE("merc: fwd, inv") {
+    for (const auto& spec : SPECS) {
+        P merc(ProjectionFactory::make_from_string(spec));
+
+        const PointLonLat p{-75., 35.};
+        EXPECT(points_equal(merc->inv(merc->fwd(p)), p, 1e-9));
+
+        EXPECT(std::get<PointXY>(merc->fwd(NORTH_POLE)).Y() > std::numeric_limits<double>::max());
+        EXPECT(std::get<PointXY>(merc->fwd(SOUTH_POLE)).Y() < std::numeric_limits<double>::lowest());
+    }
+}
+
+
+CASE("merc: as PROJ") {
+    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+        return;
+    }
+
+    for (const auto& spec : SPECS) {
+        P merc(ProjectionFactory::make_from_string(spec));
+        P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", merc->proj_str()}}));
+
+        for (const auto& p : std::vector<PointLonLat>{{-75., 35.}, {262.036499, 14.736453}, {10., -60.}}) {
+            const auto q = merc->fwd(p);
+            EXPECT(points_equal(proj->fwd(p), q, 1e-6));
+            EXPECT(points_equal(merc->inv(q), p, 1e-9));
         }
-    }
-
-
-    SECTION("spec_str") {
-        EXPECT_EQUAL(proj1.spec_str(), R"({"lat_ts":14,"type":"mercator"})");
-        EXPECT_EQUAL(proj2.spec_str(), R"({"lat_ts":14,"type":"mercator"})");
-        EXPECT_EQUAL(proj3.spec_str(), R"({"lon_0":-180,"type":"mercator"})");
-    }
-
-
-    SECTION("proj_str") {
-        EXPECT(proj1.proj_str() == "+proj=merc +lat_ts=14 +R=6371229");
-        EXPECT(proj2.proj_str() == "+proj=merc +lat_ts=14 +R=6371229");
-        EXPECT(proj3.proj_str() == "+proj=merc +lon_0=-180 +R=6371229");
     }
 }
 

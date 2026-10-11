@@ -90,50 +90,68 @@ CASE("RegularXY: projection on top") {
 }
 
 
-CASE("RegularXY: lambert_lam.grib2") {
-    // GRIB gridType=lambert_lam (as lambert): Nx=49, Ny=69, Dx=Dy=2500 m, LoV=4.9, LaD=Latin1=Latin2=51.967, sphere of
-    // radius 6371229 m, first grid point (4.038959, 51.199433), jScansPositively=1; the false easting/northing places
-    // the first grid point at (0, 0)
-    const std::string projection = "type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true";
-    const std::string xy         = "x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055]";
-
-    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + xy + ", projection: {" + projection + "}}"));
-
-    const std::vector<size_t> shape{69, 49};
-    EXPECT(grid->shape() == shape);
-    EXPECT_EQUAL(grid->spec_str(),
-                 R"({"false":[60000.021,85000.055],)"
-                 R"("projection":{"lat_0":51.967,"lat_1":51.967,"lon_0":4.9,"reverse":true,"type":"lcc"},)"
-                 R"("x":[0,120000,2500],"y":[0,170000,2500]})");
-
-    // as GRIB (eccodes)
-    const std::vector<PointLonLat> expected{
-        {4.038959, 51.199433}, {4.074832551, 51.199693547}, {5.790918449, 52.728068627}};
-
-    auto check = [&expected](const Grid& grid) {
-        const auto points = grid.to_points();
-        EXPECT(points_equal(points.front(), expected[0], 1e-6));
-        EXPECT(points_equal(points[1], expected[1], 1e-6));
-        EXPECT(points_equal(points.back(), expected[2], 1e-6));
+CASE("RegularXY: as GRIB") {
+    // grids as GRIB examples (by eccodes): the false easting/northing places the first grid point at (0, 0)
+    struct test_t {
+        std::string name;
+        std::string xy;
+        std::string projection;
+        std::string proj;
+        std::string spec_str;
+        std::vector<PointLonLat> first_second_last;
     };
 
-    check(*grid);
+    for (const auto& test : std::vector<test_t>{
+             // gridType=lambert_lam (as lambert), Nx=49, Ny=69, Dx=Dy=2500 m, LoV=4.9, LaD=Latin1=Latin2=51.967
+             {"lambert_lam.grib2",
+              "x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055]",
+              "type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9",
+              "+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229",
+              R"({"false":[60000.021,85000.055],)"
+              R"("projection":{"lat_0":51.967,"lat_1":51.967,"lon_0":4.9,"reverse":true,"type":"lcc"},)"
+              R"("x":[0,120000,2500],"y":[0,170000,2500]})",
+              {{4.038959, 51.199433}, {4.074832551, 51.199693547}, {5.790918449, 52.728068627}}},
+             // gridType=mercator, Ni=56, Nj=44, Di=Dj=45000 m, LaD=14
+             {"test_mercator.temp.grib2",
+              "x: [0, 2475000, 45000], y: [0, 1935000, 45000], false: [10569854.248, -1607827.789]",
+              "type: merc, lat_ts: 14",
+              "+proj=merc +lat_ts=14 +R=6371229",
+              R"({"false":[10569854.248,-1607827.789],"projection":{"lat_ts":14,"reverse":true,"type":"merc"},)"
+              R"("x":[0,2475000,45000],"y":[0,1935000,45000]})",
+              {{262.036499, 14.736453}, {262.453567906, 14.736453}, {284.975288815, 31.173065977}}},
+             // gridType=polar_stereographic, Nx=765, Ny=570, Dx=Dy=2500 m, LaD=60, LoV=280, projectionCentreFlag=0
+             {"CMC_hrdps_east_TMP_TGL_2_ps2.5km_2014081512_P000-00.grib2",
+              "x: [0, 1910000, 2500], y: [0, 1422500, 2500], false: [1122822.896, 5597229.258]",
+              "type: stere, lat_0: 90, lat_ts: 60, lon_0: 280",
+              "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=280 +R=6371229",
+              R"({"false":[1122822.896,5597229.258],)"
+              R"("projection":{"lat_0":90,"lat_ts":60,"lon_0":280,"reverse":true,"type":"stere"},)"
+              R"("x":[0,1910000,2500],"y":[0,1422500,2500]})",
+              {{268.656832, 38.7017}, {268.681435261, 38.705547328}, {290.67818439, 50.672962595}}},
+         }) {
+        SECTION(test.name) {
+            auto check = [&test](const std::string& projection) {
+                std::unique_ptr<const Grid> grid(
+                    GridFactory::make_from_string("{" + test.xy + ", projection: {" + projection + "}}"));
 
-    SECTION("without projection") {
-        std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + xy + "}"));
-        EXPECT(points_equal(plane->first_point(), PointXY{0., 0.}));
-        EXPECT(points_equal(plane->last_point(), PointXY{120000., 170000.}));
-    }
+                const auto points = grid->to_points();
+                EXPECT(points_equal(points.front(), test.first_second_last[0], 1e-6));
+                EXPECT(points_equal(points[1], test.first_second_last[1], 1e-6));
+                EXPECT(points_equal(points.back(), test.first_second_last[2], 1e-6));
 
-    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
-        return;
-    }
+                return grid->spec_str();
+            };
 
-    SECTION("as PROJ") {
-        std::unique_ptr<const Grid> proj(GridFactory::make_from_string(
-            "{" + xy +
-            ", projection: {type: proj, source: '+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229'}}"));
-        check(*proj);
+            EXPECT_EQUAL(check(test.projection + ", reverse: true"), test.spec_str);
+
+            // without projection, the grid points are on the plane
+            std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + test.xy + "}"));
+            EXPECT(points_equal(plane->first_point(), PointXY{0., 0.}));
+
+            if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+                check("type: proj, source: '" + test.proj + "'");
+            }
+        }
     }
 }
 

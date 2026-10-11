@@ -9,6 +9,7 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/Conformal.h"
 
 
 namespace eckit::geo::projection {
@@ -63,9 +64,12 @@ private:
     /// Second standard parallel
     const double lat_2_;
 
+    const Conformal conformal_;
+
+    /// Cone constant, scaled semi-major axis and radius of the parallel of origin, Snyder (15-1 to 15-3)
     double n_;
-    double f_;
-    double rho0_bare_;
+    double aF_;
+    double rho0_;
 };
 
 

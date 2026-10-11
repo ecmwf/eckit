@@ -56,6 +56,28 @@ const Area::Spec& Area::spec() const {
 }
 
 
+void Area::fill_grid_spec(spec::Custom& custom) const {
+    if (is_default()) {
+        return;
+    }
+
+    spec::Custom area_spec;
+    fill_spec(area_spec);
+
+    if (area_spec.only(className())) {
+        custom.set(area_spec);
+        return;
+    }
+
+    custom.set(className(), area_spec);
+}
+
+
+bool Area::is_default() const {
+    return *this == area_default();
+}
+
+
 bool Area::intersects(area::BoundingBox&) const {
     NOTIMP;
 }

@@ -51,8 +51,16 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
+    /// Spec on its own
     virtual void fill_spec(spec::Custom&) const = 0;
-    virtual const std::string& type() const     = 0;
+
+    /// Spec as part of a grid's: nothing for the default area, "area": [n, w, s, e] for a bounding box, "area": {...}
+    /// otherwise
+    void fill_grid_spec(spec::Custom&) const;
+
+    virtual const std::string& type() const = 0;
+
+    bool is_default() const;
 
     virtual bool intersects(area::BoundingBox&) const;
     virtual bool contains(const Point&) const;
@@ -72,23 +80,19 @@ private:
 
     // -- Friends
 
-    friend class Grid;
-
-    // -- Friends
-
     friend bool operator==(const Area& a, const Area& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Area& a, const Area& b) { return !(a == b); }
 };
 
 
-using AreaSpecByName = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+// a type of its own, so names aren't shared with other registries (e.g. grids')
+struct AreaSpecGenerator : spec::SpecGeneratorT1<const std::string&> {};
+
+using AreaSpecByName = spec::GeneratorT<AreaSpecGenerator>;
 
 
 template <typename T>
 using AreaRegisterType = ConcreteBuilderT1<Area, T>;
-
-template <typename T>
-using AreaRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 
 struct AreaFactory {

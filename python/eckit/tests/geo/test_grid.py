@@ -153,6 +153,22 @@ def test_grid_projection():
     assert projection.spec_str
 
 
+@pytest.mark.parametrize(
+    "spec, expected",
+    [
+        (dict(grid=[30, 30]), dict(grid=[30, 30])),
+        (dict(grid=[30, 30], figure="earth"), dict(grid=[30, 30])),
+        (dict(grid=[30, 30], figure="wgs84"), dict(grid=[30, 30], figure="wgs84")),
+        (dict(grid="F48", rotation=[30, 30]), dict(grid="F48", projection=dict(type="rotation", south_pole=[30, 30]))),
+    ],
+)
+def test_grid_spec(spec, expected):
+    # the area, projection and figure are part of the grid spec, unless the defaults
+    grid = Grid(spec)
+    assert grid.spec == expected
+    assert Grid(grid.spec) == grid
+
+
 def indices(neighbours):
     return [index for index, _ in neighbours]
 

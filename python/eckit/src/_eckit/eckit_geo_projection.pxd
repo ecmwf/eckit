@@ -14,6 +14,7 @@ cdef extern from "eckit/geo/Projection.h" namespace "eckit::geo":
         string spec_str() const
         string proj_str() const
         const string& type() const
+        bool reverse() const
         const vector[string]& source_point_coordinates() const
         const vector[string]& target_point_coordinates() const
         vector[vector[double]] fwd(

@@ -164,9 +164,9 @@ Shapefile* Shapefile::make_from_url(const std::string& url) {
 void Shapefile::fill_spec(spec::Custom& custom) const {
     custom.set("type", "shapefile");
     custom.set("shp", shpPath_);
-    custom.set("shp", dbfPath_);
+    custom.set("dbf", dbfPath_);
     if (!name_.empty()) {
-        custom.set("field", name_);
+        custom.set("name_field", name_);
     }
 }
 

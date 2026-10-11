@@ -211,6 +211,34 @@ CASE("scan modes") {
 }
 
 
+CASE("scanning order: same points and bounding box") {
+    const std::vector<std::string> orders{"i+j+", "i-j-", "i-j+", "j-i+", "j+i+", "j-i-", "j+i-"};
+
+    for (const std::string spec : {
+             "grid: F8",
+             "grid: F8, area: [60, -10, 30, 40]",
+             "grid: F16, area: [60, 350, 30, 400]",
+             "grid: F8, rotation: [-40, 20]",
+         }) {
+        const std::unique_ptr<const Grid> canonical(GridFactory::make_from_string("{" + spec + "}"));
+        const auto canonical_points = canonical->to_points();
+
+        for (const auto& order : orders) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + spec + ", order: " + order + "}"));
+
+            EXPECT_EQUAL(grid->size(), canonical->size());
+            EXPECT(grid->boundingBox() == canonical->boundingBox());
+
+            const auto ren    = grid->reorder(canonical->order());
+            const auto points = grid->to_points();
+            for (size_t k = 0; k < points.size(); ++k) {
+                EXPECT(points_equal(points[k], canonical_points[ren[k]]));
+            }
+        }
+    }
+}
+
+
 CASE("spec round trip: same points") {
     for (const std::string spec : {
              "{grid: F16}",

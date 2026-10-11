@@ -10,6 +10,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -107,6 +108,11 @@ Grid::BoundingBox* RegularGaussian::calculate_bbox() const {
 
 
 Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
+    // of the same type by a bounding box (unprojected), otherwise unstructured
+    if (!projection().is_default() || dynamic_cast<const area::BoundingBox*>(&crop) == nullptr) {
+        return make_grid_cropped_unstructured_ll(crop);
+    }
+
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
         return new RegularGaussian(N_, cropped);
     }

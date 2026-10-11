@@ -6,6 +6,7 @@ from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
+from eckit_geo_area cimport Area
 from eckit_geo_area cimport BoundingBox
 from eckit_geo_figure cimport Figure
 from eckit_geo_projection cimport Projection
@@ -31,6 +32,9 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const
+        vector[size_t] crop(const Area&) except +
+        Grid* make_grid_cropped(const Area&) except +
+        Grid* make_grid_cropped_unstructured_ll(const Area&) except +
         const Projection& projection() except +
         const Figure& figure() except +
         const Range& x() const

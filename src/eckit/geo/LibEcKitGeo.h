@@ -37,7 +37,9 @@ public:
     /// Search loader when caching (see search::KDTreeFactory)
     static std::string searchLoader();
     static bool searchFastBuild();
+
     static std::string searchCacheCapacity();
+    static std::string cropCacheCapacity();
 
     static void purgeCacheDir();
     static void purgeCacheArea();

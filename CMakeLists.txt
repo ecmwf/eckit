@@ -233,6 +233,7 @@ set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" C
 # in-memory cache capacities, as "in-process[,shared]" (bytes)
 math( EXPR _one_GiB "1024 * 1024 * 1024" )
 set( eckit_GEO_CACHE_SEARCH_CAPACITY "${_one_GiB},0" CACHE STRING "eckit::geo cache search capacity default" )
+set( eckit_GEO_CACHE_CROP_CAPACITY "0" CACHE STRING "eckit::geo cache crop capacity default" )
 
 ### LAPACK
 

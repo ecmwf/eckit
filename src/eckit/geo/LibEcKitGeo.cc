@@ -150,6 +150,13 @@ std::string LibEcKitGeo::searchCacheCapacity() {
 }
 
 
+std::string LibEcKitGeo::cropCacheCapacity() {
+    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-cache-crop-capacity;$ECKIT_GEO_CACHE_CROP_CAPACITY", eckit_GEO_CACHE_CROP_CAPACITY)};
+    return capacity;
+}
+
+
 void LibEcKitGeo::purgeCacheDir() {
     purge_path_recursive(cacheDir());
 }

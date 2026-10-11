@@ -50,6 +50,10 @@ list(APPEND eckit_geo_srcs
     area/Polygon.h
     area/library/GeoJSON.cc
     area/library/GeoJSON.h
+    cache/Crop.cc
+    cache/Crop.h
+    cache/CropCache.cc
+    cache/CropCache.h
     cache/DiskCache.cc
     cache/DiskCache.h
     cache/Download.cc

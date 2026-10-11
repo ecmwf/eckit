@@ -152,6 +152,8 @@ public:
     virtual renumber_type reorder(const order_type&) const;
 
     virtual const Area& area() const;
+
+    /// Indices of the points (lon, lat) in the area, as the cropped grid (cached, see cache::CropCache)
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
@@ -162,7 +164,12 @@ public:
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
+    /// The grid cropped to the area, of the same type if supported (e.g. regular_ll by a bounding box), otherwise
+    /// unstructured (see make_grid_cropped_unstructured_ll)
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    /// The points in the area (see crop), as an unstructured grid (its coordinates cached, exchangeable by uid)
+    [[nodiscard]] Grid* make_grid_cropped_unstructured_ll(const Area&) const;
 
     double dx() const;
     double dy() const;

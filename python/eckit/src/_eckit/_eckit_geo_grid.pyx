@@ -4,6 +4,7 @@
 
 cimport eckit_geo_area
 cimport eckit_geo_grid
+from cpython.pycapsule cimport PyCapsule_GetPointer
 from cpython.pycapsule cimport PyCapsule_New
 from cython.operator cimport dereference
 from libcpp.utility cimport pair
@@ -12,6 +13,23 @@ from libcpp.vector cimport vector
 from eckit.geo._eckit_geo import _spec_str
 from eckit.geo._eckit_geo_figure import Figure
 from eckit.geo._eckit_geo_projection import Projection
+
+
+def _as_area(area):
+    from eckit.geo._eckit_geo_area import Area
+    from eckit.geo._eckit_geo_area import BoundingBox
+
+    if isinstance(area, Area):
+        return area
+    if isinstance(area, BoundingBox):
+        return Area(area.spec)
+    return Area(area)
+
+
+cdef const eckit_geo_area.Area* _area_ptr(area):
+    return <const eckit_geo_area.Area*>PyCapsule_GetPointer(
+        area._capsule(), "eckit::geo::Area"
+    )
 
 
 cdef class Grid:
@@ -78,6 +96,32 @@ cdef class Grid:
 
     def lat(self):
         return list(eckit_geo_grid.grid_lat_values(dereference(self._grid)))
+
+    def crop(self, area) -> list:
+        """Indices of the grid points in the area (Area, BoundingBox or spec), as the
+        cropped grid (see cropped)."""
+        area = _as_area(area)
+        cdef const eckit_geo_area.Area* a = _area_ptr(area)
+        return list(self._grid.crop(dereference(a)))
+
+    def cropped(self, area):
+        """The grid cropped to the area (Area, BoundingBox or spec), of the same type if
+        supported (e.g. regular_ll by a bounding box), otherwise unstructured (see
+        cropped_unstructured_ll)."""
+        area = _as_area(area)
+        cdef const eckit_geo_area.Area* a = _area_ptr(area)
+        cdef Grid grid = Grid.__new__(Grid)  # wrap pointer directly
+        grid._grid = self._grid.make_grid_cropped(dereference(a))
+        return grid
+
+    def cropped_unstructured_ll(self, area):
+        """The points in the area (see crop), as an unstructured grid (its coordinates
+        cached, exchangeable by uid)."""
+        area = _as_area(area)
+        cdef const eckit_geo_area.Area* a = _area_ptr(area)
+        cdef Grid grid = Grid.__new__(Grid)  # wrap pointer directly
+        grid._grid = self._grid.make_grid_cropped_unstructured_ll(dereference(a))
+        return grid
 
     def bounding_box(self) -> tuple:
         cdef const eckit_geo_area.BoundingBox* bbox = &self._grid.boundingBox()

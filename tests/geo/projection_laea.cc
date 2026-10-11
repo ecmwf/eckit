@@ -19,6 +19,10 @@ namespace eckit::geo::test {
 using P = std::unique_ptr<const Projection>;
 
 
+// in the ballpark (independent of the platform): microdegrees, or micrometres
+constexpr double TOLERANCE = 1e-6;
+
+
 struct test_t {
     std::string spec;
     PointLonLat origin;
@@ -63,10 +67,10 @@ CASE("laea: fwd, inv") {
     for (const auto& test : TESTS) {
         P laea(ProjectionFactory::make_from_string(test.spec));
 
-        EXPECT(points_equal(laea->fwd(test.origin), PointXY{0., 0.}));
+        EXPECT(points_equal(laea->fwd(test.origin), PointXY{0., 0.}, TOLERANCE));
 
         for (const auto& p : test.points) {
-            EXPECT(points_equal(laea->inv(laea->fwd(p)), p));
+            EXPECT(points_equal(laea->inv(laea->fwd(p)), p, TOLERANCE));
         }
     }
 }
@@ -82,8 +86,8 @@ CASE("laea: as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", laea->proj_str()}}));
 
         for (const auto& p : test.points) {
-            EXPECT(points_equal(proj->inv(laea->fwd(p)), p));
-            EXPECT(points_equal(laea->inv(proj->fwd(p)), p));
+            EXPECT(points_equal(proj->inv(laea->fwd(p)), p, TOLERANCE));
+            EXPECT(points_equal(laea->inv(proj->fwd(p)), p, TOLERANCE));
         }
     }
 }

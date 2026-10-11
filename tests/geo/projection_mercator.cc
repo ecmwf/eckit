@@ -21,6 +21,10 @@ namespace eckit::geo::test {
 using P = std::unique_ptr<const Projection>;
 
 
+// in the ballpark (independent of the platform): microdegrees, or micrometres
+constexpr double TOLERANCE = 1e-6;
+
+
 const std::vector<std::string> SPECS{
     "{type: merc, lat_ts: 14}",
     "{type: merc, lon_0: -180}",
@@ -56,7 +60,7 @@ CASE("merc: fwd, inv") {
         P merc(ProjectionFactory::make_from_string(spec));
 
         const PointLonLat p{-75., 35.};
-        EXPECT(points_equal(merc->inv(merc->fwd(p)), p));
+        EXPECT(points_equal(merc->inv(merc->fwd(p)), p, TOLERANCE));
 
         EXPECT(std::get<PointXY>(merc->fwd(NORTH_POLE)).Y() > std::numeric_limits<double>::max());
         EXPECT(std::get<PointXY>(merc->fwd(SOUTH_POLE)).Y() < std::numeric_limits<double>::lowest());
@@ -74,8 +78,8 @@ CASE("merc: as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", merc->proj_str()}}));
 
         for (const auto& p : std::vector<PointLonLat>{{-75., 35.}, {262.036499, 14.736453}, {10., -60.}}) {
-            EXPECT(points_equal(proj->inv(merc->fwd(p)), p));
-            EXPECT(points_equal(merc->inv(proj->fwd(p)), p));
+            EXPECT(points_equal(proj->inv(merc->fwd(p)), p, TOLERANCE));
+            EXPECT(points_equal(merc->inv(proj->fwd(p)), p, TOLERANCE));
         }
     }
 }

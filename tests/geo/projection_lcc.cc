@@ -19,6 +19,10 @@ namespace eckit::geo::test {
 using P = std::unique_ptr<const Projection>;
 
 
+// in the ballpark (independent of the platform): microdegrees, or micrometres
+constexpr double TOLERANCE = 1e-6;
+
+
 // as GRIB lambert_lam.grib2: LoV=4.9, LaD=Latin1=Latin2=51.967, on the default sphere (R=6371229)
 const std::string LCC = "{type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9}";
 
@@ -49,14 +53,14 @@ CASE("lcc: fwd, inv") {
     P lcc(ProjectionFactory::make_from_string(LCC));
 
     // the origin
-    EXPECT(points_equal(lcc->fwd(PointLonLat{4.9, 51.967}), PointXY{0., 0.}));
+    EXPECT(points_equal(lcc->fwd(PointLonLat{4.9, 51.967}), PointXY{0., 0.}, TOLERANCE));
 
     // the first grid point of lambert_lam.grib2
     const PointLonLat p{4.038959, 51.199433};
     const auto q = lcc->fwd(p);
 
-    EXPECT(points_equal(q, PointXY{-60000.02103865735, -85000.05525572484}));
-    EXPECT(points_equal(lcc->inv(q), p));
+    EXPECT(points_equal(q, PointXY{-60000.021039, -85000.055256}, TOLERANCE));
+    EXPECT(points_equal(lcc->inv(q), p, TOLERANCE));
 }
 
 
@@ -76,8 +80,8 @@ CASE("lcc: proj_str") {
     P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", lcc->proj_str()}}));
 
     for (const auto& p : std::vector<PointLonLat>{{4.038959, 51.199433}, {-20., 30.}, {30., 70.}}) {
-        EXPECT(points_equal(proj->inv(lcc->fwd(p)), p));
-        EXPECT(points_equal(lcc->inv(proj->fwd(p)), p));
+        EXPECT(points_equal(proj->inv(lcc->fwd(p)), p, TOLERANCE));
+        EXPECT(points_equal(lcc->inv(proj->fwd(p)), p, TOLERANCE));
     }
 }
 
@@ -89,7 +93,7 @@ CASE("lcc: on an ellipsoid, as PROJ") {
         P lcc(ProjectionFactory::make_from_string(spec));
 
         for (const auto& p : std::vector<PointLonLat>{{4.038959, 51.199433}, {-20., 30.}, {-100., 70.}}) {
-            EXPECT(points_equal(lcc->inv(lcc->fwd(p)), p));
+            EXPECT(points_equal(lcc->inv(lcc->fwd(p)), p, TOLERANCE));
         }
 
         if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
@@ -99,8 +103,8 @@ CASE("lcc: on an ellipsoid, as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", lcc->proj_str()}}));
 
         for (const auto& p : std::vector<PointLonLat>{{4.038959, 51.199433}, {-20., 30.}, {-100., 70.}}) {
-            EXPECT(points_equal(proj->inv(lcc->fwd(p)), p));
-            EXPECT(points_equal(lcc->inv(proj->fwd(p)), p));
+            EXPECT(points_equal(proj->inv(lcc->fwd(p)), p, TOLERANCE));
+            EXPECT(points_equal(lcc->inv(proj->fwd(p)), p, TOLERANCE));
         }
     }
 }

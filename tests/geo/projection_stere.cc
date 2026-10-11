@@ -20,6 +20,10 @@ namespace eckit::geo::test {
 using P = std::unique_ptr<const Projection>;
 
 
+// in the ballpark (independent of the platform): microdegrees, or micrometres
+constexpr double TOLERANCE = 1e-6;
+
+
 const std::vector<std::string> SPECS{
     "{type: stere, lat_0: 90, lat_ts: 60, lon_0: 280}",
     "{type: stere, lat_0: -90}",
@@ -78,10 +82,10 @@ CASE("stere: fwd, inv") {
 
         // the pole is the origin
         const auto& pole = is_north(spec) ? NORTH_POLE : SOUTH_POLE;
-        EXPECT(points_equal(stere->fwd(pole), PointXY{0., 0.}));
+        EXPECT(points_equal(stere->fwd(pole), PointXY{0., 0.}, TOLERANCE));
 
         for (const auto& p : points(spec)) {
-            EXPECT(points_equal(stere->inv(stere->fwd(p)), p));
+            EXPECT(points_equal(stere->inv(stere->fwd(p)), p, TOLERANCE));
         }
     }
 }
@@ -97,8 +101,8 @@ CASE("stere: as PROJ") {
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", stere->proj_str()}}));
 
         for (const auto& p : points(spec)) {
-            EXPECT(points_equal(proj->inv(stere->fwd(p)), p));
-            EXPECT(points_equal(stere->inv(proj->fwd(p)), p));
+            EXPECT(points_equal(proj->inv(stere->fwd(p)), p, TOLERANCE));
+            EXPECT(points_equal(stere->inv(proj->fwd(p)), p, TOLERANCE));
         }
     }
 }

@@ -95,7 +95,7 @@ RegularXY::RangeXY RegularXY::RangeXY::make_from_spec(const Spec& spec, const st
 RegularXY::RegularXY(const Spec& spec) :
     RegularXY(range_from_spec(spec, "x"), range_from_spec(spec, "y"),
               spec.has("projection") ? ProjectionFactory::build(spec) : nullptr, false_from_spec(spec)) {
-    // the order adds to the directions of x and y (scanning i or j first)
+    // the order is as the directions of x and y, and can scan j first
     if (spec.has("order")) {
         order::Scan s(spec);
         if (s.is_scan_i_positive() != scan().is_scan_i_positive() ||
@@ -176,7 +176,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
         custom.set("projection", projection_spec);
     }
 
-    if (!scan().is_scan_i_then_j()) {
+    if (scan().order() != order::Scan::order_default()) {
         custom.set("order", scan().order());
     }
 }

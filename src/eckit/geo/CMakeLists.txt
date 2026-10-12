@@ -231,6 +231,7 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
         area/library/Shapefile.h
     )
     list(APPEND eckit_geo_private_libs shapelib::shp)
+    list(APPEND eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/shapefile.yaml")
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")

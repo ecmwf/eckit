@@ -24,6 +24,7 @@
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
 #include "eckit/spec/Spec.h"
 
 
@@ -110,7 +111,14 @@ public:
             throw exception::AreaError("Shapefile: 'name' (with 'name_field') or 'index' expected", Here());
         }
 
-        const Shapefile shapefile(spec);
+        // a registered library (see shapefile.yaml) provides the shapefile, overridable by the spec
+        std::unique_ptr<spec::Layered> layered;
+        if (spec.has("library")) {
+            layered = std::make_unique<spec::Layered>(spec);
+            layered->push_back(AreaFactory::library(spec.get_string("library")));
+        }
+
+        const Shapefile shapefile(layered ? *layered : spec);
         auto* area = spec.has("name") ? shapefile.make_area_from_name(spec.get_string("name"))
                                       : shapefile.make_area(spec.get_unsigned("index"));
 
@@ -139,6 +147,10 @@ Shapefile::Shapefile(const spec::Spec& spec) :
               spec.get_string("dbf", ""), spec.get_string("name_field", "")) {
     if (spec.has("url")) {
         url_ = spec.get_string("url");
+    }
+
+    if (spec.has("library")) {
+        library_ = spec.get_string("library");
     }
 }
 
@@ -182,9 +194,11 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
                 if (name == fieldName) {
                     name_ = name;
 
-                    // map entities names (they have to be unique)
+                    // map entities names (ambiguous if not unique)
                     for (int e = 0; e < nEntities_; ++e) {
-                        ASSERT(to_entity.emplace(DBFReadStringAttribute(dbf, e, i), e).second);
+                        if (auto [it, unique] = to_entity.emplace(DBFReadStringAttribute(dbf, e, i), e); !unique) {
+                            it->second = -1;
+                        }
                     }
 
                     break;
@@ -254,6 +268,10 @@ Area* Shapefile::make_area_from_name(const std::string& name) const {
         throw exception::AreaError("Shapefile: '" + name + "' not found (in field '" + name_ + "')", Here());
     }
 
+    if (it->second < 0) {
+        throw exception::AreaError("Shapefile: '" + name + "' not unique (in field '" + name_ + "')", Here());
+    }
+
     return make_area(static_cast<size_t>(it->second), name);
 }
 
@@ -307,14 +325,17 @@ Area* Shapefile::make_area(size_t entity, const std::string& name) const {
 
     // the entity, by name if possible
     spec::Custom spec{{"type", "shapefile"}};
-    if (url_.empty()) {
+    if (!library_.empty()) {
+        spec.set("library", library_);
+    }
+    else if (url_.empty()) {
         spec.set("file", file_.asString());
     }
     else {
         spec.set("url", url_);
     }
 
-    if (!dbf_.asString().empty()) {
+    if (library_.empty() && !dbf_.asString().empty()) {
         spec.set("dbf", dbf_.asString());
     }
 
@@ -328,18 +349,6 @@ Area* Shapefile::make_area(size_t entity, const std::string& name) const {
 
     return new Entity(std::move(parts), spec);
 }
-
-
-#if 0
-class AreaLibrary {
-public:
-    void add_library(const std::string& lib, const Value& value) {
-        std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(value));
-
-        emplace(lib, ShapefileURL{LibEcKitGeo::url(spec->get_string("url"))});
-    }
-};
-#endif
 
 
 }  // namespace eckit::geo::area::library

@@ -47,6 +47,7 @@ public:
     static void purgeCacheProjection();
 
     static std::string url(const std::string& url_path);
+    static std::string url(const std::string& url_path, const std::string& url_prefix);
 
     static bool proj();
 

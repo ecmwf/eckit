@@ -69,6 +69,7 @@ private:
     // -- Members
 
     std::string url_;
+    std::string library_;
     const PathName file_;
     const PathName dbf_;
 

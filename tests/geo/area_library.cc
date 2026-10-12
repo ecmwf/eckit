@@ -128,8 +128,50 @@ CASE("shapefile area: from a URL (downloaded and cached, transparently)") {
     for (const auto& p : {PointLonLat{-8., 40.}, PointLonLat{-25.5, 37.8}, PointLonLat{-3.7, 40.4}}) {
         EXPECT(portugal->contains(p) == from_file->contains(p));
     }
+
+    // the same polygons, however specified
+    EXPECT(portugal->spec_str() != from_file->spec_str());
+    EXPECT_EQUAL(portugal->uid(), from_file->uid());
+    EXPECT(*portugal == *from_file);
 }
 #endif
+
+
+CASE("shapefile area: from a library") {
+    using A = std::unique_ptr<const Area>;
+
+    // a library as registered by the shared areas (see shapefile.yaml), here of a local file
+    AreaFactory::add_library("test-cntr-rg-60m-2024",
+                             new spec::Custom{{"type", "shapefile"}, {"file", SHAPEFILE}, {"name_field", "CNTR_NAME"}});
+
+    A portugal(AreaFactory::make_from_string("{type: shapefile, library: test-cntr-rg-60m-2024, name: Portugal}"));
+    EXPECT_EQUAL(
+        portugal->spec_str(),
+        R"({"library":"test-cntr-rg-60m-2024","name":"Portugal","name_field":"CNTR_NAME","type":"shapefile"})");
+
+    A same(AreaFactory::make_from_string(portugal->spec_str()));
+    EXPECT(*same == *portugal);
+
+    A from_file(AreaFactory::make_from_string("{type: shapefile, file: '" + SHAPEFILE +
+                                              "', name_field: CNTR_NAME, name: Portugal}"));
+    EXPECT(*portugal == *from_file);
+
+    // other areas differ
+    A france(AreaFactory::make_from_string("{type: shapefile, library: test-cntr-rg-60m-2024, name: France}"));
+    EXPECT(*france != *portugal);
+
+    EXPECT_THROWS_AS(A(AreaFactory::make_from_string("{type: shapefile, library: unknown, name: Portugal}")),
+                     exception::AreaError);
+}
+
+
+CASE("shapefile area: libraries of the shared areas") {
+    // relative urls are of the shared file's url_prefix
+    std::unique_ptr<spec::Custom> lib(AreaFactory::library("cntr-rg-60m-2024"));
+    EXPECT_EQUAL(lib->get_string("url"),
+                 "https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip");
+    EXPECT_EQUAL(lib->get_string("name_field"), "CNTR_NAME");
+}
 #endif
 
 

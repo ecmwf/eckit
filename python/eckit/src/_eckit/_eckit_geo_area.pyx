@@ -53,7 +53,11 @@ cdef class Area:
     def __eq__(self, other) -> bool:
         if not isinstance(other, Area):
             return NotImplemented
-        return self.spec_str == other.spec_str
+        return self.uid == other.uid
+
+    @property
+    def uid(self) -> str:
+        return self._area.uid()
 
     @property
     def spec_str(self) -> str:

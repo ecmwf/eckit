@@ -178,10 +178,15 @@ void LibEcKitGeo::purgeCacheProjection() {
 
 
 std::string LibEcKitGeo::url(const std::string& url_path) {
-    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
-
     static const std::string url_prefix(LibResource<std::string, LibEcKitGeo>(
         "eckit-geo-share-url-prefix;$ECKIT_GEO_SHARE_URL_PREFIX", eckit_GEO_SHARE_URL_PREFIX));
+    return url(url_path, url_prefix);
+}
+
+
+std::string LibEcKitGeo::url(const std::string& url_path, const std::string& url_prefix) {
+    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
+
     auto sep =
         !url_prefix.empty() && url_prefix.back() != '/' && !url_path.empty() && url_path.front() != '/' ? "/" : "";
 

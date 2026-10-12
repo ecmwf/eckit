@@ -10,6 +10,7 @@ from libcpp.string cimport string
 cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
     cdef cppclass Area:
         string spec_str() const
+        string uid() except +
         string type() const
 
     cdef cppclass AreaFactory:

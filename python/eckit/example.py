@@ -5,6 +5,7 @@
 from eckit.geo import Area
 from eckit.geo import BoundingBox
 from eckit.geo import Grid
+from eckit.geo import features
 
 grid = Grid(grid="1/1")
 print(grid.shape)
@@ -26,14 +27,19 @@ polygons = Area(
 )
 print(len(grid.crop(polygons)))
 
-# shapefile areas (by name or index), downloaded and cached transparently
-portugal = Area(
-    type="shapefile",
-    url="https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip",
-    name_field="CNTR_NAME",
-    name="Portugal",
-)
-print(len(Grid(grid=[0.1, 0.1]).crop(portugal)))
+# shapefile areas (by name or index), downloaded and cached transparently (if supported)
+if {"shapefile", "download"} <= features():
+    portugal = Area(
+        type="shapefile",
+        url="https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip",
+        name_field="CNTR_NAME",
+        name="Portugal",
+    )
+    print(len(Grid(grid=[0.1, 0.1]).crop(portugal)))
+
+    # the same, from the registered shapefile libraries (see share/eckit/geo/shapefile.yaml)
+    portugal_from_library = Area(type="shapefile", library="cntr-rg-60m-2024", name="Portugal")
+    print(portugal_from_library.spec, portugal_from_library == portugal)  # ... True
 
 # cropped grids: of the same type if supported (regular_ll by a bounding box), otherwise unstructured (e.g. by polygons,
 # or projected grids), whose coordinates are cached and exchangeable by uid

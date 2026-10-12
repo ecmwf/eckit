@@ -16,6 +16,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo::area {
@@ -55,21 +56,43 @@ const std::string& Polygon::type() const {
 }
 
 
+namespace {
+
+
+std::pair<std::vector<double>, std::vector<double>> ring_latlons(const polygon::Polygon& ring) {
+    std::vector<double> latitudes;
+    std::vector<double> longitudes;
+    latitudes.reserve(ring.size());
+    longitudes.reserve(ring.size());
+
+    for (const auto& p : ring) {
+        latitudes.push_back(p.lat());
+        longitudes.push_back(p.lon());
+    }
+
+    return {latitudes, longitudes};
+}
+
+
+}  // namespace
+
+
+std::string Polygon::uid() const {
+    MD5 md5;
+    for (const auto& ring : *this) {
+        const auto [latitudes, longitudes] = ring_latlons(ring);
+        md5.add(grid::Unstructured::uid_from_latlons(latitudes, longitudes));
+    }
+    return md5.digest();
+}
+
+
 void Polygon::fill_spec(spec::Custom& custom) const {
     std::vector<std::string> uids;
     uids.reserve(size());
 
     for (const auto& ring : *this) {
-        std::vector<double> latitudes;
-        std::vector<double> longitudes;
-        latitudes.reserve(ring.size());
-        longitudes.reserve(ring.size());
-
-        for (const auto& p : ring) {
-            latitudes.push_back(p.lat());
-            longitudes.push_back(p.lon());
-        }
-
+        const auto [latitudes, longitudes] = ring_latlons(ring);
         uids.emplace_back(grid::Unstructured(longitudes, latitudes).uid());
     }
 

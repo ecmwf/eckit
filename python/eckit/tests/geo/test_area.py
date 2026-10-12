@@ -8,6 +8,7 @@ import pytest
 
 from eckit.geo import Area
 from eckit.geo import Grid
+from eckit.geo import features
 
 # as the C++ tests (in the source tree)
 SHAPEFILE = Path(__file__).resolve().parents[4] / "tests" / "geo" / "CNTR_RG_60M_2024_4326.shp.zip"
@@ -72,6 +73,12 @@ def test_polygon_rings():
     assert len(grid.crop(polygon)) == 10 * 10 + 10 * 9
 
 
+NEEDS_SHAPEFILE_DOWNLOAD = pytest.mark.skipif(
+    not {"shapefile", "download"} <= features(), reason="eckit without shapefile or download support"
+)
+
+
+@NEEDS_SHAPEFILE_DOWNLOAD
 @pytest.mark.skipif(not SHAPEFILE.exists(), reason="shapefile not found")
 def test_shapefile():
     # multiple rings (mainland and islands), by name or index
@@ -85,7 +92,29 @@ def test_shapefile():
     url = dict(type="shapefile", url=SHAPEFILE.as_uri(), name_field="CNTR_NAME", name="Portugal")
     from_url = Area(url)
     assert from_url.spec == url
+    assert from_url.uid == portugal.uid
+    assert from_url == portugal
 
     grid = Grid(grid=[0.5, 0.5])
     assert grid.crop(portugal)
-    assert grid.crop(from_url) == grid.crop(portugal)
+
+
+@NEEDS_SHAPEFILE_DOWNLOAD
+def test_shapefile_library():
+    # registered (see share/eckit/geo/shapefile.yaml), downloaded and cached transparently
+    try:
+        portugal = Area(type="shapefile", library="cntr-rg-60m-2024", name="Portugal")
+    except RuntimeError as e:
+        if "Download" not in str(e):
+            raise
+        pytest.skip(f"download not possible: {e}")
+
+    assert portugal.type == "shapefile"
+    assert portugal.spec == dict(type="shapefile", library="cntr-rg-60m-2024", name_field="CNTR_NAME", name="Portugal")
+    assert Area(portugal.spec) == portugal
+
+    # the same polygons, by the library's url
+    url = "https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip"
+    from_url = Area(type="shapefile", url=url, name_field="CNTR_NAME", name="Portugal")
+    assert from_url.spec == dict(type="shapefile", url=url, name_field="CNTR_NAME", name="Portugal")
+    assert from_url == portugal

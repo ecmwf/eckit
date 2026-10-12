@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include <cstddef>
 #include <fstream>
 #include <string>
@@ -81,6 +84,67 @@ CASE("unzip") {
 
         unzip.rm_cache_root();
         ASSERT(!dir.exists());
+    }
+
+
+    SECTION("unzip all, cached by concurrent processes") {
+        const PathName dir("eckit_geo_cache/unzip/unzip-processes", true);
+
+        const cache::Unzip unzip(dir);
+        unzip.rm_cache_root();
+
+        // start barrier: children block until the parent closes the pipe
+        int barrier[2];
+        ASSERT(::pipe(barrier) == 0);
+
+        constexpr int N = 6;
+        std::vector<pid_t> children;
+        for (int i = 0; i < N; ++i) {
+            auto pid = ::fork();
+            ASSERT(pid >= 0);
+
+            if (pid == 0) {
+                ::close(barrier[1]);
+                char c = 0;
+                while (::read(barrier[0], &c, 1) > 0) {}
+
+                int code = 1;
+                try {
+                    // complete, once found
+                    const auto path = unzip.to_cached_path(zip_path);
+
+                    std::string d;
+                    std::ifstream((path / "b/c").localPath()) >> d;
+                    code = (path / "a").exists() && d == "d" ? 0 : 1;
+                }
+                catch (...) {
+                    code = 1;
+                }
+                ::_exit(code);
+            }
+
+            children.push_back(pid);
+        }
+
+        ::close(barrier[0]);
+        ::close(barrier[1]);
+
+        for (auto pid : children) {
+            int status = 0;
+            ASSERT(::waitpid(pid, &status, 0) == pid);
+            EXPECT(WIFEXITED(status) && WEXITSTATUS(status) == 0);
+        }
+
+        // one extraction, nothing staged or locked left
+        const auto path = unzip.to_cached_path(zip_path);
+
+        std::vector<PathName> files;
+        std::vector<PathName> dirs;
+        path.dirName().children(files, dirs);
+        EXPECT(files.empty());
+        EXPECT_EQUAL(dirs.size(), 1);
+
+        unzip.rm_cache_root();
     }
 }
 

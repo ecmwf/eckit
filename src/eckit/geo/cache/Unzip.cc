@@ -13,7 +13,10 @@
 #include <ios>
 #include <memory>
 
+#include "eckit/container/CacheManager.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/os/AutoUmask.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/utils/MD5.h"
 
 #include "zip.h"
@@ -94,11 +97,23 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
 
 PathName Unzip::to_cached_path(const PathName& zip, const std::string& what, const std::string& prefix,
                                const std::string& suffix) const {
+    static util::recursive_mutex mutex;
+    util::lock_guard<util::recursive_mutex> lock(mutex);
+
     const auto key  = MD5{zip / what}.digest();
     const auto path = cache_root() / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + suffix);
 
     if (!path.exists()) {
-        to_path(zip, path, what);
+        // across processes, as eckit::CacheManager: the first extracts (staged, renamed in place), the others find it
+        CacheManagerFileFlock locker(path);
+        AutoLock<CacheManagerFileFlock> flock(locker);
+
+        if (!path.exists()) {
+            const auto tmp = PathName::unique(path);
+            to_path(zip, tmp, what);
+            PathName::rename(tmp, path);
+        }
+
         ASSERT_MSG(path.exists(), "Unzip: file '" + path + "' not found");
     }
 

@@ -4,23 +4,25 @@
 
 #include "eckit/geo/cache/Download.h"
 
-#include <fstream>
-#include <iterator>
 #include <ostream>
 
 #include "eckit/eckit_config.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/io/FileLock.h"
-#include "eckit/io/Length.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/Timer.h"
-#include "eckit/os/AutoUmask.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 #if eckit_HAVE_CURL
-#include "eckit/io/URLHandle.h"
+#include <fstream>
+#include <vector>
+
+#include "eckit/io/EasyCURL.h"
+#include "eckit/io/FileLock.h"
+#include "eckit/log/Timer.h"
+#include "eckit/os/AutoUmask.h"
+#include "eckit/utils/Translator.h"
 #endif
 
 
@@ -41,6 +43,7 @@ class lock_type {
 };
 
 
+#if eckit_HAVE_CURL
 class file_lock_type {
     struct flock_type {
         explicit flock_type(const PathName& path) :
@@ -70,6 +73,7 @@ public:
 
     explicit file_lock_type(const PathName& path) : flock_(path), lock_guard_(flock_) {}
 };
+#endif
 
 
 }  // namespace
@@ -101,14 +105,38 @@ std::string Download::url_file_extension(const url_type& url) {
 }
 
 
+std::string Download::validate_response(const url_type& url, long code, const headers_type& headers, bool html) {
+    // non-HTTP schemes (eg. file://) have no status nor headers, rely on transport errors only
+    if (const auto scheme = StringTools::lower(url.substr(0, url.find(':'))); scheme != "http" && scheme != "https") {
+        return {};
+    }
+
+    // require positive evidence of success: a 2xx status (0 means no response was received)
+    if (code < 200 || code >= 300) {
+        return "HTTP status " + std::to_string(code);
+    }
+
+    // a 2xx HTML page is not data (eg. captive portal, proxy error page, login page after redirects)
+    if (auto it = headers.find("content-type"); !html && it != headers.end()) {
+        if (const auto type = StringTools::lower(StringTools::trim(it->second));
+            StringTools::startsWith(type, "text/html") || StringTools::startsWith(type, "application/xhtml")) {
+            return "unexpected HTML response (Content-Type: " + type + ")";
+        }
+    }
+
+    return {};
+}
+
+
+#if eckit_HAVE_CURL
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
     // control concurrent download
     lock_type lock;
 
-    Length length = 0;
     Timer timer;
+    std::string error;
+    unsigned long long bytes = 0;
 
-#if eckit_HAVE_CURL  // for eckit::URLHandle
     file_lock_type flock(path);
 
     auto tmp = path + ".part";
@@ -118,42 +146,69 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     ASSERT(dir.exists());
 
     try {
-        length = URLHandle{url}.saveInto(tmp);
+        EasyCURL curl;
+        curl.useSSL(true);
+
+        // follows redirects
+        auto response       = curl.GET(url, true);
+        const auto& headers = response.headers();
+
+        // fail early on a known status (eg. 404)
+        if (response.code() != 0) {
+            error = validate_response(url, response.code(), headers, html);
+        }
+
+        if (error.empty()) {
+            std::ofstream out(tmp.asString(), std::ios::binary);
+            ASSERT(out);
+
+            std::vector<char> buffer(64 * 1024);  // 64k buffering
+            for (size_t n = 0; (n = response.read(buffer.data(), buffer.size())) > 0;) {
+                out.write(buffer.data(), static_cast<std::streamsize>(n));
+                ASSERT(out);
+                bytes += n;
+            }
+
+            // validate the final response
+            error = validate_response(url, response.code(), headers, html);
+
+            // protect against truncated transfer
+            if (auto it = headers.find("content-length"); error.empty() && it != headers.end()) {
+                if (const auto expected = Translator<std::string, unsigned long long>{}(it->second);
+                    expected != bytes) {
+                    error =
+                        "incomplete transfer (" + std::to_string(bytes) + " of " + std::to_string(expected) + " bytes)";
+                }
+            }
+        }
     }
-    catch (...) {
-        length = 0;
+    catch (const std::exception& e) {
+        // transport errors (eg. DNS resolution, connection, SSL, partial file)
+        error = e.what();
     }
 
-    // no empty files
-    if (length <= 0) {
+    if (error.empty() && bytes == 0) {
+        error = "empty response";
+    }
+
+    if (!error.empty()) {
         if (tmp.exists()) {
             tmp.unlink(true);
         }
 
-        throw UserError("Download error: '" + url + "' to '" + path + "'", Here());
-    }
-
-    // no html response (eg. http standard response codes) in arbitrarily small files
-    if (!html) {
-        constexpr long long HTML_MAX_SIZE(32748);
-
-        if (length < Length{HTML_MAX_SIZE}) {
-            ASSERT(tmp.exists());
-            std::string contents{std::istreambuf_iterator<char>(std::ifstream(tmp.asString()).rdbuf()), {}};
-
-            if (contents.find("<!DOCTYPE html>") != std::string::npos) {
-                tmp.unlink(true);
-
-                throw UserError("Download error: '" + url + "' to '" + path + "'", Here());
-            }
-        }
+        throw exception::DownloadError("'" + url + "' to '" + path.asString() + "': " + error, Here());
     }
 
     PathName::rename(tmp, path);
-#endif
 
-    return {static_cast<long long>(length), timer.elapsed()};
+    return {static_cast<long long>(bytes), timer.elapsed()};
 }
+#else
+Download::info_type Download::to_path(const url_type& url, const PathName& path, bool /*html*/) {
+    throw exception::DownloadError("'" + url + "' to '" + path.asString() + "': eckit built without CURL support",
+                                   Here());
+}
+#endif
 
 
 PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {

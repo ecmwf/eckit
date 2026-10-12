@@ -17,6 +17,7 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
+        download
         figure
         figure_earth
         figure_sun

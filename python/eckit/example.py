@@ -26,6 +26,15 @@ polygons = Area(
 )
 print(len(grid.crop(polygons)))
 
+# shapefile areas (by name or index), downloaded and cached transparently
+portugal = Area(
+    type="shapefile",
+    url="https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip",
+    name_field="CNTR_NAME",
+    name="Portugal",
+)
+print(len(Grid(grid=[0.1, 0.1]).crop(portugal)))
+
 # cropped grids: of the same type if supported (regular_ll by a bounding box), otherwise unstructured (e.g. by polygons,
 # or projected grids), whose coordinates are cached and exchangeable by uid
 print(grid.cropped(area).type)  # regular_ll

@@ -2,10 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from pathlib import Path
+
 import pytest
 
 from eckit.geo import Area
 from eckit.geo import Grid
+
+# as the C++ tests (in the source tree)
+SHAPEFILE = Path(__file__).resolve().parents[4] / "tests" / "geo" / "CNTR_RG_60M_2024_4326.shp.zip"
 
 
 @pytest.mark.parametrize(
@@ -66,3 +71,21 @@ def test_polygon_rings():
     grid = Grid(grid=[1, 1])
     assert len(grid.crop(polygon)) == 10 * 10 + 10 * 9
 
+
+@pytest.mark.skipif(not SHAPEFILE.exists(), reason="shapefile not found")
+def test_shapefile():
+    # multiple rings (mainland and islands), by name or index
+    spec = dict(type="shapefile", file=str(SHAPEFILE), name_field="CNTR_NAME", name="Portugal")
+    portugal = Area(spec)
+    assert portugal.type == "shapefile"
+    assert portugal.spec == spec
+    assert Area(portugal.spec) == portugal
+
+    # from a URL (downloaded and cached, transparently), the same polygons
+    url = dict(type="shapefile", url=SHAPEFILE.as_uri(), name_field="CNTR_NAME", name="Portugal")
+    from_url = Area(url)
+    assert from_url.spec == url
+
+    grid = Grid(grid=[0.5, 0.5])
+    assert grid.crop(portugal)
+    assert grid.crop(from_url) == grid.crop(portugal)

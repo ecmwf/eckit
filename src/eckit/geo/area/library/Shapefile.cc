@@ -5,11 +5,15 @@
 #include "eckit/geo/area/library/Shapefile.h"
 
 #include <algorithm>
+#include <memory>
 #include <ostream>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "shapefil.h"
 
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
@@ -79,19 +83,72 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 }
 
 
+PathName download(const std::string& url) {
+    static const cache::Download download;
+
+    const auto u = LibEcKitGeo::url(url);
+    return download.to_cached_path(u, cache::Download::url_file_basename(u, false),
+                                   cache::Download::url_file_extension(u));
+}
+
+
+/// Polygons of a shapefile entity, specified by the shapefile (multiple rings have no polygon spec)
+class Entity final : public Polygon {
+public:
+
+    Entity(container_type&& rings, const spec::Custom& spec) : Polygon(std::move(rings)), spec_(spec.container()) {}
+    Entity(const Entity& other) : Polygon(other), spec_(other.spec_.container()) {}
+    explicit Entity(const Area::Spec& spec) : Entity(*std::unique_ptr<Entity>(make_from_spec(spec))) {}
+
+    const std::string& type() const override {
+        static const std::string type{"shapefile"};
+        return type;
+    }
+
+    [[nodiscard]] static Entity* make_from_spec(const Area::Spec& spec) {
+        if (!spec.has("name") && !spec.has("index")) {
+            throw exception::AreaError("Shapefile: 'name' (with 'name_field') or 'index' expected", Here());
+        }
+
+        const Shapefile shapefile(spec);
+        auto* area = spec.has("name") ? shapefile.make_area_from_name(spec.get_string("name"))
+                                      : shapefile.make_area(spec.get_unsigned("index"));
+
+        auto* entity = dynamic_cast<Entity*>(area);
+        ASSERT(entity != nullptr);
+        return entity;
+    }
+
+private:
+
+    void fill_spec(spec::Custom& custom) const override { custom.set(spec_); }
+
+    const spec::Custom spec_;
+};
+
+
+const AreaRegisterType<Entity> AREATYPE("shapefile");
+
+
 }  // namespace
 
 
 Shapefile::Shapefile(const spec::Spec& spec) :
-    Shapefile(path_shp(spec.get_string(spec.has("shp") ? "shp" : "file")),
-              spec.has("dbf") ? spec.get_string("dbf") : "",
-              spec.has("name_field") ? spec.get_string("name_field") : "") {}
+    Shapefile(spec.has("url") ? download(spec.get_string("url"))
+                              : PathName{spec.get_string(spec.has("shp") ? "shp" : "file")},
+              spec.get_string("dbf", ""), spec.get_string("name_field", "")) {
+    if (spec.has("url")) {
+        url_ = spec.get_string("url");
+    }
+}
 
 
 Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
 
 
 Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
+    file_(shp.realName()),
+    dbf_(dbf),
     shpPath_(path_shp(shp)),
     dbfPath_(path_dbf(dbf, shpPath_)),
     impl_(std::make_unique<Implementation>()),
@@ -150,10 +207,7 @@ Shapefile::~Shapefile() {
 
 
 Shapefile* Shapefile::make_from_url(const std::string& url) {
-    static const cache::Download download;
-
-    return new Shapefile(download.to_cached_path(url, cache::Download::url_file_basename(url, false),
-                                                 cache::Download::url_file_extension(url)));
+    return new Shapefile(spec::Custom{{"url", url}});
 }
 
 
@@ -191,13 +245,32 @@ std::ostream& Shapefile::list(std::ostream& out) const {
 
 
 Area* Shapefile::make_area_from_name(const std::string& name) const {
-    ASSERT(!name_.empty() && !name.empty());
+    if (name_.empty()) {
+        throw exception::AreaError("Shapefile: areas by 'name' require 'name_field'", Here());
+    }
 
-    return make_area(to_entity.at(name));
+    auto it = to_entity.find(name);
+    if (it == to_entity.end()) {
+        throw exception::AreaError("Shapefile: '" + name + "' not found (in field '" + name_ + "')", Here());
+    }
+
+    return make_area(static_cast<size_t>(it->second), name);
 }
 
 
 Area* Shapefile::make_area(size_t entity) const {
+    auto it = std::find_if(to_entity.begin(), to_entity.end(),
+                           [entity](const auto& kv) { return static_cast<size_t>(kv.second) == entity; });
+    return make_area(entity, it != to_entity.end() ? it->first : "");
+}
+
+
+Area* Shapefile::make_area(size_t entity, const std::string& name) const {
+    if (entity >= size()) {
+        throw exception::AreaError(
+            "Shapefile: index " + std::to_string(entity) + " out of range [0, " + std::to_string(size()) + ")", Here());
+    }
+
     struct Object : std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> {
         explicit Object(SHPObject* ptr) : unique_ptr{ptr, SHPDestroyObject} { ASSERT(operator bool()); }
     };
@@ -232,7 +305,28 @@ Area* Shapefile::make_area(size_t entity) const {
         }
     }
 
-    return new area::Polygon(parts);
+    // the entity, by name if possible
+    spec::Custom spec{{"type", "shapefile"}};
+    if (url_.empty()) {
+        spec.set("file", file_.asString());
+    }
+    else {
+        spec.set("url", url_);
+    }
+
+    if (!dbf_.asString().empty()) {
+        spec.set("dbf", dbf_.asString());
+    }
+
+    if (!name.empty()) {
+        spec.set("name_field", name_);
+        spec.set("name", name);
+    }
+    else {
+        spec.set("index", entity);
+    }
+
+    return new Entity(std::move(parts), spec);
 }
 
 

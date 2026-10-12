@@ -51,7 +51,7 @@ CASE("Sphere") {
     auto e = f1->eccentricity();
     EXPECT(types::is_approximately_equal(e, 0.));
 
-    EXPECT_EQUAL(f1->spec_str(), R"({"figure":{"r":1}})");
+    EXPECT(f1->spec_str() == R"({"figure":{"r":1}})");
 }
 
 
@@ -67,7 +67,7 @@ CASE("Oblate spheroid") {
     auto e = f1->eccentricity();
     EXPECT(types::is_strictly_greater(e, 0.));
 
-    EXPECT_EQUAL(f1->spec_str(), R"({"figure":{"a":1,"b":0.5}})");
+    EXPECT(f1->spec_str() == R"({"figure":{"a":1,"b":0.5}})");
 }
 
 
@@ -85,11 +85,11 @@ CASE("Figure: spec, and as part of a projection's") {
              {"{R: 1}", R"({"figure":{"r":1}})", R"({"figure":{"r":1}})"},
          }) {
         F figure(FigureFactory::make_from_string(test.figure));
-        EXPECT_EQUAL(figure->spec_str(), test.spec);
+        EXPECT(figure->spec_str() == test.spec);
 
         spec::Custom projection_spec;
         figure->fill_projection_spec(projection_spec);
-        EXPECT_EQUAL(projection_spec.str(), test.projection_spec);
+        EXPECT(projection_spec.str() == test.projection_spec);
     }
 }
 
@@ -149,7 +149,7 @@ CASE("Figure::proj_str") {
     };
 
     for (const auto& test : tests) {
-        EXPECT_EQUAL(F(FigureFactory::build(test.spec))->proj_str(), test.proj_str);
+        EXPECT(F(FigureFactory::build(test.spec))->proj_str() == test.proj_str);
     }
 }
 

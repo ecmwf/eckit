@@ -44,7 +44,7 @@ CASE("space_view: spec") {
              {SPECS[2], R"({"figure":"wgs84","h":35785831,"lon_0":9.5,"type":"space_view"})"},
          }) {
         P projection(ProjectionFactory::make_from_string(spec));
-        EXPECT_EQUAL(projection->spec_str(), spec_str);
+        EXPECT(projection->spec_str() == spec_str);
 
         P same(ProjectionFactory::build(projection->spec()));
         EXPECT(*same == *projection);

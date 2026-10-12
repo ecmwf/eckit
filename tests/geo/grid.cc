@@ -43,7 +43,7 @@ CASE("Grid from spec/uid") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
         EXPECT(grid->size() == test.size);
-        EXPECT_EQUAL(grid->spec_str(), test.canonical);
+        EXPECT(grid->spec_str() == test.canonical);
 
         std::unique_ptr<const Grid> same(GridFactory::build(spec::Custom{{"uid", grid->uid()}}));
 
@@ -51,7 +51,7 @@ CASE("Grid from spec/uid") {
 
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
-        EXPECT_EQUAL(grid->boundingBox().spec_str(), bbox_spec_str);
+        EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
     }
 }
 
@@ -73,7 +73,7 @@ CASE("Grid name/arrangement") {
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
-        EXPECT_EQUAL(grid->name(), test.name);
+        EXPECT(grid->name() == test.name);
         EXPECT(grid->arrangement().empty());
     }
 }
@@ -88,11 +88,11 @@ CASE("Grid from name") {
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));
 
-        EXPECT_EQUAL(test.size, a->size());
+        EXPECT(test.size == a->size());
 
         std::unique_ptr<const Grid> b(GridFactory::make_from_string(test.name));
 
-        EXPECT_EQUAL(test.size, b->size());
+        EXPECT(test.size == b->size());
     }
 }
 
@@ -133,7 +133,7 @@ CASE("Grid from increments") {
         ASSERT(a);
 
         EXPECT(a->shape() == test.shape);
-        EXPECT_EQUAL(a->size(), prod(test.shape));
+        EXPECT(a->size() == prod(test.shape));
 
         std::unique_ptr<const Grid> b(GridFactory::build(a->spec()));
         ASSERT(b);
@@ -155,8 +155,8 @@ CASE("Grid::to_xyz") {
         const auto [lat, lon] = grid.to_latlons();
         const auto xyz        = grid.to_xyz();
 
-        EXPECT_EQUAL(xyz.size(), 3);
-        EXPECT_EQUAL(xyz[0].size(), grid.size());
+        EXPECT(xyz.size() == 3);
+        EXPECT(xyz[0].size() == grid.size());
         for (size_t i = 0; i < grid.size(); ++i) {
             EXPECT(
                 points_equal(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, to_xyz.fwd(PointLonLat{lon[i], lat[i]}), 1e-6));
@@ -198,7 +198,7 @@ CASE("Grid::to_xyz") {
         EXPECT_THROWS_AS(grid->to_latlons(), exception::GridError);
 
         const auto xyz = grid->to_xyz();
-        EXPECT_EQUAL(xyz[0].size(), grid->size());
+        EXPECT(xyz[0].size() == grid->size());
 
         size_t i = 0;
         for (const auto& p : *grid) {

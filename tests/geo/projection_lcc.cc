@@ -41,7 +41,7 @@ CASE("lcc: spec") {
               R"({"lat_0":51.967,"lat_1":51.967,"lon_0":4.9,"type":"lcc"})"},
          }) {
         P projection(ProjectionFactory::make_from_string(test.spec));
-        EXPECT_EQUAL(projection->spec_str(), test.spec_str);
+        EXPECT(projection->spec_str() == test.spec_str);
 
         P same(ProjectionFactory::build(projection->spec()));
         EXPECT(*same == *projection);
@@ -66,11 +66,11 @@ CASE("lcc: fwd, inv") {
 
 CASE("lcc: proj_str") {
     P lcc(ProjectionFactory::make_from_string(LCC));
-    EXPECT_EQUAL(lcc->proj_str(), "+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229");
+    EXPECT(lcc->proj_str() == "+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229");
 
     // the same projection, the other way
     P reverse(ProjectionFactory::make_from_string(LCC.substr(0, LCC.size() - 1) + ", reverse: true}"));
-    EXPECT_EQUAL(reverse->proj_str(), lcc->proj_str());
+    EXPECT(reverse->proj_str() == lcc->proj_str());
 
     if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
         return;

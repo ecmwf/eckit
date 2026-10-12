@@ -46,8 +46,8 @@ CASE("merc: spec, proj_str") {
              {"{type: mercator, lat_ts: 14}", R"({"lat_ts":14,"type":"merc"})", "+proj=merc +lat_ts=14 +R=6371229"},
          }) {
         P projection(ProjectionFactory::make_from_string(test.spec));
-        EXPECT_EQUAL(projection->spec_str(), test.spec_str);
-        EXPECT_EQUAL(projection->proj_str(), test.proj_str);
+        EXPECT(projection->spec_str() == test.spec_str);
+        EXPECT(projection->proj_str() == test.proj_str);
 
         P same(ProjectionFactory::build(projection->spec()));
         EXPECT(*same == *projection);

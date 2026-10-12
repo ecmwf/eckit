@@ -135,11 +135,11 @@ CASE("validate_response: other schemes rely on transport errors only") {
 CASE("url_file_basename, url_file_extension") {
     const std::string url = "https://host/path/to/file.tar.gz?query=1#fragment";
 
-    EXPECT_EQUAL(Download::url_file_basename(url), "file.tar.gz");
-    EXPECT_EQUAL(Download::url_file_basename(url, false), "file.tar");
-    EXPECT_EQUAL(Download::url_file_extension(url), ".gz");
-    EXPECT_EQUAL(Download::url_file_extension("https://host/path/.hidden"), "");
-    EXPECT_EQUAL(Download::url_file_extension("https://host/path/file"), "");
+    EXPECT(Download::url_file_basename(url) == "file.tar.gz");
+    EXPECT(Download::url_file_basename(url, false) == "file.tar");
+    EXPECT(Download::url_file_extension(url) == ".gz");
+    EXPECT(Download::url_file_extension("https://host/path/.hidden") == "");
+    EXPECT(Download::url_file_extension("https://host/path/file") == "");
 }
 
 
@@ -155,7 +155,7 @@ CASE("to_cached_path: cached file is used, without downloading (any configuratio
 
     auto path = download.to_cached_path(URL_UNAVAILABLE, PREFIX, SUFFIX);
     EXPECT(path == expected);
-    EXPECT_EQUAL(read_file(path), "cached");
+    EXPECT(read_file(path) == "cached");
 
     download.rm_cache_root();
     EXPECT(!root.exists());
@@ -186,7 +186,7 @@ CASE("to_path: file:// (no network)") {
             EXPECT(info.bytes.value() == static_cast<double>(contents.size()));
             EXPECT(path.exists());
             EXPECT(!part.exists());
-            EXPECT_EQUAL(read_file(path), contents);
+            EXPECT(read_file(path) == contents);
 
             remove_file(path);
         }
@@ -197,7 +197,7 @@ CASE("to_path: file:// (no network)") {
         write_file(source, "new contents");
 
         Download::to_path(url, path);
-        EXPECT_EQUAL(read_file(path), "new contents");
+        EXPECT(read_file(path) == "new contents");
 
         remove_file(path);
     }
@@ -235,7 +235,7 @@ CASE("to_cached_path: file:// (no network)") {
         auto path = download.to_cached_path(url, PREFIX, SUFFIX);
         EXPECT(path.exists());
         EXPECT(path.dirName() == root);
-        EXPECT_EQUAL(read_file(path), "contents");
+        EXPECT(read_file(path) == "contents");
 
         // source is gone, cached file is used
         remove_file(source);
@@ -331,12 +331,12 @@ CASE("to_cached_path: file://, by concurrent processes (downloaded once)") {
     ::close(inodes[0]);
 
     // the same file, and nothing else (no partial or lock files)
-    EXPECT_EQUAL(found.size(), 1);
+    EXPECT(found.size() == 1);
 
     std::vector<PathName> files;
     std::vector<PathName> dirs;
     root.children(files, dirs);
-    EXPECT_EQUAL(files.size(), 1);
+    EXPECT(files.size() == 1);
 
     download.rm_cache_root();
     remove_file(source);

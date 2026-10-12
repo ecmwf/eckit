@@ -67,12 +67,11 @@ CASE("PROJ::proj_str") {
     using projection::PROJ;
 
     // key "proj" first, then the others (sorted), then the figure (default if not specified)
-    EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lon_0", -180}}),
-                 "+proj=merc +lon_0=-180 +R=6371229");
-    EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lat_ts", 14}, {"figure", "wgs84"}}),
-                 "+proj=merc +lat_ts=14 +ellps=WGS84");
-    EXPECT_EQUAL(PROJ::proj_str(spec::Custom{{"type", "lcc"}, {"lat_1", 30}, {"a", 6378206.4}, {"b", 6356583.8}}),
-                 "+proj=lcc +lat_0=0 +lat_1=30 +a=6378206.4 +b=6356583.8");
+    EXPECT(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lon_0", -180}}) == "+proj=merc +lon_0=-180 +R=6371229");
+    EXPECT(PROJ::proj_str(spec::Custom{{"type", "mercator"}, {"lat_ts", 14}, {"figure", "wgs84"}}) ==
+           "+proj=merc +lat_ts=14 +ellps=WGS84");
+    EXPECT(PROJ::proj_str(spec::Custom{{"type", "lcc"}, {"lat_1", 30}, {"a", 6378206.4}, {"b", 6356583.8}}) ==
+           "+proj=lcc +lat_0=0 +lat_1=30 +a=6378206.4 +b=6356583.8");
 }
 
 
@@ -95,7 +94,7 @@ CASE("PROJ strings of grids") {
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
         const auto& projection = grid->projection();
-        EXPECT_EQUAL(projection.proj_str(), test.proj_str);
+        EXPECT(projection.proj_str() == test.proj_str);
 
         // rotations as PROJ (ob_tran), from the rotated (lon, lat)
         if (projection.type() == "rotation") {
@@ -145,7 +144,7 @@ CASE("PROJ strings of projections") {
              {"{type: proj, source: '+proj=lcc +lat_1=30 +R=6371229'}", "+proj=lcc +lat_1=30 +R=6371229"},
          }) {
         P projection(ProjectionFactory::make_from_string(test.spec));
-        EXPECT_EQUAL(projection->proj_str(), test.proj_str);
+        EXPECT(projection->proj_str() == test.proj_str);
 
         // the same coordinates as PROJ, from (lon, lat) (rotations are tested with grids)
         if (!LibEcKitGeo::projdb_is_available() || projection->type() == "rotation" || projection->type() == "proj" ||
@@ -250,9 +249,9 @@ Log::info() << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
         auto bbox = area::BoundingBox::make_from_projection(test.min, test.max, *test.projection);
         ASSERT(bbox);
 
-        EXPECT_EQUAL(test.periodic, bbox->periodic());
-        EXPECT_EQUAL(test.contains_north_pole, bbox->contains(NORTH_POLE));
-        EXPECT_EQUAL(test.contains_south_pole, bbox->contains(SOUTH_POLE));
+        EXPECT(test.periodic == bbox->periodic());
+        EXPECT(test.contains_north_pole == bbox->contains(NORTH_POLE));
+        EXPECT(test.contains_south_pole == bbox->contains(SOUTH_POLE));
 
         auto global = test.periodic && test.contains_north_pole && test.contains_south_pole;
 
@@ -367,8 +366,8 @@ CASE("projection: proj, reverse from spec") {
     P reverse(ProjectionFactory::make_from_string(spec.substr(0, spec.size() - 1) + ", reverse: true}"));
 
     // the source is the default
-    EXPECT_EQUAL(plain->spec_str(), R"({"target":"EPSG:3035","type":"proj"})");
-    EXPECT_EQUAL(reverse->spec_str(), R"({"source":"EPSG:3035","type":"proj"})");
+    EXPECT(plain->spec_str() == R"({"target":"EPSG:3035","type":"proj"})");
+    EXPECT(reverse->spec_str() == R"({"source":"EPSG:3035","type":"proj"})");
     EXPECT_NOT(plain->reverse());
     EXPECT_NOT(reverse->reverse());
 
@@ -376,7 +375,7 @@ CASE("projection: proj, reverse from spec") {
     for (const auto* projection : {plain.get(), reverse.get()}) {
         P same(ProjectionFactory::build(projection->spec()));
         EXPECT(*same == *projection);
-        EXPECT_EQUAL(same->reverse(), projection->reverse());
+        EXPECT(same->reverse() == projection->reverse());
     }
 
     // reversed: fwd as inv, and inv as fwd
@@ -404,19 +403,19 @@ CASE("projection: rotation, as PROJ") {
               R"("target":"+proj=longlat +R=6371229","type":"proj"})"},
          }) {
         P rotation(ProjectionFactory::make_from_string(test.rotation));
-        EXPECT_EQUAL(rotation->spec_str(), test.spec);
+        EXPECT(rotation->spec_str() == test.spec);
 
         // from the rotated (lon, lat) to (lon, lat), on the figure
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"},
                                                      {"source", rotation->proj_str()},
                                                      {"target", "+proj=longlat " + rotation->figure().proj_str()}}));
-        EXPECT_EQUAL(proj->spec_str(), test.spec_as_proj);
+        EXPECT(proj->spec_str() == test.spec_as_proj);
 
         // rebuilt from either spec, the same
         P from_spec(ProjectionFactory::build(rotation->spec()));
         P from_spec_as_proj(ProjectionFactory::build(proj->spec()));
-        EXPECT_EQUAL(from_spec->spec_str(), test.spec);
-        EXPECT_EQUAL(from_spec_as_proj->spec_str(), test.spec_as_proj);
+        EXPECT(from_spec->spec_str() == test.spec);
+        EXPECT(from_spec_as_proj->spec_str() == test.spec_as_proj);
 
         // the same coordinates, by all
         for (const auto& p : std::vector<PointLonLat>{{0., 0.}, {10., 20.}, {-35., 50.}, {120., -30.}}) {

@@ -55,16 +55,16 @@ CASE("range::RegularXY") {
                  {-356. * inc, (15. - 356.) * inc, 16},
              }) {
             range::RegularXY range(inc, a, b);
-            EXPECT_EQUAL(range.size(), size);
+            EXPECT(range.size() == size);
             EXPECT(range.values()[size - 1] == a + static_cast<double>(size - 1) * inc);
 
             range::RegularXY reverse(-inc, b, a);
-            EXPECT_EQUAL(reverse.size(), size);
+            EXPECT(reverse.size() == size);
         }
 
         std::unique_ptr<range::RegularXY> cropped(
             range::RegularXY(inc, 0., 15. * inc).make_cropped_range(inc, 10. * inc));
-        EXPECT_EQUAL(cropped->size(), 10);
+        EXPECT(cropped->size() == 10);
         EXPECT(cropped->a() == inc);
     }
 
@@ -452,11 +452,11 @@ CASE("range::Regular") {
          }) {
         range::RegularLatitude lat(test.inc, -90., 90., 0.);
         EXPECT_APPROX(lat.increment(), test.inc);
-        EXPECT_EQUAL(lat.size(), test.nlat);
+        EXPECT(lat.size() == test.nlat);
 
         range::RegularLongitude lon(test.inc, 0., 360., 0.);
         EXPECT_APPROX(lon.increment(), test.inc);
-        EXPECT_EQUAL(lon.size(), test.nlon);
+        EXPECT(lon.size() == test.nlon);
     }
 }
 

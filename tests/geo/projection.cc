@@ -70,8 +70,8 @@ CASE("projection: reverse") {
     EXPECT(!ab.reverse());
     EXPECT(ba.reverse());
 
-    EXPECT_EQUAL(ab.spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
-    EXPECT_EQUAL(ba.spec_str(), R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})");
+    EXPECT(ab.spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+    EXPECT(ba.spec_str() == R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})");
 }
 
 
@@ -98,8 +98,8 @@ CASE("projection: reverse, from spec") {
             std::unique_ptr<const Projection> reverse(
                 ProjectionFactory::make_from_string(test.spec.substr(0, test.spec.size() - 1) + ", reverse: true}"));
 
-            EXPECT_EQUAL(plain->spec_str(), test.plain);
-            EXPECT_EQUAL(reverse->spec_str(), test.reverse);
+            EXPECT(plain->spec_str() == test.plain);
+            EXPECT(reverse->spec_str() == test.reverse);
             EXPECT_NOT(plain->reverse());
             EXPECT(reverse->reverse());
 
@@ -107,7 +107,7 @@ CASE("projection: reverse, from spec") {
             for (const auto* projection : {plain.get(), reverse.get()}) {
                 std::unique_ptr<const Projection> same(ProjectionFactory::build(projection->spec()));
                 EXPECT(*same == *projection);
-                EXPECT_EQUAL(same->reverse(), projection->reverse());
+                EXPECT(same->reverse() == projection->reverse());
             }
 
             // reversed: fwd as inv, and inv as fwd
@@ -140,11 +140,11 @@ CASE("projection: spec, and as part of a grid's") {
          }) {
         std::unique_ptr<const Projection> projection(ProjectionFactory::make_from_string(test.projection));
         EXPECT(!projection->reverse());
-        EXPECT_EQUAL(projection->spec_str(), test.spec);
+        EXPECT(projection->spec_str() == test.spec);
 
         spec::Custom grid_spec;
         projection->fill_grid_spec(grid_spec);
-        EXPECT_EQUAL(grid_spec.str(), test.grid_spec);
+        EXPECT(grid_spec.str() == test.grid_spec);
     }
 }
 

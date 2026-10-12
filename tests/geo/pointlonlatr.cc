@@ -54,7 +54,7 @@ CASE("PointLonLatR normalisation") {
     auto p2 = PointLonLatR::make(p.lonr(), p.latr());
     auto p3 = PointLonLatR(1. + 42. * PointLonLatR::FULL_ANGLE, PointLonLatR::RIGHT_ANGLE);
 
-    EXPECT_EQUAL(p2.lonr(), 0.);
+    EXPECT(p2.lonr() == 0.);
     EXPECT(points_equal(p, p2));
     EXPECT(points_equal(p, p3));
 
@@ -62,7 +62,7 @@ CASE("PointLonLatR normalisation") {
     auto q2 = q.antipode();
     auto q3 = q2.antipode();
 
-    EXPECT_EQUAL(q2.lonr(), 0.);
+    EXPECT(q2.lonr() == 0.);
     EXPECT(points_equal(q2, p));
     EXPECT(points_equal(q3, q));
 }

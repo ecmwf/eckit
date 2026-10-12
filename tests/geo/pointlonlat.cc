@@ -76,7 +76,7 @@ CASE("PointLonLat antipode") {
     PointLonLat s(1., -90.);
     auto t = s.antipode();
 
-    EXPECT_EQUAL(t.lon(), 0.);
+    EXPECT(t.lon() == 0.);
     EXPECT(points_equal(t, {2., 90.}));
     EXPECT(points_equal(t.antipode(), s));
 }
@@ -205,11 +205,11 @@ CASE("PointLonLat normalisation") {
     }
 
     PointLonLat p(1, 90.);
-    EXPECT_EQUAL(p.lon(), 1.);
-    EXPECT_EQUAL(p.lat(), 90.);
+    EXPECT(p.lon() == 1.);
+    EXPECT(p.lat() == 90.);
 
     auto p2 = PointLonLat::make(p.lon(), p.lat());
-    EXPECT_EQUAL(p2.lon(), 0.);
+    EXPECT(p2.lon() == 0.);
     EXPECT(points_equal(p, p2));
 
     auto p3 = PointLonLat(50., 90.);

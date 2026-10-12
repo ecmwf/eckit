@@ -142,7 +142,7 @@ CASE("unzip") {
         std::vector<PathName> dirs;
         path.dirName().children(files, dirs);
         EXPECT(files.empty());
-        EXPECT_EQUAL(dirs.size(), 1);
+        EXPECT(dirs.size() == 1);
 
         unzip.rm_cache_root();
     }

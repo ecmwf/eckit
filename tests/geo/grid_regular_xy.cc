@@ -28,9 +28,9 @@ CASE("RegularXY: x and y") {
 
     const std::vector<size_t> shape{4, 3};
 
-    EXPECT_EQUAL(grid->type(), "regular_xy");
+    EXPECT(grid->type() == "regular_xy");
     EXPECT(grid->shape() == shape);
-    EXPECT_EQUAL(grid->spec_str(), R"({"x":[0,2,1],"y":[3,0,-1]})");
+    EXPECT(grid->spec_str() == R"({"x":[0,2,1],"y":[3,0,-1]})");
 
     // without a projection, the grid points are its (x, y)
     const auto points = grid->to_points();
@@ -50,7 +50,7 @@ CASE("RegularXY: x and y") {
                  {"{x: [0, 2, 1], y: [0, 3, 1], order: j+i+}", R"({"order":"j+i+","x":[0,2,1],"y":[0,3,1]})"},
              }) {
             std::unique_ptr<const Grid> g(GridFactory::make_from_string(test.spec));
-            EXPECT_EQUAL(g->spec_str(), test.spec_str);
+            EXPECT(g->spec_str() == test.spec_str);
         }
 
         EXPECT_THROWS_AS(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 3, 1], order: i+j-}"),
@@ -60,12 +60,12 @@ CASE("RegularXY: x and y") {
     SECTION("false easting/northing") {
         std::unique_ptr<const Grid> with_false(
             GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false: [10, 20]}"));
-        EXPECT_EQUAL(with_false->spec_str(), R"({"false":[10,20],"x":[0,2,1],"y":[3,0,-1]})");
+        EXPECT(with_false->spec_str() == R"({"false":[10,20],"x":[0,2,1],"y":[3,0,-1]})");
         EXPECT(points_equal(with_false->first_point(), PointXY{0., 3.}));
 
         std::unique_ptr<const Grid> without_false(
             GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false: [0, 0]}"));
-        EXPECT_EQUAL(without_false->spec_str(), grid->spec_str());
+        EXPECT(without_false->spec_str() == grid->spec_str());
     }
 }
 
@@ -78,7 +78,7 @@ CASE("RegularXY: x and y, any step") {
              {"{x: [0, 33005.8361490001, 3000.53055900001], y: [0, -1, -1]}", 24, {33005.8361490001, -1.}},
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
-        EXPECT_EQUAL(grid->size(), size);
+        EXPECT(grid->size() == size);
         EXPECT(points_equal(grid->to_points().back(), last, 1e-6));
     }
 }
@@ -91,8 +91,8 @@ CASE("RegularXY: projection on top") {
 
     std::unique_ptr<const Grid> grid(GridFactory::make_from_string(projected));
 
-    EXPECT_EQUAL(
-        grid->spec_str(),
+    EXPECT(
+        grid->spec_str() ==
         R"({"false":[10,10],"order":"i+j+","projection":{"lat_ts":60,"reverse":true,"type":"eqc"},"x":[0,20,10],"y":[0,10,10]})");
 
     const auto points = grid->to_points();
@@ -101,7 +101,7 @@ CASE("RegularXY: projection on top") {
     EXPECT(points_equal(points.back(), PointLonLat{20., 0.}));
 
     const auto [lat, lon] = grid->to_latlons();
-    EXPECT_EQUAL(lon.size(), grid->size());
+    EXPECT(lon.size() == grid->size());
 
     // outwards, to its precision
     const auto& bbox = grid->boundingBox();
@@ -205,7 +205,7 @@ CASE("RegularXY: as GRIB") {
                 return grid->spec_str();
             };
 
-            EXPECT_EQUAL(check(test.projection + ", reverse: true"), test.spec_str);
+            EXPECT(check(test.projection + ", reverse: true") == test.spec_str);
 
             // without projection, the grid points are on the plane
             std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + test.xy + "}"));
@@ -213,14 +213,14 @@ CASE("RegularXY: as GRIB") {
 
             // from its own spec, the same grid
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec_str));
-            EXPECT_EQUAL(grid->spec_str(), test.spec_str);
+            EXPECT(grid->spec_str() == test.spec_str);
 
             if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
                 // PROJ string from the grid, and from its projection spec
-                EXPECT_EQUAL(grid->projection().proj_str(), test.proj);
+                EXPECT(grid->projection().proj_str() == test.proj);
                 std::unique_ptr<const Projection> projection(
                     ProjectionFactory::make_from_string("{" + test.projection + "}"));
-                EXPECT_EQUAL(projection->proj_str(), test.proj);
+                EXPECT(projection->proj_str() == test.proj);
                 check("type: proj, source: '" + test.proj + "'");
             }
         }
@@ -248,7 +248,7 @@ CASE("RegularXY: space_view, as GRIB") {
              {{300.905565350, 18.425011761}, {300.936080607, 18.425558651}, {301.327135202, 18.106822780}}},
         }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec_str));
-        EXPECT_EQUAL(grid->spec_str(), spec_str);
+        EXPECT(grid->spec_str() == spec_str);
 
         const auto points = grid->to_points();
         EXPECT(points_equal(points.front(), first_second_last[0], microdegree));
@@ -276,9 +276,9 @@ CASE("RegularXY") {
 
         const std::vector<size_t> shape{33, 69};
 
-        EXPECT_EQUAL(grid->type(), "regular_xy");
+        EXPECT(grid->type() == "regular_xy");
         EXPECT(grid->shape() == shape);
-        EXPECT_EQUAL(grid->size(), 69 * 33);
+        EXPECT(grid->size() == 69 * 33);
 
         // a geographic bounding box, unlike the spec's own frame
         EXPECT(grid->boundingBox().north() < NORTH_POLE.lat());
@@ -291,7 +291,7 @@ CASE("RegularXY") {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(name));
             std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
 
-            EXPECT_EQUAL(same->spec_str(), grid->spec_str());
+            EXPECT(same->spec_str() == grid->spec_str());
             EXPECT(same->shape() == grid->shape());
         }
     }
@@ -303,7 +303,7 @@ CASE("RegularXY") {
         const std::vector<size_t> shape{294, 429};
 
         EXPECT(grid->shape() == shape);
-        EXPECT_EQUAL(grid->spec().get_double_vector("y")[0], 1040500.);
+        EXPECT(grid->spec().get_double_vector("y")[0] == 1040500.);
     }
 }
 

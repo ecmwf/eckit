@@ -47,13 +47,13 @@ CASE("spec") {
 
     EXPECT(grid3.uid() == UID);
     EXPECT(grid3.calculate_uid() == UID);
-    EXPECT_EQUAL(static_cast<const Grid&>(grid3).spec_str(), expected_spec_str);
+    EXPECT(static_cast<const Grid&>(grid3).spec_str() == expected_spec_str);
 
-    EXPECT_EQUAL(grid1->spec_str(), grid2->spec_str());
+    EXPECT(grid1->spec_str() == grid2->spec_str());
 
     std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", GRID}})));
 
-    EXPECT_EQUAL(grid4->spec_str(), expected_spec_str);
+    EXPECT(grid4->spec_str() == expected_spec_str);
 
     std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", UID}})));
 
@@ -78,7 +78,7 @@ CASE("type") {
     std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
 
     EXPECT(from_gridspec->type() == "ORCA");
-    EXPECT_EQUAL(from_gridspec->spec_str(), R"({"grid":"eORCA1_T"})");
+    EXPECT(from_gridspec->spec_str() == R"({"grid":"eORCA1_T"})");
     EXPECT(from_gridspec->size() == 120184);
     EXPECT(*from_spec == *from_gridspec);
 }

@@ -81,7 +81,7 @@ CASE("eckit::geo::util") {
 
 
     Cache::total_purge();
-    EXPECT_EQUAL(0, Cache::total_footprint());
+    EXPECT(0 == Cache::total_footprint());
 
 
     SECTION("separate caches") {
@@ -95,7 +95,7 @@ CASE("eckit::geo::util") {
 
 
     Cache::total_purge();
-    EXPECT_EQUAL(0, Cache::total_footprint());
+    EXPECT(0 == Cache::total_footprint());
 
 
     SECTION("reduced_classical_pl, reduced_octahedral_pl") {
@@ -103,39 +103,39 @@ CASE("eckit::geo::util") {
             for (const auto& test : tests) {
                 Cache::total_purge();
                 fun(test.N);
-                EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint);
+                EXPECT(Cache::total_footprint() == test.pl_footprint);
             }
 
             Cache::total_purge();
             for (const auto& test : tests) {
                 fun(test.N);
-                EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint_acc);
+                EXPECT(Cache::total_footprint() == test.pl_footprint_acc);
             }
         }
     }
 
 
     Cache::total_purge();
-    EXPECT_EQUAL(0, Cache::total_footprint());
+    EXPECT(0 == Cache::total_footprint());
 
 
     SECTION("gaussian_latitudes") {
         for (const auto& test : tests) {
             Cache::total_purge();
             util::gaussian_latitudes(test.N, test.increasing);
-            EXPECT_EQUAL(Cache::total_footprint(), test.gl_footprint);
+            EXPECT(Cache::total_footprint() == test.gl_footprint);
         }
 
         Cache::total_purge();
         for (const auto& test : tests) {
             util::gaussian_latitudes(test.N, test.increasing);
-            EXPECT_EQUAL(Cache::total_footprint(), test.gl_footprint_acc);
+            EXPECT(Cache::total_footprint() == test.gl_footprint_acc);
         }
     }
 
 
     Cache::total_purge();
-    EXPECT_EQUAL(0, Cache::total_footprint());
+    EXPECT(0 == Cache::total_footprint());
 }
 
 
@@ -178,12 +178,12 @@ CASE("cache layout") {
 
     // downloads (e.g. ORCA, ICON and FESOM coordinates) go to download/VERSION/<md5(url)>
     const cache::Download download;
-    EXPECT_EQUAL(download.cache_root(), root / "download" / std::to_string(cache::version::DOWNLOAD));
+    EXPECT(download.cache_root() == root / "download" / std::to_string(cache::version::DOWNLOAD));
 
     // coordinates written locally (e.g. unstructured grids) go to latlon/VERSION/<uid>.ek
     const auto path = cache::LatitudeLongitude({1., 2.}, {3., 4.}).to_cached_path();
     EXPECT(path.exists());
-    EXPECT_EQUAL(path.dirName(), root / "latlon" / std::to_string(cache::version::LATLON));
+    EXPECT(path.dirName() == root / "latlon" / std::to_string(cache::version::LATLON));
 }
 
 
@@ -194,13 +194,13 @@ CASE("MemoryUsage") {
     MemoryUsage a{"100,200"};
     MemoryUsage b{"300"};
 
-    EXPECT_EQUAL(a.memory(), 100);
-    EXPECT_EQUAL(a.shared(), 200);
-    EXPECT_EQUAL(b.shared(), 300);
+    EXPECT(a.memory() == 100);
+    EXPECT(a.shared() == 200);
+    EXPECT(b.shared() == 300);
 
-    EXPECT_EQUAL(a + b, MemoryUsage(400, 500));
-    EXPECT_EQUAL(b - a, MemoryUsage(200, 100));
-    EXPECT_EQUAL(a - b, MemoryUsage());  // saturates at zero
+    EXPECT(a + b == MemoryUsage(400, 500));
+    EXPECT(b - a == MemoryUsage(200, 100));
+    EXPECT(a - b == MemoryUsage());  // saturates at zero
     EXPECT_NOT(MemoryUsage());
 
     // exceeding a capacity in either memory or shared memory
@@ -237,28 +237,28 @@ CASE("InMemoryCache: usage, capacity and evictions") {
     get("b", 50);  // miss
     get("a", 50);  // hit, "a" is now more recently used than "b"
 
-    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
-    EXPECT_EQUAL(cached.statistics().hits, 1);
-    EXPECT_EQUAL(cached.statistics().misses, 2);
+    EXPECT(cached.usage() == MemoryUsage(800, 0));
+    EXPECT(cached.statistics().hits == 1);
+    EXPECT(cached.statistics().misses == 2);
 
     // reported in the memory caches total
-    EXPECT_EQUAL(Cache::total_footprint(), total + 800);
+    EXPECT(Cache::total_footprint() == total + 800);
 
     // over capacity: the least recently used is evicted
     get("c", 50);
-    EXPECT_EQUAL(cached.size(), 2);
-    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 0));
-    EXPECT_EQUAL(cached.statistics().evictions, 1);
+    EXPECT(cached.size() == 2);
+    EXPECT(cached.usage() == MemoryUsage(800, 0));
+    EXPECT(cached.statistics().evictions == 1);
 
     // values in use are not evicted, even over capacity
     auto d = get("d", 200);
-    EXPECT_EQUAL(cached.size(), 1);
-    EXPECT_EQUAL(cached.usage(), MemoryUsage(1600, 0));
+    EXPECT(cached.size() == 1);
+    EXPECT(cached.usage() == MemoryUsage(1600, 0));
 
     d.reset();
     cached.capacity(MemoryUsage{1000, 0});
-    EXPECT_EQUAL(cached.size(), 0);
-    EXPECT_EQUAL(Cache::total_footprint(), total);
+    EXPECT(cached.size() == 0);
+    EXPECT(Cache::total_footprint() == total);
 }
 
 
@@ -287,15 +287,15 @@ CASE("InMemoryCache: room is made before making a value") {
     std::weak_ptr<const Footprint> a = cached.get("a", MemoryUsage{400, 0}, make({400, 0}));
     std::weak_ptr<const Footprint> b = cached.get("b", MemoryUsage{400, 0}, make({400, 0}));
     std::weak_ptr<const Footprint> s = cached.get("s", MemoryUsage{0, 800}, make({0, 800}));
-    EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 800));
-    EXPECT_EQUAL(made, 3);
+    EXPECT(cached.usage() == MemoryUsage(800, 800));
+    EXPECT(made == 3);
 
     SECTION("a cached value is not made again, and nothing is evicted (even if the estimate doesn't fit)") {
-        EXPECT_EQUAL(cached.get("a", MemoryUsage{1000, 0}, make({400, 0})).get(), a.lock().get());
-        EXPECT_EQUAL(made, 3);
-        EXPECT_EQUAL(cached.statistics().hits, 1);
-        EXPECT_EQUAL(cached.statistics().evictions, 0);
-        EXPECT_EQUAL(cached.size(), 3);
+        EXPECT(cached.get("a", MemoryUsage{1000, 0}, make({400, 0})).get() == a.lock().get());
+        EXPECT(made == 3);
+        EXPECT(cached.statistics().hits == 1);
+        EXPECT(cached.statistics().evictions == 0);
+        EXPECT(cached.size() == 3);
     }
 
     SECTION("evicting before making, only what relieves the capacity (memory)") {
@@ -307,8 +307,8 @@ CASE("InMemoryCache: room is made before making a value") {
             return make({400, 0})();
         });
 
-        EXPECT_EQUAL(cached.statistics().evictions, 1);
-        EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 800));
+        EXPECT(cached.statistics().evictions == 1);
+        EXPECT(cached.usage() == MemoryUsage(800, 800));
     }
 
     SECTION("evicting before making, only what relieves the capacity (shared)") {
@@ -319,7 +319,7 @@ CASE("InMemoryCache: room is made before making a value") {
             return make({0, 400})();
         });
 
-        EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 400));
+        EXPECT(cached.usage() == MemoryUsage(800, 400));
     }
 
     SECTION("a value beyond the capacity is made and cached, evicting all values not in use") {
@@ -331,22 +331,22 @@ CASE("InMemoryCache: room is made before making a value") {
             return make({2000, 0})();
         });
 
-        EXPECT_EQUAL(cached.size(), 3);  // b, s and big
-        EXPECT_EQUAL(cached.usage(), MemoryUsage(2400, 800));
+        EXPECT(cached.size() == 3);  // b, s and big
+        EXPECT(cached.usage() == MemoryUsage(2400, 800));
 
         // evicted only once not in use
         in_use.reset();
         big.reset();
         cached.capacity(MemoryUsage{1000, 1000});
-        EXPECT_EQUAL(cached.size(), 1);
-        EXPECT_EQUAL(cached.usage(), MemoryUsage(0, 800));
+        EXPECT(cached.size() == 1);
+        EXPECT(cached.usage() == MemoryUsage(0, 800));
     }
 
     SECTION("an estimate below the footprint, evicting after making") {
         auto c = cached.get("c", MemoryUsage{100, 0}, make({400, 0}));
         EXPECT(a.expired());
         EXPECT_NOT(b.expired());
-        EXPECT_EQUAL(cached.usage(), MemoryUsage(800, 800));
+        EXPECT(cached.usage() == MemoryUsage(800, 800));
     }
 }
 
@@ -379,14 +379,14 @@ CASE("InMemoryCache: a value is made once, if requested concurrently") {
     }
     pool.waitForThreads();  // throws if a task failed
 
-    EXPECT_EQUAL(made, 1);
+    EXPECT(made == 1);
     for (const auto& value : values) {
         EXPECT(value == values.front());
     }
 
-    EXPECT_EQUAL(cached.statistics().misses, 1);
-    EXPECT_EQUAL(cached.statistics().hits, N - 1);
-    EXPECT_EQUAL(cached.size(), 1);
+    EXPECT(cached.statistics().misses == 1);
+    EXPECT(cached.statistics().hits == N - 1);
+    EXPECT(cached.size() == 1);
 }
 
 
@@ -402,17 +402,17 @@ CASE("InMemoryCache: a value failing to be made is not cached") {
 
     auto failing = []() -> std::shared_ptr<const Footprint> { throw std::runtime_error("failed"); };
     EXPECT_THROWS_AS(cached.get("x", MemoryUsage{600, 0}, failing), std::runtime_error);
-    EXPECT_EQUAL(cached.size(), 1);
+    EXPECT(cached.size() == 1);
 
     // the room made is not kept: a fits along with b
     cached.get("b", MemoryUsage{600, 0}, make({600, 0}));
     EXPECT_NOT(a.expired());
-    EXPECT_EQUAL(cached.statistics().evictions, 0);
+    EXPECT(cached.statistics().evictions == 0);
 
     // made on the next request
     cached.get("x", MemoryUsage{0, 0}, make({0, 0}));
-    EXPECT_EQUAL(cached.size(), 3);
-    EXPECT_EQUAL(cached.statistics().misses, 4);
+    EXPECT(cached.size() == 3);
+    EXPECT(cached.statistics().misses == 4);
 }
 
 
@@ -427,7 +427,7 @@ CASE("SearchCache: a grid search, accounted for") {
     // a grid holds its search (default configuration), loading it increases the cache usage
     const auto& search = grid->search();
     EXPECT(search.footprint());
-    EXPECT_EQUAL(cache.usage(), search.footprint());
+    EXPECT(cache.usage() == search.footprint());
     EXPECT(&search == &grid->search());
 
     // default loader (mapped-memory), as mir: the cache file mapped, using shared memory (page cache)
@@ -440,24 +440,24 @@ CASE("SearchCache: a grid search, accounted for") {
     auto memory = cache.get(*grid, spec::Custom{{{"search-loader", "memory"}}});
     EXPECT(memory.get() != &search);
     EXPECT(memory->footprint().memory() > 0);
-    EXPECT_EQUAL(cache.usage(), search.footprint() + memory->footprint());
+    EXPECT(cache.usage() == search.footprint() + memory->footprint());
     EXPECT(cache.get(*grid, spec::Custom{{{"search-loader", "memory"}}}) == memory);
 
     // other behaviours share the k-d tree, so they are not accounted for again
     auto knn = cache.get(*grid, spec::Custom{{{"search-loader", "memory"}, {"search", "knn"}, {"search-k", 4}}});
     EXPECT(&knn->kdtree() == &memory->kdtree());
-    EXPECT_EQUAL(knn->search(PointLonLat{14., 1.}).size(), 4);
-    EXPECT_EQUAL(cache.size(), 2);
+    EXPECT(knn->search(PointLonLat{14., 1.}).size() == 4);
+    EXPECT(cache.size() == 2);
 
     // searches in use are not evicted (the grid's own, and the other shared by knn)
     memory.reset();
     cache.capacity(cache::MemoryUsage{0, 0});
-    EXPECT_EQUAL(cache.size(), 2);
+    EXPECT(cache.size() == 2);
 
     knn.reset();
     cache.capacity(cache::MemoryUsage{0, 0});
-    EXPECT_EQUAL(cache.size(), 1);
-    EXPECT_EQUAL(cache.usage(), search.footprint());
+    EXPECT(cache.size() == 1);
+    EXPECT(cache.usage() == search.footprint());
 
     cache.capacity(capacity);
     cache.clear();
@@ -478,8 +478,8 @@ CASE("SearchCache: room is made for a search before loading it") {
 
     auto search1 = cache.get(*grid1, spec);
     EXPECT(dynamic_cast<const search::FileIO*>(&search1->kdtree()) != nullptr);
-    EXPECT_EQUAL(search1->footprint(), search::KDTreeFactory::estimate("file-io", grid1->size()));
-    EXPECT_EQUAL(cache.usage(), search1->footprint());
+    EXPECT(search1->footprint() == search::KDTreeFactory::estimate("file-io", grid1->size()));
+    EXPECT(cache.usage() == search1->footprint());
 
     // room for one search only
     const auto estimate2 = search::KDTreeFactory::estimate("file-io", grid2->size());
@@ -491,12 +491,12 @@ CASE("SearchCache: room is made for a search before loading it") {
     const auto evictions = cache.statistics().evictions;
     auto search2         = cache.get(*grid2, spec);
     EXPECT(evicted.expired());
-    EXPECT_EQUAL(cache.statistics().evictions, evictions + 1);
-    EXPECT_EQUAL(cache.usage(), estimate2);
+    EXPECT(cache.statistics().evictions == evictions + 1);
+    EXPECT(cache.usage() == estimate2);
 
     // cached, so nothing is evicted
     EXPECT(cache.get(*grid2, spec) == search2);
-    EXPECT_EQUAL(cache.statistics().evictions, evictions + 1);
+    EXPECT(cache.statistics().evictions == evictions + 1);
 
     search2.reset();
     cache.capacity(capacity);

@@ -52,10 +52,10 @@ CASE("projection: ll-to-xyz") {
 
 
     SECTION("spec") {
-        EXPECT_EQUAL(to_xyz_1->spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
-        EXPECT_EQUAL(to_xyz_2->spec_str(), R"({"figure":{"r":1},"type":"ll-to-xyz"})");
-        EXPECT_EQUAL(to_xyz_3->spec_str(), R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
-        EXPECT_EQUAL(to_xyz_4->spec_str(), R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_1->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_2->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_3->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_4->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
     }
 
 

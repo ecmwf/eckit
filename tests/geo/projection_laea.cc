@@ -54,8 +54,8 @@ CASE("laea: spec, proj_str") {
               R"({"figure":"wgs84","lat_0":-90,"type":"laea"})", "+proj=laea +lat_0=-90 +ellps=WGS84"},
          }) {
         P projection(ProjectionFactory::make_from_string(test.spec));
-        EXPECT_EQUAL(projection->spec_str(), test.spec_str);
-        EXPECT_EQUAL(projection->proj_str(), test.proj_str);
+        EXPECT(projection->spec_str() == test.spec_str);
+        EXPECT(projection->proj_str() == test.proj_str);
 
         P same(ProjectionFactory::build(projection->spec()));
         EXPECT(*same == *projection);

@@ -174,7 +174,7 @@ CASE("KDTreeFactory") {
     }
 
     // the default loader
-    EXPECT_EQUAL(LibEcKitGeo::searchLoader(), "mapped-memory");
+    EXPECT(LibEcKitGeo::searchLoader() == "mapped-memory");
 
     SECTION("aliases") {
         auto is = [](const std::string& name, auto* type) {
@@ -217,7 +217,7 @@ CASE("KDTree: build and query") {
                 const auto uid = unique_uid("build-" + name + (fast ? "-build" : "-insert"));
 
                 std::unique_ptr<KDTree> kdtree(KDTreeFactory::build(name, uid, points.size()));
-                EXPECT_EQUAL(kdtree->size(), points.size());
+                EXPECT(kdtree->size() == points.size());
 
                 {
                     util::lock_guard<KDTree> lock(*kdtree);
@@ -239,15 +239,15 @@ CASE("KDTree: build and query") {
                 EXPECT(consistent(*kdtree, points));
 
                 auto knn = kdtree->k_nearest_neighbours(points[0], 3);
-                EXPECT_EQUAL(knn.size(), 3);
-                EXPECT_EQUAL(knn.front().index, 0);
+                EXPECT(knn.size() == 3);
+                EXPECT(knn.front().index == 0);
 
                 auto sphere = kdtree->find_in_sphere(points[0], 10.);  // all points
-                EXPECT_EQUAL(sphere.size(), points.size());
+                EXPECT(sphere.size() == points.size());
 
                 if (auto* file = dynamic_cast<MappedFile*>(kdtree.get()); file != nullptr) {
                     EXPECT(file->path().exists());
-                    EXPECT_EQUAL(count_temporary_files(file->path()), 0);
+                    EXPECT(count_temporary_files(file->path()) == 0);
                     remove(file->path());
                 }
             }
@@ -267,7 +267,7 @@ CASE("KDTreeFactory: estimate is the footprint, once built or loaded") {
             for (bool build : {true, false}) {
                 std::unique_ptr<KDTree> kdtree(
                     KDTreeFactory::build(name, unique_uid("estimate-" + name), points.size()));
-                EXPECT_EQUAL(load_or_build(*kdtree, points), build);
+                EXPECT(load_or_build(*kdtree, points) == build);
 
                 // shared memory (not available, e.g. system limits) falls back to the cache file
                 if (auto* shm = dynamic_cast<SharedMemory*>(kdtree.get()); shm != nullptr && !shm->loaded()) {
@@ -276,7 +276,7 @@ CASE("KDTreeFactory: estimate is the footprint, once built or loaded") {
                     break;
                 }
 
-                EXPECT_EQUAL(kdtree->footprint(), estimate);
+                EXPECT(kdtree->footprint() == estimate);
 
                 // in-process k-d trees are built every time
                 auto* file = dynamic_cast<MappedFile*>(kdtree.get());
@@ -321,7 +321,7 @@ CASE("MappedFile: location") {
     // ECKIT_GEO_CACHE_PATH is set by the test environment
     const auto* env = ::getenv("ECKIT_GEO_CACHE_PATH");
     if (env != nullptr) {
-        EXPECT_EQUAL(LibEcKitGeo::cacheDir(), PathName(env, true).asString());
+        EXPECT(LibEcKitGeo::cacheDir() == PathName(env, true).asString());
     }
 
     const auto uid = unique_uid("location");
@@ -329,7 +329,7 @@ CASE("MappedFile: location") {
 
     const auto expected =
         PathName{LibEcKitGeo::cacheDir()} / "search" / std::to_string(cache::version::SEARCH) / (uid + ".kdtree");
-    EXPECT_EQUAL(kdtree.path(), expected);
+    EXPECT(kdtree.path() == expected);
     EXPECT_NOT(kdtree.path().exists());
 
     // uid is part of the path
@@ -364,7 +364,7 @@ CASE("MappedFile: build, commit, load") {
         EXPECT(consistent(kdtree, points));
     }
 
-    EXPECT_EQUAL(count_temporary_files(path), 0);
+    EXPECT(count_temporary_files(path) == 0);
     remove(path);
 }
 
@@ -397,7 +397,7 @@ CASE("MappedFile: invalid file is rebuilt") {
         EXPECT(consistent(kdtree, points));
     }
 
-    EXPECT_EQUAL(count_temporary_files(path), 0);
+    EXPECT(count_temporary_files(path) == 0);
     remove(path);
 }
 
@@ -417,11 +417,11 @@ CASE("MappedFile: uncommitted build is discarded") {
         auto v = values(points);
         kdtree.build(v);
 
-        EXPECT_EQUAL(count_temporary_files(path), 1);
+        EXPECT(count_temporary_files(path) == 1);
     }
 
     EXPECT_NOT(path.exists());
-    EXPECT_EQUAL(count_temporary_files(path), 0);
+    EXPECT(count_temporary_files(path) == 0);
     remove(path);
 }
 
@@ -446,11 +446,11 @@ CASE("MappedFile: multi-threaded") {
     }
     pool.waitForThreads();  // throws if a task failed
 
-    EXPECT_EQUAL(std::count(built.begin(), built.end(), 1), 1);
-    EXPECT_EQUAL(std::count(valid.begin(), valid.end(), 1), N);
+    EXPECT(std::count(built.begin(), built.end(), 1) == 1);
+    EXPECT(std::count(valid.begin(), valid.end(), 1) == N);
 
     MappedFile kdtree(uid, points.size());
-    EXPECT_EQUAL(count_temporary_files(kdtree.path()), 0);
+    EXPECT(count_temporary_files(kdtree.path()) == 0);
     remove(kdtree.path());
 }
 
@@ -509,14 +509,14 @@ CASE("MappedFile: multi-process") {
         loaded += code == LOADED ? 1 : 0;
     }
 
-    EXPECT_EQUAL(built, 1);
-    EXPECT_EQUAL(loaded, N - 1);
+    EXPECT(built == 1);
+    EXPECT(loaded == N - 1);
 
     MappedFile kdtree(uid, points.size());
     EXPECT_NOT(load_or_build(kdtree, points));
     EXPECT(consistent(kdtree, points));
 
-    EXPECT_EQUAL(count_temporary_files(kdtree.path()), 0);
+    EXPECT(count_temporary_files(kdtree.path()) == 0);
     remove(kdtree.path());
 }
 
@@ -534,7 +534,7 @@ CASE("FileIO: loaded from the cache file, into memory") {
     }
 
     FileIO kdtree(uid, points.size());
-    EXPECT_EQUAL(kdtree.path(), path);
+    EXPECT(kdtree.path() == path);
     EXPECT_NOT(kdtree.loaded());
 
     EXPECT_NOT(load_or_build(kdtree, points));
@@ -542,7 +542,7 @@ CASE("FileIO: loaded from the cache file, into memory") {
     EXPECT(consistent(kdtree, points));
 
     // in memory, the cache file is no longer mapped
-    EXPECT_EQUAL(kdtree.footprint(), cache::MemoryUsage(static_cast<size_t>(path.size()), 0));
+    EXPECT(kdtree.footprint() == cache::MemoryUsage(static_cast<size_t>(path.size()), 0));
 
     remove(path);
 }
@@ -625,7 +625,7 @@ CASE("TempSharedMemory: removed at exit") {
 
             const auto path = MappedFile::kdtree_path(uid, PathName{LibEcKitGeo::cacheDir()});
             if (code == LOADED) {
-                EXPECT_EQUAL(SharedMemory::is_loaded(path), !removed);
+                EXPECT(SharedMemory::is_loaded(path) == !removed);
             }
             else {
                 Log::warning() << "shared memory not available, skipping '" << loader << "'" << std::endl;
@@ -658,7 +658,7 @@ CASE("Search: multi-threaded") {
         }
         pool.waitForThreads();  // throws if a task failed
 
-        EXPECT_EQUAL(std::count(valid.begin(), valid.end(), 1), N);
+        EXPECT(std::count(valid.begin(), valid.end(), 1) == N);
     }
 
     SECTION("query concurrently") {
@@ -670,13 +670,13 @@ CASE("Search: multi-threaded") {
         }
         pool.waitForThreads();  // throws if a task failed
 
-        EXPECT_EQUAL(std::count(valid.begin(), valid.end(), 1), N);
+        EXPECT(std::count(valid.begin(), valid.end(), 1) == N);
     }
 
     const Search search(points, spec);
     const auto& path = dynamic_cast<const MappedFile&>(search.kdtree()).path();
     EXPECT(path.exists());
-    EXPECT_EQUAL(count_temporary_files(path), 0);
+    EXPECT(count_temporary_files(path) == 0);
     remove(path);
 }
 

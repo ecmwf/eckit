@@ -89,12 +89,12 @@ std::set<size_t> as_set(const Grid::renumber_type& indices) {
 CASE("polygon area: spec") {
     G ring_1(GridFactory::make_from_string(RING_1));
     G ring_2(GridFactory::make_from_string(RING_2));
-    EXPECT_EQUAL(ring_1->type(), "unstructured_ll");
+    EXPECT(ring_1->type() == "unstructured_ll");
 
     A polygons(AreaFactory::make_from_string(polygons_spec()));
-    EXPECT_EQUAL(polygons->type(), "polygon");
-    EXPECT_EQUAL(polygons->spec_str(),
-                 R"({"type":"polygon","uid":[")" + ring_1->uid() + R"(",")" + ring_2->uid() + R"("]})");
+    EXPECT(polygons->type() == "polygon");
+    EXPECT(polygons->spec_str() ==
+           R"({"type":"polygon","uid":[")" + ring_1->uid() + R"(",")" + ring_2->uid() + R"("]})");
 
     A same(AreaFactory::make_from_string(polygons->spec_str()));
     EXPECT(*same == *polygons);
@@ -106,7 +106,7 @@ CASE("polygon area: spec") {
     // one ring, by its coordinates
     A ring(AreaFactory::make_from_string(
         "{type: polygon, latitudes: [0.5, 0.5, 10.5, 10.5], longitudes: [0.5, 10.5, 10.5, 0.5]}"));
-    EXPECT_EQUAL(ring->spec_str(), R"({"type":"polygon","uid":")" + ring_1->uid() + R"("})");
+    EXPECT(ring->spec_str() == R"({"type":"polygon","uid":")" + ring_1->uid() + R"("})");
 
     // as built from points
     const area::Polygon from_points(area::Polygon::container_type{area::Polygon::value_type{
@@ -143,7 +143,7 @@ CASE("crop: unprojected grids") {
                 G cropped(grid->make_grid_cropped(*bbox));
                 const auto cropped_points = cropped->to_points();
 
-                EXPECT_EQUAL(cropped_points.size(), indices.size());
+                EXPECT(cropped_points.size() == indices.size());
                 for (size_t i = 0; i < indices.size(); ++i) {
                     EXPECT(points_equal(cropped_points[i], points[indices[i]]));
                 }
@@ -161,7 +161,7 @@ CASE("crop: unprojected grids") {
             EXPECT(std::is_sorted(indices.begin(), indices.end()));
 
             if (grid->type() == "regular_ll" && points.size() == 360 * 181) {
-                EXPECT_EQUAL(indices.size(), 10 * 10 + 10 * 9);
+                EXPECT(indices.size() == 10 * 10 + 10 * 9);
             }
         }
     }
@@ -179,8 +179,8 @@ CASE("crop: global grids, by a global bounding box from another longitude") {
         G grid(GridFactory::make_from_string(spec));
         const auto indices = grid->crop(*bbox);
 
-        EXPECT_EQUAL(indices.size(), grid->size());
-        EXPECT_EQUAL(as_set(indices).size(), grid->size());
+        EXPECT(indices.size() == grid->size());
+        EXPECT(as_set(indices).size() == grid->size());
         EXPECT_NOT(std::is_sorted(indices.begin(), indices.end()));
 
         // each row from longitude 180 (as -180)
@@ -196,7 +196,7 @@ CASE("crop: global grids, by a global bounding box from another longitude") {
 
         // the cropped grid, of the same type, has the same points in the same order
         G cropped(grid->make_grid_cropped(*bbox));
-        EXPECT_EQUAL(cropped->type(), type);
+        EXPECT(cropped->type() == type);
         EXPECT(same_points(*cropped, *grid, indices));
     }
 }
@@ -236,7 +236,7 @@ CASE("crop: projected grids (rotation, lcc)") {
 
         // projected grids crop as unstructured grids, of the same points
         G cropped(grid->make_grid_cropped(*bbox));
-        EXPECT_EQUAL(cropped->type(), "unstructured_ll");
+        EXPECT(cropped->type() == "unstructured_ll");
         EXPECT(same_points(*cropped, *grid, indices));
     }
 }
@@ -267,12 +267,12 @@ CASE("crop: as the grid type, or unstructured (exchangeable by uid)") {
         const auto indices = grid->crop(*area);
 
         G cropped(grid->make_grid_cropped(*area));
-        EXPECT_EQUAL(cropped->type(), test.type);
+        EXPECT(cropped->type() == test.type);
         EXPECT(same_points(*cropped, *grid, indices));
 
         // as unstructured, always: its coordinates cached, exchangeable by uid
         G unstructured(grid->make_grid_cropped_unstructured_ll(*area));
-        EXPECT_EQUAL(unstructured->type(), "unstructured_ll");
+        EXPECT(unstructured->type() == "unstructured_ll");
         EXPECT(same_points(*unstructured, *grid, indices));
 
         G by_uid(GridFactory::make_from_string("{uid: " + unstructured->uid() + "}"));
@@ -298,9 +298,9 @@ CASE("crop: cache") {
     const auto b          = grid->crop(*bbox);
 
     EXPECT(a == b);
-    EXPECT_EQUAL(cache.statistics().misses, statistics.misses + 1);
-    EXPECT_EQUAL(cache.statistics().hits, statistics.hits + 1);
-    EXPECT_EQUAL(cache.size(), 1);
+    EXPECT(cache.statistics().misses == statistics.misses + 1);
+    EXPECT(cache.statistics().hits == statistics.hits + 1);
+    EXPECT(cache.size() == 1);
     EXPECT(cache.usage().memory() > 0);
 
     // the same crop, recalculated

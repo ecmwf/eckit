@@ -94,16 +94,16 @@ const std::vector<std::string> LOADERS{"memory", "mmap", "file-io", "tmp-shmem"}
 
 CASE("Search: examples") {
     const Search search(LINE, spec::Custom{{{"search-loader", "memory"}}});
-    EXPECT_EQUAL(search.size(), LINE.size());
+    EXPECT(search.size() == LINE.size());
 
     SECTION("search_nn: nearest point") {
         auto a = search.search_nn(PointXYZ{0.4, 0., 0.});
-        EXPECT_EQUAL(a.index, 0);
+        EXPECT(a.index == 0);
         EXPECT(a.point == LINE[0]);
         EXPECT(approx(a.distance, 0.4));
 
         auto b = search.search_nn(PointXYZ{9., 1., 0.});
-        EXPECT_EQUAL(b.index, 4);
+        EXPECT(b.index == 4);
         EXPECT(approx(b.distance, std::sqrt(2.)));
     }
 
@@ -218,10 +218,10 @@ CASE("Search: (lon, lat) points") {
 
     const Search search(points, spec);
 
-    EXPECT_EQUAL(search.search_nn(PointLonLat{10., 10.}).index, 0);
-    EXPECT_EQUAL(search.search_nn(PointLonLat{100., 10.}).index, 1);
-    EXPECT_EQUAL(search.search_nn(PointLonLat{-170., 10.}).index, 2);
-    EXPECT_EQUAL(search.search_nn(PointLonLat{0., 80.}).index, 3);
+    EXPECT(search.search_nn(PointLonLat{10., 10.}).index == 0);
+    EXPECT(search.search_nn(PointLonLat{100., 10.}).index == 1);
+    EXPECT(search.search_nn(PointLonLat{-170., 10.}).index == 2);
+    EXPECT(search.search_nn(PointLonLat{0., 80.}).index == 3);
 
     // (lon, lat) and (X, Y, Z) queries are equivalent
     EXPECT(indices(search.search_knn(PointLonLat{45., 45.}, 4)) ==
@@ -229,8 +229,8 @@ CASE("Search: (lon, lat) points") {
 
     // chord length between the pole and the equator, on the unit sphere (equator points are equidistant)
     auto r = search.search_radius(PointLonLat{0., 90.}, std::sqrt(2.) + 1e-9);
-    EXPECT_EQUAL(r.size(), 4);
-    EXPECT_EQUAL(r.front().index, 3);
+    EXPECT(r.size() == 4);
+    EXPECT(r.front().index == 3);
     for (size_t i = 1; i < r.size(); ++i) {
         EXPECT(approx(r[i].distance, std::sqrt(2.), 1e-9));
     }
@@ -244,7 +244,7 @@ CASE("Search: grid") {
     ASSERT(grid);
 
     const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
-    EXPECT_EQUAL(search.size(), grid->size());
+    EXPECT(search.size() == grid->size());
 
     const auto nx = 360 / 30;
 
@@ -257,11 +257,11 @@ CASE("Search: grid") {
 
         // poles are represented by multiple (coincident) points
         if (q.pole()) {
-            EXPECT_EQUAL(search.search_radius(q, 1.).size(), nx);
+            EXPECT(search.search_radius(q, 1.).size() == nx);
         }
         else {
-            EXPECT_EQUAL(nn.index, index);
-            EXPECT_EQUAL(search.search_radius(q, 1.).size(), 1);
+            EXPECT(nn.index == index);
+            EXPECT(search.search_radius(q, 1.).size() == 1);
         }
 
         ++index;
@@ -277,7 +277,7 @@ CASE("Search: grid, on the grid figure") {
 
     // equidistant to two points on the equator (lon = 0 and 30): chords subtending 15 degrees
     auto knn = search.search_knn(PointLonLat{15., 0.}, 2);
-    EXPECT_EQUAL(knn.size(), 2);
+    EXPECT(knn.size() == 2);
 
     for (const auto& n : knn) {
         EXPECT(approx(n.distance, 2. * R * std::sin(7.5 * M_PI / 180.), 1e-6));
@@ -313,7 +313,7 @@ CASE("Grid::search") {
     // the same search, for the grid lifetime
     const auto& search = grid->search();
     EXPECT(&search == &grid->search());
-    EXPECT_EQUAL(search.size(), grid->size());
+    EXPECT(search.size() == grid->size());
 
     const Search reference(*grid, spec::Custom{{{"search-loader", "memory"}}});
 
@@ -341,13 +341,13 @@ CASE("Search: all loaders, compared to brute force") {
         for (bool fast : {true, false}) {
             SECTION(loader + (fast ? " (fast build)" : " (build by insertion)")) {
                 const Search search(points, spec::Custom{{{"search-loader", loader}, {"search-fast-build", fast}}});
-                EXPECT_EQUAL(search.size(), points.size());
+                EXPECT(search.size() == points.size());
 
                 for (const auto& q : queries) {
                     const auto all = brute_force(points, q);
 
                     auto nn = search.search_nn(q);
-                    EXPECT_EQUAL(nn.index, all.front().index);
+                    EXPECT(nn.index == all.front().index);
                     EXPECT(approx(nn.distance, all.front().distance));
                     EXPECT(nn.point == points[nn.index]);
 

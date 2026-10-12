@@ -30,19 +30,19 @@ CASE("AreaFactory::make_from_string") {
          }) {
         std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
 
-        EXPECT_EQUAL(area->spec_str(), expected_spec);
+        EXPECT(area->spec_str() == expected_spec);
         EXPECT(expected_area == *area);
     }
 
     std::unique_ptr<const Area> area1(
         geo::AreaFactory::make_from_string(R"({north: 90, west: 0, south: -90, east: 360})"));
 
-    EXPECT_EQUAL(area1->spec_str(), expected_spec);
+    EXPECT(area1->spec_str() == expected_spec);
 
     std::unique_ptr<const Area> area2(
         geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
 
-    EXPECT_EQUAL(area2->spec_str(), R"({"area":[10,1,0,10]})");
+    EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
 }
 
 
@@ -61,11 +61,11 @@ CASE("Area: spec, and as part of a grid's") {
               R"({"area":{"bounding_box_xy":[0,0,1,1],"type":"bounding_box_xy"}})"},
          }) {
         std::unique_ptr<const Area> area(AreaFactory::make_from_string(test.area));
-        EXPECT_EQUAL(area->spec_str(), test.spec);
+        EXPECT(area->spec_str() == test.spec);
 
         spec::Custom grid_spec;
         area->fill_grid_spec(grid_spec);
-        EXPECT_EQUAL(grid_spec.str(), test.grid_spec);
+        EXPECT(grid_spec.str() == test.grid_spec);
     }
 }
 
@@ -88,7 +88,7 @@ CASE("longitude (normalisation)") {
     for (double west : {-900, -720, -540, -360, -180, 0, 180, 360, 540, 720, 900}) {
         area::BoundingBox a(90, west, 90, west);
 
-        EXPECT_EQUAL(a.west(), west);
+        EXPECT(a.west() == west);
         EXPECT(a.empty());
 
         area::BoundingBox b{90, west, -90, west - 1};
@@ -109,9 +109,9 @@ CASE("longitude (periodic, spanning 2 pi or more, from any west)") {
 
         for (const auto& c : {a, *b}) {
             EXPECT(c.periodic());
-            EXPECT_EQUAL(c.east(), c.west() + PointLonLat::FULL_ANGLE);
+            EXPECT(c.east() == c.west() + PointLonLat::FULL_ANGLE);
         }
-        EXPECT_EQUAL(b->west(), PointLonLat::normalise_angle_to_minimum(w, -PointLonLat::FLAT_ANGLE));
+        EXPECT(b->west() == PointLonLat::normalise_angle_to_minimum(w, -PointLonLat::FLAT_ANGLE));
     }
 }
 
@@ -120,36 +120,36 @@ CASE("assignment") {
     area::BoundingBox a(10, 1, -10, 100);
     area::BoundingBox b(20, 2, -20, 200);
 
-    EXPECT_NOT_EQUAL(a.north(), b.north());
+    EXPECT_NOT(a.north() == b.north());
     EXPECT(a != b);
 
     b = a;
 
-    EXPECT_EQUAL(a.north(), b.north());
+    EXPECT(a.north() == b.north());
     EXPECT(a == b);
 
     b = {30., b.west(), b.south(), b.east()};
 
-    EXPECT_EQUAL(b.north(), 30);
-    EXPECT_EQUAL(a.north(), 10);
+    EXPECT(b.north() == 30);
+    EXPECT(a.north() == 10);
 
     area::BoundingBox c(a);
 
-    EXPECT_EQUAL(a.north(), c.north());
+    EXPECT(a.north() == c.north());
     EXPECT(a == c);
 
     c = {40., c.west(), c.south(), c.east()};
 
-    EXPECT_EQUAL(c.north(), 40);
-    EXPECT_EQUAL(a.north(), 10);
+    EXPECT(c.north() == 40);
+    EXPECT(a.north() == 10);
 
     auto d(std::move(a));
 
-    EXPECT_EQUAL(d.north(), 10);
+    EXPECT(d.north() == 10);
 
     d = {50., d.west(), d.south(), d.east()};
 
-    EXPECT_EQUAL(d.north(), 50);
+    EXPECT(d.north() == 50);
 }
 
 
@@ -169,8 +169,8 @@ CASE("comparison") {
     const area::BoundingBox crop{90, -180, -90, 360};
     area::BoundingBox grid{90, 0, -90, 360};
     EXPECT(crop.intersects(grid));
-    EXPECT_EQUAL(grid.west(), -180.);
-    EXPECT_EQUAL(grid.east(), 180.);
+    EXPECT(grid.west() == -180.);
+    EXPECT(grid.east() == 180.);
 }
 
 
@@ -211,8 +211,8 @@ CASE("intersects") {
     const area::BoundingBox crop{90, -180, -90, 360};
     area::BoundingBox grid{90, 0, -90, 360};
     EXPECT(crop.intersects(grid));
-    EXPECT_EQUAL(grid.west(), -180.);
-    EXPECT_EQUAL(grid.east(), 180.);
+    EXPECT(grid.west() == -180.);
+    EXPECT(grid.east() == 180.);
 }
 
 

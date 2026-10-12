@@ -48,7 +48,7 @@ CASE("eckit::geo::util::linspace") {
     for (const auto& [start, stop, num] : std::vector<std::tuple<double, double, size_t>>{
              {90., -90., 1801}, {-90., 90., 1801}, {0., 359.9, 3600}, {0., 1., 7}}) {
         const auto& l = util::linspace(start, stop, num);
-        EXPECT_EQUAL(l.size(), num);
+        EXPECT(l.size() == num);
         EXPECT(l.front() == start);
         EXPECT(l.back() == stop);
     }

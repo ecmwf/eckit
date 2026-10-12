@@ -75,7 +75,7 @@ CASE("rotated") {
     std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: F48, rotation: [30, 30]}"));
 
     EXPECT(grid->projection().type() == "rotation");
-    EXPECT_EQUAL(grid->spec_str(), R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})");
+    EXPECT(grid->spec_str() == R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})");
 
     // first/last points are in the rotated frame
     EXPECT(points_equal(grid->first_point(), PointLonLat{0., 88.572168514007274}));
@@ -101,19 +101,19 @@ CASE("crop") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(a));
     auto n1 = grid1->size();
 
-    EXPECT_EQUAL(n1, 32);
+    EXPECT(n1 == 32);
 
     a.set("south", 0.);
     std::unique_ptr<const Grid> grid2(GridFactory::build(a));
     auto n2 = grid2->size();
 
-    EXPECT_EQUAL(n2, n1 / 2);
+    EXPECT(n2 == n1 / 2);
 
     spec::Custom b{{{"grid", "f2"}, {"west", -180}}};
     std::unique_ptr<const Grid> grid3(GridFactory::build(b));
     auto n3 = grid3->size();
 
-    EXPECT_EQUAL(n3, n1);
+    EXPECT(n3 == n1);
 
     auto bbox3 = grid3->boundingBox();
 
@@ -126,13 +126,13 @@ CASE("crop") {
     std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(bbox3));
     auto n4 = grid4->size();
 
-    EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
+    EXPECT(n4 == 5 * 4);  // Ni * Nj
 
     b.set("east", -1.);
     std::unique_ptr<const Grid> grid5(GridFactory::build(b));
     auto n5 = grid5->size();
 
-    EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
+    EXPECT(n5 == 4 * 4);  // Ni * Nj
 
     const std::vector<PointLonLat> ref{
         {-180., 59.444408289},  {-135., 59.444408289},  {-90., 59.444408289},  {-45., 59.444408289},
@@ -158,7 +158,7 @@ CASE("crop") {
     for (const auto& it : *grid5) {
         EXPECT(points_equal(ref[i++], it));
     }
-    EXPECT_EQUAL(i, n5);
+    EXPECT(i == n5);
 }
 
 
@@ -226,7 +226,7 @@ CASE("scanning order: same points and bounding box") {
         for (const auto& order : orders) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + spec + ", order: " + order + "}"));
 
-            EXPECT_EQUAL(grid->size(), canonical->size());
+            EXPECT(grid->size() == canonical->size());
             EXPECT(grid->boundingBox() == canonical->boundingBox());
 
             const auto ren    = grid->reorder(canonical->order());
@@ -250,7 +250,7 @@ CASE("spec round trip: same points") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
         std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
 
-        EXPECT_EQUAL(same->size(), grid->size());
+        EXPECT(same->size() == grid->size());
         EXPECT(same->to_latlons() == grid->to_latlons());
     }
 }
@@ -261,7 +261,7 @@ CASE("crop to a single column") {
 
     const auto [lats, lons] = grid->to_latlons();
     EXPECT(lons == std::vector<double>(lats.size(), 0.));
-    EXPECT_EQUAL(grid->size(), 2);
+    EXPECT(grid->size() == 2);
 }
 
 

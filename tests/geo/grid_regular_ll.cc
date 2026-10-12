@@ -35,8 +35,7 @@ CASE("rotated: spec equivalences") {
              R"({"grid":[5,5],"projection":{"south_pole_lon":-20,"south_pole_lat":-40,"type":"rotation"}})",
              R"({"grid":[5,5],"projection":{"rotation":[-40,-20],"type":"rotation"}})",
          }) {
-        EXPECT_EQUAL(grd(spec)->spec_str(),
-                     R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})");
+        EXPECT(grd(spec)->spec_str() == R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})");
     }
 
     for (const auto* spec : {
@@ -45,7 +44,7 @@ CASE("rotated: spec equivalences") {
              R"({"grid":[5,5],"projection":{"south_pole":[0,-90],"type":"rotation"}})",
              R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
          }) {
-        EXPECT_EQUAL(grd(spec)->spec_str(), R"({"grid":[5,5]})");
+        EXPECT(grd(spec)->spec_str() == R"({"grid":[5,5]})");
     }
 
     struct {
@@ -63,8 +62,8 @@ CASE("rotated: spec equivalences") {
     };
 
     for (const auto& test : tests) {
-        EXPECT_EQUAL(grd(test.a)->spec_str(), grd(test.b)->spec_str());
-        EXPECT_EQUAL(grd(test.b)->spec_str(), grd(test.c)->spec_str());
+        EXPECT(grd(test.a)->spec_str() == grd(test.b)->spec_str());
+        EXPECT(grd(test.b)->spec_str() == grd(test.c)->spec_str());
     }
 }
 
@@ -79,9 +78,8 @@ CASE("rotated") {
 
     SECTION("spec") {
         // the 'rotation' shorthand canonicalises to a projection, and 'area' stays in the rotated frame
-        EXPECT_EQUAL(
-            grid->spec_str(),
-            R"({"area":[10,-10,-10,10],"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})");
+        EXPECT(grid->spec_str() ==
+               R"({"area":[10,-10,-10,10],"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})");
 
         std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
         EXPECT(*grid == *same);
@@ -183,7 +181,7 @@ CASE("global, non-shifted") {
     RegularLL b(spec::Custom{{{"grid", std::vector<double>{1, 1}}}});
 
     EXPECT(b.size() == 360 * 181);
-    EXPECT_EQUAL(b.spec_str(), R"({"grid":[1,1]})");
+    EXPECT(b.spec_str() == R"({"grid":[1,1]})");
 
     for (const double d : {
              7.,
@@ -197,11 +195,11 @@ CASE("global, non-shifted") {
 
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom{{{"grid", std::vector<double>{d, d}}}}));
 
-        EXPECT_EQUAL(grid1->spec_str(), spec_ref);
+        EXPECT(grid1->spec_str() == spec_ref);
 
         std::unique_ptr<const Grid> grid2(GridFactory::make_from_string(std::to_string(d) + "/" + std::to_string(d)));
 
-        EXPECT_EQUAL(grid2->spec_str(), spec_ref);
+        EXPECT(grid2->spec_str() == spec_ref);
     }
 }
 
@@ -222,7 +220,7 @@ CASE("global, shifted") {
             EXPECT(grid.nx() == 360);
             EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 360 * 180);
-            EXPECT_EQUAL(grid.spec_str(), spec_ref);
+            EXPECT(grid.spec_str() == spec_ref);
         }
     }
 
@@ -242,7 +240,7 @@ CASE("global, shifted") {
             EXPECT(grid.nx() == 180);
             EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 180 * 180);
-            EXPECT_EQUAL(grid.spec_str(), spec_ref);
+            EXPECT(grid.spec_str() == spec_ref);
         }
     }
 
@@ -316,7 +314,7 @@ CASE("non-global, shifted") {
         RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
         EXPECT(b.size() == 5 * 10);
-        EXPECT_EQUAL(b.spec_str(), R"({"area":[10,1,1,9],"grid":[2,1],"reference":[1,0]})");
+        EXPECT(b.spec_str() == R"({"area":[10,1,1,9],"grid":[2,1],"reference":[1,0]})");
     }
 
 
@@ -424,7 +422,7 @@ CASE("MARS-like grid + area -> gridSpec-like grid + area + reference") {
 
         RegularLL g1({grid[0], grid[1]}, {area[0], area[1], area[2], area[3]}, {area[1], area[2]});
         EXPECT(expected_shape == g1.shape());
-        EXPECT_EQUAL(g1.spec_str(), expected_spec_str);
+        EXPECT(g1.spec_str() == expected_spec_str);
 
         RegularLL g2(spec);
         EXPECT(g1 == g2);
@@ -447,7 +445,7 @@ CASE("scan modes") {
 
         EXPECT(grid.order() == "i+j-");
         EXPECT(grid.size() == 4 * 3);
-        EXPECT_EQUAL(grid.spec_str(), R"({"grid":[90,90]})");
+        EXPECT(grid.spec_str() == R"({"grid":[90,90]})");
 
         const std::vector<PointLonLat> ref{
             {0., 90.},  {90., 90.},  {180., 90.},  {270., 90.},   //
@@ -469,7 +467,7 @@ CASE("scan modes") {
 
         EXPECT(grid.order() == "i+j+");
         EXPECT(grid.size() == 4 * 3);
-        EXPECT_EQUAL(grid.spec_str(), R"({"grid":[90,90],"order":"i+j+"})");
+        EXPECT(grid.spec_str() == R"({"grid":[90,90],"order":"i+j+"})");
 
         const std::vector<PointLonLat> ref{
             {0., -90.}, {90., -90.}, {180., -90.}, {270., -90.},  //
@@ -655,7 +653,7 @@ CASE("scanning orders: same points and bounding box") {
         for (const auto& order : orders) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{" + spec + ", order: " + order + "}"));
 
-            EXPECT_EQUAL(grid->size(), canonical->size());
+            EXPECT(grid->size() == canonical->size());
             EXPECT(grid->boundingBox() == canonical->boundingBox());
 
             const auto ren    = grid->reorder(canonical->order());
@@ -700,8 +698,8 @@ CASE("RegularLL: rotated, projection as PROJ") {
 
     std::unique_ptr<const Grid> rotated(GridFactory::make_from_string(spec));
     std::unique_ptr<const Grid> rotated_as_proj(GridFactory::make_from_string(spec_as_proj));
-    EXPECT_EQUAL(rotated->spec_str(), spec);
-    EXPECT_EQUAL(rotated_as_proj->spec_str(), spec_as_proj);
+    EXPECT(rotated->spec_str() == spec);
+    EXPECT(rotated_as_proj->spec_str() == spec_as_proj);
 
     // rebuilt from either spec, the same
     std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(rotated->spec_str()));
@@ -716,7 +714,7 @@ CASE("RegularLL: rotated, projection as PROJ") {
 
     for (const auto* grid : {rotated_as_proj.get(), from_spec.get(), from_spec_as_proj.get()}) {
         const auto other = grid->to_points();
-        EXPECT_EQUAL(other.size(), points.size());
+        EXPECT(other.size() == points.size());
         for (size_t i = 0; i < points.size(); ++i) {
             EXPECT(points_equal(other[i], points[i], 1e-6));
         }

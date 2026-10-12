@@ -59,9 +59,9 @@ CASE("shapefile area: spec") {
 
     A portugal(AreaFactory::make_from_string("{type: shapefile, file: '" + SHAPEFILE +
                                              "', name_field: CNTR_NAME, name: Portugal}"));
-    EXPECT_EQUAL(portugal->type(), "shapefile");
-    EXPECT_EQUAL(portugal->spec_str(),
-                 R"({"file":")" + SHAPEFILE + R"(","name":"Portugal","name_field":"CNTR_NAME","type":"shapefile"})");
+    EXPECT(portugal->type() == "shapefile");
+    EXPECT(portugal->spec_str() ==
+           R"({"file":")" + SHAPEFILE + R"(","name":"Portugal","name_field":"CNTR_NAME","type":"shapefile"})");
 
     A same(AreaFactory::make_from_string(portugal->spec_str()));
     EXPECT(*same == *portugal);
@@ -77,7 +77,7 @@ CASE("shapefile area: spec") {
 
     // by index, specified by name (if the name field is known)
     A first(AreaFactory::make_from_string("{type: shapefile, file: '" + SHAPEFILE + "', index: 0}"));
-    EXPECT_EQUAL(first->spec_str(), R"({"file":")" + SHAPEFILE + R"(","index":0,"type":"shapefile"})");
+    EXPECT(first->spec_str() == R"({"file":")" + SHAPEFILE + R"(","index":0,"type":"shapefile"})");
 
     A first_named(
         AreaFactory::make_from_string("{type: shapefile, file: '" + SHAPEFILE + "', name_field: CNTR_NAME, index: 0}"));
@@ -108,7 +108,7 @@ CASE("shapefile area: crop") {
     for (const auto& p : points) {
         contained += portugal->contains(p) ? 1 : 0;
     }
-    EXPECT_EQUAL(indices.size(), contained);
+    EXPECT(indices.size() == contained);
 }
 
 
@@ -119,8 +119,8 @@ CASE("shapefile area: from a URL (downloaded and cached, transparently)") {
     const auto url = "file://" + SHAPEFILE;
     A portugal(
         AreaFactory::make_from_string("{type: shapefile, url: '" + url + "', name_field: CNTR_NAME, name: Portugal}"));
-    EXPECT_EQUAL(portugal->spec_str(),
-                 R"({"name":"Portugal","name_field":"CNTR_NAME","type":"shapefile","url":")" + url + R"("})");
+    EXPECT(portugal->spec_str() ==
+           R"({"name":"Portugal","name_field":"CNTR_NAME","type":"shapefile","url":")" + url + R"("})");
 
     A from_file(AreaFactory::make_from_string("{type: shapefile, file: '" + SHAPEFILE +
                                               "', name_field: CNTR_NAME, name: Portugal}"));
@@ -130,7 +130,7 @@ CASE("shapefile area: from a URL (downloaded and cached, transparently)") {
 
     // the same polygons, however specified
     EXPECT(portugal->spec_str() != from_file->spec_str());
-    EXPECT_EQUAL(portugal->uid(), from_file->uid());
+    EXPECT(portugal->uid() == from_file->uid());
     EXPECT(*portugal == *from_file);
 }
 #endif
@@ -144,9 +144,8 @@ CASE("shapefile area: from a library") {
                              new spec::Custom{{"type", "shapefile"}, {"file", SHAPEFILE}, {"name_field", "CNTR_NAME"}});
 
     A portugal(AreaFactory::make_from_string("{type: shapefile, library: test-cntr-rg-60m-2024, name: Portugal}"));
-    EXPECT_EQUAL(
-        portugal->spec_str(),
-        R"({"library":"test-cntr-rg-60m-2024","name":"Portugal","name_field":"CNTR_NAME","type":"shapefile"})");
+    EXPECT(portugal->spec_str() ==
+           R"({"library":"test-cntr-rg-60m-2024","name":"Portugal","name_field":"CNTR_NAME","type":"shapefile"})");
 
     A same(AreaFactory::make_from_string(portugal->spec_str()));
     EXPECT(*same == *portugal);
@@ -167,9 +166,9 @@ CASE("shapefile area: from a library") {
 CASE("shapefile area: libraries of the shared areas") {
     // relative urls are of the shared file's url_prefix
     std::unique_ptr<spec::Custom> lib(AreaFactory::library("cntr-rg-60m-2024"));
-    EXPECT_EQUAL(lib->get_string("url"),
-                 "https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip");
-    EXPECT_EQUAL(lib->get_string("name_field"), "CNTR_NAME");
+    EXPECT(lib->get_string("url") ==
+           "https://gisco-services.ec.europa.eu/distribution/v2/countries/shp/CNTR_RG_60M_2024_4326.shp.zip");
+    EXPECT(lib->get_string("name_field") == "CNTR_NAME");
 }
 #endif
 

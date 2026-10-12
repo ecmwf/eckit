@@ -12,3 +12,13 @@ grid_names:
           y: [0, -4398000, -2000]
           false: [1949000, -2101000]
           projection: {type: laea, lat_0: 55, lon_0: 10, figure: wgs84, reverse: true}
+
+    - swisslv95:
+          x: [2439000, 2867000, 1000]
+          y: [1040500, 1333500, 1000]
+          projection: swisslv95
+
+    - swisslv03:
+          x: [255500, 964500, 1000]
+          y: [-159500, 479500, 1000]
+          projection: swisslv03

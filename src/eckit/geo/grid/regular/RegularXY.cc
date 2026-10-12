@@ -159,9 +159,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
     }
 
     if (projected_) {
-        spec::Custom projection_spec;
-        projection().fill_spec(projection_spec);
-        custom.set("projection", projection_spec);
+        projection().fill_grid_spec(custom);
     }
 
     if (scan().order() != order::Scan::order_default()) {

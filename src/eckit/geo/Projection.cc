@@ -6,6 +6,7 @@
 
 #include <array>
 #include <limits>
+#include <memory>
 #include <ostream>
 #include <set>
 #include <string>
@@ -57,6 +58,11 @@ const Projection* make(const std::string& type, const Projection::Spec& spec) {
     if (spec.has("x_0") || spec.has("y_0")) {
         throw exception::SpecError("ProjectionFactory: no false easting/northing (x_0, y_0), see the grid's 'false'",
                                    Here());
+    }
+
+    // e.g. 'proj' without PROJ
+    if (!Factory<Projection>::instance().exists(type)) {
+        throw exception::ProjectionError("ProjectionFactory: unknown projection type '" + type + "'", Here());
     }
 
     const auto* projection = Factory<Projection>::instance().get(type).create(spec);
@@ -308,6 +314,11 @@ void Projection::fill_grid_spec(spec::Custom& custom) const {
         return;
     }
 
+    if (std::string name; ProjectionSpecByName::instance().match(projection_spec, name)) {
+        custom.set(className(), name);
+        return;
+    }
+
     custom.set(className(), projection_spec);
 }
 
@@ -321,8 +332,18 @@ const Projection* ProjectionFactory::make_from_string(const std::string& str) {
 const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
     lock_type lock;
 
-    // an explicit 'projection' has to name its type
+    // an explicit 'projection' has to name its type, or be a name (see projection.yaml)
     if (spec.has("projection")) {
+        if (std::string name; spec.get("projection", name)) {
+            share::Projection::instance();
+            if (!ProjectionSpecByName::instance().matches(name)) {
+                throw exception::ProjectionError("ProjectionFactory: unknown projection name '" + name + "'", Here());
+            }
+
+            std::unique_ptr<Projection::Spec> cfg(ProjectionSpecByName::instance().match(name).spec(name));
+            return make(cfg->get_string("type"), *cfg);
+        }
+
         const auto& cfg = spec.spec("projection");
         return make(cfg.get_string("type"), cfg);
     }

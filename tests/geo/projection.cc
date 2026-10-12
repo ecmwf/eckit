@@ -38,6 +38,21 @@ CASE("projection: none") {
 }
 
 
+CASE("projection: unknown type") {
+    using P = std::unique_ptr<const Projection>;
+
+    EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{projection: {type: not_a_projection}}")),
+                     exception::ProjectionError);
+
+    // named projections of PROJ, without PROJ
+    if (!ProjectionFactory::has_type("proj")) {
+        EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{projection: swisslv95}")), exception::ProjectionError);
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("swisslv95")),
+                         exception::ProjectionError);
+    }
+}
+
+
 CASE("projection: reverse") {
     projection::LonLatToXYZ ab(new figure::UnitSphere);
     projection::Reverse ba(new projection::LonLatToXYZ(new figure::UnitSphere));

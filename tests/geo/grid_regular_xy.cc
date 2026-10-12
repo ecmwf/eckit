@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -80,6 +81,46 @@ CASE("RegularXY: x and y, any step") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
         EXPECT(grid->size() == size);
         EXPECT(points_equal(grid->to_points().back(), last, 1e-6));
+    }
+}
+
+
+CASE("RegularXY: reorder") {
+    // x and y increasing, so the grid order is i+j+
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 1, 1]}"));
+
+    EXPECT(grid->size() == 6);
+    EXPECT(grid->order() == "i+j+");
+
+    size_t n = 0;
+    for (const auto& p : *grid) {
+        EXPECT(std::holds_alternative<PointXY>(p));
+        ++n;
+    }
+    EXPECT(n == 6);
+
+    const auto points = grid->to_points();
+    EXPECT(points.size() == 6);
+
+    // points in each order, the empty order being the default (i+j-)
+    for (const auto& [order, expected] : std::vector<std::pair<std::string, std::vector<PointXY>>>{
+             {"", {{0, 1}, {1, 1}, {2, 1}, {0, 0}, {1, 0}, {2, 0}}},
+             {"i+j-", {{0, 1}, {1, 1}, {2, 1}, {0, 0}, {1, 0}, {2, 0}}},
+             {"i+j+", {{0, 0}, {1, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1}}},
+             {"i-j-", {{2, 1}, {1, 1}, {0, 1}, {2, 0}, {1, 0}, {0, 0}}},
+             {"i-j+", {{2, 0}, {1, 0}, {0, 0}, {2, 1}, {1, 1}, {0, 1}}},
+             {"j+i-", {{2, 0}, {2, 1}, {1, 0}, {1, 1}, {0, 0}, {0, 1}}},
+             {"j+i+", {{0, 0}, {0, 1}, {1, 0}, {1, 1}, {2, 0}, {2, 1}}},
+             {"j-i-", {{2, 1}, {2, 0}, {1, 1}, {1, 0}, {0, 1}, {0, 0}}},
+             {"j-i+", {{0, 1}, {0, 0}, {1, 1}, {1, 0}, {2, 1}, {2, 0}}},
+         }) {
+        // grid point k is point ren[k] in the order
+        const auto ren = grid->reorder(order);
+        EXPECT(ren.size() == 6);
+
+        for (size_t k = 0; k < points.size(); ++k) {
+            EXPECT(points_equal(points[k], expected[ren[k]]));
+        }
     }
 }
 

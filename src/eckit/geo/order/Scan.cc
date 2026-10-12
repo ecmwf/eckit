@@ -38,7 +38,7 @@ static const std::vector<Scan::order_type> MODES{
 };
 
 
-Scan::Scan(const order_type& order) : order_(order) {
+Scan::Scan(const order_type& order) : order_(order.empty() ? order_default() : order) {
     if (std::count(MODES.begin(), MODES.end(), order_) != 1) {
         throw exception::OrderError("Scan invalid order: '" + order_ + "'", Here());
     }

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
@@ -19,7 +20,8 @@ public:
 
     // -- Types
 
-    using url_type = std::string;
+    using url_type     = std::string;
+    using headers_type = std::map<std::string, std::string>;  // keys in lowercase
 
     struct info_type {
         Bytes bytes;
@@ -42,6 +44,8 @@ public:
     // -- Class methods
 
     static info_type to_path(const url_type&, const PathName&, bool html = false);
+
+    static std::string validate_response(const url_type&, long code, const headers_type&, bool html = false);
 
     static int version() { return VERSION; }
 

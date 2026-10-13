@@ -176,7 +176,7 @@ Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_
 
 
 bool Regular::Implementation::periodic() const {
-    NOTIMP;
+    return false;
 }
 
 

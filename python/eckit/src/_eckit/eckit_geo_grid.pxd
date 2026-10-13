@@ -27,6 +27,7 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
 
         pair[vector[double], vector[double]] to_latlons() except +
         vector[vector[double]] to_xyz() except +
+        vector[string] point_coordinates() except +
         Grid* to_unstructured_ll(const string& name) except +
 
         vector[size_t] shape() const
@@ -59,7 +60,6 @@ cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
 
 cdef extern from * namespace "eckit::geo::python":
     """
-    #include <string>
     #include <type_traits>
     #include <variant>
     #include <vector>
@@ -101,7 +101,7 @@ cdef extern from * namespace "eckit::geo::python":
     }
 
     inline std::vector<v> grid_points(const Grid& grid) {
-        // one vector per coordinate (see grid_point_coordinates)
+        // one vector per coordinate (see Grid::point_coordinates)
         std::vector<v> points;
         for (const auto& p : grid) {
             const auto values = point_values(p);
@@ -118,20 +118,6 @@ cdef extern from * namespace "eckit::geo::python":
         return points;
     }
 
-    inline std::vector<std::string> grid_point_coordinates(const Grid& grid) {
-        return std::visit(
-            [](const auto& q) -> std::vector<std::string> {
-                using P = std::decay_t<decltype(q)>;
-                if constexpr (std::is_same_v<P, std::monostate>) {
-                    throw exception::GridError("Grid: invalid point", Here());
-                }
-                else {
-                    return point_coordinates<P>();
-                }
-            },
-            grid.first_point());
-    }
-
     }
     """
     vector[double] grid_x_values(const Grid& grid) except +
@@ -139,4 +125,3 @@ cdef extern from * namespace "eckit::geo::python":
     vector[double] grid_lon_values(const Grid& grid) except +
     vector[double] grid_lat_values(const Grid& grid) except +
     vector[vector[double]] grid_points(const Grid& grid) except +
-    vector[string] grid_point_coordinates(const Grid& grid) except +

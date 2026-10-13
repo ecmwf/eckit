@@ -101,7 +101,7 @@ cdef class Grid:
     @property
     def point_coordinates(self) -> tuple:
         """Grid points coordinate names, eg. ("x", "y") or ("longitude", "latitude")."""
-        return tuple(eckit_geo_grid.grid_point_coordinates(dereference(self._grid)))
+        return tuple(self._grid.point_coordinates())
 
     def reorder(self, order: str = "") -> list:
         """Renumbering to another order: grid point k is point ren[k] in that order

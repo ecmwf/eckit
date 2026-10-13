@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -142,6 +143,23 @@ CASE("Grid from increments") {
 }
 
 
+CASE("Grid::point_coordinates") {
+    using names = std::vector<std::string>;
+
+    // as the grid points
+    for (const auto& [spec, expected] : std::vector<std::pair<std::string, names>>{
+             {"{grid: [30, 30]}", {"longitude", "latitude"}},
+             {"{grid: [30, 30], rotation: [-40, -20]}", {"longitude", "latitude"}},
+             {"{grid: o2}", {"longitude", "latitude"}},
+             {"{x: [0, 2, 1], y: [0, 1, 1]}", {"x", "y"}},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        EXPECT(grid->point_coordinates() == expected);
+        EXPECT(&grid->point_coordinates() == &point_coordinates(grid->first_point()));
+    }
+}
+
+
 CASE("Grid::to_xyz") {
     // points from the projection target, geocentric
     constexpr auto GEOCENTRIC_GRID =
@@ -195,6 +213,7 @@ CASE("Grid::to_xyz") {
         EXPECT(!grid->empty());
 
         EXPECT_THROWS_AS(grid->to_latlons(), exception::GridError);
+        EXPECT((grid->point_coordinates() == std::vector<std::string>{"x", "y", "z"}));
 
         const auto xyz = grid->to_xyz();
         EXPECT(xyz[0].size() == grid->size());

@@ -136,11 +136,17 @@ public:
     [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
+
+    /// Coordinate names of the grid, eg. ("x", "y") or ("longitude", "latitude") (see point_coordinates)
+    const std::vector<std::string>& point_coordinates() const;
+
+    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lon, lat)
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    /// Geocentric coordinates (one vector per coordinate), as the grid points or on their figure
+    /// Coordinates (one vector per coordinate), on their figure, as geocentric cartesian (x, y, z)
     [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
 
+    /// Convert the grid to an unstructured grid (coordinates are cached, exchangeable by uid)
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
 
     /// Shared (cache::SearchCache), valid for the grid lifetime

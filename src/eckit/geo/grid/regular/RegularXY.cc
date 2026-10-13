@@ -109,7 +109,7 @@ RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, const Projection* p, co
     projected_(p != nullptr) {
     ASSERT(!empty());
 
-    if (projected_ && projection().source_point_coordinates() != point_coordinates<PointXY>()) {
+    if (projected_ && projection().source_point_coordinates() != geo::point_coordinates<PointXY>()) {
         throw exception::SpecError("RegularXY: 'projection' from (x, y) expected (e.g. with reverse: true)", Here());
     }
 }

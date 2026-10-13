@@ -143,7 +143,7 @@ RegularLL::Reference RegularLL::reference_default() {
 
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
     const auto& p  = projection();
-    const auto& ll = point_coordinates<PointLonLat>();
+    const auto& ll = geo::point_coordinates<PointLonLat>();
 
     if (p.is_default() || p.source_point_coordinates() != ll || p.target_point_coordinates() != ll) {
         return calculate_bbox_xy();

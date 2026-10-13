@@ -21,6 +21,7 @@ namespace eckit::geo {
 using Point = std::variant<std::monostate, PointXY, PointXYZ, PointLonLat, PointLonLatR>;
 
 
+/// Point comparison functions
 bool points_equal(const Point&, const Point&);
 bool points_equal(const Point&, const Point&, double eps);
 
@@ -43,6 +44,8 @@ const std::vector<std::string>& point_coordinates<PointLonLat>();
 
 template <>
 const std::vector<std::string>& point_coordinates<PointLonLatR>();
+
+const std::vector<std::string>& point_coordinates(const Point&);
 
 
 }  // namespace eckit::geo

@@ -190,6 +190,21 @@ def test_grid_to_xyz(spec, a, b):
             assert radius == pytest.approx(b)
 
 
+@pytest.mark.parametrize(
+    "spec, coordinates",
+    [
+        (dict(grid=[30, 30]), ("longitude", "latitude")),
+        (dict(grid=[30, 30], rotation=[-40, -20]), ("longitude", "latitude")),
+        (dict(grid="o2"), ("longitude", "latitude")),
+        (dict(x=[0, 2, 1], y=[0, 1, 1]), ("x", "y")),
+    ],
+)
+def test_grid_point_coordinates(spec, coordinates):
+    grid = Grid(spec)
+    assert grid.point_coordinates == coordinates
+    assert tuple(grid.to_points()) == coordinates
+
+
 def indices(neighbours):
     return [index for index, _ in neighbours]
 

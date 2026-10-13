@@ -186,6 +186,11 @@ std::vector<Point> Grid::to_points() const {
 }
 
 
+const std::vector<std::string>& Grid::point_coordinates() const {
+    return geo::point_coordinates(first_point());
+}
+
+
 std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double>> ll;
     ll.first.reserve(size());

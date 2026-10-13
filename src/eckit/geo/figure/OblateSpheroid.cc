@@ -9,7 +9,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
@@ -51,36 +50,6 @@ double OblateSpheroid::eccentricity(double a, double b) {
 double OblateSpheroid::flattening(double a, double b) {
     ASSERT(0. < b && b <= a);
     return (a - b) / a;
-}
-
-
-double OblateSpheroid::_area(double a, double b) {
-    const auto e = eccentricity(a, b);
-    const auto A = 2. * M_PI * a * a * (1. + (1. - e * e) * std::atanh(e) / e);
-
-    return A;
-}
-
-
-double OblateSpheroid::_area(double a, double b, const area::BoundingBox& bbox) {
-    auto f = [](double phi, double e) {
-        auto sin_phi = std::sin(phi);
-        if (types::is_approximately_equal(sin_phi, 0.)) {
-            return sin_phi;
-        }
-
-        auto denom = 1. - e * e * sin_phi * sin_phi;
-        return (sin_phi / denom + (0.5 / e) * std::log((1. + e * sin_phi) / (1. - e * sin_phi)));
-    };
-
-    const auto phi1 = util::DEGREE_TO_RADIAN * bbox.south();
-    const auto phi2 = util::DEGREE_TO_RADIAN * bbox.north();
-    const auto dlam = util::DEGREE_TO_RADIAN * (bbox.east() - bbox.west());
-
-    const auto e = eccentricity(a, b);
-    const auto A = dlam * b * b / 2. * (f(phi2, e) - f(phi1, e));
-
-    return A;
 }
 
 

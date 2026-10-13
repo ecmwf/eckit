@@ -594,7 +594,7 @@ bool BoundingBox::empty() const {
 
 
 double BoundingBox::area() const {
-    return figure::Earth::_area(*this);
+    return figure::EARTH.area(*this);
 }
 
 

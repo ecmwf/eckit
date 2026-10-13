@@ -24,7 +24,7 @@ Mercator::Mercator(double lon_0, double lat_ts, Figure* fig) :
     Projection(fig),
     lon_0_(lon_0),
     lat_ts_(lat_ts),
-    conformal_(figure().eccentricity()),
+    conformal_(figure().conformal()),
     k_(figure().a() * conformal_.m(lat_ts * util::DEGREE_TO_RADIAN)) {}
 
 

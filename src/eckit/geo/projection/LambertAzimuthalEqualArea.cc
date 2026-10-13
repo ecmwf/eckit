@@ -24,18 +24,18 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(double lat_0, double lon_0,
     lat_0_(lat_0),
     lon_0_(lon_0),
     a_(figure().a()),
-    e_(figure().eccentricity()),
+    authalic_(figure().authalic()),
     aspect_(types::is_approximately_equal(lat_0, PointLonLat::RIGHT_ANGLE)    ? Aspect::NORTH_POLE
             : types::is_approximately_equal(lat_0, -PointLonLat::RIGHT_ANGLE) ? Aspect::SOUTH_POLE
                                                                               : Aspect::OBLIQUE) {
     const auto phi_0 = lat_0 * util::DEGREE_TO_RADIAN;
+    const auto e     = figure().eccentricity();
 
-    qp_     = q(1.);
-    rq_     = std::sqrt(qp_ / 2.);
-    sinb_0_ = q(std::sin(phi_0)) / qp_;
+    rq_     = std::sqrt(authalic_.qp() / 2.);
+    sinb_0_ = authalic_.q(std::sin(phi_0)) / authalic_.qp();
     cosb_0_ = std::sqrt(1. - sinb_0_ * sinb_0_);
     d_      = aspect_ == Aspect::OBLIQUE
-                  ? std::cos(phi_0) / (std::sqrt(1. - e_ * e_ * std::sin(phi_0) * std::sin(phi_0)) * rq_ * cosb_0_)
+                  ? std::cos(phi_0) / (std::sqrt(1. - e * e * std::sin(phi_0) * std::sin(phi_0)) * rq_ * cosb_0_)
                   : 1.;
 }
 
@@ -44,56 +44,20 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
     LambertAzimuthalEqualArea(spec.get_double("lat_0", 0.), spec.get_double("lon_0", 0.), FigureFactory::build(spec)) {}
 
 
-double LambertAzimuthalEqualArea::q(double sinphi) const {
-    if (types::is_approximately_equal(e_, 0.)) {
-        return 2. * sinphi;
-    }
-
-    const auto es = e_ * sinphi;
-    return (1. - e_ * e_) * (sinphi / (1. - es * es) - std::log((1. - es) / (1. + es)) / (2. * e_));
-}
-
-
-double LambertAzimuthalEqualArea::phi(double beta) const {
-    if (types::is_approximately_equal(e_, 0.)) {
-        return beta;
-    }
-
-    constexpr int max_iter = 15;
-    constexpr double eps   = 1e-12;
-
-    const auto q = qp_ * std::sin(beta);
-
-    auto phi = std::asin(q / 2.);
-    for (int i = 0; i < max_iter; ++i) {
-        const auto s    = std::sin(phi);
-        const auto es   = e_ * s;
-        const auto dphi = (1. - es * es) * (1. - es * es) / (2. * std::cos(phi)) *
-                          (q / (1. - e_ * e_) - s / (1. - es * es) + std::log((1. - es) / (1. + es)) / (2. * e_));
-        phi += dphi;
-        if (std::abs(dphi) < eps) {
-            return phi;
-        }
-    }
-
-    throw exception::ProjectionError("LambertAzimuthalEqualArea: latitude calculation failed to converge", Here());
-}
-
-
 PointXY LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
     const auto dlam =
         PointLonLat::normalise_angle_to_minimum(p.lon() - lon_0_, -PointLonLat::FLAT_ANGLE) * util::DEGREE_TO_RADIAN;
-    const auto q = this->q(std::sin(p.lat() * util::DEGREE_TO_RADIAN));
+    const auto q = authalic_.q(std::sin(p.lat() * util::DEGREE_TO_RADIAN));
 
     if (aspect_ != Aspect::OBLIQUE) {
         // Snyder (24-23 to 24-25)
         const auto sign = aspect_ == Aspect::NORTH_POLE ? 1. : -1.;
-        const auto rho  = a_ * std::sqrt(std::max(0., qp_ - sign * q));
+        const auto rho  = a_ * std::sqrt(std::max(0., authalic_.qp() - sign * q));
         return {rho * std::sin(dlam), -sign * rho * std::cos(dlam)};
     }
 
     // Snyder (24-17 to 24-19)
-    const auto sinb = q / qp_;
+    const auto sinb = q / authalic_.qp();
     const auto cosb = std::sqrt(std::max(0., 1. - sinb * sinb));
     const auto b    = rq_ * std::sqrt(2. / (1. + sinb_0_ * sinb + cosb_0_ * cosb * std::cos(dlam)));
 
@@ -106,10 +70,11 @@ PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
         // Snyder (24-26, 24-27)
         const auto sign = aspect_ == Aspect::NORTH_POLE ? 1. : -1.;
         const auto rho  = std::hypot(p.X(), p.Y()) / a_;
-        const auto beta = sign * std::asin(std::min(1., 1. - rho * rho / qp_));
+        const auto beta = sign * std::asin(std::min(1., 1. - rho * rho / authalic_.qp()));
 
         return PointLonLat::make_from_lonlatr(lon_0_ * util::DEGREE_TO_RADIAN + std::atan2(p.X(), -sign * p.Y()),
-                                              phi(beta), lon_0_ - PointLonLat::FLAT_ANGLE);
+                                              authalic_.phi(authalic_.qp() * std::sin(beta)),
+                                              lon_0_ - PointLonLat::FLAT_ANGLE);
     }
 
     // Snyder (24-28 to 24-30)
@@ -127,7 +92,7 @@ PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
     return PointLonLat::make_from_lonlatr(
         lon_0_ * util::DEGREE_TO_RADIAN +
             std::atan2(x * std::sin(ce), rho * cosb_0_ * std::cos(ce) - y * sinb_0_ * std::sin(ce)),
-        phi(beta), lon_0_ - PointLonLat::FLAT_ANGLE);
+        authalic_.phi(authalic_.qp() * std::sin(beta)), lon_0_ - PointLonLat::FLAT_ANGLE);
 }
 
 

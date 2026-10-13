@@ -12,8 +12,8 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/GreatCircle.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -99,26 +99,6 @@ double Sphere::distance(double radius, const PointLonLat& P1, const PointLonLat&
 
 double Sphere::distance(double radius, const PointXYZ& P1, const PointXYZ& P2) {
     return radius * centralAngle(radius, P1, P2);
-}
-
-
-double Sphere::area(double radius) {
-    ASSERT(radius > 0.);
-    return 4. * M_PI * radius * radius;
-}
-
-
-double Sphere::area(double radius, const area::BoundingBox& bbox) {
-    ASSERT(radius > 0.);
-
-    auto lonf = bbox.periodic() ? 1. : (bbox.east() - bbox.west()) / PointLonLat::FULL_ANGLE;
-    ASSERT(0. <= lonf && lonf <= 1.);
-
-    auto sn   = std::sin(util::DEGREE_TO_RADIAN * bbox.north());
-    auto ss   = std::sin(util::DEGREE_TO_RADIAN * bbox.south());
-    auto latf = 0.5 * (sn - ss);
-
-    return area(radius) * latf * lonf;
 }
 
 

@@ -59,23 +59,14 @@ private:
     const double lat_0_;
     const double lon_0_;
     const double a_;
-    const double e_;
+    const Figure::Authalic authalic_;
     const Aspect aspect_;
 
-    /// Authalic: q at the pole, radius, and sine/cosine of the latitude of the origin, Snyder (24-11 to 24-14)
-    double qp_;
+    /// Authalic radius, and sine/cosine of the latitude of the origin, Snyder (24-12 to 24-14)
     double rq_;
     double sinb_0_;
     double cosb_0_;
     double d_;
-
-    // -- Methods
-
-    /// Snyder (3-12)
-    double q(double sinphi) const;
-
-    /// The latitude of the authalic latitude beta, Snyder (3-16)
-    double phi(double beta) const;
 };
 
 

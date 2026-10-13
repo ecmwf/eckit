@@ -9,7 +9,6 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/projection/Conformal.h"
 
 
 namespace eckit::geo::projection {
@@ -55,7 +54,7 @@ private:
     /// Latitude of true scale
     const double lat_ts_;
 
-    const Conformal conformal_;
+    const Figure::Conformal conformal_;
 
     /// Semi-major axis, scaled at the latitude of true scale
     const double k_;

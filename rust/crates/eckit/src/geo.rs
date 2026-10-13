@@ -114,9 +114,32 @@ impl Grid {
         }
     }
 
-    /// The catalog entry backing this grid, as a spec string.
-    pub fn catalog(&self) -> Result<String> {
-        self.inner.catalog_str().map_err(eckit_sys::Error::from)
+    /// The catalog entry backing this grid.
+    ///
+    /// Grids shipped as data files (ORCA, FESOM, ICON) are described by an
+    /// entry in eckit's shared grid catalog, keyed by uid, which carries what
+    /// the gridSpec does not: the data URL, shape, arrangement and so on. For
+    /// every other grid the entry is the grid's own canonical spec, so the
+    /// catalog is never empty and compares equal to [`Grid::spec`].
+    ///
+    /// The view borrows the entry the grid caches, like [`Grid::spec`]; the
+    /// lookup runs once, on first call.
+    ///
+    /// ```
+    /// # fn main() -> eckit::Result<()> {
+    /// # eckit::init();
+    /// let grid = eckit::Grid::from_name("O16")?;
+    /// let catalog = grid.catalog()?;
+    /// assert_eq!(catalog.get::<String>("grid")?, "O16");
+    /// assert_eq!(catalog.to_json_str()?, grid.spec().to_json_str()?);
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn catalog(&self) -> Result<Spec<'_>> {
+        self.inner
+            .catalog()
+            .map(|inner| Spec { inner })
+            .map_err(eckit_sys::Error::from)
     }
 
     /// Unique identifier for this grid.

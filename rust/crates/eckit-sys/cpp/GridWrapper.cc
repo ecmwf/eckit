@@ -74,8 +74,11 @@ void with_rows(const eckit::geo::Grid& grid, F&& f) {
 
 // ============== Identity ==============
 
-rust::String GridWrapper::catalog_str() const {
-    return rust::String(grid_->catalog_str());
+const SpecWrapper& GridWrapper::catalog() const {
+    if (!catalog_) {
+        catalog_.emplace(grid_->catalog());
+    }
+    return *catalog_;
 }
 
 rust::String GridWrapper::uid() const {

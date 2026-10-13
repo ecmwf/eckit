@@ -74,7 +74,17 @@ fn run() -> Result<(), eckit::Error> {
     }
     show("uid", grid.uid());
     show("type", grid.grid_type());
-    show("catalog", grid.catalog());
+    // The catalog entry is the grid's own spec, except for grids shipped as
+    // data files (ORCA, FESOM, ICON), whose entry carries the download URL.
+    match grid.catalog() {
+        Ok(catalog) => {
+            show("catalog", catalog.to_json_str());
+            if catalog.has("url") {
+                show("catalog.url", catalog.get::<String>("url"));
+            }
+        }
+        Err(err) => show("catalog", Err::<String, _>(err)),
+    }
 
     let n = grid.len()?;
 

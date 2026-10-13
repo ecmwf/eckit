@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace eckit_bridge {
 
@@ -28,6 +29,7 @@ struct RawPoint;
 class GridWrapper {
     std::unique_ptr<const eckit::geo::Grid> grid_;
     SpecWrapper spec_;
+    mutable std::optional<SpecWrapper> catalog_;
 
 public:
 
@@ -36,7 +38,9 @@ public:
     // Identity
     /// The canonical gridSpec, cached by the grid and valid for its lifetime.
     const SpecWrapper& spec() const { return spec_; }
-    rust::String catalog_str() const;
+
+    /// The catalog entry backing this grid, resolved on first use and valid for the grid's lifetime.
+    const SpecWrapper& catalog() const;
     rust::String uid() const;
     rust::String grid_type() const;
 

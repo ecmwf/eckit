@@ -53,7 +53,8 @@ mod ffi {
 
         /// The canonical gridSpec, cached by the grid and valid for its lifetime.
         fn spec(self: &GridWrapper) -> &SpecWrapper;
-        fn catalog_str(self: &GridWrapper) -> Result<String>;
+        /// The catalog entry backing the grid, resolved on first call and valid for its lifetime.
+        fn catalog(self: &GridWrapper) -> Result<&SpecWrapper>;
         fn uid(self: &GridWrapper) -> Result<String>;
         fn grid_type(self: &GridWrapper) -> Result<String>;
 

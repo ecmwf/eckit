@@ -756,6 +756,73 @@ CASE("alternating rows (or columns)") {
 }
 
 
+CASE("single point, row or column") {
+    // the points as given, without increment in the direction of a single point
+    struct test_t {
+        std::string spec;
+        std::vector<size_t> shape;
+        std::string spec_str;
+        PointLonLat first;
+        PointLonLat last;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{grid: [0.5, 0.5], area: [45, 10, 45, 10]}",
+              {1, 1},
+              R"({"area":[45,10,45,10],"grid":[0,0]})",
+              {10., 45.},
+              {10., 45.}},
+             {"{grid: [0.5, 0.5], area: [45, 10, 45, 11]}",
+              {1, 3},
+              R"({"area":[45,10,45,11],"grid":[0.5,0]})",
+              {10., 45.},
+              {11., 45.}},
+             {"{grid: [0.5, 0.5], area: [46, 10, 45, 10]}",
+              {3, 1},
+              R"({"area":[46,10,45,10],"grid":[0,0.5]})",
+              {10., 46.},
+              {10., 45.}},
+             {"{grid: [0, 0], area: [45, 10, 45, 10]}",
+              {1, 1},
+              R"({"area":[45,10,45,10],"grid":[0,0]})",
+              {10., 45.},
+              {10., 45.}},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec));
+
+        EXPECT(grid->shape() == test.shape);
+        EXPECT(grid->size() == test.shape[0] * test.shape[1]);
+        EXPECT(grid->spec_str() == test.spec_str);
+        EXPECT(points_equal(grid->first_point(), test.first));
+        EXPECT(points_equal(grid->last_point(), test.last));
+
+        const auto points = grid->to_points();
+        EXPECT(points.size() == grid->size());
+        EXPECT(points_equal(points.front(), test.first));
+        EXPECT(points_equal(points.back(), test.last));
+
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+        EXPECT(*same == *grid);
+        EXPECT(same->size() == grid->size());
+    }
+
+
+    SECTION("rotated") {
+        std::unique_ptr<const Grid> grid(
+            GridFactory::make_from_string("{grid: [0.5, 0.5], area: [1, 2, 1, 2], rotation: [-40, 10]}"));
+
+        EXPECT(grid->size() == 1);
+        EXPECT(grid->spec_str() ==
+               R"({"area":[1,2,1,2],"grid":[0,0],"projection":{"south_pole":[10,-40],"type":"rotation"}})");
+
+        const projection::Rotation rotation(PointLonLat{10., -40.});
+        const auto p = std::get<PointLonLat>(grid->to_points().front());
+        EXPECT(points_equal(p, rotation.fwd(PointLonLat{2., 1.})));
+        EXPECT(points_equal(p, PointLonLat{13.175624, 50.957540}, 1e-6));
+    }
+}
+
+
 CASE("RegularLL: rotated, projection as PROJ") {
     if (!ProjectionFactory::has_type("proj")) {
         return;

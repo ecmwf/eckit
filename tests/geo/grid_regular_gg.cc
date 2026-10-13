@@ -292,6 +292,31 @@ CASE("alternating rows") {
 }
 
 
+CASE("number of longitudes other than 4N") {
+    // eg. GRIB regular_gg N95 with Ni=384 (0.9375 degree)
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: F95, ni: 384}"));
+
+    const std::vector<size_t> shape{190, 384};
+    EXPECT(grid->shape() == shape);
+    EXPECT(grid->spec_str() == R"({"grid":"F95","ni":384})");
+
+    const auto points = grid->to_points();
+    EXPECT(points_equal(std::get<PointLonLat>(points[1]), PointLonLat{0.9375, std::get<PointLonLat>(points[0]).lat()}));
+
+    std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+    EXPECT(*same == *grid);
+
+    // 4N is the default
+    std::unique_ptr<const Grid> standard(GridFactory::make_from_string("{grid: F95, ni: 380}"));
+    EXPECT(standard->spec_str() == R"({"grid":"F95"})");
+
+    // cropped, as the grid
+    std::unique_ptr<const Grid> cropped(
+        GridFactory::make_from_string("{grid: F95, ni: 384, area: [10, 0, -10, 9.375]}"));
+    EXPECT(cropped->shape()[1] == 11);
+}
+
+
 }  // namespace eckit::geo::test
 
 

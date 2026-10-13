@@ -9,7 +9,6 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/projection/Conformal.h"
 
 
 namespace eckit::geo::projection {
@@ -57,7 +56,7 @@ private:
     /// 1 for the North Pole, -1 for the South Pole
     const double sign_;
 
-    const Conformal conformal_;
+    const Figure::Conformal conformal_;
 
     /// Radius from the pole is k t, Snyder (21-33, 21-34)
     double k_;

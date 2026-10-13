@@ -15,7 +15,8 @@ namespace eckit::geo::projection {
 
 
 /**
- * @brief AlbersEqualArea projection for the sphere
+ * @brief Albers equal-area conic projection, as PROJ (aea)
+ * @ref Map Projections: A Working Manual, John P. Snyder (1987)
  */
 class AlbersEqualArea : public Projection {
 public:
@@ -53,10 +54,11 @@ private:
 
     const double lat_1_;
     const double lat_2_;
-    const double n_;
-    const double R_;
-    const double C_;
-    const double rho0_;
+    const double a_;  // semi-major axis
+    const Figure::Authalic authalic_;
+    double n_;
+    double C_;
+    double rho0_;  // in units of a_
 };
 
 

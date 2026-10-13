@@ -202,11 +202,11 @@ CASE("Unit Sphere") {
 
 
     SECTION("area hemispheres") {
-        auto area_hemisphere_north = s1._area({90., -180., 0., 180.});
-        auto area_hemisphere_south = s1._area({0., -180., -90., 180.});
+        auto area_hemisphere_north = s1.area({90., -180., 0., 180.});
+        auto area_hemisphere_south = s1.area({0., -180., -90., 180.});
 
-        EXPECT(area_hemisphere_north == 0.5 * s1.area());
-        EXPECT(area_hemisphere_north == area_hemisphere_south);
+        EXPECT(types::is_approximately_equal(area_hemisphere_north, 0.5 * s1.area()));
+        EXPECT(types::is_approximately_equal(area_hemisphere_north, area_hemisphere_south));
     }
 
 
@@ -328,9 +328,9 @@ CASE("Two-unit Sphere") {
 
         area::BoundingBox bbox({P2.lat(), P1.lon(), P1.lat(), P2.lon()});
 
-        auto local_1 = s1._area(bbox);
-        auto local_2 = s2._area(bbox);
-        EXPECT(4. * local_1 == local_2);
+        auto local_1 = s1.area(bbox);
+        auto local_2 = s2.area(bbox);
+        EXPECT(types::is_approximately_equal(4. * local_1, local_2));
     }
 }
 

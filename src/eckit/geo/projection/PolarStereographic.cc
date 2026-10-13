@@ -26,7 +26,7 @@ PolarStereographic::PolarStereographic(double lat_0, double lat_ts, double lon_0
     lat_ts_(lat_ts),
     lon_0_(lon_0),
     sign_(lat_0 < 0. ? -1. : 1.),
-    conformal_(figure().eccentricity()) {
+    conformal_(figure().conformal()) {
     if (!types::is_approximately_equal(lat_0, sign_ * PointLonLat::RIGHT_ANGLE)) {
         throw exception::ProjectionError("PolarStereographic: lat_0 = 90 or -90 expected (polar)", Here());
     }

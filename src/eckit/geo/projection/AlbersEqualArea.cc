@@ -20,28 +20,6 @@ static const ProjectionRegisterType<AlbersEqualArea> PROJECTION_1("aea");
 static const ProjectionRegisterType<AlbersEqualArea> PROJECTION_2("albers");
 
 
-static inline double calculate_C(double lat_1, double n) {
-    const auto lat_1r = lat_1 * util::DEGREE_TO_RADIAN;
-
-    return std::cos(lat_1r) * std::cos(lat_1r) + 2. * n * std::sin(lat_1r);
-}
-
-
-static inline double calculate_n(double lat_1, double lat_2) {
-    if (auto n = 0.5 * (std::sin(lat_1 * util::DEGREE_TO_RADIAN) + std::sin(lat_2 * util::DEGREE_TO_RADIAN));
-        !types::is_approximately_equal(n, 0.)) {
-        return n;
-    }
-
-    throw exception::ProjectionError("AlbersEqualArea: cannot calculate n", Here());
-}
-
-
-static inline double calculate_rho(double R, double n, double C, double phir) {
-    return R / n * std::sqrt(C - 2. * n * std::sin(phir));
-}
-
-
 AlbersEqualArea::AlbersEqualArea(const Spec& spec) :
     AlbersEqualArea(spec.get_double("lon_0"), spec.get_double("lat_0"), spec.get_double("lat_1"),
                     spec.get_double("lat_2"), FigureFactory::build(spec)) {}
@@ -53,27 +31,62 @@ AlbersEqualArea::AlbersEqualArea(double lon_0, double lat_0, double lat_1, doubl
     centre_r_(PointLonLatR::make_from_lonlat(lon_0, lat_0)),
     lat_1_(lat_1),
     lat_2_(lat_2),
-    n_(calculate_n(lat_1, lat_2)),
-    R_(figure().R()),
-    C_(calculate_C(lat_1, n_)),
-    rho0_(calculate_rho(R_, n_, C_, centre_r_.latr())) {}
+    a_(figure().a()),
+    authalic_(figure().authalic()) {
+    const auto conformal = figure().conformal();
+
+    const auto phi_1 = lat_1 * util::DEGREE_TO_RADIAN;
+    const auto phi_2 = lat_2 * util::DEGREE_TO_RADIAN;
+    const auto m_1   = conformal.m(phi_1);
+    const auto q_1   = authalic_.q(std::sin(phi_1));
+
+    // a tangent cone (one standard parallel) or a secant cone
+    n_ = types::is_approximately_equal(lat_1, lat_2)
+             ? std::sin(phi_1)
+             : (m_1 * m_1 - conformal.m(phi_2) * conformal.m(phi_2)) / (authalic_.q(std::sin(phi_2)) - q_1);
+
+    if (types::is_approximately_equal(n_, 0.)) {
+        throw exception::ProjectionError("AlbersEqualArea: cannot calculate n", Here());
+    }
+
+    C_    = m_1 * m_1 + n_ * q_1;
+    rho0_ = std::sqrt(C_ - n_ * authalic_.q(std::sin(centre_r_.latr()))) / n_;
+}
 
 
 PointXY AlbersEqualArea::fwd(const PointLonLat& p) const {
-    auto rho    = calculate_rho(R_, n_, C_, p.lat() * util::DEGREE_TO_RADIAN);
-    auto thetar = n_ * PointLonLat::normalise_angle_to_minimum(p.lon() - centre_.lon(), -PointLonLat::FLAT_ANGLE) *
-                  util::DEGREE_TO_RADIAN;
+    const auto c = C_ - n_ * authalic_.q(std::sin(p.lat() * util::DEGREE_TO_RADIAN));
+    if (c < 0.) {
+        throw exception::ProjectionError("AlbersEqualArea: point not projectable", Here());
+    }
 
-    return PointXY{rho * std::sin(thetar), rho0_ - rho * std::cos(thetar)};
+    const auto rho    = std::sqrt(c) / n_;
+    const auto thetar = n_ *
+                        PointLonLat::normalise_angle_to_minimum(p.lon() - centre_.lon(), -PointLonLat::FLAT_ANGLE) *
+                        util::DEGREE_TO_RADIAN;
+
+    return PointXY{a_ * rho * std::sin(thetar), a_ * (rho0_ - rho * std::cos(thetar))};
 }
 
 
 PointLonLat AlbersEqualArea::inv(const PointXY& q) const {
-    auto rho    = std::sqrt(q.X() * q.X() + (rho0_ - q.Y()) * (rho0_ - q.Y()));
-    auto thetar = std::atan2(q.X(), rho0_ - q.Y());
+    auto x = q.X() / a_;
+    auto y = rho0_ - q.Y() / a_;
 
-    return PointLonLat::make_from_lonlatr(centre_r_.lonr() + thetar / n_,
-                                          std::asin((C_ - (rho * rho * n_ * n_) / (R_ * R_)) / (2. * n_)),
+    auto rho = std::hypot(x, y);
+    if (types::is_approximately_equal(rho, 0.)) {
+        return PointLonLat::make(centre_.lon(), n_ > 0. ? PointLonLat::RIGHT_ANGLE : -PointLonLat::RIGHT_ANGLE,
+                                 centre_.lon() - PointLonLat::FLAT_ANGLE);
+    }
+
+    if (n_ < 0.) {
+        rho = -rho;
+        x   = -x;
+        y   = -y;
+    }
+
+    return PointLonLat::make_from_lonlatr(centre_r_.lonr() + std::atan2(x, y) / n_,
+                                          authalic_.phi((C_ - rho * rho * n_ * n_) / n_),
                                           centre_.lon() - PointLonLat::FLAT_ANGLE);
 }
 

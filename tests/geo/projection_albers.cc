@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -68,6 +69,39 @@ CASE("AlbersEqualArea") {
 
             if (proj2) {
                 EXPECT(points_equal(std::get<PointXY>(proj2->fwd(p)), q, 1e-6));
+            }
+        }
+    }
+}
+
+
+CASE("AlbersEqualArea: ellipsoid") {
+    // Snyder (1987), Map Projections: A Working Manual, p. 292, Clarke 1866 ellipsoid
+    std::unique_ptr<const Projection> aea(ProjectionFactory::make_from_string(
+        "{type: aea, lon_0: -96, lat_0: 23, lat_1: 29.5, lat_2: 45.5, figure: {a: 6378206.4, b: 6356583.8}}"));
+
+    EXPECT(aea->proj_str() == "+proj=aea +lat_0=23 +lat_1=29.5 +lat_2=45.5 +lon_0=-96 +a=6378206.4 +b=6356583.8");
+
+    const PointLonLat p{-75., 35.};
+    const auto q = std::get<PointXY>(aea->fwd(p));
+    EXPECT(points_equal(q, PointXY{1885472.7, 1535925.0}, 0.1));
+    EXPECT(points_equal(aea->inv(q), p));
+
+    // a tangent cone (one standard parallel), southern
+    std::unique_ptr<const Projection> south(ProjectionFactory::make_from_string(
+        "{type: aea, lon_0: 132, lat_0: 0, lat_1: -18, lat_2: -18, figure: grs80}"));
+
+    for (const auto& r : std::vector<PointLonLat>{{132., 0.}, {112., -10.}, {154., -43.}, {120., -30.}}) {
+        EXPECT(points_equal(south->inv(south->fwd(r)), r));
+    }
+
+    if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+        for (const auto* proj : {aea.get(), south.get()}) {
+            std::unique_ptr<const Projection> by_proj(
+                ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", proj->proj_str()}}));
+
+            for (const auto& r : std::vector<PointLonLat>{{-75., 35.}, {-120., 50.}, {112., -10.}, {154., -43.}}) {
+                EXPECT(points_equal(by_proj->fwd(r), proj->fwd(r), 1e-3));
             }
         }
     }

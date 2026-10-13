@@ -32,12 +32,20 @@ class lock_type {
 namespace detail {
 
 
+/// A multiple of inc, the nearest to target (up or down)
 Fraction adjust(const Fraction& target, const Fraction& inc, bool up) {
     auto r = target / inc;
     auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
 
     return n * inc;
-};
+}
+
+
+/// The offset of the values from the multiples of inc (as the reference), in [0, |inc|)
+Fraction shift(const Fraction& ref, const Fraction& inc) {
+    auto s = (ref / inc).decimalPart() * inc;
+    return s < 0 ? s + Fraction::abs(inc) : s;
+}
 
 
 size_t N(Fraction inc, Fraction a, Fraction b) {
@@ -47,6 +55,7 @@ size_t N(Fraction inc, Fraction a, Fraction b) {
 
 struct Plain final : Regular::Implementation {
     using Implementation::Implementation;
+    explicit Plain(const Implementation& other) : Implementation(other) {}
 };
 
 
@@ -75,10 +84,7 @@ struct RegularLatitude final : Regular::Implementation {
 
 struct RegularLongitude final : Regular::Implementation {
     RegularLongitude(Fraction inc, Fraction a, Fraction b, Fraction ref) : Implementation(inc, a, b, ref) {
-        if (size_ == 1) {
-            return;
-        }
-
+        // (a single value has no increment, so isn't periodic)
         if (Fraction::abs(b_ - a_ + inc_) >= PERIOD) {
             const auto inc  = Fraction::abs(inc_);
             const auto span = adjust(PERIOD, inc, true) - inc;
@@ -130,32 +136,40 @@ const Fraction RegularLongitude::PERIOD{360, 1};
 Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref) : inc_(inc), a_(a), b_(b) {
     if (types::is_approximately_equal<double>(inc_, 0.) ||
         types::is_approximately_lesser_or_equal<double>((b_ - a_) * inc_, 0.)) {
-        size_ = 1;
-        inc_  = {};
-        b_    = a_;
-        return;
+        // no increment, or b not in its direction: a, as given
+        b_ = a_;
     }
-
-    shift_ = (ref / inc).decimalPart() * inc;
-    if (shift_ < 0) {
-        shift_ += Fraction::abs(inc);  // [0, |inc|)
+    else {
+        // the values, multiples of inc from the reference, within [a, b]
+        shift_ = detail::shift(ref, inc_);
+        a_     = shift_ + detail::adjust(a_ - shift_, inc_, true);
+        b_     = shift_ + detail::adjust(b_ - shift_, inc_, false);
+        ASSERT(a_ == b_ || (a < b) == (a_ < b_));
     }
-    a_ = shift_ + detail::adjust(a_ - shift_, inc_, true);
-    b_ = shift_ + detail::adjust(b_ - shift_, inc_, false);
-    ASSERT(a_ == b_ || (a < b) == (a_ < b_));
 
     size_ = detail::N(inc_, a_, b_);
     ASSERT(size_ > 0);
+
+    // a single value has no increment (eg. a grid of a single point, row or column)
+    if (size_ == 1) {
+        inc_   = {};
+        shift_ = {};
+    }
 }
 
 
 Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_b) const {
+    // a single value (without increment), as is
+    if (size_ == 1) {
+        return new detail::Cropped(new detail::Plain{*this});
+    }
+
     const bool up = a_ <= b_;
     ASSERT(up ? crop_a <= crop_b : crop_a > crop_b);
 
     detail::Plain other(inc_, Fraction{crop_a}, Fraction{crop_b}, a_);
-    auto _min = std::max(min(), other.min());
-    auto _max = std::min(max(), other.max());
+    const auto _min = std::max(min(), other.min());
+    const auto _max = std::min(max(), other.max());
 
     return new detail::Cropped(new detail::Plain{inc_, up ? _min : _max, up ? _max : _min, a_});
 }

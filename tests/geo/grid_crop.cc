@@ -202,6 +202,94 @@ CASE("crop: global grids, by a global bounding box from another longitude") {
 }
 
 
+CASE("crop: scanning modes (as the grid), cropping out odd and even numbers of starting rows or columns") {
+    // the cropped grid keeps the scanning mode (alternating rows, or columns, start in the same direction)
+    const std::vector<std::string> orders{"i+j-",  "i+j+",  "i-j-",  "i-j+",  "j+i-",  "j-i+",  "i+-j-",
+                                          "i-+j+", "i+-j+", "i-+j-", "j+-i+", "j-+i-", "j-+i+", "j+-i-"};
+
+    struct test_t {
+        std::string grid;
+        std::vector<double> area;  // [north, west, south, east]
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             // 10 columns, 11 rows: cropping out 1 (odd) or 2 (even) rows and columns at each side
+             {"{grid: [1, 1], area: [10, 0, 0, 9]", {9, 1, 1, 8}},
+             {"{grid: [1, 1], area: [10, 0, 0, 9]", {8, 2, 2, 7}},
+             {"{grid: [1, 1], area: [10, 0, 0, 9]", {9, 2, 2, 8}},
+             // Gaussian: cropping out 1 row and column at each side
+             {"{grid: F4", {65., 22.5, -65., 315.}},
+             // global, by a bounding box from another longitude (rows from -180, as 180)
+             {"{grid: [30, 30]", {60., -180., -60., 150.}},
+         }) {
+        for (const auto& order : orders) {
+            G grid(GridFactory::make_from_string(test.grid + ", order: " + order + "}"));
+            A bbox(new area::BoundingBox(test.area[0], test.area[1], test.area[2], test.area[3]));
+
+            G cropped(grid->make_grid_cropped(*bbox));
+            EXPECT(cropped->type() == grid->type());
+            EXPECT(cropped->order() == order);
+
+            const auto indices = grid->crop(*bbox);
+            EXPECT(as_set(indices).size() == cropped->size());
+            EXPECT(same_points(*cropped, *grid, indices));
+        }
+    }
+}
+
+
+CASE("crop: alternating rows (or columns), cropping out 1, 2 or 3 starting rows (or columns), the cropped points") {
+    // the cropped grid points, and the grid points by the indices
+    struct test_t {
+        std::string grid;
+        std::vector<double> area;  // [north, west, south, east]
+        std::vector<PointLonLat> expected;
+    };
+
+    // rows (i then j): 3 columns (longitude 0 to 2), 4 rows (latitude 3 to 0)
+    const std::string rows_ipm = "{grid: [1, 1], area: [3, 0, 0, 2], order: i+-j-}";
+    const std::string rows_imp = "{grid: [1, 1], area: [3, 0, 0, 2], order: i-+j-}";
+
+    // columns (j then i): 4 columns (longitude 0 to 3), 3 rows (latitude 0 to 2)
+    const std::string cols_jpm = "{grid: [1, 1], area: [2, 0, 0, 3], order: j+-i+}";
+    const std::string cols_jmp = "{grid: [1, 1], area: [2, 0, 0, 3], order: j-+i+}";
+
+    for (const auto& test : std::vector<test_t>{
+             {rows_ipm, {2, 0, 0, 2}, {{0, 2}, {1, 2}, {2, 2}, {2, 1}, {1, 1}, {0, 1}, {0, 0}, {1, 0}, {2, 0}}},
+             {rows_ipm, {1, 0, 0, 2}, {{0, 1}, {1, 1}, {2, 1}, {2, 0}, {1, 0}, {0, 0}}},
+             {rows_ipm, {0, 0, 0, 2}, {{0, 0}, {1, 0}, {2, 0}}},
+             {rows_imp, {2, 0, 0, 2}, {{2, 2}, {1, 2}, {0, 2}, {0, 1}, {1, 1}, {2, 1}, {2, 0}, {1, 0}, {0, 0}}},
+             {rows_imp, {1, 0, 0, 2}, {{2, 1}, {1, 1}, {0, 1}, {0, 0}, {1, 0}, {2, 0}}},
+             {rows_imp, {0, 0, 0, 2}, {{2, 0}, {1, 0}, {0, 0}}},
+             {cols_jpm, {2, 1, 0, 3}, {{1, 0}, {1, 1}, {1, 2}, {2, 2}, {2, 1}, {2, 0}, {3, 0}, {3, 1}, {3, 2}}},
+             {cols_jpm, {2, 2, 0, 3}, {{2, 0}, {2, 1}, {2, 2}, {3, 2}, {3, 1}, {3, 0}}},
+             {cols_jpm, {2, 3, 0, 3}, {{3, 0}, {3, 1}, {3, 2}}},
+             {cols_jmp, {2, 1, 0, 3}, {{1, 2}, {1, 1}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 2}, {3, 1}, {3, 0}}},
+             {cols_jmp, {2, 2, 0, 3}, {{2, 2}, {2, 1}, {2, 0}, {3, 0}, {3, 1}, {3, 2}}},
+             {cols_jmp, {2, 3, 0, 3}, {{3, 2}, {3, 1}, {3, 0}}},
+         }) {
+        G grid(GridFactory::make_from_string(test.grid));
+        A bbox(new area::BoundingBox(test.area[0], test.area[1], test.area[2], test.area[3]));
+
+        G cropped(grid->make_grid_cropped(*bbox));
+        EXPECT(cropped->order() == grid->order());
+
+        const auto cropped_points = cropped->to_points();
+        EXPECT(cropped_points.size() == test.expected.size());
+        for (size_t k = 0; k < test.expected.size(); ++k) {
+            EXPECT(points_equal(cropped_points[k], test.expected[k]));
+        }
+
+        const auto indices = grid->crop(*bbox);
+        const auto points  = grid->to_points();
+        EXPECT(indices.size() == test.expected.size());
+        for (size_t k = 0; k < test.expected.size(); ++k) {
+            EXPECT(points_equal(points[indices[k]], test.expected[k]));
+        }
+    }
+}
+
+
 CASE("crop: projected grids (rotation, lcc)") {
     struct test_t {
         std::string grid;
@@ -290,7 +378,8 @@ CASE("crop: cache") {
     auto& cache = cache::CropCache::instance();
     cache.clear();
 
-    G grid(GridFactory::make_from_string("{grid: 2/2}"));
+    // (regular grids are cropped directly, other grids by the points in the area, cached)
+    G grid(GridFactory::make_from_string("{grid: O32}"));
     A bbox(AreaFactory::make_from_string(BBOXES.front()));
 
     const auto statistics = cache.statistics();
@@ -302,9 +391,6 @@ CASE("crop: cache") {
     EXPECT(cache.statistics().hits == statistics.hits + 1);
     EXPECT(cache.size() == 1);
     EXPECT(cache.usage().memory() > 0);
-
-    // the same crop, recalculated
-    EXPECT(a == cache::CropCache::calculate(*grid, *bbox));
 
     // on disk, loaded once the in-memory cache is cleared
     if (LibEcKitGeo::caching()) {

@@ -117,17 +117,8 @@ Grid::BoundingBox* RegularGaussian::calculate_bbox() const {
 }
 
 
-Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
-    // of the same type by a bounding box (unprojected), otherwise unstructured
-    if (!projection().is_default() || dynamic_cast<const area::BoundingBox*>(&crop) == nullptr) {
-        return make_grid_cropped_unstructured_ll(crop);
-    }
-
-    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularGaussian(N_, ni_, cropped);
-    }
-
-    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
+grid::Regular* RegularGaussian::make_regular_cropped(const BoundingBox& bbox) const {
+    return new RegularGaussian(N_, ni_, bbox, scan());
 }
 
 

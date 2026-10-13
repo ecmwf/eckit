@@ -45,14 +45,18 @@ public:
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
-    [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-
     const Range& lon() const override { return x_; }
     const Range& lat() const override { return y_; }
 
     // -- Class members
 
     [[nodiscard]] static Spec* spec(const std::string& name);
+
+protected:
+
+    // -- Overridden methods
+
+    [[nodiscard]] Regular* make_regular_cropped(const BoundingBox&) const override;
 
 private:
 

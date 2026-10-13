@@ -209,11 +209,6 @@ ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
-ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
-                    DEFAULT OFF
-                    CONDITION eckit_HAVE_ECKIT_GEO
-                    DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
-
 ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     DEFAULT ON
                     CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP

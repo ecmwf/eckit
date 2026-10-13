@@ -120,7 +120,6 @@ CASE("test_eckit_container_kdtree_constructor") {
     }
     kd.build(points.begin(), points.end());
 
-    // size
     EXPECT_EQUAL(kd.size(), points.size());
 
     // pick a point
@@ -183,7 +182,6 @@ CASE("test_eckit_container_kdtree_insert") {
         }
     }
 
-    // size
     EXPECT_EQUAL(kd.size(), points.size());
 
     // pick a point

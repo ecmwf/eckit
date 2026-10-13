@@ -68,7 +68,6 @@ hip = []   # HIP GPU linear algebra operations
 geo-codec-grids = ["eckit-codec", "lz4", "eckit-geo"]  # ORCA/FESOM/ICON grid types (requires codec + LZ4)
 geo-caching = []               # eckit::geo default caching behaviour
 geo-bitreproducible = []       # eckit::geo bit reproducibility tests
-geo-projection-proj-default = []  # eckit::geo default to PROJ-based projections
 geo-area-shapefile = []        # Shapefile support (CMake default: ON)
 
 # Advanced (CMake default: OFF)

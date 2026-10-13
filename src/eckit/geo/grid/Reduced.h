@@ -33,7 +33,7 @@ public:
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
-    // Methods
+    // -- Methods
 
     virtual const std::vector<double>& latitudes() const        = 0;
     virtual const std::vector<double>& longitudes(size_t) const = 0;

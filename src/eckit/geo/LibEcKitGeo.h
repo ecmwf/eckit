@@ -49,8 +49,6 @@ public:
     static std::string url(const std::string& url_path);
     static std::string url(const std::string& url_path, const std::string& url_prefix);
 
-    static bool proj();
-
     static bool projdb_is_available();
     static void projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths = {});
     static void projdb_reset();

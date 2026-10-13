@@ -194,14 +194,6 @@ std::string LibEcKitGeo::url(const std::string& url_path, const std::string& url
 }
 
 
-bool LibEcKitGeo::proj() {
-    static const bool yes{
-        LibResource<bool, LibEcKitGeo>("eckit-geo-projection-proj;$ECKIT_GEO_PROJECTION_PROJ",
-                                       (eckit_HAVE_PROJ != 0) && (eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT != 0))};
-    return yes;
-}
-
-
 bool LibEcKitGeo::projdb_is_available() {
 #if eckit_HAVE_PROJ
     return geo::projection::PROJ::projdb_is_available();

@@ -38,7 +38,6 @@ CASE("area_libraries") {
          }) {
         lib->list(Log::info()) << std::endl;
 
-        // std::unique_ptr<Area> area(gj.make_area(0));
         std::unique_ptr<Area> area(lib->make_area_from_name("Portugal"));
 
         for (double lat = 39.7; lat > 37.; lat -= .05) {

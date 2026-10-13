@@ -51,6 +51,9 @@ public:
     static const std::string& proj_default();
 
     static bool projdb_is_available();
+
+    /// Register the projection type "proj" (once), if the PROJ database is available
+    static void register_type();
     static void projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths = {});
     static void projdb_reset();
 

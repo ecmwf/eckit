@@ -54,7 +54,17 @@ struct SelfReversing {
 
 
 /// Projection of a type, reversed if the spec has "reverse": true
+/// Projection types of optional features, if available (eg. "proj" with the PROJ database)
+void register_optional_types() {
+#if eckit_HAVE_PROJ
+    projection::PROJ::register_type();
+#endif
+}
+
+
 const Projection* make(const std::string& type, const Projection::Spec& spec) {
+    register_optional_types();
+
     if (spec.has("x_0") || spec.has("y_0")) {
         throw exception::SpecError("ProjectionFactory: no false easting/northing (x_0, y_0), see the grid's 'false'",
                                    Here());
@@ -396,7 +406,14 @@ Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
 }
 
 
+bool ProjectionFactory::has_type(const std::string& type) {
+    register_optional_types();
+    return Factory<Projection>::instance().exists(type);
+}
+
+
 std::ostream& ProjectionFactory::list(std::ostream& out) {
+    register_optional_types();
     lock_type lock;
     share::Projection::instance();
 

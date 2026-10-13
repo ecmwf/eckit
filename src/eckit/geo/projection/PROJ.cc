@@ -26,9 +26,6 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<PROJ> PROJECTION("proj", true);
-
-
 namespace {
 
 
@@ -417,6 +414,12 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 const std::string& PROJ::proj_default() {
     static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
     return DEFAULT;
+}
+
+
+void PROJ::register_type() {
+    static const std::unique_ptr<ProjectionRegisterType<PROJ>> REGISTER(
+        projdb_is_available() ? new ProjectionRegisterType<PROJ>("proj", true) : nullptr);
 }
 
 

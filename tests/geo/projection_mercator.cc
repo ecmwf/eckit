@@ -8,7 +8,6 @@
 #include <variant>
 #include <vector>
 
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
@@ -69,7 +68,7 @@ CASE("merc: fwd, inv") {
 
 
 CASE("merc: as PROJ") {
-    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+    if (!ProjectionFactory::has_type("proj")) {
         return;
     }
 

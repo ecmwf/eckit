@@ -10,7 +10,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
@@ -176,7 +175,7 @@ CASE("Grid::to_xyz") {
     }
 
 
-    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+    if (!ProjectionFactory::has_type("proj")) {
         return;
     }
 

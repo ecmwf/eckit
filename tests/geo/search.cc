@@ -11,7 +11,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
@@ -288,7 +287,7 @@ CASE("Search: grid, on the grid figure") {
 CASE("Search: grid points find themselves, on their figure") {
     std::vector<std::string> grids{R"({"grid": [30, 30]})", R"({"grid": [30, 30], "figure": "wgs84"})"};
 
-    if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+    if (ProjectionFactory::has_type("proj")) {
         // (lon, lat) on the PROJ target CRS, and geocentric points
         grids.emplace_back("swisslv95");
         grids.emplace_back(

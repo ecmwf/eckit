@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
@@ -72,7 +71,7 @@ CASE("lcc: proj_str") {
     P reverse(ProjectionFactory::make_from_string(LCC.substr(0, LCC.size() - 1) + ", reverse: true}"));
     EXPECT(reverse->proj_str() == lcc->proj_str());
 
-    if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+    if (!ProjectionFactory::has_type("proj")) {
         return;
     }
 
@@ -96,7 +95,7 @@ CASE("lcc: on an ellipsoid, as PROJ") {
             EXPECT(points_equal(lcc->inv(lcc->fwd(p)), p, TOLERANCE));
         }
 
-        if (!ProjectionFactory::has_type("proj") || !LibEcKitGeo::projdb_is_available()) {
+        if (!ProjectionFactory::has_type("proj")) {
             continue;
         }
 

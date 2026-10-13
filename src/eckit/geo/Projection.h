@@ -142,7 +142,7 @@ struct ProjectionFactory {
 
     [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec&);
     static std::ostream& list(std::ostream&);
-    static bool has_type(const std::string& type) { return Factory<Projection>::instance().exists(type); }
+    static bool has_type(const std::string&);
 
     /// Projection types interpreting "reverse": true themselves, others are wrapped (see projection::Reverse)
     static void register_self_reversing(const std::string& type);

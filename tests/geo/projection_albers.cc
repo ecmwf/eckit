@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -95,7 +94,7 @@ CASE("AlbersEqualArea: ellipsoid") {
         EXPECT(points_equal(south->inv(south->fwd(r)), r));
     }
 
-    if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+    if (ProjectionFactory::has_type("proj")) {
         for (const auto* proj : {aea.get(), south.get()}) {
             std::unique_ptr<const Projection> by_proj(
                 ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", proj->proj_str()}}));

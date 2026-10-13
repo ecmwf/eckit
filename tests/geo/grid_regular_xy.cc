@@ -12,7 +12,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
@@ -285,7 +284,7 @@ CASE("RegularXY: as GRIB") {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec_str));
             EXPECT(grid->spec_str() == test.spec_str);
 
-            if (ProjectionFactory::has_type("proj") && LibEcKitGeo::projdb_is_available()) {
+            if (ProjectionFactory::has_type("proj")) {
                 // PROJ string from the grid, and from its projection spec
                 EXPECT(grid->projection().proj_str() == test.proj);
                 std::unique_ptr<const Projection> projection(

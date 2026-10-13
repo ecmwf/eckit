@@ -265,6 +265,33 @@ CASE("crop to a single column") {
 }
 
 
+CASE("alternating rows") {
+    // rows scanning in alternate directions, as GRIB alternativeRowScanning
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: F2, order: i+-j-}"));
+    std::unique_ptr<const Grid> plain(GridFactory::make_from_string("{grid: F2}"));
+
+    EXPECT(grid->order() == "i+-j-");
+    EXPECT(grid->spec_str() == R"({"grid":"F2","order":"i+-j-"})");
+    EXPECT(grid->size() == plain->size());
+
+    const auto points       = grid->to_points();
+    const auto plain_points = plain->to_points();
+
+    // first row as the plain grid, second row reversed
+    const size_t ni = 8;
+    for (size_t i = 0; i < ni; ++i) {
+        EXPECT(points_equal(points[i], plain_points[i]));
+        EXPECT(points_equal(points[ni + i], plain_points[2 * ni - 1 - i]));
+    }
+
+    // reordered, as the plain grid
+    const auto ren = grid->reorder(plain->order());
+    for (size_t k = 0; k < points.size(); ++k) {
+        EXPECT(points_equal(points[k], plain_points[ren[k]]));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

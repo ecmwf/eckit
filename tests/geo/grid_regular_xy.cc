@@ -125,6 +125,35 @@ CASE("RegularXY: reorder") {
 }
 
 
+CASE("RegularXY: alternating rows (or columns)") {
+    // rows (or columns) scanning in alternate directions, as GRIB alternativeRowScanning
+    for (const auto& [order, expected] : std::vector<std::pair<std::string, std::vector<PointXY>>>{
+             {"i+-j+", {{0, 0}, {1, 0}, {2, 0}, {2, 1}, {1, 1}, {0, 1}}},
+             {"j+-i+", {{0, 0}, {0, 1}, {1, 1}, {1, 0}, {2, 0}, {2, 1}}},
+         }) {
+        std::unique_ptr<const Grid> grid(
+            GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 1, 1], order: " + order + "}"));
+
+        EXPECT(grid->order() == order);
+        EXPECT(grid->size() == 6);
+
+        const auto points = grid->to_points();
+        EXPECT(points.size() == expected.size());
+        for (size_t k = 0; k < expected.size(); ++k) {
+            EXPECT(points_equal(points[k], expected[k]));
+        }
+
+        // grid point k is point ren[k] in the order i+j+
+        const auto ren = grid->reorder("i+j+");
+
+        const std::vector<PointXY> ipos_jpos{{0, 0}, {1, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1}};
+        for (size_t k = 0; k < points.size(); ++k) {
+            EXPECT(points_equal(points[k], ipos_jpos[ren[k]]));
+        }
+    }
+}
+
+
 CASE("RegularXY: projection on top") {
     // (x, y) to (lon, lat), applied to the grid's (x, y) less the false easting/northing
     const std::string projected =

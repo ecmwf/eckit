@@ -33,6 +33,7 @@ private:
     const grid::Regular& grid_;
 
     const bool xy_;
+    const bool alternating_;  // rows (or columns) scanning in alternate directions
     const std::vector<double>& x_;
     const std::vector<double>& y_;
     size_t ix_;

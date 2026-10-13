@@ -149,6 +149,7 @@ public:
     virtual size_t truncation() const;
 
     virtual const order_type& order() const;
+    /// Renumbering of the points to another order: point k is point ren[k] in that order
     virtual renumber_type reorder(const order_type&) const;
 
     virtual const Area& area() const;

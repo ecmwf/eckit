@@ -63,6 +63,10 @@ CASE("order=scan") {
                     (iScansNegatively ? (1 << 7) : 0);
         EXPECT(mode == scanningMode);
     }
+
+    // the empty order is the default
+    EXPECT(Scan{""}.order() == Scan::order_default());
+    EXPECT(Scan{""}.order() == "i+j-");
 }
 
 

@@ -32,6 +32,7 @@ struct RegularInstance : Instance, Regular {
 Regular::Regular(const grid::Regular& grid, size_t index) :
     grid_(grid),
     xy_(grid.scan().is_scan_i_then_j()),
+    alternating_(grid.scan().is_scan_alternating()),
     x_((xy_ ? grid.x() : grid.y()).values()),
     y_((xy_ ? grid.y() : grid.x()).values()),
     ix_(0),
@@ -82,7 +83,8 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return xy_ ? grid_.point(x_.at(ix_), y_.at(iy_)) : grid_.point(y_.at(iy_), x_.at(ix_));
+    const auto ix = alternating_ && iy_ % 2 == 1 ? nx_ - 1 - ix_ : ix_;
+    return xy_ ? grid_.point(x_.at(ix), y_.at(iy_)) : grid_.point(y_.at(iy_), x_.at(ix));
 }
 
 

@@ -7,6 +7,7 @@ cimport eckit_geo_grid
 from cpython.pycapsule cimport PyCapsule_GetPointer
 from cpython.pycapsule cimport PyCapsule_New
 from cython.operator cimport dereference
+from libc.string cimport memcpy
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
@@ -73,6 +74,39 @@ cdef class Grid:
     def to_xyz(self):
         cdef vector[vector[double]] xyz = self._grid.to_xyz()
         return list(xyz[0]), list(xyz[1]), list(xyz[2])
+
+    def to_points(self) -> dict:
+        """Grid points, as a dict of coordinate name (see point_coordinates) to values
+        (numpy arrays, or lists)."""
+        names = self.point_coordinates
+        cdef vector[vector[double]] w = (
+            eckit_geo_grid.grid_points(dereference(self._grid))
+        )
+        assert <size_t>len(names) == w.size()
+
+        try:
+            import numpy as np
+        except ImportError:  # numpy is optional
+            return {name: list(c) for name, c in zip(names, w)}
+
+        cdef double[::1] array
+        out = {}
+        for k in range(w.size()):
+            out[names[k]] = np.empty(w[k].size())
+            array = out[names[k]]
+            if w[k].size() > 0:
+                memcpy(&array[0], w[k].data(), w[k].size() * sizeof(double))
+        return out
+
+    @property
+    def point_coordinates(self) -> tuple:
+        """Grid points coordinate names, eg. ("x", "y") or ("longitude", "latitude")."""
+        return tuple(eckit_geo_grid.grid_point_coordinates(dereference(self._grid)))
+
+    def reorder(self, order: str = "") -> list:
+        """Renumbering to another order: grid point k is point ren[k] in that order
+        (empty: the default order)."""
+        return list(self._grid.reorder(order))
 
     def to_unstructured_ll(self, name: str = ""):
         cdef Grid grid = Grid.__new__(Grid)  # wrap pointer directly

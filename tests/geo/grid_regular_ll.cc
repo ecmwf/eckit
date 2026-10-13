@@ -684,6 +684,78 @@ CASE("scanning orders: same points and bounding box") {
 }
 
 
+CASE("alternating rows (or columns)") {
+    // rows (or columns) scanning in alternate directions, as GRIB alternativeRowScanning
+    struct test_t {
+        std::string order;
+        std::vector<PointLonLat> expected;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"i+-j-",
+              {{0, 60},
+               {1, 60},
+               {2, 60},
+               {3, 60},
+               {3, 59},
+               {2, 59},
+               {1, 59},
+               {0, 59},
+               {0, 58},
+               {1, 58},
+               {2, 58},
+               {3, 58}}},
+             {"i-+j+",
+              {{3, 58},
+               {2, 58},
+               {1, 58},
+               {0, 58},
+               {0, 59},
+               {1, 59},
+               {2, 59},
+               {3, 59},
+               {3, 60},
+               {2, 60},
+               {1, 60},
+               {0, 60}}},
+             {"j-+i+",
+              {{0, 60},
+               {0, 59},
+               {0, 58},
+               {1, 58},
+               {1, 59},
+               {1, 60},
+               {2, 60},
+               {2, 59},
+               {2, 58},
+               {3, 58},
+               {3, 59},
+               {3, 60}}},
+         }) {
+        std::unique_ptr<const Grid> grid(
+            GridFactory::make_from_string("{grid: [1, 1], area: [60, 0, 58, 3], order: " + test.order + "}"));
+
+        EXPECT(grid->order() == test.order);
+        EXPECT(grid->spec_str() == R"({"area":[60,0,58,3],"grid":[1,1],"order":")" + test.order + R"("})");
+
+        const auto points = grid->to_points();
+        EXPECT(points.size() == test.expected.size());
+        for (size_t k = 0; k < points.size(); ++k) {
+            EXPECT(points_equal(points[k], test.expected[k]));
+        }
+
+        // reordered, as the grid of the default order
+        std::unique_ptr<const Grid> plain(GridFactory::make_from_string("{grid: [1, 1], area: [60, 0, 58, 3]}"));
+        const auto plain_points = plain->to_points();
+
+        const auto ren = grid->reorder(plain->order());
+        for (size_t k = 0; k < points.size(); ++k) {
+            EXPECT(points_equal(points[k], plain_points[ren[k]]));
+        }
+    }
+}
+
+
 CASE("RegularLL: rotated, projection as PROJ") {
     if (!ProjectionFactory::has_type("proj")) {
         return;

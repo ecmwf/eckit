@@ -31,6 +31,7 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
 
         vector[size_t] shape() const
         size_t size() const
+        vector[size_t] reorder(const string&) except +
         const BoundingBox& boundingBox() const
         vector[size_t] crop(const Area&) except +
         Grid* make_grid_cropped(const Area&) except +
@@ -58,9 +59,14 @@ cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
 
 cdef extern from * namespace "eckit::geo::python":
     """
+    #include <string>
+    #include <type_traits>
+    #include <variant>
     #include <vector>
 
+    #include "eckit/geo/Exceptions.h"
     #include "eckit/geo/Grid.h"
+    #include "eckit/geo/Point.h"
 
     namespace eckit::geo::python {
 
@@ -71,9 +77,66 @@ cdef extern from * namespace "eckit::geo::python":
     inline v grid_lon_values(const Grid& grid) { return grid.lon().values(); }
     inline v grid_lat_values(const Grid& grid) { return grid.lat().values(); }
 
+    inline v point_values(const Point& p) {
+        return std::visit(
+            [](const auto& q) -> v {
+                using P = std::decay_t<decltype(q)>;
+                if constexpr (std::is_same_v<P, PointXY>) {
+                    return {q.X(), q.Y()};
+                }
+                else if constexpr (std::is_same_v<P, PointXYZ>) {
+                    return {q.X(), q.Y(), q.Z()};
+                }
+                else if constexpr (std::is_same_v<P, PointLonLat>) {
+                    return {q.lon(), q.lat()};
+                }
+                else if constexpr (std::is_same_v<P, PointLonLatR>) {
+                    return {q.lonr(), q.latr()};
+                }
+                else {
+                    throw exception::GridError("Grid: invalid point", Here());
+                }
+            },
+            p);
+    }
+
+    inline std::vector<v> grid_points(const Grid& grid) {
+        // one vector per coordinate (see grid_point_coordinates)
+        std::vector<v> points;
+        for (const auto& p : grid) {
+            const auto values = point_values(p);
+            if (points.empty()) {
+                points.assign(values.size(), {});
+                for (auto& c : points) {
+                    c.reserve(grid.size());
+                }
+            }
+            for (size_t k = 0; k < values.size(); ++k) {
+                points[k].emplace_back(values[k]);
+            }
+        }
+        return points;
+    }
+
+    inline std::vector<std::string> grid_point_coordinates(const Grid& grid) {
+        return std::visit(
+            [](const auto& q) -> std::vector<std::string> {
+                using P = std::decay_t<decltype(q)>;
+                if constexpr (std::is_same_v<P, std::monostate>) {
+                    throw exception::GridError("Grid: invalid point", Here());
+                }
+                else {
+                    return point_coordinates<P>();
+                }
+            },
+            grid.first_point());
+    }
+
     }
     """
     vector[double] grid_x_values(const Grid& grid) except +
     vector[double] grid_y_values(const Grid& grid) except +
     vector[double] grid_lon_values(const Grid& grid) except +
     vector[double] grid_lat_values(const Grid& grid) except +
+    vector[vector[double]] grid_points(const Grid& grid) except +
+    vector[string] grid_point_coordinates(const Grid& grid) except +

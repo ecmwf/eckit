@@ -185,7 +185,6 @@ list(APPEND eckit_geo_srcs
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
     util/reverse.cc
-    util/sincos.h
 )
 
 set(eckit_geo_include_dirs

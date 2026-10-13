@@ -582,9 +582,10 @@ CASE("SharedMemory: shared between loaders, until unloaded") {
 CASE("TempSharedMemory: removed at exit") {
     const auto points = random_points(1000, 14);
 
-    constexpr int LOADED        = 0;
-    constexpr int NOT_AVAILABLE = 1;
-    constexpr int FAILED        = 2;
+    // (static, used in the lambda without capture)
+    static constexpr int LOADED        = 0;
+    static constexpr int NOT_AVAILABLE = 1;
+    static constexpr int FAILED        = 2;
 
     // load in a child process, which exits normally (std::exit, so static objects are destructed)
     auto load_and_exit = [&points](const std::string& loader, const std::string& uid) {

@@ -22,6 +22,9 @@
 namespace eckit::geo::test {
 
 
+using G = std::unique_ptr<const Grid>;
+
+
 CASE("RegularXY: x and y") {
     // 'x' and 'y' are [start, stop, step], stop included
     std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1]}"));
@@ -53,7 +56,7 @@ CASE("RegularXY: x and y") {
             EXPECT(g->spec_str() == test.spec_str);
         }
 
-        EXPECT_THROWS_AS(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 3, 1], order: i+j-}"),
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 3, 1], order: i+j-}")),
                          exception::SpecError);
     }
 
@@ -186,13 +189,13 @@ CASE("RegularXY: projection on top") {
     EXPECT(*same == *grid);
 
     SECTION("a projection has to take (x, y)") {
-        EXPECT_THROWS_AS(GridFactory::make_from_string("{x: [0, 20, 10], y: [0, 10, 10], projection: {type: eqc}}"),
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string("{x: [0, 20, 10], y: [0, 10, 10], projection: {type: eqc}}")),
                          exception::SpecError);
     }
 
     SECTION("a projection has no false easting/northing (the grid has)") {
-        EXPECT_THROWS_AS(GridFactory::make_from_string(
-                             "{x: [0, 20, 10], y: [0, 10, 10], projection: {type: eqc, reverse: true, x_0: 1}}"),
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string(
+                             "{x: [0, 20, 10], y: [0, 10, 10], projection: {type: eqc, reverse: true, x_0: 1}}")),
                          exception::SpecError);
     }
 }

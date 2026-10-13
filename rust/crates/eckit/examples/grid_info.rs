@@ -57,7 +57,7 @@ fn run() -> Result<(), eckit::Error> {
 
     section("identity");
     let spec = grid.spec();
-    show("spec", spec.to_json());
+    show("spec", spec.to_json_str());
     // Typed access: a named grid carries its name under "grid"; a lon/lat grid
     // built from increments carries them under "grid", with its "area".
     if spec.has("area") {

@@ -53,7 +53,7 @@ impl From<eckit_sys::geo::RawPoint> for Point {
 ///
 /// ```ignore
 /// let grid = Grid::from_name("O1280")?;
-/// assert_eq!(grid.spec().to_json()?, r#"{"grid":"O1280"}"#);
+/// assert_eq!(grid.spec().to_json_str()?, r#"{"grid":"O1280"}"#);
 /// assert_eq!(grid.spec().get::<String>("grid")?, "O1280");
 ///
 /// let pl = grid.pl()?;                       // points per latitude row
@@ -106,7 +106,7 @@ impl Grid {
     ///
     /// Normalised, so it may differ from the spec passed in — `{"grid":"o16"}`
     /// comes back as `{"grid":"O16"}`. The view borrows the spec the grid
-    /// caches; [`Spec::to_json`] gives the string form.
+    /// caches; [`Spec::to_json_str`] gives the string form.
     #[must_use]
     pub fn spec(&self) -> Spec<'_> {
         Spec {
@@ -255,7 +255,7 @@ impl FromStr for Grid {
 /// that owns it.
 ///
 /// Values are read by type through [`Spec::get`], the canonical JSON through
-/// [`Spec::to_json`]. A missing key, or one holding another type, is an
+/// [`Spec::to_json_str`]. A missing key, or one holding another type, is an
 /// [`Error::SpecError`](crate::Error).
 pub struct Spec<'g> {
     inner: &'g eckit_sys::geo::SpecWrapper,
@@ -274,14 +274,14 @@ impl Spec<'_> {
     }
 
     /// Canonical JSON form, e.g. `{"grid":"O1280"}`.
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_str(&self) -> Result<String> {
         self.inner.json().map_err(eckit_sys::Error::from)
     }
 }
 
 impl fmt::Debug for Spec<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.to_json() {
+        match self.to_json_str() {
             Ok(json) => f.write_str(&json),
             Err(err) => write!(f, "<spec unavailable: {err}>"),
         }

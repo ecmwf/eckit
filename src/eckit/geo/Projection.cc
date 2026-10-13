@@ -6,6 +6,7 @@
 
 #include <array>
 #include <limits>
+#include <map>
 #include <memory>
 #include <ostream>
 #include <set>
@@ -20,6 +21,7 @@
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
+#include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
@@ -278,15 +280,106 @@ const Projection::Spec& Projection::spec() const {
 
 
 std::string Projection::proj_str() const {
-#if eckit_HAVE_PROJ
     // not spec(), which can be a projection name, and the figure (even if a default, omitted from spec)
     spec::Custom custom;
     fill_spec(custom);
     figure().fill_spec(custom);
-    return projection::PROJ::proj_str(custom);
-#else
-    NOTIMP;
-#endif
+    return proj_str(custom);
+}
+
+
+std::string Projection::proj_str(const spec::Custom& custom) {
+    const auto type = custom.get_string("type", "");
+
+    // the coordinate reference system other than (lon, lat)
+    if (type == "proj") {
+        const auto source = custom.get_string("source", proj_default());
+        return source != proj_default() ? source : custom.get_string("target", proj_default());
+    }
+
+    // projection types with a PROJ equivalent
+    static const std::map<std::string, std::string> NAMES{
+        {"", "longlat"},  // the default projection
+        {"none", "longlat"},
+        {"aea", "aea"},
+        {"albers", "aea"},
+        {"eqc", "eqc"},
+        {"plate-carree", "eqc"},
+        {"laea", "laea"},
+        {"lambert_azimuthal_equal_area", "laea"},
+        {"lcc", "lcc"},
+        {"lambert", "lcc"},
+        {"lambert_lam", "lcc"},
+        {"ll-to-xyz", "cart"},
+        {"merc", "merc"},
+        {"mercator", "merc"},
+        {"rotation", "ob_tran"},
+        {"stere", "stere"},
+        {"polar_stereographic", "stere"},
+    };
+
+    const auto name = NAMES.find(type);
+    if (name == NAMES.end()) {
+        throw exception::ProjectionError("PROJ: no equivalent to projection type '" + type + "'", Here());
+    }
+
+    // key "proj" comes first in string, then the others (sorted)
+    auto compare = [](const std::string& a, const std::string& b) {
+        return a != b && (a == "proj" || b == "proj") ? a == "proj" : a < b;
+    };
+
+    std::map<std::string, std::string, decltype(compare)> keys(compare);
+    auto str = [](double value) { return to_string(spec::Custom::value_type{value}); };
+
+    // figure comes last in string (default figure if not specified)
+    std::unique_ptr<const Figure> figure(FigureFactory::build(custom));
+    ASSERT(figure);
+    auto figure_str = figure->proj_str();
+
+    keys["proj"] = name->second;
+
+    if (name->second == "ob_tran") {
+        const auto south_pole = custom.get_double_vector("south_pole", {0., -90.});
+        const auto angle      = custom.get_double("rotation_angle", 0.);
+
+        keys["o_proj"]  = "longlat";
+        keys["lon_0"]   = str(south_pole[0]);
+        keys["o_lat_p"] = str(-south_pole[1]);
+        if (angle != 0.) {
+            keys["o_lon_p"] = str(angle);
+        }
+    }
+    else {
+        for (const auto& [k, v] : custom.container()) {
+            if (k != "type" && k != "reverse" && FigureFactory::keys().count(k) == 0) {
+                keys[k] = to_string(v);
+            }
+        }
+
+        if (name->second == "lcc" && keys.count("lat_0") == 0) {
+            keys["lat_0"] = "0";  // (PROJ defaults to lat_1, without lat_2)
+        }
+
+        if (name->second == "eqc") {
+            // (x, y) in degrees, independent of the figure: on the sphere of its semi-major axis (PROJ eqc is on the
+            // ellipsoid, and a sphere of radius 180/pi is not of Earth)
+            keys["to_meter"] = str(figure->a() * util::DEGREE_TO_RADIAN);
+            figure_str       = "+R=" + str(figure->a());
+        }
+    }
+
+    std::string proj;
+    for (const auto& [key, value] : keys) {
+        proj += "+" + key + "=" + value + " ";
+    }
+
+    return proj + figure_str;
+}
+
+
+const std::string& Projection::proj_default() {
+    static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
+    return DEFAULT;
 }
 
 

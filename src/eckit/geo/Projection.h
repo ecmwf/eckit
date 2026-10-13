@@ -92,6 +92,13 @@ public:
 
     static const Projection& projection_default();
 
+    /// PROJ string of a projection spec (and its figure), for the projection types with a PROJ equivalent (not
+    /// requiring PROJ)
+    static std::string proj_str(const spec::Custom&);
+
+    /// PROJ default coordinate reference system, (lon, lat) on WGS84
+    static const std::string& proj_default();
+
 protected:
 
     // -- Methods

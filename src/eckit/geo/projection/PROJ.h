@@ -47,9 +47,6 @@ public:
 
     // -- Class methods
 
-    static std::string proj_str(const spec::Custom&);
-    static const std::string& proj_default();
-
     static bool projdb_is_available();
 
     /// Register the projection type "proj" (once), if the PROJ database is available

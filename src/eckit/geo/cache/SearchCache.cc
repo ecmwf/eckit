@@ -4,8 +4,6 @@
 
 #include "eckit/geo/cache/SearchCache.h"
 
-#include <string>
-
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Search.h"

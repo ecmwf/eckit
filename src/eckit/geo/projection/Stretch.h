@@ -13,18 +13,20 @@
 namespace eckit::geo::projection {
 
 
+/// Latitude stretching by a factor: fwd from unstretched to the stretched sphere, inv the reverse (as by the inverse
+/// factor)
 class Stretch : public Projection {
 public:
 
     // -- Constructors
 
-    explicit Stretch(double c);
+    explicit Stretch(double c, bool reverse = false);
     explicit Stretch(const Spec&);
 
     // -- Methods
 
-    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), 1. / c_)); }
-    inline PointLonLat inv(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), c_)); }
+    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), c_)); }
+    inline PointLonLat inv(const PointLonLat& q) const { return PointLonLat::make(q.lon(), stretch(q.lat(), 1. / c_)); }
 
     // -- Overridden methods
 
@@ -43,7 +45,7 @@ private:
 
     // -- Members
 
-    double c_;
+    const double c_;
 
     // -- Methods
 

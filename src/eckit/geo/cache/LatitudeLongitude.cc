@@ -43,7 +43,7 @@ struct Loader final : Cache::Loader {
             throw exception::GridError("LatitudeLongitude: unknown uid='" + uid + "'", Here());
         }
 
-        std::unique_ptr<const Grid::Spec> spec(GridSpecByUID::instance().get(uid).spec());
+        std::unique_ptr<const Grid::Spec> spec(GridSpecByUID::instance().get_spec(uid));
         ASSERT(spec);
 
         if (spec->has("cached_path")) {

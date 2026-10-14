@@ -4,6 +4,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -28,7 +30,7 @@ using P = std::unique_ptr<Projection>;
 constexpr double EPS = 1e-6;
 
 
-CASE("rotation (1)") {
+CASE("rotation: South Pole out of range") {
     spec::Custom spec({
         {"type", "rotation"},
         {"south_pole_lat", -91.},
@@ -43,7 +45,7 @@ CASE("rotation (1)") {
 }
 
 
-CASE("rotation (2)") {
+CASE("rotation: round trips") {
     const PointLonLat p(1, 1);
     int delta[] = {-360, -180, -1, 0, 1, 90, 91, 180};
 
@@ -62,7 +64,7 @@ CASE("rotation (2)") {
 }
 
 
-CASE("rotation (3)") {
+CASE("rotation: points") {
     const PointLonLat sp(182., -46.7);
     projection::Rotation rot({sp.lon(), sp.lat()}, 0.);
 
@@ -71,8 +73,8 @@ CASE("rotation (3)") {
 
     SECTION("pole point") {
         PointLonLat a(0., 90.);
-        auto b = rot.fwd(a);
-        auto c = rot.inv(b);
+        auto b = rot.inv(a);
+        auto c = rot.fwd(b);
 
         EXPECT(points_equal(b, sp.antipode(), EPS));
         EXPECT(points_equal(a, c, EPS));
@@ -174,8 +176,8 @@ CASE("rotation (3)") {
             for (int j = 0; j < 2 * Nj + 1; j++, k++) {
                 PointLonLat a(static_cast<double>(i) * 360. / static_cast<double>(Ni),
                               static_cast<double>(j - Nj) * 90. / static_cast<double>(Nj));
-                auto b = rot.fwd(a);
-                auto c = rot.inv(b);
+                auto b = rot.inv(a);
+                auto c = rot.fwd(b);
 
                 EXPECT(points_equal(b, ref[k], EPS));
                 EXPECT(points_equal(a, c, EPS));
@@ -185,7 +187,7 @@ CASE("rotation (3)") {
 }
 
 
-CASE("rotation (4)") {
+CASE("rotation: not rotated, by angle, by matrix") {
     const projection::Rotation non_rotated({0., -90.}, 0.);
     const projection::Rotation rotation_angle({0., -90.}, -180.);
     const projection::Rotation rotation_matrix({4., -40.}, 180.);
@@ -216,16 +218,115 @@ CASE("rotation (4)") {
     };
 
     for (const auto& test : tests) {
-        auto b = test.rotation.fwd(test.a);
+        auto b = test.rotation.inv(test.a);
         EXPECT(points_equal(b, test.b, EPS));
 
-        auto a = test.rotation.inv(b);
+        auto a = test.rotation.fwd(b);
         EXPECT(points_equal(a, test.a, EPS));
     }
 }
 
 
-CASE("rotation (5)") {
+CASE("rotation: South Pole at -90 (its longitude as the angle)") {
+    struct test_t {
+        double south_pole_lon;
+        double angle;
+        double expected_angle;  // the angle less the South Pole longitude, in [-180, 180)
+        PointLonLat q;          // on the rotated sphere
+        PointLonLat p;          // geographic (inv(q))
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {10., 0., -10., {50., 30.}, {60., 30.}},
+             {10., 25., 15., {50., 30.}, {35., 30.}},
+             {-30., 5., 35., {0., -45.}, {-35., -45.}},
+             {170., -40., 150., {-120., 60.}, {90., 60.}},
+             {-120., 90., -150., {10., 0.}, {160., 0.}},
+             {45., 360., -45., {0., 60.}, {45., 60.}},
+         }) {
+        const projection::Rotation rotation({test.south_pole_lon, -90.}, test.angle);
+        const projection::Rotation equivalent(SOUTH_POLE, test.expected_angle);
+        const projection::Rotation close({test.south_pole_lon, -89.999}, test.angle);  // by the rotation matrix
+
+        EXPECT(rotation.rotated());
+        EXPECT(points_equal(rotation.south_pole(), SOUTH_POLE));
+        EXPECT(types::is_approximately_equal(rotation.angle(), test.expected_angle, PointLonLat::EPS));
+        EXPECT(rotation.spec_str() == equivalent.spec_str());
+
+        // from/to the rotated sphere
+        EXPECT(points_equal(rotation.inv(test.q), test.p));
+        EXPECT(points_equal(rotation.fwd(test.p), test.q));
+
+        // by spec
+        std::unique_ptr<const Projection> from_spec(ProjectionFactory::make_from_string(
+            "{type: rotation, south_pole_lon: " + std::to_string(test.south_pole_lon) +
+            ", south_pole_lat: -90, rotation_angle: " + std::to_string(test.angle) + "}"));
+        EXPECT(from_spec->spec_str() == rotation.spec_str());
+        EXPECT(points_equal(from_spec->inv(test.q), test.p));
+
+        // round trips, and as the rotation matrix (close to the South Pole)
+        for (const auto& q : std::vector<PointLonLat>{{0., 0.}, {50., 30.}, {-120., -45.}, {179., 60.}, test.q}) {
+            EXPECT(points_equal(rotation.inv(q), equivalent.inv(q)));
+            EXPECT(points_equal(rotation.inv(q), close.inv(q), 1e-2));
+            EXPECT(points_equal(rotation.fwd(rotation.inv(q)), q));
+            EXPECT(points_equal(rotation.inv(rotation.fwd(q)), q));
+        }
+    }
+
+    // the South Pole longitude and the angle cancelling out, not a rotation
+    for (const auto& [lon, angle] : std::vector<std::pair<double, double>>{{10., 10.}, {-30., 330.}}) {
+        const projection::Rotation rotation({lon, -90.}, angle);
+        EXPECT_NOT(rotation.rotated());
+        EXPECT(points_equal(rotation.inv(PointLonLat{50., 30.}), PointLonLat{50., 30.}));
+    }
+}
+
+
+CASE("rotation: reverse (the inverse rotation)") {
+    struct test_t {
+        PointLonLat south_pole;
+        double angle;
+        std::string spec;  // reversed, as the inverse rotation
+    };
+
+    const std::vector<PointLonLat> points{{0., 0.}, {50., 30.}, {-120., -45.}, {179., 60.}};
+
+    for (const auto& test : std::vector<test_t>{
+             {{10., -40.}, 0., R"({"rotation_angle":-170,"south_pole":[-180,-40],"type":"rotation"})"},  // by matrix
+             {{10., -40.}, 25., R"({"rotation_angle":-170,"south_pole":[-155,-40],"type":"rotation"})"},
+             {{10., -90.}, 25., R"({"rotation_angle":-15,"type":"rotation"})"},  // by angle
+             {SOUTH_POLE, 0., "{}"},                                             // not a rotation
+         }) {
+        const projection::Rotation rotation(test.south_pole, test.angle);
+        const projection::Rotation reverse(test.south_pole, test.angle, true);
+        const projection::Reverse wrapped(new projection::Rotation(test.south_pole, test.angle));
+        const projection::Reverse reversed_reverse(new projection::Rotation(test.south_pole, test.angle, true));
+
+        EXPECT(reverse.spec_str() == test.spec);
+        EXPECT_NOT(reverse.reverse());
+        EXPECT(reverse.identity() == rotation.identity());
+
+        // as reversed by projection::Reverse, and by the spec
+        std::unique_ptr<const Projection> by_spec(ProjectionFactory::build(wrapped.spec()));
+        EXPECT(*by_spec == reverse);
+
+        // reversed again, as not reversed
+        std::unique_ptr<const Projection> by_spec_again(ProjectionFactory::build(reversed_reverse.spec()));
+        EXPECT(*by_spec_again == rotation);
+
+        for (const auto& p : points) {
+            EXPECT(points_equal(reverse.fwd(p), rotation.inv(p)));
+            EXPECT(points_equal(reverse.inv(p), rotation.fwd(p)));
+            EXPECT(points_equal(wrapped.fwd(p), reverse.fwd(p)));
+            EXPECT(points_equal(wrapped.inv(p), reverse.inv(p)));
+            EXPECT(points_equal(reversed_reverse.fwd(p), rotation.fwd(p)));
+            EXPECT(points_equal(reversed_reverse.inv(p), rotation.inv(p)));
+        }
+    }
+}
+
+
+CASE("rotation: composed") {
     spec::Custom spec({
         {"type", "rotation"},
         {"south_pole_lat", -90.},
@@ -257,9 +358,9 @@ CASE("rotation (5)") {
         auto qs = dynamic_cast<projection::Composer*>(composition1.get())->fwd_points(p);
         EXPECT(qs.size() == 8);
 
-        EXPECT(points_equal(qs.front(), PointLonLat{-45., lat}));
-        EXPECT(points_equal(qs[1], PointLonLat{-90., lat}));
-        EXPECT(points_equal(qs[2], PointLonLat{-135., lat}));
+        EXPECT(points_equal(qs.front(), PointLonLat{45., lat}));
+        EXPECT(points_equal(qs[1], PointLonLat{90., lat}));
+        EXPECT(points_equal(qs[2], PointLonLat{135., lat}));
         // ...
         EXPECT(points_equal(qs.back(), p));
     }
@@ -284,7 +385,7 @@ CASE("rotation (5)") {
 }
 
 
-CASE("make_from_projection (1)") {
+CASE("rotation: bounding box (1)") {
     projection::Rotation rotation(spec::Custom({
         {"type", "rotation"},
         {"south_pole_lat", 10.},
@@ -303,7 +404,7 @@ CASE("make_from_projection (1)") {
              {{0., 0.}, {-160., 80.}},
              {{2., 0.}, {-171.370559, 79.803957}},
          }) {
-        EXPECT(points_equal(rotation.fwd(test.p), test.q, EPS));
+        EXPECT(points_equal(rotation.inv(test.p), test.q, EPS));
     }
 
     EXPECT_THROWS_AS(auto dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
@@ -317,7 +418,7 @@ CASE("make_from_projection (1)") {
 }
 
 
-CASE("make_from_projection (2)") {
+CASE("rotation: bounding box (2)") {
     projection::Rotation rotation({22, -40});
     PointLonLat min(-27, 33);
     PointLonLat max(45, 73);
@@ -380,20 +481,25 @@ CASE("rotation: vectors") {
     }
 
 
-    SECTION("none") {
+    SECTION("not rotated") {
         check(projection::Rotation{});
     }
 
 
     SECTION("reverse") {
-        projection::Reverse reverse(new projection::Rotation(PointLonLat{10., -40.}));
-        projection::Rotation rotation(PointLonLat{10., -40.});
+        const projection::Rotation rotation(PointLonLat{10., -40.});
+        const projection::Rotation reverse(PointLonLat{10., -40.}, 0., true);
+        const projection::Reverse wrapped(new projection::Rotation(PointLonLat{10., -40.}));
 
-        const auto a = reverse.fwd(lon, lat);
-        const auto b = rotation.inv(lon, lat);
+        check(reverse);
+        check(wrapped);
 
-        EXPECT(approx(a[0], b[0]));
-        EXPECT(approx(a[1], b[1]));
+        const auto a = rotation.inv(lon, lat);
+        for (const Projection* projection : std::vector<const Projection*>{&reverse, &wrapped}) {
+            const auto b = projection->fwd(lon, lat);
+            EXPECT(approx(a[0], b[0]));
+            EXPECT(approx(a[1], b[1]));
+        }
     }
 }
 

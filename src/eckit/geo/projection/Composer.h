@@ -16,13 +16,13 @@
 namespace eckit::geo::projection {
 
 
-class Composer : public Projection, private std::deque<Projection*> {
+class Composer : public Projection, private std::deque<const Projection*> {
 public:
 
     // -- Constructors
 
     explicit Composer() = default;
-    Composer(std::initializer_list<Projection*>);
+    Composer(std::initializer_list<const Projection*>);
 
     Composer(const Composer&) = delete;
     Composer(Composer&&)      = delete;
@@ -43,8 +43,8 @@ public:
     // -- Methods
 
     void clear();
-    void emplace_back(Projection*);
-    void emplace_front(Projection*);
+    void emplace_back(const Projection*);
+    void emplace_front(const Projection*);
 
     using deque::empty;
     using deque::size;
@@ -61,8 +61,8 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Projection* compose_back(Projection*, const Spec&);
-    [[nodiscard]] static Projection* compose_front(const Spec&, Projection*);
+    [[nodiscard]] static Projection* compose_back(const Projection*, const Spec&);
+    [[nodiscard]] static Projection* compose_front(const Spec&, const Projection*);
 
 private:
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -14,9 +15,25 @@
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+#include "eckit/thread/ThreadPool.h"
 
 
 namespace eckit::geo::test {
+
+
+/// Thread pool task, calling a function
+template <typename Function>
+class Task final : public ThreadPoolTask {
+public:
+
+    explicit Task(Function fun) : fun_(std::move(fun)) {}
+
+private:
+
+    void execute() override { fun_(); }
+
+    Function fun_;
+};
 
 
 void cleanup() {
@@ -61,6 +78,39 @@ CASE("unstructured_ll") {
     EXPECT(*b == *e);
     EXPECT(*b == *f);
     EXPECT(b->uid() == g->uid());  // b has a name, g doesn't
+
+    cleanup();
+}
+
+
+CASE("unstructured_ll: concurrent constructions (re-registering) and lookups of a uid") {
+    cleanup();
+
+    const std::string name = "concurrent-grid";
+    const std::vector<double> lats{0, 1, 2, 3};
+    const std::vector<double> lons{0, 1, 2, 3};
+    const auto uid = grid::Unstructured(lons, lats, name).uid();
+
+    constexpr size_t N = 8;
+    constexpr size_t M = 50;
+
+    ThreadPool pool("threads", N);
+    for (size_t i = 0; i < N; ++i) {
+        pool.push(new Task([&, i]() {
+            for (size_t j = 0; j < M; ++j) {
+                if (i % 2 == 0) {
+                    const grid::Unstructured grid(lons, lats, name);  // re-registers the uid and name
+                    EXPECT(grid.uid() == uid);
+                    continue;
+                }
+
+                std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{uid: " + uid + "}"));
+                EXPECT(grid->uid() == uid);
+                EXPECT(grid->to_points().size() == lats.size());
+            }
+        }));
+    }
+    pool.waitForThreads();  // throws if a task failed
 
     cleanup();
 }

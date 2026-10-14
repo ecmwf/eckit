@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <map>
 #include <ostream>
-#include <string>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"

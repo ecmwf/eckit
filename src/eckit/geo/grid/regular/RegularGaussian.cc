@@ -9,7 +9,6 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 

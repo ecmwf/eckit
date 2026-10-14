@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 #include <variant>
@@ -46,6 +47,10 @@ template <>
 const std::vector<std::string>& point_coordinates<PointLonLatR>();
 
 const std::vector<std::string>& point_coordinates(const Point&);
+
+
+/// Coordinate names of the point type at an index of Point
+const std::vector<std::string>& point_coordinates(size_t index);
 
 
 }  // namespace eckit::geo

@@ -16,7 +16,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/order/Scan.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"

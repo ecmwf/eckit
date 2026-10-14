@@ -12,6 +12,7 @@
 #include <ostream>
 #include <regex>
 #include <string>
+#include <utility>
 
 #include "eckit/spec/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
@@ -28,6 +29,13 @@ namespace eckit::spec {
 
 //------------------------------------------------------------------------------------------------------
 
+struct lock_type {
+    explicit lock_type(Mutex& mutex) : lock_guard_{mutex} {}
+    AutoLock<Mutex> lock_guard_;
+};
+
+//------------------------------------------------------------------------------------------------------
+
 template <class C>
 class GeneratorT {
 public:
@@ -36,7 +44,7 @@ public:
 
     using generator_t = C;
     using key_t       = std::string;
-    using storage_t   = std::map<key_t, std::unique_ptr<generator_t>>;
+    using storage_t   = std::map<key_t, std::shared_ptr<generator_t>>;  // shared, so in use while unregistered
 
     // -- Constructors
 
@@ -58,11 +66,26 @@ public:
     void regist(const key_t&, generator_t*);
     void unregist(const key_t&);
 
-    const generator_t& get(const key_t&) const;
-    const generator_t& match(const std::string&) const;
+    void replace(const key_t&, generator_t*);
+
+    const generator_t& get(const key_t& k) const { return *get_shared(k); }
+    const generator_t& match(const std::string& k) const { return *match_shared(k); }
+
+    template <typename... Args>
+    [[nodiscard]] auto get_spec(const key_t& k, Args&&... args) const {
+        return get_shared(k)->spec(std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    [[nodiscard]] auto match_spec(const std::string& k, Args&&... args) const {
+        return match_shared(k)->spec(std::forward<Args>(args)...);
+    }
+
     const storage_t& store() const { return store_; }
 
     bool match(const Custom& spec, std::string& name) const {
+        lock_type lock(mutex_);
+
         auto end = store_.cend();
         auto i   = end;
         for (auto j = store_.cbegin(); j != end; ++j) {
@@ -96,6 +119,9 @@ private:
 
     // -- Methods
 
+    std::shared_ptr<const generator_t> get_shared(const key_t&) const;
+    std::shared_ptr<const generator_t> match_shared(const std::string&) const;
+
     void print(std::ostream&) const;
 
     // -- Friends
@@ -104,13 +130,6 @@ private:
         o.print(os);
         return os;
     }
-};
-
-//------------------------------------------------------------------------------------------------------
-
-struct lock_type {
-    explicit lock_type(Mutex& mutex) : lock_guard_{mutex} {}
-    AutoLock<Mutex> lock_guard_;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -151,6 +170,14 @@ void GeneratorT<C>::regist(const key_t& k, generator_t* c) {
 }
 
 template <class C>
+void GeneratorT<C>::replace(const key_t& k, generator_t* c) {
+    lock_type lock(mutex_);
+
+    ASSERT(c != nullptr);
+    store_[k].reset(c);
+}
+
+template <class C>
 void GeneratorT<C>::unregist(const key_t& k) {
     lock_type lock(mutex_);
 
@@ -163,18 +190,18 @@ void GeneratorT<C>::unregist(const key_t& k) {
 }
 
 template <class C>
-const typename GeneratorT<C>::generator_t& GeneratorT<C>::get(const key_t& k) const {
+std::shared_ptr<const typename GeneratorT<C>::generator_t> GeneratorT<C>::get_shared(const key_t& k) const {
     lock_type lock(mutex_);
 
     if (auto it = store_.find(k); it != store_.end()) {
-        return *(it->second);
+        return it->second;
     }
 
     throw BadParameter("Generator unknown: '" + k + "'", Here());
 }
 
 template <class C>
-const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::string& k) const {
+std::shared_ptr<const typename GeneratorT<C>::generator_t> GeneratorT<C>::match_shared(const std::string& k) const {
     lock_type lock(mutex_);
 
     auto end = store_.cend();
@@ -190,7 +217,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
     }
 
     if (i != end) {
-        return *(i->second);
+        return i->second;
     }
 
     throw BadParameter("Generator unknown: '" + k + "'", Here());

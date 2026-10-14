@@ -87,12 +87,12 @@ fn rotation() {
         ["longitude", "latitude"]
     );
 
-    // fwd: rotated (lon, lat) to geographic (lon, lat); the rotated south pole is the
-    // given south pole, and the rotated equator is 90 degree away from it
-    assert!((lonlat_of(rotation.fwd(lonlat(0.0, -90.0)).expect("fwd")).1 + 40.0).abs() < EPS_LL);
-    assert!((lonlat_of(rotation.inv(lonlat(10.0, -40.0)).expect("inv")).1 + 90.0).abs() < EPS_LL);
+    // fwd: geographic (lon, lat) to the rotated sphere (as PROJ ob_tran), inv the reverse; the
+    // rotated south pole is the given south pole, and the rotated equator is 90 degree away from it
+    assert!((lonlat_of(rotation.inv(lonlat(0.0, -90.0)).expect("inv")).1 + 40.0).abs() < EPS_LL);
+    assert!((lonlat_of(rotation.fwd(lonlat(10.0, -40.0)).expect("fwd")).1 + 90.0).abs() < EPS_LL);
     assert!(close(
-        lonlat_of(rotation.fwd(lonlat(0.0, 0.0)).expect("fwd")),
+        lonlat_of(rotation.inv(lonlat(0.0, 0.0)).expect("inv")),
         (10.0, 50.0),
         EPS_LL
     ));

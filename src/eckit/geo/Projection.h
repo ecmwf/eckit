@@ -83,13 +83,17 @@ public:
 
     bool is_default() const;
 
-    /// If fwd/inv are reversed (see projection::Reverse)
+    /// If fwd/inv are reversed
     virtual bool reverse() const { return false; }
+
+    /// If fwd/inv are the identity, the same reversed
+    virtual bool identity() const { return false; }
 
     // -- Class methods
 
     static std::string className() { return "projection"; }
 
+    /// Default projection, (lon, lat) to (x, y) in degrees (equidistant cylindrical)
     static const Projection& projection_default();
 
     /// PROJ string of a projection spec (and its figure), for the projection types with a PROJ equivalent (not
@@ -101,6 +105,11 @@ public:
 
 protected:
 
+    // -- Constructors
+
+    /// Share the figure of another projection, with its source/target point types (swapped, if reversing it)
+    Projection(const Projection&, bool reverse);
+
     // -- Methods
 
     /// Set the source/target point types, given by example points
@@ -108,9 +117,6 @@ protected:
 
     /// Set the source/target point types as the source of the first and the target of the last projections
     void point_types_from(const Projection& first, const Projection& last);
-
-    /// Swap the source/target point types
-    void reverse_point_types();
 
     /// Project points (see fwd/inv), given one vector per coordinate of checked sizes (v3 is empty for points of 2
     /// coordinates); the default projects point by point

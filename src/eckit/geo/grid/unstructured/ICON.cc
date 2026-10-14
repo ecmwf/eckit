@@ -45,7 +45,7 @@ ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_
 
 ICON::ICON(const std::string& name, Arrangement a) :
     ICON(*[](const std::string& grid) {
-        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match(grid).spec(grid));
+        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match_spec(grid, grid));
     }(name + "_" + arrangement_to_string(a))) {}
 
 
@@ -61,7 +61,7 @@ std::vector<size_t> ICON::shape() const {
 
 
 Grid::Spec* ICON::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get(str).spec() : GridSpecByName::instance().get(str).spec(str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(str) : GridSpecByName::instance().get_spec(str, str);
 }
 
 

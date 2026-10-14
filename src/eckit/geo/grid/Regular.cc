@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"

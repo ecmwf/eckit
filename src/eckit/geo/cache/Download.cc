@@ -141,7 +141,7 @@ Download::info_type download(const Download::url_type& url, const PathName& path
     std::string error;
     unsigned long long bytes = 0;
 
-    auto tmp = path + ".part";
+    auto tmp = PathName::unique(path + ".part");  // unique, as concurrent downloads (eg. to_path) can overlap
     auto dir = path.dirName();
 
     dir.mkdir();

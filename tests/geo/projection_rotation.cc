@@ -30,7 +30,7 @@ using P = std::unique_ptr<Projection>;
 constexpr double EPS = 1e-6;
 
 
-CASE("rotation (1)") {
+CASE("rotation: South Pole out of range") {
     spec::Custom spec({
         {"type", "rotation"},
         {"south_pole_lat", -91.},
@@ -45,7 +45,7 @@ CASE("rotation (1)") {
 }
 
 
-CASE("rotation (2)") {
+CASE("rotation: round trips") {
     const PointLonLat p(1, 1);
     int delta[] = {-360, -180, -1, 0, 1, 90, 91, 180};
 
@@ -64,7 +64,7 @@ CASE("rotation (2)") {
 }
 
 
-CASE("rotation (3)") {
+CASE("rotation: points") {
     const PointLonLat sp(182., -46.7);
     projection::Rotation rot({sp.lon(), sp.lat()}, 0.);
 
@@ -187,7 +187,7 @@ CASE("rotation (3)") {
 }
 
 
-CASE("rotation (4)") {
+CASE("rotation: not rotated, by angle, by matrix") {
     const projection::Rotation non_rotated({0., -90.}, 0.);
     const projection::Rotation rotation_angle({0., -90.}, -180.);
     const projection::Rotation rotation_matrix({4., -40.}, 180.);
@@ -326,7 +326,7 @@ CASE("rotation: reverse (the inverse rotation)") {
 }
 
 
-CASE("rotation (5)") {
+CASE("rotation: composed") {
     spec::Custom spec({
         {"type", "rotation"},
         {"south_pole_lat", -90.},
@@ -385,7 +385,7 @@ CASE("rotation (5)") {
 }
 
 
-CASE("make_from_projection (1)") {
+CASE("rotation: bounding box (1)") {
     projection::Rotation rotation(spec::Custom({
         {"type", "rotation"},
         {"south_pole_lat", 10.},
@@ -418,7 +418,7 @@ CASE("make_from_projection (1)") {
 }
 
 
-CASE("make_from_projection (2)") {
+CASE("rotation: bounding box (2)") {
     projection::Rotation rotation({22, -40});
     PointLonLat min(-27, 33);
     PointLonLat max(45, 73);
@@ -481,7 +481,7 @@ CASE("rotation: vectors") {
     }
 
 
-    SECTION("none") {
+    SECTION("not rotated") {
         check(projection::Rotation{});
     }
 

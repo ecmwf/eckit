@@ -94,18 +94,7 @@ CASE("PROJ strings of grids") {
               "+proj=lcc +lat_1=30 +R=6371229"},
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
-        const auto& projection = grid->projection();
-        EXPECT(projection.proj_str() == test.proj_str);
-
-        // rotations as PROJ (ob_tran), to the rotated (lon, lat)
-        if (projection.type() == "rotation") {
-            P proj(ProjectionFactory::build(
-                spec::Custom{{"type", "proj"}, {"source", "+proj=longlat +R=6371229"}, {"target", test.proj_str}}));
-
-            for (const auto& p : std::vector<PointLonLat>{{0., 0.}, {10., 20.}, {-35., 50.}, {120., -30.}}) {
-                EXPECT(points_equal(projection.fwd(p), proj->fwd(p), 1e-6));
-            }
-        }
+        EXPECT(grid->projection().proj_str() == test.proj_str);
     }
 }
 
@@ -146,7 +135,7 @@ CASE("PROJ strings of projections") {
         P projection(ProjectionFactory::make_from_string(test.spec));
         EXPECT(projection->proj_str() == test.proj_str);
 
-        // the same coordinates as PROJ, from (lon, lat) (rotations are tested with grids)
+        // the same coordinates as PROJ, from (lon, lat) (see rotation, as PROJ)
         if (!LibEcKitGeo::projdb_is_available() || projection->type() == "rotation" || projection->type() == "proj" ||
             projection->reverse()) {
             continue;
@@ -195,11 +184,6 @@ CASE("projection: proj") {
     for (const auto& test : tests_proj) {
         P projection(ProjectionFactory::build(
             spec::Custom{{{"type", "proj"}, {"source", test.source}, {"target", test.target}}}));
-
-#if 0
-Log::info() << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
-          << std::endl;
-#endif
 
         auto b = projection->fwd(a);
         auto c = projection->inv(b);
@@ -431,6 +415,9 @@ CASE("projection: rotation, as PROJ") {
          R"({"rotation_angle":25,"south_pole":[10,-40],"type":"rotation"})",
          R"({"source":"+proj=longlat +R=6371229",)"
          R"("target":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229","type":"proj"})"},
+        {"{type: rotation, south_pole: [-20, -30]}", R"({"south_pole":[-20,-30],"type":"rotation"})",
+         R"({"source":"+proj=longlat +R=6371229",)"
+         R"("target":"+proj=ob_tran +lon_0=-20 +o_lat_p=30 +o_proj=longlat +R=6371229","type":"proj"})"},
     };
 
     for (const auto& test : tests) {

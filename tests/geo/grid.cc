@@ -212,7 +212,7 @@ CASE("Grid::to_xyz") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(GEOCENTRIC_GRID));
         EXPECT(!grid->empty());
 
-        EXPECT_THROWS_AS(grid->to_latlons(), exception::GridError);
+        EXPECT_THROWS_AS((void)grid->to_latlons(), exception::GridError);
         EXPECT((grid->point_coordinates() == std::vector<std::string>{"x", "y", "z"}));
 
         const auto xyz = grid->to_xyz();

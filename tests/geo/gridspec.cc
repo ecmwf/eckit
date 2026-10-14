@@ -44,8 +44,8 @@ CASE("canonical (global grids)") {
 
     static const auto bbox_global = area::BoundingBox::bounding_box_default().spec_str();
 
-    for (const auto& test : {
-             test_t{"{grid: 10/10}", R"({"grid":[10,10]})", 684},
+    for (const auto& test : std::vector<test_t>{
+             {"{grid: 10/10}", R"({"grid":[10,10]})", 684},
              {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},
              {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},
              {"{grid: o8}", R"({"grid":"O8"})", 544},

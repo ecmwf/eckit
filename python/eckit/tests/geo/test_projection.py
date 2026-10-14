@@ -295,3 +295,20 @@ def test_projection_rotation_reverse():
     assert reverse.fwd(*p) == pytest.approx(plain.inv(*p))
     assert reverse.inv(*p) == pytest.approx(plain.fwd(*p))
 
+
+@pytest.mark.parametrize(
+    "spec",
+    [
+        dict(type="rotation"),
+        dict(type="rotation", south_pole=[0, -90], reverse=True),
+        dict(type="rotation", south_pole=[10, -90], rotation_angle=10.0),
+    ],
+)
+def test_projection_identity(spec):
+    # the identity (e.g. a rotation not rotating) is built as the default
+    projection = Projection(spec)
+    assert projection == Projection({})
+    assert projection.type == "eqc"
+    assert projection.spec == {}
+    assert not projection.identity
+    assert not projection.reverse

@@ -166,12 +166,6 @@ const std::string& Rotation::type() const {
 }
 
 
-Rotation* Rotation::make_from_spec(const Spec& spec) {
-    auto r = std::make_unique<Rotation>(spec);
-    return r->rotated() ? r.release() : nullptr;
-}
-
-
 void Rotation::fill_spec(spec::Custom& custom) const {
     if (!rotated_) {
         return;

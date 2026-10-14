@@ -45,6 +45,7 @@ CASE("rotated: spec equivalences") {
              R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
          }) {
         EXPECT(grd(spec)->spec_str() == R"({"grid":[5,5]})");
+        EXPECT(grd(spec)->projection().type() == "eqc");  // not a rotation
     }
 
     struct {

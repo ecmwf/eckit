@@ -198,7 +198,6 @@ def test_proj_epsg_4326_to_3857_arrays():
 @pytest.mark.parametrize(
     "spec, proj_str",
     [
-        (dict(type="none"), "+proj=longlat +R=6371229"),
         (
             dict(type="eqc", lat_ts=30.0, lat_0=10.0),
             "+proj=eqc +lat_0=10 +lat_ts=30 +to_meter=111198.923448546 +R=6371229",

@@ -17,9 +17,8 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
@@ -76,15 +75,21 @@ const Projection* make(const std::string& type, const Projection::Spec& spec) {
         throw exception::ProjectionError("ProjectionFactory: unknown projection type '" + type + "'", Here());
     }
 
-    const auto* projection = Factory<Projection>::instance().get(type).create(spec);
+    std::unique_ptr<const Projection> projection(Factory<Projection>::instance().get(type).create(spec));
+
+    // the identity as the default
+    if (projection->identity()) {
+        return ProjectionFactory::make_default();
+    }
+
     if (!spec.get_bool("reverse", false)) {
-        return projection;
+        return projection.release();
     }
 
     auto& self_reversing = SelfReversing::instance();
     util::lock_guard<util::recursive_mutex> lock(self_reversing.mutex);
 
-    return self_reversing.types.count(type) == 0 ? new projection::Reverse(projection) : projection;
+    return self_reversing.types.count(type) == 0 ? new projection::Reverse(projection.release()) : projection.release();
 }
 
 
@@ -298,22 +303,11 @@ std::string Projection::proj_str(const spec::Custom& custom) {
     // projection types with a PROJ equivalent
     static const std::map<std::string, std::string> NAMES{
         {"", "longlat"},  // the default projection
-        {"none", "longlat"},
-        {"aea", "aea"},
-        {"albers", "aea"},
-        {"eqc", "eqc"},
-        {"plate-carree", "eqc"},
-        {"laea", "laea"},
-        {"lambert_azimuthal_equal_area", "laea"},
-        {"lcc", "lcc"},
-        {"lambert", "lcc"},
-        {"lambert_lam", "lcc"},
-        {"ll-to-xyz", "cart"},
-        {"merc", "merc"},
-        {"mercator", "merc"},
-        {"rotation", "ob_tran"},
-        {"stere", "stere"},
-        {"polar_stereographic", "stere"},
+        {"aea", "aea"},          {"albers", "aea"},  {"eqc", "eqc"},
+        {"plate-carree", "eqc"}, {"laea", "laea"},   {"lambert_azimuthal_equal_area", "laea"},
+        {"lcc", "lcc"},          {"lambert", "lcc"}, {"lambert_lam", "lcc"},
+        {"ll-to-xyz", "cart"},   {"merc", "merc"},   {"mercator", "merc"},
+        {"rotation", "ob_tran"}, {"stere", "stere"}, {"polar_stereographic", "stere"},
     };
 
     const auto name = NAMES.find(type);
@@ -387,13 +381,13 @@ bool Projection::is_default() const {
 
 
 const Projection& Projection::projection_default() {
-    static const projection::None PROJECTION;
+    static const projection::EquidistantCylindrical PROJECTION;
     return PROJECTION;
 }
 
 
 const Projection* ProjectionFactory::make_default() {
-    return ProjectionFactory::build(Projection::projection_default().spec());
+    return new projection::EquidistantCylindrical;
 }
 
 
@@ -450,9 +444,7 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
     }
 
     if (spec.has("rotation")) {
-        if (auto* rotation = projection::Rotation::make_from_spec(spec); rotation != nullptr) {
-            return rotation;
-        }
+        return make("rotation", spec);
     }
 
     std::unique_ptr<Projection::Spec> cfg(make_spec(spec));

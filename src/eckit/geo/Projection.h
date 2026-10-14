@@ -93,6 +93,7 @@ public:
 
     static std::string className() { return "projection"; }
 
+    /// Default projection, (lon, lat) to (x, y) in degrees (equidistant cylindrical)
     static const Projection& projection_default();
 
     /// PROJ string of a projection spec (and its figure), for the projection types with a PROJ equivalent (not

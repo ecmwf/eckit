@@ -48,10 +48,6 @@ public:
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
 
-    // -- Class methods
-
-    [[nodiscard]] static Rotation* make_from_spec(const Spec&);
-
 protected:
 
     // -- Overridden methods

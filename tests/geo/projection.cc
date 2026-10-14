@@ -18,7 +18,6 @@
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"  // to test Reverse
-#include "eckit/geo/projection/None.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/projection/Stretch.h"
@@ -30,12 +29,19 @@
 namespace eckit::geo::test {
 
 
-CASE("projection: none") {
-    Point p = PointLonLat{1, 1};
-    std::unique_ptr<Projection> projection(Factory<Projection>::instance().get("none").create(spec::Custom{}));
+CASE("projection: default") {
+    const auto& projection = Projection::projection_default();
+    std::unique_ptr<const Projection> made(ProjectionFactory::make_default());
 
-    EXPECT(points_equal(p, projection->inv(p)));
-    EXPECT(points_equal(p, projection->fwd(p)));
+    EXPECT(projection.type() == "eqc");
+    EXPECT(projection.spec_str() == "{}");
+    EXPECT(projection.is_default());
+    EXPECT_NOT(projection.identity());
+    EXPECT(*made == projection);
+
+    // a type not of a projection (e.g. a grid's), the default
+    std::unique_ptr<const Projection> none(ProjectionFactory::make_from_string("{type: none}"));
+    EXPECT(none->is_default());
 }
 
 
@@ -61,6 +67,19 @@ CASE("projection: identity") {
     EXPECT_NOT(rotated.identity());
     EXPECT_NOT(reverse_rotated.identity());
     EXPECT_NOT(projection::LonLatToXYZ(new figure::UnitSphere).identity());
+
+    // by the factory, as the default (of the same spec)
+    for (const auto& spec : std::vector<std::string>{
+             "{type: rotation}",
+             "{type: rotation, reverse: true}",
+             "{type: rotation, south_pole: [10, -90], rotation_angle: 10}",
+             "{rotation: [-90, 0]}",
+         }) {
+        std::unique_ptr<const Projection> projection(ProjectionFactory::make_from_string(spec));
+        EXPECT(projection->type() == "eqc");
+        EXPECT(projection->is_default());
+        EXPECT_NOT(projection->identity());
+    }
 }
 
 
@@ -337,7 +356,6 @@ CASE("projection: point types") {
 
 
     SECTION("by class") {
-        check(projection::None{}, LL, LL);
         check(projection::Rotation{PointLonLat{10., -40.}}, LL, LL);
         check(projection::EquidistantCylindrical{}, LL, XY);
         check(projection::LonLatToXYZ{new figure::UnitSphere}, LL, XYZ);

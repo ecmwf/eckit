@@ -117,7 +117,6 @@ CASE("PROJ strings of projections") {
     };
 
     for (const auto& test : std::vector<test_t>{
-             {"{type: none}", "+proj=longlat +R=6371229"},
              {"{type: eqc, lat_ts: 30, lat_0: 10}",
               "+proj=eqc +lat_0=10 +lat_ts=30 +to_meter=111198.923448546 +R=6371229"},
              {"{type: plate-carree, lat_ts: 30, figure: wgs84}",

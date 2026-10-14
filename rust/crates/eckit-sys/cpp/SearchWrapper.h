@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// eckit geo Search bridge — a cached `eckit::geo::Search`.
+// eckit geo Search bridge: a cached `eckit::geo::Search`.
 #pragma once
 
 #include "eckit/geo/Search.h"

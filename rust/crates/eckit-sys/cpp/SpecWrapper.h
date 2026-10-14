@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// eckit spec bridge — read-only view of an `eckit::spec::Spec`.
+// eckit spec bridge: read-only view of an `eckit::spec::Spec`.
 #pragma once
 
 #include "eckit/spec/Spec.h"

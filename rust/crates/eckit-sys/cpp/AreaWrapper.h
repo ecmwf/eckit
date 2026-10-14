@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// eckit geo Area bridge — wraps `eckit::geo::Area`.
+// eckit geo Area bridge: wraps `eckit::geo::Area`.
 #pragma once
 
 #include "SpecWrapper.h"
@@ -67,7 +67,7 @@ public:
 
     // ============== Factories ==============
 
-    /// Build an area from a spec — a YAML/JSON mapping, e.g. `{"area":[90,0,-90,360]}`.
+    /// Build an area from a spec, a YAML/JSON mapping, e.g. `{"area":[90,0,-90,360]}`.
     static std::unique_ptr<AreaWrapper> from_spec(rust::Str spec);
 
     /// Build a bounding box from its extent.

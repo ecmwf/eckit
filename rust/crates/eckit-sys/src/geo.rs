@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-//! FFI bindings to `eckit::geo` — grids, identified by gridSpec, and their
+//! FFI bindings to `eckit::geo`: grids, identified by gridSpec, and their
 //! areas, figures, projections and point searches.
 
 #[cxx::bridge(namespace = "eckit_bridge")]
@@ -18,13 +18,13 @@ mod ffi {
     /// Which alternative of the `eckit::geo::Point` variant a [`RawPoint`] holds.
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     enum PointKind {
-        /// `PointXY` — `coords` is `[x, y, _]`.
+        /// `PointXY`: `coords` is `[x, y, _]`.
         Xy,
-        /// `PointXYZ` — `coords` is `[x, y, z]`.
+        /// `PointXYZ`: `coords` is `[x, y, z]`.
         Xyz,
-        /// `PointLonLat` — `coords` is `[lon, lat, _]`, in degrees.
+        /// `PointLonLat`: `coords` is `[lon, lat, _]`, in degrees.
         LonLat,
-        /// `PointLonLatR` — `coords` is `[lon, lat, _]`, in radians.
+        /// `PointLonLatR`: `coords` is `[lon, lat, _]`, in radians.
         LonLatR,
     }
 
@@ -217,7 +217,7 @@ mod ffi {
         /// An `eckit::geo::Area`: a bounding box, polygon or shapefile feature.
         type AreaWrapper;
 
-        /// Build an area from a spec — a YAML/JSON mapping, e.g.
+        /// Build an area from a spec, a YAML/JSON mapping, e.g.
         /// `{"area":[90,0,-90,360]}` or `{"type":"polygon",...}`.
         #[Self = "AreaWrapper"]
         fn from_spec(spec: &str) -> Result<UniquePtr<AreaWrapper>>;

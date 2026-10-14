@@ -175,10 +175,10 @@ fn projection_and_figure(grid: &Grid) {
 /// Every point's latitude and longitude, printing a sample.
 ///
 /// `fill_latlons` over caller-owned buffers is the form to reach for on real
-/// grids — O1280 is 6.6M points per array, and these buffers can be reused.
+/// grids: O1280 is 6.6M points per array, and these buffers can be reused.
 fn points(grid: &Grid, n: usize) -> Result<(Vec<f64>, Vec<f64>), eckit::Error> {
     let buffers = human_bytes(2 * n * size_of::<f64>());
-    section(&format!("points — {n} total, {buffers} of buffers"));
+    section(&format!("points: {n} total, {buffers} of buffers"));
     let mut lat = vec![0.0; n];
     let mut lon = vec![0.0; n];
     grid.fill_latlons(&mut lat, &mut lon)?;
@@ -310,7 +310,7 @@ fn point(p: Point) -> String {
 
 fn pl_summary(pl: &[i64]) -> String {
     if pl.is_empty() {
-        return "(none — no row structure)".to_string();
+        return "(none: no row structure)".to_string();
     }
     let sum: i64 = pl.iter().sum();
     format!("{}  (sum {sum})", summarize(pl, i64::to_string))

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// eckit geo Figure bridge — view of an `eckit::geo::Figure`.
+// eckit geo Figure bridge: view of an `eckit::geo::Figure`.
 #pragma once
 
 #include "SpecWrapper.h"

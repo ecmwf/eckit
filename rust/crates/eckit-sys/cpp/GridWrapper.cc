@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// eckit geo Grid bridge — implementation.
+// eckit geo Grid bridge: implementation.
 
 #include "eckit_exceptions.h"
 

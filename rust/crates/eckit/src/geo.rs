@@ -3,7 +3,7 @@
 
 //! Geospatial grids from `eckit::geo`.
 //!
-//! A grid is identified by its **gridSpec** — a YAML/JSON mapping such as
+//! A grid is identified by its **gridSpec**, a YAML/JSON mapping such as
 //! `{"grid":"O1280"}`. This is a more precise identity than a grid *name*: the
 //! spec round-trips through [`Grid::spec`] in canonical form and can carry an
 //! area, projection or explicit `pl` that a name cannot express.
@@ -187,7 +187,7 @@ impl Grid {
 
     /// The canonical gridSpec identifying this grid.
     ///
-    /// Normalised, so it may differ from the spec passed in — `{"grid":"o16"}`
+    /// Normalised, so it can differ from the spec passed in: `{"grid":"o16"}`
     /// comes back as `{"grid":"O16"}`. The view borrows the spec the grid
     /// caches; [`Spec::to_json_str`] gives the string form.
     #[must_use]
@@ -201,7 +201,7 @@ impl Grid {
     ///
     /// Grids shipped as data files (ORCA, FESOM, ICON) are described by an
     /// entry in eckit's shared grid catalog, keyed by uid, which carries what
-    /// the gridSpec does not: the data URL, shape, arrangement and so on. For
+    /// the gridSpec does not: the data URL, shape and arrangement. For
     /// every other grid the entry is the grid's own canonical spec, so the
     /// catalog is never empty and compares equal to [`Grid::spec`].
     ///
@@ -416,7 +416,7 @@ impl Grid {
     ///
     /// Both slices must hold at least [`Grid::len`] elements. Preferred over
     /// [`Grid::to_latlons`] for large grids, since it lets the caller reuse
-    /// buffers — O1280 alone is 6.6 million points per array.
+    /// buffers; O1280 alone is 6.6 million points per array.
     ///
     /// Fails with [`Error::GridError`](crate::Error) if the grid's points are
     /// not geographic ([`Point::LonLat`] or [`Point::LonLatR`]); see
@@ -737,7 +737,7 @@ pub fn cache_footprint() -> usize {
 
 /// Drop every entry from eckit geo's process-global memory caches.
 ///
-/// Live grids keep working, they simply recompute on next use. However eckit's
+/// Live grids keep working, they recompute on next use. However eckit's
 /// own iterators hold references into these caches while they run, so do not
 /// purge while another thread is inside [`Grid::fill_latlons`],
 /// [`Grid::to_latlons`] or any other grid call.

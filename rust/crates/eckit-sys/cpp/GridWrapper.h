@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// eckit geo Grid bridge — wraps `eckit::geo::Grid`.
+// eckit geo Grid bridge: wraps `eckit::geo::Grid`.
 #pragma once
 
 #include "ProjectionWrapper.h"
@@ -117,7 +117,7 @@ public:
 
     // ============== Factories ==============
 
-    /// Build a grid from a gridSpec — a YAML/JSON mapping, e.g. `{"grid":"O1280"}`, or a bare name.
+    /// Build a grid from a gridSpec, a YAML/JSON mapping, e.g. `{"grid":"O1280"}`, or a bare name.
     static std::unique_ptr<GridWrapper> from_spec(rust::Str spec);
 
     /// Build an unstructured grid from its points, optionally named.

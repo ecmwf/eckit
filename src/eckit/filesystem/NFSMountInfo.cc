@@ -12,6 +12,8 @@
 
 namespace eckit::filesystem::nfs {
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 std::optional<std::string> local_lock_option(std::istream& mountinfo, std::string_view device) {
 
     // id parent major:minor root mountpoint options [optional fields] - fstype source super-options
@@ -62,5 +64,7 @@ std::optional<std::string> local_lock_option([[maybe_unused]] std::string_view d
     return std::nullopt;
 #endif
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::filesystem::nfs

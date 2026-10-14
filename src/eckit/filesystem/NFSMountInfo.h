@@ -13,11 +13,13 @@
 
 namespace eckit::filesystem::nfs {
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /// Finds the NFS mount option that makes fcntl locks local to this client, if any.
 ///
 /// With `nolock` or `local_lock=posix|all` the kernel grants fcntl locks, including OFD locks, without asking the
-/// server, so they do not exclude other clients. `local_lock=flock` only affects flock(2) and is not reported. Only
-/// NFSv2/3 mounts can be in that state: the kernel clears these flags for NFSv4.
+/// server, so they do not exclude other clients. `local_lock=flock` only affects flock(2) and is not reported. On
+/// Linux only NFSv2/3 mounts can be in that state: the kernel clears these flags for NFSv4.
 ///
 /// @param mountinfo Mount table in /proc/self/mountinfo format.
 /// @param device    "major:minor" of the filesystem, as printed in the third column (see LocalPathName::device()).
@@ -27,5 +29,7 @@ std::optional<std::string> local_lock_option(std::istream& mountinfo, std::strin
 /// As above, reading the mount table of this process. Linux only: nothing is reported elsewhere, or if
 /// /proc/self/mountinfo cannot be read.
 std::optional<std::string> local_lock_option(std::string_view device);
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::filesystem::nfs

@@ -259,26 +259,22 @@ impl BoundingBox {
         self.area.spec()
     }
 
-    /// The box as an [`Area`].
-    #[must_use]
-    pub const fn as_area(&self) -> &Area {
-        &self.area
-    }
-
-    /// The box as an [`Area`], giving up the extent accessors.
-    #[must_use]
-    pub fn into_area(self) -> Area {
-        self.area
-    }
-
     pub(crate) fn as_sys(&self) -> &eckit_sys::geo::AreaWrapper {
         self.area.as_sys()
     }
 }
 
+/// The box as an [`Area`].
 impl AsRef<Area> for BoundingBox {
     fn as_ref(&self) -> &Area {
         &self.area
+    }
+}
+
+/// The box as an [`Area`], giving up the extent accessors.
+impl From<BoundingBox> for Area {
+    fn from(bbox: BoundingBox) -> Self {
+        bbox.area
     }
 }
 

@@ -127,36 +127,26 @@ impl<'g> Projection<'g> {
     /// # }
     /// ```
     pub fn fwd_vectors(&self, coords: &[&[f64]]) -> Result<Vec<Vec<f64>>> {
-        let [v1, v2, v3] = split_input(coords)?;
-        let flat = self
-            .inner
-            .fwd_vectors(v1, v2, v3)
-            .map_err(eckit_sys::Error::from)?;
-        Ok(split_output(
-            &flat,
-            v1.len(),
-            self.target_point_coordinates()?.len(),
-        ))
+        let [v1, v2, v3] = split(coords)?;
+        let mut out = vec![vec![0.0; v1.len()]; self.inner.target_dims()?];
+        let [o1, o2, o3] = split_mut(&mut out)?;
+        self.inner.fwd_vectors(v1, v2, v3, o1, o2, o3)?;
+        Ok(out)
     }
 
     /// Project points from the target to the source point type; see
     /// [`Projection::fwd_vectors`].
     pub fn inv_vectors(&self, coords: &[&[f64]]) -> Result<Vec<Vec<f64>>> {
-        let [v1, v2, v3] = split_input(coords)?;
-        let flat = self
-            .inner
-            .inv_vectors(v1, v2, v3)
-            .map_err(eckit_sys::Error::from)?;
-        Ok(split_output(
-            &flat,
-            v1.len(),
-            self.source_point_coordinates()?.len(),
-        ))
+        let [v1, v2, v3] = split(coords)?;
+        let mut out = vec![vec![0.0; v1.len()]; self.inner.source_dims()?];
+        let [o1, o2, o3] = split_mut(&mut out)?;
+        self.inner.inv_vectors(v1, v2, v3, o1, o2, o3)?;
+        Ok(out)
     }
 }
 
 /// One slice per coordinate, the third empty for points of 2 coordinates.
-fn split_input<'a>(coords: &[&'a [f64]]) -> Result<[&'a [f64]; 3]> {
+fn split<'a>(coords: &[&'a [f64]]) -> Result<[&'a [f64]; 3]> {
     match coords {
         [v1, v2] => Ok([v1, v2, &[]]),
         [v1, v2, v3] => Ok([v1, v2, v3]),
@@ -167,12 +157,15 @@ fn split_input<'a>(coords: &[&'a [f64]]) -> Result<[&'a [f64]; 3]> {
     }
 }
 
-/// The flattened result back into `count` vectors of `n` values.
-fn split_output(flat: &[f64], n: usize, count: usize) -> Vec<Vec<f64>> {
-    if n == 0 {
-        return vec![Vec::new(); count];
+fn split_mut(coords: &mut [Vec<f64>]) -> Result<[&mut [f64]; 3]> {
+    match coords {
+        [v1, v2] => Ok([v1, v2, &mut []]),
+        [v1, v2, v3] => Ok([v1, v2, v3]),
+        _ => Err(eckit_sys::Error::Other(format!(
+            "projection: expected 2 or 3 coordinates, got {}",
+            coords.len()
+        ))),
     }
-    flat.chunks(n).map(<[f64]>::to_vec).collect()
 }
 
 /// Equality by spec, however the projections were described. Projections

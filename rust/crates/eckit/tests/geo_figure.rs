@@ -8,21 +8,10 @@ mod common;
 
 use std::f64::consts::PI;
 
-use eckit::Grid;
-use eckit::geo::BoundingBox;
+use common::{bbox, grid};
 
 const EARTH_RADIUS: f64 = 6_371_229.0; // [m] from eckit::geo::figure::DatumIFS::radius
 const EARTH_AREA: f64 = 510_101_140_207_791.56; // [m^2]
-
-fn grid(spec: &str) -> Grid {
-    common::init();
-    Grid::from_spec(spec).unwrap_or_else(|err| panic!("grid {spec}: {err}"))
-}
-
-fn bbox(north: f64, west: f64, south: f64, east: f64) -> BoundingBox {
-    common::init();
-    BoundingBox::new(north, west, south, east).expect("bounding box")
-}
 
 fn rel(a: f64, b: f64, tolerance: f64) -> bool {
     (a - b).abs() <= tolerance * b.abs()

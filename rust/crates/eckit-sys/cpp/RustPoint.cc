@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "RustPoint.h"
-#include "RustVec.h"
 #include "eckit-sys/src/geo.rs.h"
 
 #include "eckit/geo/Exceptions.h"
@@ -44,10 +43,6 @@ eckit::geo::Point RustPoint::from_raw(const RawPoint& raw) {
             return PointLonLatR{c[0], c[1]};
     }
     throw exception::GridError("RustPoint: unknown point kind", Here());
-}
-
-rust::Vec<rust::String> RustPoint::names(const std::vector<std::string>& names) {
-    return RustVec::strings(names);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

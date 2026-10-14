@@ -5,32 +5,30 @@
 
 #include "ProjectionWrapper.h"
 #include "RustPoint.h"
+#include "RustVec.h"
 #include "eckit-sys/src/geo.rs.h"
 
+#include <algorithm>
+#include <array>
+#include <string>
 #include <vector>
 
 namespace eckit_bridge {
 
 namespace {
 
-std::vector<double> to_vector(rust::Slice<const double> slice) {
-    return {slice.begin(), slice.end()};
-}
-
-rust::Vec<double> concatenate(const std::vector<std::vector<double>>& blocks) {
-    size_t n = 0;
-    for (const auto& block : blocks) {
-        n += block.size();
+void copy_blocks(const std::vector<std::vector<double>>& blocks, std::array<rust::Slice<double>, 3> out) {
+    if (blocks.size() > out.size()) {
+        throw eckit::UserError("ProjectionWrapper: " + std::to_string(blocks.size()) + " output coordinates", Here());
     }
-
-    rust::Vec<double> out;
-    out.reserve(n);
-    for (const auto& block : blocks) {
-        for (auto v : block) {
-            out.push_back(v);
+    for (size_t i = 0; i < blocks.size(); ++i) {
+        if (out[i].size() < blocks[i].size()) {
+            throw eckit::UserError("ProjectionWrapper: output buffer " + std::to_string(i + 1) + " too small for " +
+                                       std::to_string(blocks[i].size()) + " points",
+                                   Here());
         }
+        std::copy(blocks[i].begin(), blocks[i].end(), out[i].begin());
     }
-    return out;
 }
 
 }  // namespace
@@ -54,11 +52,19 @@ bool ProjectionWrapper::reverse() const {
 }
 
 rust::Vec<rust::String> ProjectionWrapper::source_point_coordinates() const {
-    return RustPoint::names(projection_.source_point_coordinates());
+    return RustVec::strings(projection_.source_point_coordinates());
 }
 
 rust::Vec<rust::String> ProjectionWrapper::target_point_coordinates() const {
-    return RustPoint::names(projection_.target_point_coordinates());
+    return RustVec::strings(projection_.target_point_coordinates());
+}
+
+size_t ProjectionWrapper::source_dims() const {
+    return projection_.source_point_coordinates().size();
+}
+
+size_t ProjectionWrapper::target_dims() const {
+    return projection_.target_point_coordinates().size();
 }
 
 RawPoint ProjectionWrapper::fwd(RawPoint point) const {
@@ -69,14 +75,16 @@ RawPoint ProjectionWrapper::inv(RawPoint point) const {
     return RustPoint::to_raw(projection_.inv(RustPoint::from_raw(point)));
 }
 
-rust::Vec<double> ProjectionWrapper::fwd_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2,
-                                                 rust::Slice<const double> v3) const {
-    return concatenate(projection_.fwd(to_vector(v1), to_vector(v2), to_vector(v3)));
+void ProjectionWrapper::fwd_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2,
+                                    rust::Slice<const double> v3, rust::Slice<double> out1, rust::Slice<double> out2,
+                                    rust::Slice<double> out3) const {
+    copy_blocks(projection_.fwd(RustVec::to_std(v1), RustVec::to_std(v2), RustVec::to_std(v3)), {out1, out2, out3});
 }
 
-rust::Vec<double> ProjectionWrapper::inv_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2,
-                                                 rust::Slice<const double> v3) const {
-    return concatenate(projection_.inv(to_vector(v1), to_vector(v2), to_vector(v3)));
+void ProjectionWrapper::inv_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2,
+                                    rust::Slice<const double> v3, rust::Slice<double> out1, rust::Slice<double> out2,
+                                    rust::Slice<double> out3) const {
+    copy_blocks(projection_.inv(RustVec::to_std(v1), RustVec::to_std(v2), RustVec::to_std(v3)), {out1, out2, out3});
 }
 
 bool ProjectionWrapper::equals(const ProjectionWrapper& other) const {

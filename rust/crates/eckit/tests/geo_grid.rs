@@ -6,13 +6,9 @@
 
 mod common;
 
+use common::{grid, lon_diff};
 use eckit::Grid;
 use eckit::geo::Point;
-
-fn grid(spec: &str) -> Grid {
-    common::init();
-    Grid::from_spec(spec).unwrap_or_else(|err| panic!("grid {spec}: {err}"))
-}
 
 fn latlons(lat: &[f64], lon: &[f64], name: Option<&str>) -> Grid {
     common::init();
@@ -22,13 +18,6 @@ fn latlons(lat: &[f64], lon: &[f64], name: Option<&str>) -> Grid {
 fn approx(a: f64, b: f64, eps: f64) -> bool {
     (a - b).abs() <= eps
 }
-
-/// Longitude difference, modulo 360.
-fn lon_diff(a: f64, b: f64) -> f64 {
-    (a - b + 180.0).rem_euclid(360.0) - 180.0
-}
-
-const EMPTY: [f64; 0] = [];
 
 // x and y increasing, so the grid order is i+j+
 const XY: &str = r#"{"x":[0,2,1],"y":[0,1,1]}"#;
@@ -316,6 +305,7 @@ fn regular_xy_points_and_order() {
 
     // the grid points are (x, y), which `to_latlons` cannot give
     assert!(grid.to_latlons().is_err());
+    assert!(grid.to_xyz().is_err());
     assert_eq!(
         grid.to_points().expect("points"),
         [
@@ -336,12 +326,8 @@ fn regular_xy_reorder() {
     let grid = grid(XY);
     let points = grid.to_points().expect("points");
 
-    // points in each order, the empty order being the default (i+j-)
-    let orders: [(&str, [(f64, f64); 6]); 9] = [
-        (
-            "",
-            [(0., 1.), (1., 1.), (2., 1.), (0., 0.), (1., 0.), (2., 0.)],
-        ),
+    // points in each order
+    let orders: [(&str, [(f64, f64); 6]); 8] = [
         (
             "i+j-",
             [(0., 1.), (1., 1.), (2., 1.), (0., 0.), (1., 0.), (2., 0.)],
@@ -390,6 +376,7 @@ fn regular_xy_reorder() {
         assert_eq!(points, renumbered, "{order:?}");
     }
 
+    // the empty order is the default, i+j-
     assert_eq!(
         grid.reorder("").expect("default"),
         grid.reorder("i+j-").expect("i+j-")
@@ -474,17 +461,26 @@ fn rows_and_columns() {
     );
     assert_eq!(reduced.pl().expect("pl"), [20, 24, 24, 20]);
     assert_eq!(reduced.distinct_latitudes().expect("lats").len(), 4);
-    assert_eq!(reduced.distinct_longitudes().expect("lons"), EMPTY);
-    assert_eq!(reduced.x_values().expect("x"), EMPTY);
+    assert_eq!(reduced.distinct_longitudes().expect("lons"), [] as [f64; 0]);
+    assert_eq!(reduced.x_values().expect("x"), [] as [f64; 0]);
 
     let cartesian = grid(XY);
-    assert_eq!(cartesian.distinct_latitudes().expect("lats"), EMPTY);
-    assert_eq!(cartesian.distinct_longitudes().expect("lons"), EMPTY);
+    assert_eq!(
+        cartesian.distinct_latitudes().expect("lats"),
+        [] as [f64; 0]
+    );
+    assert_eq!(
+        cartesian.distinct_longitudes().expect("lons"),
+        [] as [f64; 0]
+    );
 
     let unstructured = latlons(&[5.0, 6.0], &[7.0, 8.0], None);
     assert!(!unstructured.is_structured().expect("structured"));
     assert_eq!(unstructured.pl().expect("pl"), [] as [i64; 0]);
-    assert_eq!(unstructured.distinct_latitudes().expect("lats"), EMPTY);
+    assert_eq!(
+        unstructured.distinct_latitudes().expect("lats"),
+        [] as [f64; 0]
+    );
 }
 
 #[test]

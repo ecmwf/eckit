@@ -25,6 +25,7 @@
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
@@ -93,10 +94,6 @@ bool has_longitudes(const Grid& grid) {
 // process-global memory cache, which `MemoryCache::total_purge()` frees.
 rust::Vec<double> values(const Range& range) {
     return RustVec::copy<double>(range.values());
-}
-
-std::vector<double> to_vector(rust::Slice<const double> slice) {
-    return {slice.begin(), slice.end()};
 }
 
 void check_size(const char* method, size_t n, size_t have) {
@@ -175,8 +172,8 @@ size_t GridWrapper::ny() const {
 }
 
 size_t GridWrapper::nx() const {
-    const auto* g = dynamic_cast<const eckit::geo::grid::Regular*>(grid_.get());
-    return g == nullptr ? 0 : g->nx();
+    const auto shape = grid_->shape();
+    return shape.size() == 2 ? shape[1] : 0;
 }
 
 bool GridWrapper::is_regular() const {
@@ -219,16 +216,8 @@ RawPoint GridWrapper::last_point() const {
     return RustPoint::to_raw(grid_->last_point());
 }
 
-rust::Vec<RawPoint> GridWrapper::to_points() const {
-    rust::Vec<RawPoint> out;
-    out.reserve(grid_->size());
-    std::for_each(grid_->cbegin(), grid_->cend(),
-                  [&out](const auto& point) { out.push_back(RustPoint::to_raw(point)); });
-    return out;
-}
-
 rust::Vec<rust::String> GridWrapper::point_coordinates() const {
-    return RustPoint::names(grid_->point_coordinates());
+    return RustVec::strings(grid_->point_coordinates());
 }
 
 rust::Vec<double> GridWrapper::distinct_latitudes() const {
@@ -247,11 +236,19 @@ rust::Vec<double> GridWrapper::y_values() const {
     return is_regular() ? values(grid_->y()) : rust::Vec<double>{};
 }
 
+// Point by point, not through `Grid::to_latlons`/`to_xyz`, which allocate every coordinate array before copying.
+
+void GridWrapper::fill_points(rust::Slice<RawPoint> points) const {
+    check_size("fill_points", grid_->size(), points.size());
+
+    size_t i = 0;
+    std::for_each(grid_->cbegin(), grid_->cend(), [&](const auto& point) { points[i++] = RustPoint::to_raw(point); });
+}
+
 void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon) const {
     using namespace eckit::geo;
 
-    const auto n = grid_->size();
-    check_size("fill_latlons", n, std::min(lat.size(), lon.size()));
+    check_size("fill_latlons", grid_->size(), std::min(lat.size(), lon.size()));
 
     size_t i = 0;
     std::for_each(grid_->cbegin(), grid_->cend(), [&](const auto& point) {
@@ -271,15 +268,27 @@ void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon)
 }
 
 void GridWrapper::fill_xyz(rust::Slice<double> x, rust::Slice<double> y, rust::Slice<double> z) const {
-    const auto n = grid_->size();
-    check_size("fill_xyz", n, std::min({x.size(), y.size(), z.size()}));
+    using namespace eckit::geo;
 
-    const auto xyz = grid_->to_xyz();
-    ASSERT(xyz.size() == 3 && xyz[0].size() == n && xyz[1].size() == n && xyz[2].size() == n);
+    check_size("fill_xyz", grid_->size(), std::min({x.size(), y.size(), z.size()}));
 
-    std::copy(xyz[0].begin(), xyz[0].end(), x.begin());
-    std::copy(xyz[1].begin(), xyz[1].end(), y.begin());
-    std::copy(xyz[2].begin(), xyz[2].end(), z.begin());
+    const auto& figure = grid_->figure();
+    const projection::LonLatToXYZ to_xyz(figure.a(), figure.b());
+
+    size_t i = 0;
+    std::for_each(grid_->cbegin(), grid_->cend(), [&](const auto& point) {
+        const auto q =
+            std::holds_alternative<PointXYZ>(point)      ? std::get<PointXYZ>(point)
+            : std::holds_alternative<PointLonLat>(point) ? to_xyz.fwd(std::get<PointLonLat>(point))
+            : std::holds_alternative<PointLonLatR>(point)
+                ? to_xyz.fwd(PointLonLat{util::RADIAN_TO_DEGREE * std::get<PointLonLatR>(point).lonr(),
+                                         util::RADIAN_TO_DEGREE * std::get<PointLonLatR>(point).latr()})
+                : throw exception::GridError("GridWrapper::fill_xyz: grid points are not geographic", Here());
+        x[i] = q.X();
+        y[i] = q.Y();
+        z[i] = q.Z();
+        ++i;
+    });
 }
 
 // ============== Derived grids ==============
@@ -325,7 +334,7 @@ std::unique_ptr<GridWrapper> GridWrapper::from_latlons(rust::Slice<const double>
                                    std::to_string(lon.size()) + " longitudes",
                                Here());
     }
-    return adopt(new eckit::geo::grid::Unstructured(to_vector(lon), to_vector(lat), std::string(name)));
+    return adopt(new eckit::geo::grid::Unstructured(RustVec::to_std(lon), RustVec::to_std(lat), std::string(name)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

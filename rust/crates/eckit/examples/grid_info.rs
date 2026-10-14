@@ -33,10 +33,8 @@ const SAMPLE: usize = 4;
 const LABEL: usize = 18;
 
 /// Location searched for in the grid: London.
-const QUERY: Point = Point::LonLat {
-    lon: -0.1,
-    lat: 51.5,
-};
+const QUERY_LON: f64 = -0.1;
+const QUERY_LAT: f64 = 51.5;
 
 fn main() -> ExitCode {
     // Reporting the error through `Display` rather than returning it from
@@ -192,19 +190,16 @@ fn points(grid: &Grid, n: usize) -> Result<(Vec<f64>, Vec<f64>), eckit::Error> {
 /// Nearest grid points to a location, through the grid's k-d tree.
 fn search(grid: &Grid, lat: &[f64], lon: &[f64]) {
     section("search");
-    let Point::LonLat {
-        lon: query_lon,
-        lat: query_lat,
-    } = QUERY
-    else {
-        unreachable!("the query is a lon/lat point");
+    let query = Point::LonLat {
+        lon: QUERY_LON,
+        lat: QUERY_LAT,
     };
-    field("query", &format!("lat {query_lat:.4}  lon {query_lon:.4}"));
+    field("query", &format!("lat {QUERY_LAT:.4}  lon {QUERY_LON:.4}"));
     match grid.search() {
         Ok(search) => {
             show(
                 "nearest",
-                search.nearest(QUERY).map(|near| {
+                search.nearest(query).map(|near| {
                     format!(
                         "[{}] lat {:.4}  lon {:.4}  {:.1} km away",
                         near.index,
@@ -216,7 +211,7 @@ fn search(grid: &Grid, lat: &[f64], lon: &[f64]) {
             );
             show(
                 "4 nearest",
-                search.nearest_k(QUERY, 4).map(|near| {
+                search.nearest_k(query, 4).map(|near| {
                     near.iter()
                         .map(|n| format!("[{}] {:.1} km", n.index, n.distance / 1000.0))
                         .collect::<Vec<_>>()

@@ -66,7 +66,7 @@ public:
     /// Number of latitude rows, 0 for grids with no row structure.
     size_t ny() const;
 
-    /// Points per row of a regular grid, 0 otherwise.
+    /// Points per row of a grid of shape (ny, nx), 0 otherwise.
     size_t nx() const;
 
     bool is_regular() const;
@@ -85,7 +85,6 @@ public:
     std::unique_ptr<AreaWrapper> bounding_box() const;
     RawPoint first_point() const;
     RawPoint last_point() const;
-    rust::Vec<RawPoint> to_points() const;
     rust::Vec<rust::String> point_coordinates() const;
 
     /// Distinct latitudes (longitudes), empty for grids whose rows (columns) share none.
@@ -96,11 +95,12 @@ public:
     rust::Vec<double> x_values() const;
     rust::Vec<double> y_values() const;
 
+    /// Fill caller-owned buffers of at least size() elements with every point, in iteration order.
+    void fill_points(rust::Slice<RawPoint> points) const;
     void fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon) const;
     void fill_xyz(rust::Slice<double> x, rust::Slice<double> y, rust::Slice<double> z) const;
 
     const ProjectionWrapper& projection() const { return projection_; }
-    const FigureWrapper& figure() const { return projection_.figure(); }
 
     // Derived grids
     std::unique_ptr<GridWrapper> to_unstructured_ll(rust::Str name) const;

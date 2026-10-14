@@ -6,20 +6,11 @@
 
 mod common;
 
-use eckit::Grid;
+use common::{grid, lonlat};
 use eckit::geo::Point;
 
 const EPS_LL: f64 = 1e-9; // [degree]
 const EPS_XY: f64 = 1e-6; // [m]
-
-fn grid(spec: &str) -> Grid {
-    common::init();
-    Grid::from_spec(spec).unwrap_or_else(|err| panic!("grid {spec}: {err}"))
-}
-
-const fn lonlat(lon: f64, lat: f64) -> Point {
-    Point::LonLat { lon, lat }
-}
 
 fn lonlat_of(point: Point) -> (f64, f64) {
     match point {

@@ -36,10 +36,10 @@
 //! empty to store them uncompressed, or building those grids fails with `No
 //! CompressorBuilder called lz4`.
 
-pub mod area;
-pub mod figure;
-pub mod projection;
-pub mod search;
+mod area;
+mod figure;
+mod projection;
+mod search;
 
 use std::fmt;
 use std::str::FromStr;
@@ -279,7 +279,7 @@ impl Grid {
         self.inner.ny().map_err(eckit_sys::Error::from)
     }
 
-    /// Points per row of a regular grid, or `0` for other grids.
+    /// Points per row of a grid of shape `[ny, nx]`, or `0` for other grids.
     pub fn nx(&self) -> Result<usize> {
         self.inner.nx().map_err(eckit_sys::Error::from)
     }
@@ -365,10 +365,19 @@ impl Grid {
     /// [`Grid::fill_latlons`] or [`Grid::fill_xyz`] for large geographic
     /// grids.
     pub fn to_points(&self) -> Result<Vec<Point>> {
+        use eckit_sys::geo::{PointKind, RawPoint};
+
+        let mut raw = vec![
+            RawPoint {
+                kind: PointKind::Xy,
+                coords: [0.0; 3],
+            };
+            self.len()?
+        ];
         self.inner
-            .to_points()
-            .map(|points| points.into_iter().map(Point::from).collect())
-            .map_err(eckit_sys::Error::from)
+            .fill_points(&mut raw)
+            .map_err(eckit_sys::Error::from)?;
+        Ok(raw.into_iter().map(Point::from).collect())
     }
 
     /// Coordinate names of the points, one per coordinate: `["longitude",
@@ -422,14 +431,6 @@ impl Grid {
     /// not geographic ([`Point::LonLat`] or [`Point::LonLatR`]); see
     /// [`Grid::fill_xyz`] for coordinates every grid can give.
     pub fn fill_latlons(&self, lat: &mut [f64], lon: &mut [f64]) -> Result<()> {
-        let n = self.len()?;
-        if lat.len() < n || lon.len() < n {
-            return Err(eckit_sys::Error::Other(format!(
-                "fill_latlons: buffers hold {} and {} points, need {n}",
-                lat.len(),
-                lon.len()
-            )));
-        }
         self.inner
             .fill_latlons(lat, lon)
             .map_err(eckit_sys::Error::from)
@@ -450,19 +451,9 @@ impl Grid {
     /// Write every point's geocentric Cartesian coordinates, on the grid's
     /// [`Figure`], into caller-owned buffers.
     ///
-    /// Works for every grid, projected or not. All slices must hold at least
-    /// [`Grid::len`] elements. Unlike [`Grid::fill_latlons`], eckit computes
-    /// the coordinates into temporaries before they are copied out.
+    /// Works for every geographic grid, projected or not. All slices must hold
+    /// at least [`Grid::len`] elements.
     pub fn fill_xyz(&self, x: &mut [f64], y: &mut [f64], z: &mut [f64]) -> Result<()> {
-        let n = self.len()?;
-        if x.len() < n || y.len() < n || z.len() < n {
-            return Err(eckit_sys::Error::Other(format!(
-                "fill_xyz: buffers hold {}, {} and {} points, need {n}",
-                x.len(),
-                y.len(),
-                z.len()
-            )));
-        }
         self.inner.fill_xyz(x, y, z).map_err(eckit_sys::Error::from)
     }
 
@@ -489,7 +480,7 @@ impl Grid {
     /// does.
     #[must_use]
     pub fn figure(&self) -> Figure<'_> {
-        Figure::new(self.inner.figure())
+        self.projection().figure()
     }
 
     /// This grid as an unstructured grid of the same (lon, lat) points,

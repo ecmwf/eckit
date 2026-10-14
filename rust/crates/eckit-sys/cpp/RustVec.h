@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-// Conversions into `rust::Vec`, shared by the bridge wrappers.
+// Conversions between `rust::Vec`/`rust::Slice` and `std::vector`, shared by the bridge wrappers.
 #pragma once
 
 #include "rust/cxx.h"
@@ -36,6 +36,9 @@ struct RustVec {
         }
         return out;
     }
+
+    /// Copies a slice into a `std::vector`.
+    static std::vector<double> to_std(rust::Slice<const double> slice) { return {slice.begin(), slice.end()}; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

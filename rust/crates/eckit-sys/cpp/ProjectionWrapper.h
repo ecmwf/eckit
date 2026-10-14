@@ -11,6 +11,8 @@
 
 #include "rust/cxx.h"
 
+#include <cstddef>
+
 namespace eckit_bridge {
 
 struct RawPoint;
@@ -47,18 +49,22 @@ public:
     rust::Vec<rust::String> source_point_coordinates() const;
     rust::Vec<rust::String> target_point_coordinates() const;
 
+    /// Number of coordinates of the source (target) points, 2 or 3.
+    size_t source_dims() const;
+    size_t target_dims() const;
+
     const FigureWrapper& figure() const { return figure_; }
 
     /// Project a point, from the source to the target point type (fwd) or the reverse (inv).
     RawPoint fwd(RawPoint point) const;
     RawPoint inv(RawPoint point) const;
 
-    /// Project points given one slice per source coordinate (`v3` empty for points of 2 coordinates), returning the
-    /// target coordinates concatenated, one block of `v1.size()` per coordinate. Points failing to project are NaN.
-    rust::Vec<double> fwd_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2,
-                                  rust::Slice<const double> v3) const;
-    rust::Vec<double> inv_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2,
-                                  rust::Slice<const double> v3) const;
+    /// Project points given one slice per source coordinate (`v3` empty for points of 2 coordinates), writing one
+    /// slice per target coordinate (`out3` unused for targets of 2 coordinates). Points failing to project are NaN.
+    void fwd_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2, rust::Slice<const double> v3,
+                     rust::Slice<double> out1, rust::Slice<double> out2, rust::Slice<double> out3) const;
+    void inv_vectors(rust::Slice<const double> v1, rust::Slice<const double> v2, rust::Slice<const double> v3,
+                     rust::Slice<double> out1, rust::Slice<double> out2, rust::Slice<double> out3) const;
 
     /// Equality by spec, however the projections are described.
     bool equals(const ProjectionWrapper& other) const;

@@ -9,27 +9,13 @@ mod common;
 
 use std::sync::OnceLock;
 
+use common::{bbox, grid, lon_diff};
 use eckit::geo::{Area, BoundingBox};
 use eckit::{Grid, Result};
-
-fn grid(spec: &str) -> Grid {
-    common::init();
-    Grid::from_spec(spec).unwrap_or_else(|err| panic!("grid {spec}: {err}"))
-}
 
 fn area(spec: &str) -> Area {
     common::init();
     Area::from_spec(spec).unwrap_or_else(|err| panic!("area {spec}: {err}"))
-}
-
-fn bbox(north: f64, west: f64, south: f64, east: f64) -> BoundingBox {
-    common::init();
-    BoundingBox::new(north, west, south, east).expect("bounding box")
-}
-
-/// Longitude difference, modulo 360.
-fn lon_diff(a: f64, b: f64) -> f64 {
-    (a - b + 180.0).rem_euclid(360.0) - 180.0
 }
 
 /// Whether the cropped grid points (lon, lat) are those of the grid, by index.
@@ -89,7 +75,7 @@ fn bbox_spec_is_normalised() {
     ] {
         let bbox = bbox(n, w, s, e);
         assert_eq!(bbox.spec().to_json_str().expect("json"), expected);
-        assert_eq!(bbox.as_area().area_type().expect("type"), "bounding_box");
+        assert_eq!(bbox.as_ref().area_type().expect("type"), "bounding_box");
         assert_eq!(BoundingBox::from_spec(expected).expect("from spec"), bbox);
     }
 }
@@ -104,7 +90,7 @@ fn bbox_global() {
     assert!(bbox.is_global().expect("global"));
     assert!(!bbox.is_empty().expect("empty"));
     assert!(bbox.is_periodic().expect("periodic"));
-    assert!(bbox.as_area().is_default().expect("default"));
+    assert!(bbox.as_ref().is_default().expect("default"));
 }
 
 #[test]
@@ -113,7 +99,7 @@ fn bbox_not_global() {
     assert!(!bbox.is_global().expect("global"));
     assert!(!bbox.is_empty().expect("empty"));
     assert!(!bbox.is_periodic().expect("periodic"));
-    assert!(!bbox.as_area().is_default().expect("default"));
+    assert!(!bbox.as_ref().is_default().expect("default"));
 }
 
 #[test]
@@ -130,7 +116,7 @@ fn bbox_intersects_and_contains() {
 
     assert!(outer.contains_point(5.0, 5.0).expect("point"));
     assert!(!outer.contains_point(50.0, 50.0).expect("point"));
-    assert!(outer.as_area().contains(5.0, 5.0).expect("point"));
+    assert!(outer.as_ref().contains(5.0, 5.0).expect("point"));
 }
 
 #[test]
@@ -204,7 +190,7 @@ fn area_into_bounding_box() {
         (bbox.north(), bbox.west(), bbox.south(), bbox.east()),
         (10.0, 1.0, 0.0, 10.0)
     );
-    assert_eq!(bbox.into_area(), area(r#"{"area":[10,1,0,10]}"#));
+    assert_eq!(Area::from(bbox), area(r#"{"area":[10,1,0,10]}"#));
 
     let polygon = polygons();
     assert!(!polygon.is_bounding_box());
@@ -275,7 +261,7 @@ fn unprojected_grid_crop() {
     for spec in [r#"{"grid":[1,1]}"#, r#"{"grid":"O32"}"#] {
         let grid = grid(spec);
         for area in [
-            bbox(10.0, -10.0, -10.0, 10.0).into_area(),
+            Area::from(bbox(10.0, -10.0, -10.0, 10.0)),
             area(r#"{"type":"bounding_box","north":60.5,"west":349.5,"south":40.5,"east":30.5}"#),
         ] {
             let indices = grid.crop(&area).expect("crop");
@@ -337,7 +323,7 @@ fn projected_grid_crop() {
 
 #[test]
 fn cropped_grid_types() {
-    let bbox10 = || bbox(10.0, -10.0, -10.0, 10.0).into_area();
+    let bbox10 = || Area::from(bbox(10.0, -10.0, -10.0, 10.0));
     for (spec, area, grid_type) in [
         (r#"{"grid":[1,1]}"#, bbox10(), "regular_ll"),
         (r#"{"grid":"F32"}"#, bbox10(), "regular_gg"),
@@ -350,7 +336,7 @@ fn cropped_grid_types() {
         ),
         (
             LCC,
-            bbox(52.0, 4.5, 51.5, 5.5).into_area(),
+            Area::from(bbox(52.0, 4.5, 51.5, 5.5)),
             "unstructured_ll",
         ),
     ] {

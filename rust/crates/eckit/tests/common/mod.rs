@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-//! Shared setup of the geo tests.
+//! Shared setup and helpers of the geo tests. Each test binary uses a subset.
+#![allow(dead_code)]
 
 use std::sync::OnceLock;
 
+use eckit::Grid;
+use eckit::geo::{BoundingBox, Point};
 use tempfile::TempDir;
 
 static CACHE: OnceLock<TempDir> = OnceLock::new();
@@ -35,4 +38,23 @@ pub fn init() {
         eckit::init();
         dir
     });
+}
+
+pub fn grid(spec: &str) -> Grid {
+    init();
+    Grid::from_spec(spec).unwrap_or_else(|err| panic!("grid {spec}: {err}"))
+}
+
+pub fn bbox(north: f64, west: f64, south: f64, east: f64) -> BoundingBox {
+    init();
+    BoundingBox::new(north, west, south, east).expect("bounding box")
+}
+
+pub const fn lonlat(lon: f64, lat: f64) -> Point {
+    Point::LonLat { lon, lat }
+}
+
+/// Longitude difference, modulo 360.
+pub fn lon_diff(a: f64, b: f64) -> f64 {
+    (a - b + 180.0).rem_euclid(360.0) - 180.0
 }

@@ -7,17 +7,8 @@
 
 mod common;
 
-use eckit::Grid;
+use common::{grid, lonlat};
 use eckit::geo::{Neighbour, Point, search_cache_clear, search_cache_statistics};
-
-fn grid(spec: &str) -> Grid {
-    common::init();
-    Grid::from_spec(spec).unwrap_or_else(|err| panic!("grid {spec}: {err}"))
-}
-
-const fn lonlat(lon: f64, lat: f64) -> Point {
-    Point::LonLat { lon, lat }
-}
 
 fn indices(neighbours: &[Neighbour]) -> Vec<usize> {
     let mut indices: Vec<usize> = neighbours.iter().map(|n| n.index).collect();

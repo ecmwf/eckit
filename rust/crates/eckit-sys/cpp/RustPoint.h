@@ -6,8 +6,6 @@
 
 #include "eckit/geo/Point.h"
 
-#include "rust/cxx.h"
-
 namespace eckit_bridge {
 
 struct RawPoint;
@@ -20,9 +18,6 @@ struct RustPoint {
 
     /// Rebuilds the point a flattened one describes.
     static eckit::geo::Point from_raw(const RawPoint&);
-
-    /// Copies coordinate names into a `rust::Vec`.
-    static rust::Vec<rust::String> names(const std::vector<std::string>&);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

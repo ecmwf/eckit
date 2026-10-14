@@ -110,7 +110,7 @@ mod ffi {
         /// Number of latitude rows, `0` for grids with no row structure.
         fn ny(self: &GridWrapper) -> Result<usize>;
 
-        /// Points per row of a regular grid, `0` otherwise.
+        /// Points per row of a grid of shape `(ny, nx)`, `0` otherwise.
         fn nx(self: &GridWrapper) -> Result<usize>;
 
         fn is_regular(self: &GridWrapper) -> Result<bool>;
@@ -131,8 +131,9 @@ mod ffi {
         fn bounding_box(self: &GridWrapper) -> Result<UniquePtr<AreaWrapper>>;
         fn first_point(self: &GridWrapper) -> Result<RawPoint>;
         fn last_point(self: &GridWrapper) -> Result<RawPoint>;
-        /// Every point, in iteration order, whatever the grid's point type.
-        fn to_points(self: &GridWrapper) -> Result<Vec<RawPoint>>;
+        /// Fill a caller-owned buffer of at least `size()` elements with every
+        /// point, in iteration order, whatever the grid's point type.
+        fn fill_points(self: &GridWrapper, points: &mut [RawPoint]) -> Result<()>;
         /// Coordinate names of the grid points, e.g. `["longitude", "latitude"]` or `["x", "y"]`.
         fn point_coordinates(self: &GridWrapper) -> Result<Vec<String>>;
 
@@ -154,9 +155,8 @@ mod ffi {
         /// on its figure. All must hold at least `size()` elements.
         fn fill_xyz(self: &GridWrapper, x: &mut [f64], y: &mut [f64], z: &mut [f64]) -> Result<()>;
 
-        /// The grid's projection and figure, valid for its lifetime.
+        /// The grid's projection, valid for its lifetime.
         fn projection(self: &GridWrapper) -> &ProjectionWrapper;
-        fn figure(self: &GridWrapper) -> &FigureWrapper;
 
         // Derived grids
 
@@ -289,27 +289,36 @@ mod ffi {
         /// Source and target point coordinate names, e.g. `["longitude", "latitude"]` to `["x", "y"]`.
         fn source_point_coordinates(self: &ProjectionWrapper) -> Result<Vec<String>>;
         fn target_point_coordinates(self: &ProjectionWrapper) -> Result<Vec<String>>;
+        /// Number of coordinates of the source (target) points, 2 or 3.
+        fn source_dims(self: &ProjectionWrapper) -> Result<usize>;
+        fn target_dims(self: &ProjectionWrapper) -> Result<usize>;
         /// The projection's figure, valid for its lifetime.
         fn figure(self: &ProjectionWrapper) -> &FigureWrapper;
         /// Project a point from the source to the target point type (`fwd`) or the reverse (`inv`).
         fn fwd(self: &ProjectionWrapper, point: RawPoint) -> Result<RawPoint>;
         fn inv(self: &ProjectionWrapper, point: RawPoint) -> Result<RawPoint>;
         /// Project points given one slice per source coordinate (`v3` empty
-        /// for points of 2 coordinates), returning the target coordinates
-        /// concatenated, one block of `v1.len()` per coordinate. Points that
-        /// fail to project are NaN.
+        /// for points of 2 coordinates), writing one slice per target
+        /// coordinate (`out3` unused for targets of 2 coordinates). Points
+        /// that fail to project are NaN.
         fn fwd_vectors(
             self: &ProjectionWrapper,
             v1: &[f64],
             v2: &[f64],
             v3: &[f64],
-        ) -> Result<Vec<f64>>;
+            out1: &mut [f64],
+            out2: &mut [f64],
+            out3: &mut [f64],
+        ) -> Result<()>;
         fn inv_vectors(
             self: &ProjectionWrapper,
             v1: &[f64],
             v2: &[f64],
             v3: &[f64],
-        ) -> Result<Vec<f64>>;
+            out1: &mut [f64],
+            out2: &mut [f64],
+            out3: &mut [f64],
+        ) -> Result<()>;
         /// Equality by spec.
         fn equals(self: &ProjectionWrapper, other: &ProjectionWrapper) -> Result<bool>;
 

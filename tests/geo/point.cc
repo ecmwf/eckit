@@ -4,6 +4,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -59,6 +60,14 @@ CASE("point_coordinates") {
     EXPECT(&point_coordinates(Point{PointLonLatR{4., 5.}}) == &point_coordinates<PointLonLatR>());
 
     EXPECT_THROWS_AS(point_coordinates(Point{}), BadValue);
+
+    // by the Point alternative index (not the empty point)
+    for (const Point& p : {Point{PointXY{}}, Point{PointXYZ{}}, Point{PointLonLat{}}, Point{PointLonLatR{}}}) {
+        EXPECT(&point_coordinates(p.index()) == &point_coordinates(p));
+    }
+
+    EXPECT_THROWS_AS(point_coordinates(Point{}.index()), BadValue);
+    EXPECT_THROWS_AS(point_coordinates(std::variant_size_v<Point>), BadValue);
 }
 
 

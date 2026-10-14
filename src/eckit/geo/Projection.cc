@@ -116,30 +116,17 @@ void visit_point_type(size_t index, F&& f) {
 }
 
 
-const std::vector<std::string>& coordinates(size_t index) {
-    const std::vector<std::string>* names = nullptr;
-    visit_point_type(index, [&names](auto tag) { names = &point_coordinates<typename decltype(tag)::type>(); });
-    return *names;
-}
-
-
-size_t dims(size_t index) {
-    size_t n = 0;
-    visit_point_type(index, [&n](auto tag) { n = decltype(tag)::type::DIMS; });
-    return n;
-}
-
-
 /// Check the vectors of coordinates of points of a point type (v3 is empty for points of 2 coordinates)
 void check_vectors(const std::vector<double>& v1, const std::vector<double>& v2, const std::vector<double>& v3,
                    size_t type) {
-    const auto n = v1.size();
-    if (dims(type) == 3 ? v2.size() == n && v3.size() == n : v2.size() == n && v3.empty()) {
+    const auto n         = v1.size();
+    const auto& expected = point_coordinates(type);
+    if (expected.size() == 3 ? v2.size() == n && v3.size() == n : v2.size() == n && v3.empty()) {
         return;
     }
 
     std::string names;
-    for (const auto& name : coordinates(type)) {
+    for (const auto& name : expected) {
         names += (names.empty() ? "" : ", ") + name;
     }
 
@@ -156,7 +143,7 @@ std::vector<std::vector<double>> project_points(const std::vector<double>& v1, c
     const std::array<const std::vector<double>*, 3> in{&v1, &v2, &v3};
     const auto n = v1.size();
 
-    std::vector<std::vector<double>> out(dims(to), std::vector<double>(n));
+    std::vector<std::vector<double>> out(point_coordinates(to).size(), std::vector<double>(n));
 
     visit_point_type(from, [&](auto from_tag) {
         visit_point_type(to, [&](auto to_tag) {
@@ -222,12 +209,12 @@ std::vector<std::vector<double>> Projection::inv(const std::vector<double>& v1, 
 
 
 const std::vector<std::string>& Projection::source_point_coordinates() const {
-    return coordinates(source_);
+    return point_coordinates(source_);
 }
 
 
 const std::vector<std::string>& Projection::target_point_coordinates() const {
-    return coordinates(target_);
+    return point_coordinates(target_);
 }
 
 
@@ -239,8 +226,8 @@ Point Projection::from_grid_xy(double x, double y) const {
 
 void Projection::point_types(const Point& source, const Point& target) {
     // validates the point types (the empty point is not a point type)
-    dims(source.index());
-    dims(target.index());
+    point_coordinates(source);
+    point_coordinates(target);
 
     source_ = source.index();
     target_ = target.index();

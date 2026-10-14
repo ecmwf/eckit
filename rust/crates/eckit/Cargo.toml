@@ -35,3 +35,23 @@ tempfile.workspace = true
 [[example]]
 name = "grid_info"
 required-features = ["geo"]
+
+[[test]]
+name = "geo_area"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_figure"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_grid"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_projection"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_search"
+required-features = ["geo"]

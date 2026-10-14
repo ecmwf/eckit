@@ -244,6 +244,7 @@ struct GridSpecByName {
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
     static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+    static void replace(const key_t& key, const spec::Custom&);
 };
 
 
@@ -256,6 +257,7 @@ struct GridSpecByUID {
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
     static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+    static void replace(const key_t& key, const spec::Custom&);
 };
 
 

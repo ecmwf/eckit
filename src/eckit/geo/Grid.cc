@@ -77,10 +77,10 @@ const spec::Spec& Grid::catalog() const {
         };
 
         if (GridSpecByUID::instance().exists(uid())) {
-            catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
+            catalog_.reset(GridSpecByUID::instance().get_spec(uid()));
         }
         else if (std::string name = get_name(spec()); GridSpecByName::instance().matches(name)) {
-            catalog_.reset(GridSpecByName::instance().match(name).spec(name));
+            catalog_.reset(GridSpecByName::instance().match_spec(name, name));
         }
         else {
             catalog_.reset(new spec::Custom);
@@ -429,7 +429,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
             throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
         }
 
-        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
+        cfg->push_front(GridSpecByUID::instance().get_spec(uid));
     }
 
 
@@ -468,7 +468,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     }
 
     if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
-        cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
+        cfg->push_back(GridSpecByName::instance().match_spec(grid, grid));
     }
 
     // x and y (also of a named grid) are of a regular_xy
@@ -511,6 +511,11 @@ void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
 }
 
 
+void GridSpecByName::replace(const key_t& key, const spec::Custom& spec) {
+    instance().replace(key, new SpecByName(spec));
+}
+
+
 GridSpecByUID::generator_t& GridSpecByUID::instance() {
     share::Grid::instance();  // ensure load of supporting files
     return generator_t::instance();
@@ -519,6 +524,11 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
     regist(key, new SpecByUID(spec));
+}
+
+
+void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
+    instance().replace(key, new SpecByUID(spec));
 }
 
 

@@ -57,18 +57,9 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
 
     const spec::Custom custom(custom_map);
 
-    if (GridSpecByUID::instance().exists(uid)) {
-        GridSpecByUID::instance().unregist(uid);
-    }
-    GridSpecByUID::regist(uid, custom);
-    ASSERT(GridSpecByUID::instance().exists(uid));
-
+    GridSpecByUID::replace(uid, custom);
     if (!name.empty()) {
-        if (GridSpecByName::instance().exists(name)) {
-            GridSpecByName::instance().unregist(name);
-        }
-        GridSpecByName::regist(name, custom);
-        ASSERT(GridSpecByName::instance().exists(name));
+        GridSpecByName::replace(name, custom);
     }
 
     cache::Grid::save(uid, custom);
@@ -148,15 +139,16 @@ void Unstructured::fill_spec(spec::Custom& custom) const {
         auto grid = name_ + (name_.empty() || arrangement_.empty() ? "" : "_" + arrangement_);
         custom.set("grid", grid);
 
-        if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                               GridSpecByName::instance().match(grid).spec(grid)->get_string("uid") != _uid) {
+        if (auto _uid = uid();
+            !GridSpecByName::instance().exists(grid) ||
+            std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
             custom.set("uid", _uid);
         }
         return;
     }
 
     // NOTE: every unstructured grid is known by uid
-    std::unique_ptr<spec::Custom> ptr(dynamic_cast<spec::Custom*>(GridSpecByUID::instance().get(uid()).spec()));
+    std::unique_ptr<spec::Custom> ptr(dynamic_cast<spec::Custom*>(GridSpecByUID::instance().get_spec(uid())));
     ASSERT(ptr);
 
     auto custom_map = ptr->container();

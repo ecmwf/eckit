@@ -419,7 +419,7 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
                 throw exception::ProjectionError("ProjectionFactory: unknown projection name '" + name + "'", Here());
             }
 
-            std::unique_ptr<Projection::Spec> cfg(ProjectionSpecByName::instance().match(name).spec(name));
+            std::unique_ptr<Projection::Spec> cfg(ProjectionSpecByName::instance().match_spec(name, name));
             return make(cfg->get_string("type"), *cfg);
         }
 

@@ -6,7 +6,9 @@
 
 #include <cmath>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -14,51 +16,54 @@
 namespace eckit::geo::projection {
 
 
-PolarStereographic::PolarStereographic(const Spec& spec) :
-    PolarStereographic(PointLonLat::make_from_spec(spec, "centre"), PointLonLat::make_from_spec(spec, "first")) {}
+static const ProjectionRegisterType<PolarStereographic> PROJECTION_1("stere");
+static const ProjectionRegisterType<PolarStereographic> PROJECTION_2("polar_stereographic");
 
 
-PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
-    Projection(figure_ptr),
-    centre_(centre),
-    centre_r_(PointLonLatR::make_from_lonlat(centre.lon(), centre.lat())),
-    first_(first),
-    first_r_(PointLonLatR::make_from_lonlat(first.lon(), first.lat())),
-    sign_(centre_.lat() < 0. ? -1. : 1.),
-    F_(types::is_approximately_equal(centre_.lat(), PointLonLat::RIGHT_ANGLE, PointLonLat::EPS) ||
-               types::is_approximately_equal(centre_.lat(), -PointLonLat::RIGHT_ANGLE, PointLonLat::EPS)
-           ? 0.5
-           : std::tan(0.5 * (M_PI_2 - sign_ * centre_r_.latr())) / std::cos(sign_ * centre_r_.latr())) {
-    auto z = fwd(first_);
-    x0_    = z.X();
-    y0_    = z.Y();
+PolarStereographic::PolarStereographic(double lat_0, double lat_ts, double lon_0, Figure* fig) :
+    Projection(fig),
+    lat_0_(lat_0),
+    lat_ts_(lat_ts),
+    lon_0_(lon_0),
+    sign_(lat_0 < 0. ? -1. : 1.),
+    conformal_(figure().conformal()) {
+    if (!types::is_approximately_equal(lat_0, sign_ * PointLonLat::RIGHT_ANGLE)) {
+        throw exception::ProjectionError("PolarStereographic: lat_0 = 90 or -90 expected (polar)", Here());
+    }
+
+    const auto e     = figure().eccentricity();
+    const auto phi_c = sign_ * lat_ts * util::DEGREE_TO_RADIAN;
+
+    k_ = types::is_approximately_equal(lat_ts, lat_0)
+             ? 2. * figure().a() / std::sqrt(std::pow(1. + e, 1. + e) * std::pow(1. - e, 1. - e))
+             : figure().a() * conformal_.m(phi_c) / conformal_.t(phi_c);
 }
 
 
-PointXY PolarStereographic::fwd(const PointLonLat& q) const {
-    auto p = PointLonLatR::make_from_lonlat(q.lon(), q.lat());
+PolarStereographic::PolarStereographic(const Spec& spec) :
+    PolarStereographic(spec.get_double("lat_0"), spec.get_double("lat_ts", spec.get_double("lat_0")),
+                       spec.get_double("lon_0", 0.), FigureFactory::build(spec)) {}
 
-    auto a      = sign_ * (p.lonr() - centre_r_.lonr());
-    auto tsf    = std::tan(0.5 * (M_PI_2 - sign_ * p.latr()));
-    auto height = figure().R() * tsf / F_;
 
-    return {-sign_ * height * std::sin(a), sign_ * height * std::cos(a)};
+PointXY PolarStereographic::fwd(const PointLonLat& p) const {
+    const auto rho = k_ * conformal_.t(sign_ * p.lat() * util::DEGREE_TO_RADIAN);
+    const auto dlam =
+        PointLonLat::normalise_angle_to_minimum(p.lon() - lon_0_, -PointLonLat::FLAT_ANGLE) * util::DEGREE_TO_RADIAN;
+
+    return {rho * std::sin(dlam), -sign_ * rho * std::cos(dlam)};
 }
 
 
 PointLonLat PolarStereographic::inv(const PointXY& q) const {
-    PointXY p{q.X() - x0_, q.Y() - y0_};
+    const auto rho = std::hypot(q.X(), q.Y());
 
-    auto rh  = std::sqrt(p.X() * p.X() + p.Y() * p.Y());
-    auto tsi = rh / figure().R() * F_;
-
-    return PointLonLat::make_from_lonlatr(sign_ * std::atan2(sign_ * p.X(), -sign_ * p.Y()) + centre_r_.lonr(),
-                                          sign_ * (M_PI_2 - 2 * std::atan(tsi)));
+    return PointLonLat::make_from_lonlatr(lon_0_ * util::DEGREE_TO_RADIAN + std::atan2(q.X(), -sign_ * q.Y()),
+                                          sign_ * conformal_.phi(rho / k_), lon_0_ - PointLonLat::FLAT_ANGLE);
 }
 
 
 const std::string& PolarStereographic::type() const {
-    static const std::string type{"polar_stereographic"};
+    static const std::string type{"stere"};
     return type;
 }
 
@@ -66,11 +71,16 @@ const std::string& PolarStereographic::type() const {
 void PolarStereographic::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
-    custom.set("type", "stere");
-    custom.set("lon_0", centre_.lon());
-    custom.set("lat_0", centre_.lat());
-    custom.set("lon_first", first_.lon());
-    custom.set("lat_first", first_.lat());
+    custom.set("type", type());
+    custom.set("lat_0", lat_0_);
+
+    if (!types::is_approximately_equal(lat_ts_, lat_0_)) {
+        custom.set("lat_ts", lat_ts_);
+    }
+
+    if (!types::is_approximately_equal(lon_0_, 0.)) {
+        custom.set("lon_0", lon_0_);
+    }
 }
 
 

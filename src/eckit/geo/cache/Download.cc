@@ -8,9 +8,12 @@
 
 #include "eckit/eckit_config.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/io/FileLock.h"
 #include "eckit/log/Log.h"
+#include "eckit/os/AutoUmask.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/StringTools.h"
 
@@ -19,9 +22,7 @@
 #include <vector>
 
 #include "eckit/io/EasyCURL.h"
-#include "eckit/io/FileLock.h"
 #include "eckit/log/Timer.h"
-#include "eckit/os/AutoUmask.h"
 #include "eckit/utils/Translator.h"
 #endif
 
@@ -29,7 +30,6 @@
 namespace eckit::geo::cache {
 
 
-const int Download::VERSION        = 1;
 const std::string Download::PREFIX = "";
 const std::string Download::SUFFIX = ".download";
 
@@ -43,7 +43,6 @@ class lock_type {
 };
 
 
-#if eckit_HAVE_CURL
 class file_lock_type {
     struct flock_type {
         explicit flock_type(const PathName& path) :
@@ -73,10 +72,14 @@ public:
 
     explicit file_lock_type(const PathName& path) : flock_(path), lock_guard_(flock_) {}
 };
-#endif
 
 
 }  // namespace
+
+
+PathName Download::default_root() {
+    return PathName{LibEcKitGeo::cacheDir()} / "download" / std::to_string(version::DOWNLOAD);
+}
 
 
 std::string Download::url_file_basename(const url_type& url, bool ext) {
@@ -128,16 +131,15 @@ std::string Download::validate_response(const url_type& url, long code, const he
 }
 
 
-#if eckit_HAVE_CURL
-Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
-    // control concurrent download
-    lock_type lock;
+namespace {
 
+
+// unlocked, see to_path and to_cached_path
+Download::info_type download(const Download::url_type& url, const PathName& path, [[maybe_unused]] bool html) {
+#if eckit_HAVE_CURL
     Timer timer;
     std::string error;
     unsigned long long bytes = 0;
-
-    file_lock_type flock(path);
 
     auto tmp = path + ".part";
     auto dir = path.dirName();
@@ -155,7 +157,7 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 
         // fail early on a known status (eg. 404)
         if (response.code() != 0) {
-            error = validate_response(url, response.code(), headers, html);
+            error = Download::validate_response(url, response.code(), headers, html);
         }
 
         if (error.empty()) {
@@ -170,7 +172,7 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
             }
 
             // validate the final response
-            error = validate_response(url, response.code(), headers, html);
+            error = Download::validate_response(url, response.code(), headers, html);
 
             // protect against truncated transfer
             if (auto it = headers.find("content-length"); error.empty() && it != headers.end()) {
@@ -202,37 +204,44 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     PathName::rename(tmp, path);
 
     return {static_cast<long long>(bytes), timer.elapsed()};
-}
 #else
-Download::info_type Download::to_path(const url_type& url, const PathName& path, bool /*html*/) {
     throw exception::DownloadError("'" + url + "' to '" + path.asString() + "': eckit built without CURL support",
                                    Here());
-}
 #endif
+}
+
+
+}  // namespace
+
+
+Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
+    lock_type lock;
+    file_lock_type flock(path);
+
+    return download(url, path, html);
+}
 
 
 PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {
-    // control concurrent access
     lock_type lock;
 
-    static MemoryCacheT<MD5::digest_t, std::string> CACHE;
-
-    // set cache key, return path early if possible
-    const auto key = MD5{url}.digest();
-    const auto path =
-        CACHE.contains(key) ? PathName{CACHE[key]} : cache_root() / prefix + (prefix.empty() ? "" : "-") + key + suffix;
+    const auto path = cache_root() / prefix + (prefix.empty() ? "" : "-") + MD5{url}.digest() + suffix;
 
     if (path.exists()) {
-        return CACHE[key] = path;
+        return path;
     }
 
-    // download, update cache, return path
-    Log::info() << "Downloading '" << url << "' to '" << path << "'..." << std::endl;
-    auto info = Download::to_path(url, path, html_);
-    Log::info() << "Download of " << info.bytes << " took " << info.time_s << "s." << std::endl;
+    // across processes: the first downloads, the others find the file
+    file_lock_type flock(path);
+
+    if (!path.exists()) {
+        Log::info() << "Downloading '" << url << "' to '" << path << "'..." << std::endl;
+        auto info = download(url, path, html_);
+        Log::info() << "Download of " << info.bytes << " took " << info.time_s << "s." << std::endl;
+    }
 
     ASSERT_MSG(path.exists(), "Download: file '" + path + "' not found");
-    return CACHE[key] = path;
+    return path;
 }
 
 

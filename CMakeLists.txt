@@ -209,11 +209,6 @@ ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
-ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
-                    DEFAULT OFF
-                    CONDITION eckit_HAVE_ECKIT_GEO
-                    DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
-
 ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     DEFAULT ON
                     CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP
@@ -229,6 +224,11 @@ endif()
 # (keep paths as strings to avoid normalisation/expansion)
 set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
+
+# in-memory cache capacities, as "in-process[,shared]" (bytes)
+math( EXPR _one_GiB "1024 * 1024 * 1024" )
+set( eckit_GEO_CACHE_SEARCH_CAPACITY "${_one_GiB},0" CACHE STRING "eckit::geo cache search capacity default" )
+set( eckit_GEO_CACHE_CROP_CAPACITY "0" CACHE STRING "eckit::geo cache crop capacity default" )
 
 ### LAPACK
 

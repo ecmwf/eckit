@@ -28,7 +28,7 @@ public:
 
     const std::string& type() const override;
 
-private:
+protected:
 
     // -- Overridden methods
 

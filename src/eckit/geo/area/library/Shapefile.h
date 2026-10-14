@@ -22,6 +22,11 @@ class Area;
 namespace eckit::geo::area::library {
 
 
+/**
+ * @brief Shapefile areas (by entity index, or name), as area type shapefile
+ * @details Spec: shapefile from 'url' (downloaded and cached) or 'file' (.shp, or .zip with one .shp), optionally
+ * 'dbf', and the entity by 'index', or 'name' in field 'name_field'.
+ */
 class Shapefile : public Library {
 public:
 
@@ -63,6 +68,11 @@ private:
 
     // -- Members
 
+    std::string url_;
+    std::string library_;
+    const PathName file_;
+    const PathName dbf_;
+
     const PathName shpPath_;
     const PathName dbfPath_;
 
@@ -76,6 +86,10 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+
+    // -- Methods
+
+    [[nodiscard]] Area* make_area(size_t, const std::string& name) const;
 };
 
 

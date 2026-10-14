@@ -26,9 +26,15 @@ public:
     explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N, BoundingBox = {}, order::Scan = scan_default(), const Projection* = nullptr);
 
+    /// Of ni longitudes (global, 4N if 0)
+    RegularGaussian(size_t N, size_t ni, BoundingBox, order::Scan = scan_default(), const Projection* = nullptr);
+
     // -- Methods
 
     size_t N() const { return N_; }
+
+    /// Number of longitudes of the global grid (4N, unless given)
+    size_t ni() const { return ni_; }
 
     // -- Overridden methods
 
@@ -39,8 +45,6 @@ public:
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
-    [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-
     const Range& lon() const override { return x_; }
     const Range& lat() const override { return y_; }
 
@@ -48,11 +52,18 @@ public:
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
+protected:
+
+    // -- Overridden methods
+
+    [[nodiscard]] Regular* make_regular_cropped(const BoundingBox&) const override;
+
 private:
 
     // -- Members
 
     const size_t N_;
+    const size_t ni_;
     const range::RegularLongitude x_;
     const range::GaussianLatitude y_;
 

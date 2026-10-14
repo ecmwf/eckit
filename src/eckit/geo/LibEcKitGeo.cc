@@ -129,6 +129,34 @@ std::string LibEcKitGeo::cacheDir() {
 }
 
 
+std::string LibEcKitGeo::searchLoader() {
+    static const std::string loader{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-memory")};
+    return loader;
+}
+
+
+bool LibEcKitGeo::searchFastBuild() {
+    static const bool yes{
+        LibResource<bool, LibEcKitGeo>("eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD", true)};
+    return yes;
+}
+
+
+std::string LibEcKitGeo::searchCacheCapacity() {
+    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-cache-search-capacity;$ECKIT_GEO_CACHE_SEARCH_CAPACITY", eckit_GEO_CACHE_SEARCH_CAPACITY)};
+    return capacity;
+}
+
+
+std::string LibEcKitGeo::cropCacheCapacity() {
+    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-cache-crop-capacity;$ECKIT_GEO_CACHE_CROP_CAPACITY", eckit_GEO_CACHE_CROP_CAPACITY)};
+    return capacity;
+}
+
+
 void LibEcKitGeo::purgeCacheDir() {
     purge_path_recursive(cacheDir());
 }
@@ -150,22 +178,19 @@ void LibEcKitGeo::purgeCacheProjection() {
 
 
 std::string LibEcKitGeo::url(const std::string& url_path) {
-    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
-
     static const std::string url_prefix(LibResource<std::string, LibEcKitGeo>(
         "eckit-geo-share-url-prefix;$ECKIT_GEO_SHARE_URL_PREFIX", eckit_GEO_SHARE_URL_PREFIX));
+    return url(url_path, url_prefix);
+}
+
+
+std::string LibEcKitGeo::url(const std::string& url_path, const std::string& url_prefix) {
+    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
+
     auto sep =
         !url_prefix.empty() && url_prefix.back() != '/' && !url_path.empty() && url_path.front() != '/' ? "/" : "";
 
     return std::regex_search(url_path, has_scheme) ? url_path : url_prefix + sep + url_path;
-}
-
-
-bool LibEcKitGeo::proj() {
-    static const bool yes{
-        LibResource<bool, LibEcKitGeo>("eckit-geo-projection-proj;$ECKIT_GEO_PROJECTION_PROJ",
-                                       (eckit_HAVE_PROJ != 0) && (eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT != 0))};
-    return yes;
 }
 
 

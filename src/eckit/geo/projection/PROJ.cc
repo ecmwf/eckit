@@ -8,9 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <limits>
-#include <map>
 #include <memory>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -19,13 +17,12 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/util.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
-
-
-static ProjectionRegisterType<PROJ> PROJECTION("proj");
 
 
 namespace {
@@ -33,6 +30,13 @@ namespace {
 
 PJ_AREA* AREA       = nullptr;
 PJ_CONTEXT* CONTEXT = nullptr;
+
+
+// PROJ objects share the context, which isn't thread-safe
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
 
 
 PJ_CONTEXT* ctx() {
@@ -55,8 +59,16 @@ void proj_reset() {
 }
 
 
-struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
-    explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {
+struct pj_destroy {
+    void operator()(PJ* ptr) const {
+        lock_type lock;
+        proj_destroy(ptr);
+    }
+};
+
+
+struct pj_t : std::unique_ptr<PJ, pj_destroy> {
+    explicit pj_t(element_type* ptr) : unique_ptr(ptr) {
         if (!operator bool()) {
             // common errors are "proj.db not found" or "invalid CRS string"
             const auto err = proj_context_errno(ctx());
@@ -142,6 +154,8 @@ struct XYZ final : Convert {
 
 
 Figure* make_figure(const std::string& proj_str) {
+    lock_type lock;
+
     pj_t identity(proj_create_crs_to_crs(ctx(), proj_str.c_str(), proj_str.c_str(), area()));
 
     pj_t crs(proj_get_target_crs(ctx(), identity.get()));
@@ -157,6 +171,16 @@ Figure* make_figure(const std::string& proj_str) {
 }
 
 
+std::string spec_source(const Projection::Spec& spec) {
+    return spec.get_string("source", PROJ::proj_default());
+}
+
+
+std::string spec_target(const Projection::Spec& spec) {
+    return spec.get_string("target", spec.get_string("proj", PROJ::proj_default()));
+}
+
+
 }  // namespace
 
 
@@ -169,10 +193,12 @@ struct PROJ::Implementation {
     }
 
     inline Point fwd(const Point& p) const {
+        lock_type lock;
         return target_->to_point(proj_trans(proj_.get(), PJ_FWD, source_->to_coord(p)));
     }
 
     inline Point inv(const Point& p) const {
+        lock_type lock;
         return source_->to_point(proj_trans(proj_.get(), PJ_INV, target_->to_coord(p)));
     }
 
@@ -193,8 +219,11 @@ struct PROJ::Implementation {
         }
 
         constexpr auto stride = sizeof(double);
-        proj_trans_generic(proj_.get(), direction, c[0].data(), stride, n, c[1].data(), stride, n,
-                           m == 3 ? c[2].data() : nullptr, stride, m == 3 ? n : 0, nullptr, 0, 0);
+        {
+            lock_type lock;
+            proj_trans_generic(proj_.get(), direction, c[0].data(), stride, n, c[1].data(), stride, n,
+                               m == 3 ? c[2].data() : nullptr, stride, m == 3 ? n : 0, nullptr, 0, 0);
+        }
 
         c.resize(to.dims());
 
@@ -227,6 +256,8 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     ASSERT(!source_.empty());
     ASSERT(!target_.empty());
 
+    lock_type lock;
+
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
         pj_t identity(proj_create_crs_to_crs(ctx(), string.c_str(), string.c_str(), area()));
         pj_t crs(proj_get_target_crs(ctx(), identity.get()));
@@ -243,7 +274,6 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
                                                           : NOTIMP;
     };
 
-    // projection, normalised
     pj_t p(proj_create_crs_to_crs(ctx(), source_.c_str(), target_.c_str(), area()));
     p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
@@ -252,8 +282,11 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 }
 
 
-PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", proj_default()), spec.get_string("target", spec.get_string("proj", proj_default())),
+PROJ::PROJ(const Spec& spec) : PROJ(spec, spec.get_bool("reverse", false)) {}
+
+
+PROJ::PROJ(const Spec& spec, bool reverse) :
+    PROJ(reverse ? spec_target(spec) : spec_source(spec), reverse ? spec_source(spec) : spec_target(spec),
          spec.get_double("lon_minimum", 0)) {}
 
 
@@ -288,60 +321,15 @@ std::vector<std::vector<double>> PROJ::inv_vector(const std::vector<double>& v1,
 }
 
 
-std::string PROJ::proj_str(const spec::Custom& custom) {
-    using key_value_type = std::pair<std::string, std::string>;
-
-    // key "proj" comes first in string, then the others (sorted)
-    struct key_value_compare {
-        bool operator()(const key_value_type& a, const key_value_type& b) const {
-            if (a.first != b.first && (a.first == "proj" || b.first == "proj")) {
-                return a.first == "proj";
-            }
-            return a < b;
-        };
-    };
-
-    static const std::map<std::string, std::string> KEYS{
-        {"type", "proj"},
-    };
-
-    static const std::map<std::string, std::string> VALUES{
-        {"mercator", "merc"},
-        {"reverse_mercator", "merc"},
-    };
-
-    auto rename = [](const std::map<std::string, std::string>& map, const std::string& key) {
-        const auto it = map.find(key);
-        return it != map.end() ? it->second : key;
-    };
-
-    std::set<key_value_type, key_value_compare> set;
-    for (const auto& [k, v] : custom.container()) {
-        if (FigureFactory::keys().count(k) == 0) {
-            set.emplace(rename(KEYS, k), rename(VALUES, to_string(v)));
-        }
-    }
-
-    std::string str;
-    for (const auto& [key, value] : set) {
-        str += "+" + key + "=" + value + " ";
-    }
-
-    // figure comes last in string (default figure if not specified)
-    std::unique_ptr<const Figure> figure(FigureFactory::build(custom));
-    ASSERT(figure);
-
-    return str + figure->proj_str();
-}
-
-
-const std::string& PROJ::proj_default() {
-    static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
-    return DEFAULT;
+void PROJ::register_type() {
+    static const std::unique_ptr<ProjectionRegisterType<PROJ>> REGISTER(
+        projdb_is_available() ? new ProjectionRegisterType<PROJ>("proj", true) : nullptr);
 }
 
 
 bool PROJ::projdb_is_available() {
+    lock_type lock;
+
     struct MuteLog {
         MuteLog() : previous_(proj_log_level(ctx(), PJ_LOG_NONE)) {}
         ~MuteLog() { proj_log_level(ctx(), previous_); }
@@ -350,13 +338,15 @@ bool PROJ::projdb_is_available() {
 
     // Note: not using pj_t, which throws on failure (failure is a possible outcome)
     std::unique_ptr<pj_t::element_type, pj_t::deleter_type> crs(
-        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, 0, nullptr), &proj_destroy);
+        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, 0, nullptr));
 
     return static_cast<bool>(crs);
 }
 
 
 void PROJ::projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths) {
+    lock_type lock;
+
     // Recreate context so the new paths takes effect (an already-open database is reset)
     proj_reset();
 
@@ -377,6 +367,8 @@ void PROJ::projdb_set_search_paths(const std::string& db_path, const std::vector
 
 
 void PROJ::projdb_reset() {
+    lock_type lock;
+
     // a fresh context re-resolves the database from the environment / compiled-in defaults.
     proj_reset();
 }

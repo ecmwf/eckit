@@ -56,6 +56,7 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
+    std::string uid() const override;
 
     bool intersects(BoundingBox&) const override;
     bool contains(const Point&) const override;

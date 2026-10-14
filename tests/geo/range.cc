@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <memory>
 #include <ostream>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "eckit/geo/grid/regular/RegularXY.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/geo/range/RegularXY.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -25,13 +27,13 @@ namespace eckit::geo::test {
 
 CASE("range::RegularXY") {
     SECTION("make_xy_range") {
-        range::RegularXY range(1., -1., 2., -1.);
+        range::RegularXY range(1., -1., 2.);
 
         EXPECT(range.size() == 4);
 
         EXPECT_APPROX(range.a(), -1.);
         EXPECT_APPROX(range.b(), 2.);
-        EXPECT_APPROX(range.increment(), 1.);
+        EXPECT_APPROX(range.inc(), 1.);
 
         const auto& values = range.values();
 
@@ -39,6 +41,31 @@ CASE("range::RegularXY") {
         EXPECT_APPROX(values[1], 0.);
         EXPECT_APPROX(values[2], 1.);
         EXPECT_APPROX(values[3], 2.);
+    }
+
+
+    SECTION("irrational step (as space_view), without drift") {
+        constexpr double inc = 2997.400223720893;
+
+        // the end is included to a small fraction of the step (descending, and cropped)
+        for (const auto& [a, b, size] : std::vector<std::tuple<double, double, size_t>>{
+                 {0., 15. * inc, 16},
+                 {0., 15. * inc * (1. - 1e-12), 16},
+                 {0., 15. * inc - 0.5 * inc, 15},
+                 {-356. * inc, (15. - 356.) * inc, 16},
+             }) {
+            range::RegularXY range(inc, a, b);
+            EXPECT(range.size() == size);
+            EXPECT(range.values()[size - 1] == a + static_cast<double>(size - 1) * inc);
+
+            range::RegularXY reverse(-inc, b, a);
+            EXPECT(reverse.size() == size);
+        }
+
+        std::unique_ptr<range::RegularXY> cropped(
+            range::RegularXY(inc, 0., 15. * inc).make_cropped_range(inc, 10. * inc));
+        EXPECT(cropped->size() == 10);
+        EXPECT(cropped->a() == inc);
     }
 
 
@@ -108,6 +135,12 @@ CASE("range::RegularLongitude") {
                  {-90., 90., -90., 0., false, {90, 0, -90}},
                  {90., -180., 180., 0., true, {-180, -90, 0, 90}},
                  {45., -180., 180., 0., true, {-180, -135, -90, -45, 0, 45, 90, 135}},
+                 {100., 0., 360., 0., true, {0, 100, 200, 300}},
+                 // decreasing, periodic (from the lowest point)
+                 {-90., 180., -180., 0., true, {90, 0, -90, -180}},
+                 {-90., 360., 0., 0., true, {270, 180, 90, 0}},
+                 {-45., 180., -180., 0., true, {135, 90, 45, 0, -45, -90, -135, -180}},
+                 {-100., 360., 0., 0., true, {300, 200, 100, 0}},
              }) {
             range::RegularLongitude range(test.inc, test.a, test.b, test.ref);
             EXPECT(range.periodic() == test.periodic);
@@ -154,26 +187,31 @@ CASE("range::RegularLongitude") {
     }
 
 
+    SECTION("cropped to a single value") {
+        const range::RegularLongitude range(11.25, 0., 360.);
+        const std::unique_ptr<range::RegularLongitude> cropped(range.make_cropped_range(-7., 7.));
+
+        EXPECT(cropped->size() == 1);
+        EXPECT(cropped->a() == 0.);
+        EXPECT(cropped->increment() == 0.);
+    }
+
+
     SECTION("degenerate") {
-        range::RegularLongitude range1(1., 1., 1.);
-
-        EXPECT(range1.size() == 1);
-        EXPECT(range1.values().front() == 1.);
-
-        range::RegularLongitude range2(2., 2., 2.);
-
-        EXPECT(range2.size() == 1);
-        EXPECT(range2.values().front() == 2.);
-
-        range::RegularLongitude range3(0., 2., 2.);
-
-        EXPECT(range3.size() == 1);
-        EXPECT(range3.values().front() == 2.);
-
-        range::RegularLongitude range4(0., 2., 2., 1.);
-
-        EXPECT(range4.size() == 1);
-        EXPECT(range4.values().front() == 2.);
+        // a single value, as given and without increment
+        for (const auto& [range, value] : std::vector<std::pair<range::RegularLongitude, double>>{
+                 {range::RegularLongitude(1., 1., 1.), 1.},
+                 {range::RegularLongitude(2., 2., 2.), 2.},
+                 {range::RegularLongitude(0., 2., 2.), 2.},
+                 {range::RegularLongitude(0., 2., 2., 1.), 2.},
+                 {range::RegularLongitude(0.5, 2., 2., 0.1), 2.},  // not a multiple of the increment from ref
+                 {range::RegularLongitude(360., 0., 10.), 0.},     // a single multiple of the increment, not periodic
+             }) {
+            EXPECT(range.size() == 1);
+            EXPECT(range.values().front() == value);
+            EXPECT(range.increment() == 0.);
+            EXPECT_NOT(range.periodic());
+        }
     }
 
 
@@ -410,11 +448,32 @@ CASE("range::Regular") {
          }) {
         range::RegularLatitude lat(test.inc, -90., 90., 0.);
         EXPECT_APPROX(lat.increment(), test.inc);
-        EXPECT_EQUAL(lat.size(), test.nlat);
+        EXPECT(lat.size() == test.nlat);
 
         range::RegularLongitude lon(test.inc, 0., 360., 0.);
         EXPECT_APPROX(lon.increment(), test.inc);
-        EXPECT_EQUAL(lon.size(), test.nlon);
+        EXPECT(lon.size() == test.nlon);
+    }
+}
+
+
+CASE("range::RegularLatitude, a single value") {
+    // a single value, as given and without increment (eg. a grid of a single point, row or column)
+    for (const auto& [range, value] : std::vector<std::pair<range::RegularLatitude, double>>{
+             {range::RegularLatitude(0.5, 45., 45.), 45.},
+             {range::RegularLatitude(0., 45., 45.), 45.},
+             {range::RegularLatitude(0.5, 45., 44.), 45.},   // b not in the direction of the increment
+             {range::RegularLatitude(1., 44.8, 45.7), 45.},  // a single multiple of the increment
+         }) {
+        EXPECT(range.size() == 1);
+        EXPECT(range.increment() == 0.);
+        EXPECT_APPROX(range.values().front(), value);
+
+        // cropped, as is
+        std::unique_ptr<const range::Regular> cropped(range.make_cropped_range(40., 50.));
+        EXPECT(cropped->size() == 1);
+        EXPECT(cropped->increment() == 0.);
+        EXPECT_APPROX(cropped->values().front(), value);
     }
 }
 

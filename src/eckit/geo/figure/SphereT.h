@@ -8,11 +8,6 @@
 #include "eckit/geo/figure/Sphere.h"
 
 
-namespace eckit::geo::area {
-class BoundingBox;
-}
-
-
 namespace eckit::geo::figure {
 
 
@@ -33,15 +28,8 @@ public:
 
     bool is_default() const override { return DATUM::default_figure; }
 
-    /// Surface area [L^2]
-    double area() const override { return _area(); }
-
-    /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) const override { return _area(bbox); }
-
     // -- Class methods
 
-    /// Sphere radius
     inline static double radius() { return DATUM::radius; }
 
     /// Great-circle central angle between two points [radian]
@@ -61,12 +49,6 @@ public:
     inline static double distance(const PointXYZ& A, const PointXYZ& B) {
         return Sphere::distance(DATUM::radius, A, B);
     }
-
-    /// Surface area [L^2]
-    inline static double _area() { return Sphere::area(DATUM::radius); }
-
-    /// Surface area between parallels and meridians [L^2]
-    inline static double _area(const area::BoundingBox& bbox) { return Sphere::area(DATUM::radius, bbox); }
 
     /// Convert spherical to Cartesian coordinates
     inline static PointXYZ _convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {

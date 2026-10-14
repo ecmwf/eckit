@@ -17,7 +17,6 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
@@ -121,7 +120,7 @@ const std::string& RegularLL::type() const {
 
 Point RegularLL::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};  // First longitude and first latitude
+    return PointLonLat{x().values().front(), y().values().front()};
 }
 
 
@@ -131,12 +130,8 @@ Point RegularLL::last_point() const {
 }
 
 
-Grid* RegularLL::make_grid_cropped(const Area& crop) const {
-    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularLL({dx(), dy()}, cropped);
-    }
-
-    throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());
+grid::Regular* RegularLL::make_regular_cropped(const BoundingBox& bbox) const {
+    return new RegularLL({std::abs(dx()), std::abs(dy())}, bbox, reference(), scan());
 }
 
 
@@ -147,13 +142,15 @@ RegularLL::Reference RegularLL::reference_default() {
 
 
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
-    if (const auto* rotation = dynamic_cast<const projection::Rotation*>(&projection()); rotation != nullptr) {
-        return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()},
-                                                       *rotation)
-            .release();
+    const auto& p  = projection();
+    const auto& ll = geo::point_coordinates<PointLonLat>();
+
+    if (p.is_default() || p.source_point_coordinates() != ll || p.target_point_coordinates() != ll) {
+        return calculate_bbox_xy();
     }
 
-    return calculate_bbox_xy();
+    return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()}, p)
+        .release();
 }
 
 

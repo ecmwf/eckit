@@ -31,6 +31,9 @@ public:
     double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
 
+    using Projection::fwd;
+    using Projection::inv;
+
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
     inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
 
@@ -40,9 +43,6 @@ public:
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
-
-    /// NOTE: a rotated grid's (x, y) are (lon, lat) on the rotated sphere, which fwd() un-rotates
-    inline Point from_grid_xy(double x, double y) const override { return fwd(PointLonLat{x, y}); }
 
     // -- Class methods
 

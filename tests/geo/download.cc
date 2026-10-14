@@ -2,8 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include <fstream>
 #include <iterator>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -130,11 +135,11 @@ CASE("validate_response: other schemes rely on transport errors only") {
 CASE("url_file_basename, url_file_extension") {
     const std::string url = "https://host/path/to/file.tar.gz?query=1#fragment";
 
-    EXPECT_EQUAL(Download::url_file_basename(url), "file.tar.gz");
-    EXPECT_EQUAL(Download::url_file_basename(url, false), "file.tar");
-    EXPECT_EQUAL(Download::url_file_extension(url), ".gz");
-    EXPECT_EQUAL(Download::url_file_extension("https://host/path/.hidden"), "");
-    EXPECT_EQUAL(Download::url_file_extension("https://host/path/file"), "");
+    EXPECT(Download::url_file_basename(url) == "file.tar.gz");
+    EXPECT(Download::url_file_basename(url, false) == "file.tar");
+    EXPECT(Download::url_file_extension(url) == ".gz");
+    EXPECT(Download::url_file_extension("https://host/path/.hidden") == "");
+    EXPECT(Download::url_file_extension("https://host/path/file") == "");
 }
 
 
@@ -150,7 +155,7 @@ CASE("to_cached_path: cached file is used, without downloading (any configuratio
 
     auto path = download.to_cached_path(URL_UNAVAILABLE, PREFIX, SUFFIX);
     EXPECT(path == expected);
-    EXPECT_EQUAL(read_file(path), "cached");
+    EXPECT(read_file(path) == "cached");
 
     download.rm_cache_root();
     EXPECT(!root.exists());
@@ -181,7 +186,7 @@ CASE("to_path: file:// (no network)") {
             EXPECT(info.bytes.value() == static_cast<double>(contents.size()));
             EXPECT(path.exists());
             EXPECT(!part.exists());
-            EXPECT_EQUAL(read_file(path), contents);
+            EXPECT(read_file(path) == contents);
 
             remove_file(path);
         }
@@ -192,7 +197,7 @@ CASE("to_path: file:// (no network)") {
         write_file(source, "new contents");
 
         Download::to_path(url, path);
-        EXPECT_EQUAL(read_file(path), "new contents");
+        EXPECT(read_file(path) == "new contents");
 
         remove_file(path);
     }
@@ -230,7 +235,7 @@ CASE("to_cached_path: file:// (no network)") {
         auto path = download.to_cached_path(url, PREFIX, SUFFIX);
         EXPECT(path.exists());
         EXPECT(path.dirName() == root);
-        EXPECT_EQUAL(read_file(path), "contents");
+        EXPECT(read_file(path) == "contents");
 
         // source is gone, cached file is used
         remove_file(source);
@@ -253,6 +258,88 @@ CASE("to_cached_path: file:// (no network)") {
     remove_file(source);
     download.rm_cache_root();
     EXPECT(!root.exists());
+}
+
+
+CASE("to_cached_path: file://, by concurrent processes (downloaded once)") {
+    constexpr long SIZE = 1L << 22;
+    const PathName source(SOURCE);
+    {
+        std::ofstream out(source.localPath(), std::ios::binary);
+        for (long i = 0; i < SIZE; ++i) {
+            out.put(static_cast<char>(i % 251));
+        }
+    }
+
+    const auto url = file_url(source);
+
+    const PathName root("test.download.processes", true);
+    const Download download(root);
+    download.rm_cache_root();
+
+    // start barrier: children block until the parent closes the pipe; children report the inode they found
+    int barrier[2];
+    int inodes[2];
+    ASSERT(::pipe(barrier) == 0);
+    ASSERT(::pipe(inodes) == 0);
+
+    constexpr int N = 6;
+    std::vector<pid_t> children;
+    for (int i = 0; i < N; ++i) {
+        auto pid = ::fork();
+        ASSERT(pid >= 0);
+
+        if (pid == 0) {
+            ::close(barrier[1]);
+            ::close(inodes[0]);
+            char c = 0;
+            while (::read(barrier[0], &c, 1) > 0) {}
+
+            int code = 1;
+            try {
+                const auto path = download.to_cached_path(url);
+
+                struct stat st{};
+                if (::stat(path.localPath(), &st) == 0 && st.st_size == SIZE &&
+                    ::write(inodes[1], &st.st_ino, sizeof(st.st_ino)) == sizeof(st.st_ino)) {
+                    code = 0;
+                }
+            }
+            catch (...) {
+                code = 1;
+            }
+            ::_exit(code);
+        }
+
+        children.push_back(pid);
+    }
+
+    ::close(barrier[0]);
+    ::close(barrier[1]);
+    ::close(inodes[1]);
+
+    for (auto pid : children) {
+        int status = 0;
+        ASSERT(::waitpid(pid, &status, 0) == pid);
+        EXPECT(WIFEXITED(status) && WEXITSTATUS(status) == 0);
+    }
+
+    std::set<ino_t> found;
+    for (ino_t ino = 0; ::read(inodes[0], &ino, sizeof(ino)) == sizeof(ino);) {
+        found.insert(ino);
+    }
+    ::close(inodes[0]);
+
+    // the same file, and nothing else (no partial or lock files)
+    EXPECT(found.size() == 1);
+
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+    root.children(files, dirs);
+    EXPECT(files.size() == 1);
+
+    download.rm_cache_root();
+    remove_file(source);
 }
 
 

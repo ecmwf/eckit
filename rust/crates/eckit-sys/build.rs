@@ -63,8 +63,18 @@ fn build_cxx_bridge(include: &std::path::Path) {
     {
         println!("cargo:rerun-if-changed=src/geo.rs");
         println!("cargo:rerun-if-changed=cpp/EckitGeoBridge.h");
+        println!("cargo:rerun-if-changed=cpp/RustPoint.h");
+        println!("cargo:rerun-if-changed=cpp/RustPoint.cc");
+        println!("cargo:rerun-if-changed=cpp/AreaWrapper.h");
+        println!("cargo:rerun-if-changed=cpp/AreaWrapper.cc");
+        println!("cargo:rerun-if-changed=cpp/FigureWrapper.h");
+        println!("cargo:rerun-if-changed=cpp/FigureWrapper.cc");
         println!("cargo:rerun-if-changed=cpp/GridWrapper.h");
         println!("cargo:rerun-if-changed=cpp/GridWrapper.cc");
+        println!("cargo:rerun-if-changed=cpp/ProjectionWrapper.h");
+        println!("cargo:rerun-if-changed=cpp/ProjectionWrapper.cc");
+        println!("cargo:rerun-if-changed=cpp/SearchWrapper.h");
+        println!("cargo:rerun-if-changed=cpp/SearchWrapper.cc");
         println!("cargo:rerun-if-changed=cpp/SpecWrapper.h");
         println!("cargo:rerun-if-changed=cpp/SpecWrapper.cc");
         bridges.push(std::path::PathBuf::from("src/geo.rs"));
@@ -81,7 +91,12 @@ fn build_cxx_bridge(include: &std::path::Path) {
 
     #[cfg(feature = "eckit-geo")]
     build
+        .file(crate_dir.join("cpp/RustPoint.cc"))
+        .file(crate_dir.join("cpp/AreaWrapper.cc"))
+        .file(crate_dir.join("cpp/FigureWrapper.cc"))
         .file(crate_dir.join("cpp/GridWrapper.cc"))
+        .file(crate_dir.join("cpp/ProjectionWrapper.cc"))
+        .file(crate_dir.join("cpp/SearchWrapper.cc"))
         .file(crate_dir.join("cpp/SpecWrapper.cc"));
 
     build

@@ -6,6 +6,7 @@
 
 #include "rust/cxx.h"
 
+#include <string>
 #include <vector>
 
 namespace eckit_bridge {
@@ -22,6 +23,16 @@ struct RustVec {
         out.reserve(values.size());
         for (const auto& v : values) {
             out.push_back(static_cast<To>(v));
+        }
+        return out;
+    }
+
+    /// Copies strings into a `rust::Vec<rust::String>`.
+    static rust::Vec<rust::String> strings(const std::vector<std::string>& values) {
+        rust::Vec<rust::String> out;
+        out.reserve(values.size());
+        for (const auto& v : values) {
+            out.push_back(rust::String(v));
         }
         return out;
     }

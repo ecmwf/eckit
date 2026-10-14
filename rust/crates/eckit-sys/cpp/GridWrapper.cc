@@ -5,43 +5,45 @@
 
 #include "eckit_exceptions.h"
 
+#include "AreaWrapper.h"
 #include "GridWrapper.h"
+#include "RustPoint.h"
 #include "RustVec.h"
+#include "SearchWrapper.h"
 #include "eckit-sys/src/geo.rs.h"
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/grid/SphericalHarmonics.h"
+#include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
+#include "eckit/geo/grid/regular/RegularGaussian.h"
+#include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/geo/util.h"
+#include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
 
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace eckit_bridge {
 
 namespace {
 
-RawPoint to_raw(const eckit::geo::Point& point) {
-    using namespace eckit::geo;
+using eckit::geo::Grid;
+using eckit::geo::Range;
 
-    if (const auto* p = std::get_if<PointXY>(&point)) {
-        return {PointKind::Xy, {p->X(), p->Y(), 0.}};
-    }
-    if (const auto* p = std::get_if<PointXYZ>(&point)) {
-        return {PointKind::Xyz, {p->X(), p->Y(), p->Z()}};
-    }
-    if (const auto* p = std::get_if<PointLonLat>(&point)) {
-        return {PointKind::LonLat, {p->lon(), p->lat(), 0.}};
-    }
-    if (const auto* p = std::get_if<PointLonLatR>(&point)) {
-        return {PointKind::LonLatR, {p->lonr(), p->latr(), 0.}};
-    }
-    throw exception::GridError("GridWrapper: point holds no value", Here());
+template <typename... Ts>
+bool is_any_of(const Grid& grid) {
+    return (... || (dynamic_cast<const Ts*>(&grid) != nullptr));
 }
 
 /// Calls `f(ny, nx)` with the grid's row structure, where `nx(j)` is the number
@@ -51,7 +53,7 @@ RawPoint to_raw(const eckit::geo::Point& point) {
 /// like `{"grid":"O1280"}` do not carry "pl" in their spec, so the only route
 /// is a cast to the concrete class.
 template <typename F>
-void with_rows(const eckit::geo::Grid& grid, F&& f) {
+void with_rows(const Grid& grid, F&& f) {
     using namespace eckit::geo::grid;
 
     if (const auto* g = dynamic_cast<const reduced::ReducedGaussian*>(&grid)) {
@@ -66,6 +68,46 @@ void with_rows(const eckit::geo::Grid& grid, F&& f) {
     else if (const auto* g = dynamic_cast<const Regular*>(&grid)) {
         f(g->ny(), [g](size_t /*j*/) { return g->nx(); });
     }
+}
+
+/// The grid types defining a scanning order; the base class throws `NotImplemented` (which prints a backtrace).
+bool has_order(const Grid& grid) {
+    using namespace eckit::geo::grid;
+    return is_any_of<Regular, reduced::ReducedGaussian, reduced::ReducedLonLat, reduced::HEALPix>(grid);
+}
+
+/// The grid types whose rows share their latitudes (as `Grid::lat`).
+bool has_latitudes(const Grid& grid) {
+    using namespace eckit::geo::grid;
+    return is_any_of<regular::RegularLL, regular::RegularGaussian, reduced::ReducedGaussian, reduced::ReducedLonLat,
+                     reduced::HEALPix>(grid);
+}
+
+/// The grid types whose columns share their longitudes (as `Grid::lon`).
+bool has_longitudes(const Grid& grid) {
+    using namespace eckit::geo::grid;
+    return is_any_of<regular::RegularLL, regular::RegularGaussian>(grid);
+}
+
+// Copied, not borrowed: `Range::values()` may return a reference into the
+// process-global memory cache, which `MemoryCache::total_purge()` frees.
+rust::Vec<double> values(const Range& range) {
+    return RustVec::copy<double>(range.values());
+}
+
+std::vector<double> to_vector(rust::Slice<const double> slice) {
+    return {slice.begin(), slice.end()};
+}
+
+void check_size(const char* method, size_t n, size_t have) {
+    if (have < n) {
+        throw eckit::UserError(
+            std::string("GridWrapper::") + method + ": buffers too small for " + std::to_string(n) + " points", Here());
+    }
+}
+
+std::unique_ptr<GridWrapper> adopt(const Grid* grid) {
+    return std::make_unique<GridWrapper>(std::unique_ptr<const Grid>(grid));
 }
 
 }  // namespace
@@ -87,6 +129,18 @@ rust::String GridWrapper::uid() const {
 
 rust::String GridWrapper::grid_type() const {
     return rust::String(grid_->type());
+}
+
+rust::String GridWrapper::name() const {
+    return rust::String(grid_->name());
+}
+
+rust::String GridWrapper::arrangement() const {
+    return rust::String(grid_->arrangement());
+}
+
+bool GridWrapper::equals(const GridWrapper& other) const {
+    return *grid_ == *other.grid_;
 }
 
 // ============== Shape ==============
@@ -120,57 +174,158 @@ size_t GridWrapper::ny() const {
     return ny;
 }
 
+size_t GridWrapper::nx() const {
+    const auto* g = dynamic_cast<const eckit::geo::grid::Regular*>(grid_.get());
+    return g == nullptr ? 0 : g->nx();
+}
+
+bool GridWrapper::is_regular() const {
+    return is_any_of<eckit::geo::grid::Regular>(*grid_);
+}
+
+size_t GridWrapper::truncation() const {
+    const auto* g = dynamic_cast<const eckit::geo::grid::SphericalHarmonics*>(grid_.get());
+    return g == nullptr ? 0 : g->truncation();
+}
+
+// ============== Order ==============
+
+rust::String GridWrapper::order() const {
+    if (!has_order(*grid_)) {
+        throw eckit::geo::exception::OrderError("Grid: order is not defined for type '" + grid_->type() + "'", Here());
+    }
+    return rust::String(grid_->order());
+}
+
+rust::Vec<size_t> GridWrapper::reorder(rust::Str to) const {
+    if (!has_order(*grid_)) {
+        throw eckit::geo::exception::OrderError("Grid: reorder is not defined for type '" + grid_->type() + "'",
+                                                Here());
+    }
+    return RustVec::copy<size_t>(grid_->reorder(std::string(to)));
+}
+
 // ============== Geometry ==============
 
-Bbox GridWrapper::bounding_box() const {
-    const auto& bbox = grid_->boundingBox();
-    return {bbox.north(), bbox.west(), bbox.south(), bbox.east()};
+std::unique_ptr<AreaWrapper> GridWrapper::bounding_box() const {
+    return std::make_unique<AreaWrapper>(std::make_unique<eckit::geo::area::BoundingBox>(grid_->boundingBox()));
 }
 
 RawPoint GridWrapper::first_point() const {
-    return to_raw(grid_->first_point());
+    return RustPoint::to_raw(grid_->first_point());
 }
 
 RawPoint GridWrapper::last_point() const {
-    return to_raw(grid_->last_point());
+    return RustPoint::to_raw(grid_->last_point());
 }
 
-// Copied, not borrowed: `Range::values()` may return a reference into the
-// process-global memory cache, which `MemoryCache::total_purge()` frees.
+rust::Vec<RawPoint> GridWrapper::to_points() const {
+    rust::Vec<RawPoint> out;
+    out.reserve(grid_->size());
+    std::for_each(grid_->cbegin(), grid_->cend(),
+                  [&out](const auto& point) { out.push_back(RustPoint::to_raw(point)); });
+    return out;
+}
+
+rust::Vec<rust::String> GridWrapper::point_coordinates() const {
+    return RustPoint::names(grid_->point_coordinates());
+}
 
 rust::Vec<double> GridWrapper::distinct_latitudes() const {
-    return RustVec::copy<double>(grid_->lat().values());
+    return has_latitudes(*grid_) ? values(grid_->lat()) : rust::Vec<double>{};
 }
 
 rust::Vec<double> GridWrapper::distinct_longitudes() const {
-    return RustVec::copy<double>(grid_->lon().values());
+    return has_longitudes(*grid_) ? values(grid_->lon()) : rust::Vec<double>{};
+}
+
+rust::Vec<double> GridWrapper::x_values() const {
+    return is_regular() ? values(grid_->x()) : rust::Vec<double>{};
+}
+
+rust::Vec<double> GridWrapper::y_values() const {
+    return is_regular() ? values(grid_->y()) : rust::Vec<double>{};
 }
 
 void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon) const {
+    using namespace eckit::geo;
+
     const auto n = grid_->size();
-    if (lat.size() < n || lon.size() < n) {
-        throw eckit::UserError("GridWrapper::fill_latlons: buffers too small for " + std::to_string(n) + " points",
-                               Here());
-    }
+    check_size("fill_latlons", n, std::min(lat.size(), lon.size()));
 
     size_t i = 0;
     std::for_each(grid_->cbegin(), grid_->cend(), [&](const auto& point) {
-        const auto* p = std::get_if<eckit::geo::PointLonLat>(&point);
-        if (p == nullptr) {
-            throw eckit::geo::exception::GridError("GridWrapper::fill_latlons: grid points are not lon/lat", Here());
+        if (const auto* p = std::get_if<PointLonLat>(&point)) {
+            lat[i] = p->lat();
+            lon[i] = p->lon();
         }
-        lat[i] = p->lat();
-        lon[i] = p->lon();
+        else if (const auto* r = std::get_if<PointLonLatR>(&point)) {
+            lat[i] = util::RADIAN_TO_DEGREE * r->latr();
+            lon[i] = util::RADIAN_TO_DEGREE * r->lonr();
+        }
+        else {
+            throw exception::GridError("GridWrapper::fill_latlons: grid points are not (lon, lat)", Here());
+        }
         ++i;
     });
+}
+
+void GridWrapper::fill_xyz(rust::Slice<double> x, rust::Slice<double> y, rust::Slice<double> z) const {
+    const auto n = grid_->size();
+    check_size("fill_xyz", n, std::min({x.size(), y.size(), z.size()}));
+
+    const auto xyz = grid_->to_xyz();
+    ASSERT(xyz.size() == 3 && xyz[0].size() == n && xyz[1].size() == n && xyz[2].size() == n);
+
+    std::copy(xyz[0].begin(), xyz[0].end(), x.begin());
+    std::copy(xyz[1].begin(), xyz[1].end(), y.begin());
+    std::copy(xyz[2].begin(), xyz[2].end(), z.begin());
+}
+
+// ============== Derived grids ==============
+
+std::unique_ptr<GridWrapper> GridWrapper::to_unstructured_ll(rust::Str name) const {
+    return adopt(grid_->to_unstructured_ll(std::string(name)));
+}
+
+rust::Vec<size_t> GridWrapper::crop(const AreaWrapper& area) const {
+    return RustVec::copy<size_t>(grid_->crop(area.inner()));
+}
+
+std::unique_ptr<GridWrapper> GridWrapper::make_grid_cropped(const AreaWrapper& area) const {
+    return adopt(grid_->make_grid_cropped(area.inner()));
+}
+
+std::unique_ptr<GridWrapper> GridWrapper::make_grid_cropped_unstructured_ll(const AreaWrapper& area) const {
+    return adopt(grid_->make_grid_cropped_unstructured_ll(area.inner()));
+}
+
+// ============== Search ==============
+
+std::unique_ptr<SearchWrapper> GridWrapper::search() const {
+    return std::make_unique<SearchWrapper>(eckit::geo::cache::SearchCache::instance().get(*grid_));
+}
+
+std::unique_ptr<SearchWrapper> GridWrapper::search_with_spec(rust::Str spec) const {
+    const std::unique_ptr<const eckit::spec::Spec> custom(
+        eckit::spec::Custom::make_from_value(eckit::YAMLParser::decodeString(std::string(spec))));
+    return std::make_unique<SearchWrapper>(eckit::geo::cache::SearchCache::instance().get(*grid_, *custom));
 }
 
 // ============== Factories ==============
 
 std::unique_ptr<GridWrapper> GridWrapper::from_spec(rust::Str spec) {
-    // Adopt the owning pointer before anything else can throw.
-    std::unique_ptr<const eckit::geo::Grid> grid(eckit::geo::GridFactory::make_from_string(std::string(spec)));
-    return std::make_unique<GridWrapper>(std::move(grid));
+    return adopt(eckit::geo::GridFactory::make_from_string(std::string(spec)));
+}
+
+std::unique_ptr<GridWrapper> GridWrapper::from_latlons(rust::Slice<const double> lat, rust::Slice<const double> lon,
+                                                       rust::Str name) {
+    if (lat.size() != lon.size()) {
+        throw eckit::UserError("GridWrapper::from_latlons: " + std::to_string(lat.size()) + " latitudes, " +
+                                   std::to_string(lon.size()) + " longitudes",
+                               Here());
+    }
+    return adopt(new eckit::geo::grid::Unstructured(to_vector(lon), to_vector(lat), std::string(name)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

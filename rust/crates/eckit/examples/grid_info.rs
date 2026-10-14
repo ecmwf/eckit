@@ -8,6 +8,7 @@
 //! cargo run --example grid_info -- N320
 //! cargo run --example grid_info -- H4
 //! cargo run --example grid_info -- '{"area":[73,-27,33,45],"grid":[4,4]}'
+//! cargo run --example grid_info -- '{"grid":[5,5],"rotation":[-40,10]}'
 //! ```
 //!
 //! An argument starting with `{` is treated as a gridSpec, anything else as a
@@ -17,7 +18,7 @@
 use std::process::ExitCode;
 
 use eckit::Grid;
-use eckit::geo::{Point, cache_footprint, cache_purge};
+use eckit::geo::{BoundingBox, Point, cache_footprint, cache_purge, search_cache_statistics};
 
 /// Grid described when the caller passes no argument.
 const DEFAULT_GRID: &str = "O16";
@@ -30,6 +31,12 @@ const SAMPLE: usize = 4;
 
 /// Column width for field labels.
 const LABEL: usize = 18;
+
+/// Location searched for in the grid: London.
+const QUERY: Point = Point::LonLat {
+    lon: -0.1,
+    lat: 51.5,
+};
 
 fn main() -> ExitCode {
     // Reporting the error through `Display` rather than returning it from
@@ -55,6 +62,19 @@ fn run() -> Result<(), eckit::Error> {
 
     println!("grid_info: {input}");
 
+    identity(&grid);
+    let n = shape(&grid)?;
+    geometry(&grid);
+    projection_and_figure(&grid);
+    let (lat, lon) = points(&grid, n)?;
+    search(&grid, &lat, &lon);
+    crop(&grid)?;
+    caches(grid);
+
+    Ok(())
+}
+
+fn identity(grid: &Grid) {
     section("identity");
     let spec = grid.spec();
     show("spec", spec.to_json_str());
@@ -69,7 +89,7 @@ fn run() -> Result<(), eckit::Error> {
             "spec.grid",
             spec.get::<Vec<f64>>("grid").map(|v| format!("{v:?}")),
         );
-    } else {
+    } else if spec.has("grid") {
         show("spec.grid", spec.get::<String>("grid"));
     }
     show("uid", grid.uid());
@@ -85,47 +105,78 @@ fn run() -> Result<(), eckit::Error> {
         }
         Err(err) => show("catalog", Err::<String, _>(err)),
     }
+}
 
+/// Returns the number of points.
+fn shape(grid: &Grid) -> Result<usize, eckit::Error> {
     let n = grid.len()?;
 
     section("shape");
     show("points", Ok(n));
     show("empty", grid.is_empty().map(yes_no));
     show("shape", grid.shape().map(|s| format!("{s:?}")));
+    show("regular", grid.is_regular().map(yes_no));
     show("latitude rows", grid.ny());
     show("structured", grid.is_structured().map(yes_no));
     show("pl", grid.pl().map(|pl| pl_summary(&pl)));
+    show("order", grid.order());
 
+    Ok(n)
+}
+
+fn geometry(grid: &Grid) {
     section("geometry");
     show(
-        "bounding box",
-        grid.bounding_box().map(|b| {
-            format!(
-                "N {:.4}  W {:.4}  S {:.4}  E {:.4}",
-                b.north, b.west, b.south, b.east
-            )
-        }),
+        "coordinates",
+        grid.point_coordinates().map(|c| c.join(", ")),
     );
+    show("bounding box", grid.bounding_box().map(|b| bbox(&b)));
     show("first point", grid.first_point().map(point));
     show("last point", grid.last_point().map(point));
+    // Empty when the rows (columns) share no latitudes (longitudes), as for
+    // reduced grids' longitudes: only regular grids have a single set.
     show(
         "distinct lats",
         grid.distinct_latitudes().map(|v| degrees(&v)),
     );
-    // Only regular grids have a single set of longitudes shared by every row.
-    // Asking a reduced grid throws `NotImplemented`, and eckit prints a
-    // backtrace to stdout as it does so.
-    if is_regular(&grid) {
-        show(
-            "distinct lons",
-            grid.distinct_longitudes().map(|v| degrees(&v)),
-        );
-    } else {
-        field("distinct lons", "(regular grids only)");
-    }
+    show(
+        "distinct lons",
+        grid.distinct_longitudes().map(|v| degrees(&v)),
+    );
+}
 
-    // `fill_latlons` over caller-owned buffers is the form to reach for on real
-    // grids — O1280 is 6.6M points per array, and these buffers can be reused.
+fn projection_and_figure(grid: &Grid) {
+    section("projection and figure");
+    let projection = grid.projection();
+    show("type", projection.projection_type());
+    show("spec", projection.spec().to_json_str());
+    show("proj", projection.proj_str());
+    show(
+        "coordinates",
+        projection.source_point_coordinates().and_then(|s| {
+            Ok(format!(
+                "{} -> {}",
+                s.join(", "),
+                projection.target_point_coordinates()?.join(", ")
+            ))
+        }),
+    );
+    let figure = grid.figure();
+    show("figure", figure.spec().to_json_str());
+    show("spherical", figure.is_spherical().map(yes_no));
+    show(
+        "semi-axes",
+        figure
+            .a()
+            .and_then(|a| Ok(format!("a {a}  b {}", figure.b()?))),
+    );
+}
+
+/// Every point's latitude and longitude, printing a sample.
+///
+/// `fill_latlons` over caller-owned buffers is the form to reach for on real
+/// grids — O1280 is 6.6M points per array, and these buffers can be reused.
+fn points(grid: &Grid, n: usize) -> Result<(Vec<f64>, Vec<f64>), eckit::Error> {
     let buffers = human_bytes(2 * n * size_of::<f64>());
     section(&format!("points — {n} total, {buffers} of buffers"));
     let mut lat = vec![0.0; n];
@@ -135,13 +186,87 @@ fn run() -> Result<(), eckit::Error> {
         println!("  [{i}] lat {:.4}  lon {:.4}", lat[i], lon[i]);
     }
 
+    Ok((lat, lon))
+}
+
+/// Nearest grid points to a location, through the grid's k-d tree.
+fn search(grid: &Grid, lat: &[f64], lon: &[f64]) {
+    section("search");
+    let Point::LonLat {
+        lon: query_lon,
+        lat: query_lat,
+    } = QUERY
+    else {
+        unreachable!("the query is a lon/lat point");
+    };
+    field("query", &format!("lat {query_lat:.4}  lon {query_lon:.4}"));
+    match grid.search() {
+        Ok(search) => {
+            show(
+                "nearest",
+                search.nearest(QUERY).map(|near| {
+                    format!(
+                        "[{}] lat {:.4}  lon {:.4}  {:.1} km away",
+                        near.index,
+                        lat[near.index],
+                        lon[near.index],
+                        near.distance / 1000.0
+                    )
+                }),
+            );
+            show(
+                "4 nearest",
+                search.nearest_k(QUERY, 4).map(|near| {
+                    near.iter()
+                        .map(|n| format!("[{}] {:.1} km", n.index, n.distance / 1000.0))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                }),
+            );
+            show(
+                "k-d tree",
+                search.footprint().map(|f| human_bytes(f.memory)),
+            );
+        }
+        Err(err) => show("nearest", Err::<String, _>(err)),
+    }
+}
+
+/// Points in an area, and the grid cropped to it: of the same type when
+/// supported (a lon/lat grid by a bounding box), otherwise unstructured.
+fn crop(grid: &Grid) -> Result<(), eckit::Error> {
+    section("crop");
+    let box_ = BoundingBox::new(60.0, -10.0, 35.0, 30.0)?;
+    field("area", &bbox(&box_));
+    show("points in area", grid.crop(&box_).map(|i| i.len()));
+    show(
+        "cropped grid",
+        grid.cropped(&box_)
+            .and_then(|c| Ok(format!("{} ({} points)", c.grid_type()?, c.len()?))),
+    );
+
+    Ok(())
+}
+
+/// Takes the grid, to show the caches it leaves behind once dropped.
+fn caches(grid: Grid) {
     section("caches");
+    show(
+        "searches",
+        search_cache_statistics().map(|s| {
+            format!(
+                "{} cached, {} hits, {} misses, {}",
+                s.size,
+                s.hits,
+                s.misses,
+                human_bytes(s.usage.memory)
+            )
+        }),
+    );
     field("footprint", &human_bytes(cache_footprint()));
     drop(grid);
     cache_purge();
     field("after purge", &human_bytes(cache_footprint()));
-
-    Ok(())
 }
 
 fn section(title: &str) {
@@ -160,13 +285,18 @@ fn show(label: &str, value: eckit::Result<impl std::fmt::Display>) {
     }
 }
 
-/// Regular grids report `[ny, nx]`; reduced ones report `[size]`.
-fn is_regular(grid: &Grid) -> bool {
-    grid.shape().is_ok_and(|shape| shape.len() == 2)
-}
-
 const fn yes_no(value: bool) -> &'static str {
     if value { "yes" } else { "no" }
+}
+
+fn bbox(b: &BoundingBox) -> String {
+    format!(
+        "N {:.4}  W {:.4}  S {:.4}  E {:.4}",
+        b.north(),
+        b.west(),
+        b.south(),
+        b.east()
+    )
 }
 
 fn point(p: Point) -> String {
@@ -187,6 +317,9 @@ fn pl_summary(pl: &[i64]) -> String {
 }
 
 fn degrees(values: &[f64]) -> String {
+    if values.is_empty() {
+        return "(none shared)".to_string();
+    }
     format!(
         "{} values: {}",
         values.len(),

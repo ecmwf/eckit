@@ -8,7 +8,10 @@
 #include "RustVec.h"
 #include "SpecWrapper.h"
 
+#include "eckit/spec/Exceptions.h"
+
 #include <string>
+#include <vector>
 
 namespace eckit_bridge {
 
@@ -48,6 +51,15 @@ rust::Vec<size_t> SpecWrapper::get_unsigned_vector(rust::Str key) const {
 
 rust::Vec<double> SpecWrapper::get_double_vector(rust::Str key) const {
     return RustVec::copy<double>(spec_.get_double_vector(std::string(key)));
+}
+
+rust::Vec<rust::String> SpecWrapper::get_string_vector(rust::Str key) const {
+    const std::string name(key);
+    std::vector<std::string> values;
+    if (!spec_.get(name, values)) {
+        throw eckit::spec::exception::SpecError(name, Here());
+    }
+    return RustVec::strings(values);
 }
 
 rust::String SpecWrapper::json() const {

@@ -29,6 +29,9 @@ eckit-sys.workspace = true
 [build-dependencies]
 bindman-utils.workspace = true
 
+[dev-dependencies]
+tempfile.workspace = true
+
 [[example]]
 name = "grid_info"
 required-features = ["geo"]

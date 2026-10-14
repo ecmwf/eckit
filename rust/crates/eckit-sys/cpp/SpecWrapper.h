@@ -37,6 +37,7 @@ public:
     rust::Vec<std::int64_t> get_long_vector(rust::Str key) const;
     rust::Vec<size_t> get_unsigned_vector(rust::Str key) const;
     rust::Vec<double> get_double_vector(rust::Str key) const;
+    rust::Vec<rust::String> get_string_vector(rust::Str key) const;
 
     /// Canonical JSON form.
     rust::String json() const;

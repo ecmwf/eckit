@@ -10,5 +10,9 @@
 // crates via `cargo:cpp_dir`, and must not pull in geo — which is optional and
 // only built when the `eckit-geo` feature is on.
 
+#include "AreaWrapper.h"
+#include "FigureWrapper.h"
 #include "GridWrapper.h"
+#include "ProjectionWrapper.h"
+#include "SearchWrapper.h"
 #include "SpecWrapper.h"

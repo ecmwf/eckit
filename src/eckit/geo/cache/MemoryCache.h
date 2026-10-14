@@ -94,7 +94,10 @@ public:
                                });
     }
 
-    void purge() final { container_.clear(); }
+    void purge() final {
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
+        container_.clear();
+    }
 
 private:
 

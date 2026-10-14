@@ -65,7 +65,7 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
     else if (a() < b()) {
         ASSERT(crop_a <= crop_b);
         if (is_less(a(), crop_a) || is_less(crop_b, b())) {
-            auto [from, to] = util::monotonic_crop(v, crop_a, crop_b);
+            auto [from, to] = util::monotonic_crop(v, crop_a - PointLonLat::EPS, crop_b + PointLonLat::EPS);
             v.erase(v.begin() + to, v.end());
             v.erase(v.begin(), v.begin() + from);
         }
@@ -73,7 +73,7 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
     else {
         ASSERT(crop_a >= crop_b);
         if (is_less(b(), crop_b) || is_less(crop_a, a())) {
-            auto [from, to] = util::monotonic_crop(v, crop_b, crop_a);
+            auto [from, to] = util::monotonic_crop(v, crop_b - PointLonLat::EPS, crop_a + PointLonLat::EPS);
             v.erase(v.begin() + to, v.end());
             v.erase(v.begin(), v.begin() + from);
         }

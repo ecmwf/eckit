@@ -18,7 +18,6 @@
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Tokenizer.h"
@@ -108,6 +107,23 @@ private:
     bool includesNorthPole_ = false;
     bool includesSouthPole_ = false;
     bool first_             = true;
+};
+
+
+/// Projection inverted, by reference
+class Inverse final : public Projection {
+public:
+
+    explicit Inverse(const Projection& projection) : projection_(projection) {}
+
+    Point fwd(const Point& p) const override { return projection_.inv(p); }
+    Point inv(const Point& q) const override { return projection_.fwd(q); }
+
+    const std::string& type() const override { return projection_.type(); }
+
+private:
+
+    const Projection& projection_;
 };
 
 
@@ -373,19 +389,45 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
-    constexpr double precision_ll = 0.5e-6;  // to microdegrees
-    constexpr double precision_xy = 0.5e-1;  // to decimeters
+    const auto& ll = point_coordinates<PointLonLat>();
+    const auto& xy = point_coordinates<PointXY>();
 
-    return make_bounding_box(min, max, projection, precision_ll, precision_xy);
+    // (lon, lat) to (x, y), or the reverse
+    if (projection.source_point_coordinates() == ll && projection.target_point_coordinates() == xy) {
+        return make_bounding_box(min, max, projection, PRECISION_LL, PRECISION_XY);
+    }
+
+    if (projection.source_point_coordinates() == xy && projection.target_point_coordinates() == ll) {
+        return make_bounding_box(min, max, Inverse{projection}, PRECISION_LL, PRECISION_XY);
+    }
+
+    if (projection.source_point_coordinates() == ll || projection.target_point_coordinates() == ll) {
+        throw exception::ProjectionError("BoundingBox: projection between (lon, lat) and (x, y) expected", Here());
+    }
+
+    // not geographic points (e.g. geocentric), all of them are included
+    return std::make_unique<BoundingBox>();
 }
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, PointLonLat max,
-                                                               const projection::Rotation& rotation) {
-    projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                    new projection::EquidistantCylindrical};
+                                                               const Projection& projection) {
+    const auto& ll = point_coordinates<PointLonLat>();
+    if (projection.source_point_coordinates() != ll || projection.target_point_coordinates() != ll) {
+        throw exception::ProjectionError("BoundingBox: projection from (lon, lat) to (lon, lat) expected", Here());
+    }
 
-    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, projection);
+    // (lon, lat) to the projection's source (lon, lat) as (x, y), reversing a copy of the projection
+    spec::Custom copy;
+    projection.fill_spec(copy);
+    if (!copy.has("type")) {
+        copy.set("type", projection.type());
+    }
+
+    projection::Composer composer{new projection::Reverse(ProjectionFactory::build(copy)),
+                                  new projection::EquidistantCylindrical};
+
+    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     if (after->periodic()) {
         return std::make_unique<BoundingBox>(after->north(), 0, after->south(), PointLonLat::FULL_ANGLE);
     }
@@ -404,16 +446,18 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_typ
         s = SOUTH_POLE.lat();
     }
 
-    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
+    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[ (periodic, as the constructor, if spanning 2 pi)
     const auto min  = -PointLonLat::FLAT_ANGLE;
     const auto same = is_approximately_equal(w, e);
+    const auto periodic =
+        !same && (e - w > PointLonLat::FULL_ANGLE || is_approximately_equal(e - w, PointLonLat::FULL_ANGLE));
 
     w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
             ? min
             : PointLonLat::normalise_angle_to_minimum(w, min);
 
     auto a = PointLonLat::normalise_angle_to_minimum(e, w);
-    e      = same ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+    e      = same ? w : periodic || is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
 
     return std::make_unique<BoundingBox>(n, w, s, e);
 }
@@ -464,7 +508,9 @@ bool BoundingBox::contains(const Point& p) const {
 
     if ((south() < q.lat() && q.lat() < north()) || is_approximately_equal(q.lat(), north()) ||
         is_approximately_equal(q.lat(), south())) {
-        return PointLonLat::normalise_angle_to_minimum(q.lon(), west()) <= east();
+        // as latitudes, longitudes at the edges are approximate
+        const auto lon = PointLonLat::normalise_angle_to_minimum(q.lon(), west() - PointLonLat::EPS);
+        return lon <= east() || is_approximately_equal(lon, east());
     }
 
     return false;
@@ -502,8 +548,9 @@ bool BoundingBox::intersects(BoundingBox& other) const {
         n = s;
     }
 
+    // both periodic, from this west
     if (periodic() && other.periodic()) {
-        other = {n, other.west(), s, other.east()};
+        other = {n, west(), s, west() + PointLonLat::FULL_ANGLE};
         return intersectsSN;
     }
 
@@ -547,7 +594,7 @@ bool BoundingBox::empty() const {
 
 
 double BoundingBox::area() const {
-    return figure::Earth::_area(*this);
+    return figure::EARTH.area(*this);
 }
 
 

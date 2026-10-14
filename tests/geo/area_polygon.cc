@@ -171,11 +171,11 @@ CASE("Polygon") {
                                  test_t{{{1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}, {1, 0}}, 4}}) {
             Polygon poly1(test.points);
             poly1.simplify();
-            EXPECT_EQUAL(poly1.size(), test.size);
+            EXPECT(poly1.size() == test.size);
 
             Polygon poly2(test.points.begin(), test.points.end());
             poly2.simplify();
-            EXPECT_EQUAL(poly2.size(), test.size);
+            EXPECT(poly2.size() == test.size);
         }
     }
 

@@ -35,7 +35,7 @@ CASE("unstructured_ll") {
 
     std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats));  // registers uid only
 
-    EXPECT_EQUAL(a->size(), lats.size());
+    EXPECT(a->size() == lats.size());
 
     const auto [out_lats, out_lons] = a->to_latlons();
 
@@ -110,7 +110,7 @@ CASE("to_unstructured_ll") {
     std::unique_ptr<const Grid> src(new grid::Unstructured(lons, lats));
 
     std::unique_ptr<const Grid> a(src->to_unstructured_ll());
-    EXPECT_EQUAL(a->type(), std::string("unstructured_ll"));
+    EXPECT(a->type() == std::string("unstructured_ll"));
     EXPECT(a->to_latlons() == src->to_latlons());
     EXPECT(a->uid() == src->uid());  // same points, no name -> same uid
 

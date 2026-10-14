@@ -19,11 +19,6 @@
 
 
 namespace eckit::geo {
-class Figure;
-}
-
-
-namespace eckit::geo {
 
 
 class Projection {
@@ -70,14 +65,16 @@ public:
     const std::vector<std::string>& target_point_coordinates() const;
 
     /// Map a grid's (x, y) coordinates to geographic coordinates
-    virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
-
-    void falseXY(const PointXY& falseXY) { false_ = falseXY; }
-    const PointXY& falseXY() const { return false_; }
+    Point from_grid_xy(double x, double y) const;
 
     const Figure& figure() const { return *figure_; }
 
+    /// Spec on its own, with the figure unless the default
     virtual void fill_spec(spec::Custom&) const;
+
+    /// Spec as part of a grid's: "projection": {...}, but for the default projection only its figure (as the grid's)
+    void fill_grid_spec(spec::Custom&) const;
+
     virtual const std::string& type() const = 0;
 
     [[nodiscard]] const Spec& spec() const;
@@ -86,11 +83,21 @@ public:
 
     bool is_default() const;
 
+    /// If fwd/inv are reversed (see projection::Reverse)
+    virtual bool reverse() const { return false; }
+
     // -- Class methods
 
     static std::string className() { return "projection"; }
 
     static const Projection& projection_default();
+
+    /// PROJ string of a projection spec (and its figure), for the projection types with a PROJ equivalent (not
+    /// requiring PROJ)
+    static std::string proj_str(const spec::Custom&);
+
+    /// PROJ default coordinate reference system, (lon, lat) on WGS84
+    static const std::string& proj_default();
 
 protected:
 
@@ -118,7 +125,6 @@ private:
 
     std::shared_ptr<const Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
-    PointXY false_;
     size_t source_;  // point types (as Point alternatives)
     size_t target_;
 
@@ -129,14 +135,10 @@ private:
 };
 
 
-using ProjectionSpecByName = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+// a type of its own, so names aren't shared with other registries (e.g. grids')
+struct ProjectionSpecGenerator : spec::SpecGeneratorT1<const std::string&> {};
 
-
-template <typename T>
-using ProjectionRegisterType = ConcreteBuilderT1<Projection, T>;
-
-template <typename T>
-using ProjectionRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
+using ProjectionSpecByName = spec::GeneratorT<ProjectionSpecGenerator>;
 
 
 struct ProjectionFactory {
@@ -147,7 +149,26 @@ struct ProjectionFactory {
 
     [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec&);
     static std::ostream& list(std::ostream&);
-    static bool has_type(const std::string& type) { return Factory<Projection>::instance().exists(type); }
+    static bool has_type(const std::string&);
+
+    /// Projection types interpreting "reverse": true themselves, others are wrapped (see projection::Reverse)
+    static void register_self_reversing(const std::string& type);
+};
+
+
+template <typename T>
+class ProjectionRegisterType {
+public:
+
+    explicit ProjectionRegisterType(const std::string& type, bool self_reversing = false) : builder_(type) {
+        if (self_reversing) {
+            ProjectionFactory::register_self_reversing(type);
+        }
+    }
+
+private:
+
+    ConcreteBuilderT1<Projection, T> builder_;
 };
 
 

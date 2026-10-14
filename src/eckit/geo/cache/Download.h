@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
@@ -19,7 +20,8 @@ public:
 
     // -- Types
 
-    using url_type = std::string;
+    using url_type     = std::string;
+    using headers_type = std::map<std::string, std::string>;  // keys in lowercase
 
     struct info_type {
         Bytes bytes;
@@ -28,11 +30,10 @@ public:
 
     // -- Constructors
 
-    explicit Download(const PathName& root = ".", bool html = false) : DiskCache(root), html_(html) {}
+    explicit Download(const PathName& root = default_root(), bool html = false) : DiskCache(root), html_(html) {}
 
     // -- Methods
 
-    static const int VERSION;
     static const std::string PREFIX;
     static const std::string SUFFIX;
 
@@ -43,7 +44,9 @@ public:
 
     static info_type to_path(const url_type&, const PathName&, bool html = false);
 
-    static int version() { return VERSION; }
+    static std::string validate_response(const url_type&, long code, const headers_type&, bool html = false);
+
+    static PathName default_root();
 
     static std::string url_file_basename(const url_type&, bool ext = true);
     static std::string url_file_extension(const url_type&);

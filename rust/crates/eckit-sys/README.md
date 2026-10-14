@@ -64,7 +64,6 @@ These flags control what the underlying C++ eckit library is compiled with.
   `eckit-geo`, `lz4`).
 - `geo-caching` - Default eckit::geo caching behaviour.
 - `geo-bitreproducible` - Bit-reproducibility tests.
-- `geo-projection-proj-default` - Default to PROJ-based projections.
 - `geo-area-shapefile` - Shapefile support.
 
 ### Other (off by default)

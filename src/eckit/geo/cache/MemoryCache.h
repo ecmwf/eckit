@@ -28,6 +28,14 @@ protected:
 
     MemoryCache();
 
+    MemoryCache(const MemoryCache&) = delete;
+    MemoryCache(MemoryCache&&)      = delete;
+
+    virtual ~MemoryCache();
+
+    MemoryCache& operator=(const MemoryCache&) = delete;
+    MemoryCache& operator=(MemoryCache&&)      = delete;
+
 private:
 
     virtual bytes_size_t footprint() const = 0;

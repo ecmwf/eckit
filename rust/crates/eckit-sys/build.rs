@@ -348,10 +348,6 @@ fn build_vendored() -> std::path::PathBuf {
         bindman_utils::on_off(cfg!(feature = "geo-bitreproducible"))
     ));
     cmd.arg(format!(
-        "-DENABLE_GEO_PROJECTION_PROJ_DEFAULT={}",
-        bindman_utils::on_off(cfg!(feature = "geo-projection-proj-default"))
-    ));
-    cmd.arg(format!(
         "-DENABLE_GEO_AREA_SHAPEFILE={}",
         bindman_utils::on_off(cfg!(feature = "geo-area-shapefile"))
     ));

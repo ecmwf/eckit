@@ -11,6 +11,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -29,7 +30,7 @@ CASE("AreaFactory::make_from_string") {
          }) {
         std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
 
-        EXPECT(expected_spec == area->spec_str());
+        EXPECT(area->spec_str() == expected_spec);
         EXPECT(expected_area == *area);
     }
 
@@ -42,6 +43,30 @@ CASE("AreaFactory::make_from_string") {
         geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
 
     EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
+}
+
+
+CASE("Area: spec, and as part of a grid's") {
+    struct test_t {
+        std::string area;
+        std::string spec;
+        std::string grid_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{}", R"({"area":[90,0,-90,360]})", "{}"},
+             {"{area: [10, 1, 0, 10]}", R"({"area":[10,1,0,10]})", R"({"area":[10,1,0,10]})"},
+             {"{type: bounding_box_xy, bounding_box_xy: [0, 0, 1, 1]}",
+              R"({"bounding_box_xy":[0,0,1,1],"type":"bounding_box_xy"})",
+              R"({"area":{"bounding_box_xy":[0,0,1,1],"type":"bounding_box_xy"}})"},
+         }) {
+        std::unique_ptr<const Area> area(AreaFactory::make_from_string(test.area));
+        EXPECT(area->spec_str() == test.spec);
+
+        spec::Custom grid_spec;
+        area->fill_grid_spec(grid_spec);
+        EXPECT(grid_spec.str() == test.grid_spec);
+    }
 }
 
 
@@ -63,7 +88,7 @@ CASE("longitude (normalisation)") {
     for (double west : {-900, -720, -540, -360, -180, 0, 180, 360, 540, 720, 900}) {
         area::BoundingBox a(90, west, 90, west);
 
-        EXPECT_EQUAL(a.west(), west);
+        EXPECT(a.west() == west);
         EXPECT(a.empty());
 
         area::BoundingBox b{90, west, -90, west - 1};
@@ -76,40 +101,55 @@ CASE("longitude (normalisation)") {
 }
 
 
+CASE("longitude (periodic, spanning 2 pi or more, from any west)") {
+    for (const auto& [w, e] : std::vector<std::pair<double, double>>{{-180, 180}, {-180, 360}, {0, 360}, {10, 1000}}) {
+        area::BoundingBox a{90, w, -90, e};
+        auto b = area::BoundingBox::make_from_area(90, w, -90, e);
+        ASSERT(b);
+
+        for (const auto& c : {a, *b}) {
+            EXPECT(c.periodic());
+            EXPECT(c.east() == c.west() + PointLonLat::FULL_ANGLE);
+        }
+        EXPECT(b->west() == PointLonLat::normalise_angle_to_minimum(w, -PointLonLat::FLAT_ANGLE));
+    }
+}
+
+
 CASE("assignment") {
     area::BoundingBox a(10, 1, -10, 100);
     area::BoundingBox b(20, 2, -20, 200);
 
-    EXPECT_NOT_EQUAL(a.north(), b.north());
+    EXPECT_NOT(a.north() == b.north());
     EXPECT(a != b);
 
     b = a;
 
-    EXPECT_EQUAL(a.north(), b.north());
+    EXPECT(a.north() == b.north());
     EXPECT(a == b);
 
     b = {30., b.west(), b.south(), b.east()};
 
-    EXPECT_EQUAL(b.north(), 30);
-    EXPECT_EQUAL(a.north(), 10);
+    EXPECT(b.north() == 30);
+    EXPECT(a.north() == 10);
 
     area::BoundingBox c(a);
 
-    EXPECT_EQUAL(a.north(), c.north());
+    EXPECT(a.north() == c.north());
     EXPECT(a == c);
 
     c = {40., c.west(), c.south(), c.east()};
 
-    EXPECT_EQUAL(c.north(), 40);
-    EXPECT_EQUAL(a.north(), 10);
+    EXPECT(c.north() == 40);
+    EXPECT(a.north() == 10);
 
     auto d(std::move(a));
 
-    EXPECT_EQUAL(d.north(), 10);
+    EXPECT(d.north() == 10);
 
     d = {50., d.west(), d.south(), d.east()};
 
-    EXPECT_EQUAL(d.north(), 50);
+    EXPECT(d.north() == 50);
 }
 
 
@@ -124,6 +164,13 @@ CASE("comparison") {
                                   c.east() + 41 * PointLonLat::FULL_ANGLE};
         EXPECT(area::bounding_box_equal(c, d));
     }
+
+    // both periodic: the intersection is from this west (e.g. the area cropping a grid)
+    const area::BoundingBox crop{90, -180, -90, 360};
+    area::BoundingBox grid{90, 0, -90, 360};
+    EXPECT(crop.intersects(grid));
+    EXPECT(grid.west() == -180.);
+    EXPECT(grid.east() == 180.);
 }
 
 
@@ -159,6 +206,13 @@ CASE("intersects") {
                                   c.east() + 41 * PointLonLat::FULL_ANGLE};
         EXPECT(area::bounding_box_equal(c, d));
     }
+
+    // both periodic: the intersection is from this west (e.g. the area cropping a grid)
+    const area::BoundingBox crop{90, -180, -90, 360};
+    area::BoundingBox grid{90, 0, -90, 360};
+    EXPECT(crop.intersects(grid));
+    EXPECT(grid.west() == -180.);
+    EXPECT(grid.east() == 180.);
 }
 
 

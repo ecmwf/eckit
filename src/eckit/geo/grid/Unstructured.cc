@@ -58,7 +58,6 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
 
     const spec::Custom custom(custom_map);
 
-    // register uid and name in memory
     if (GridSpecByUID::instance().exists(uid)) {
         GridSpecByUID::instance().unregist(uid);
     }
@@ -73,8 +72,6 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
         ASSERT(GridSpecByName::instance().exists(name));
     }
 
-
-    // register on disk
     cache::Grid::save(uid, custom);
 }
 

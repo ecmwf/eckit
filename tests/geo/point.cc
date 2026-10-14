@@ -51,6 +51,14 @@ CASE("point_coordinates") {
     EXPECT(point_coordinates<PointXYZ>().size() == PointXYZ::DIMS);
     EXPECT(point_coordinates<PointLonLat>().size() == PointLonLat::DIMS);
     EXPECT(point_coordinates<PointLonLatR>().size() == PointLonLatR::DIMS);
+
+    // as the point type, the same names
+    EXPECT(&point_coordinates(Point{PointXY{1., 2.}}) == &point_coordinates<PointXY>());
+    EXPECT(&point_coordinates(Point{PointXYZ{1., 2., 3.}}) == &point_coordinates<PointXYZ>());
+    EXPECT(&point_coordinates(Point{PointLonLat{4., 5.}}) == &point_coordinates<PointLonLat>());
+    EXPECT(&point_coordinates(Point{PointLonLatR{4., 5.}}) == &point_coordinates<PointLonLatR>());
+
+    EXPECT_THROWS_AS(point_coordinates(Point{}), BadValue);
 }
 
 

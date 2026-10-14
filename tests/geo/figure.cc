@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
@@ -70,6 +71,29 @@ CASE("Oblate spheroid") {
 }
 
 
+CASE("Figure: spec, and as part of a projection's") {
+    struct test_t {
+        std::string figure;
+        std::string spec;
+        std::string projection_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{figure: earth}", R"({"figure":"earth"})", "{}"},
+             {"{figure: grib1}", R"({"figure":"grib1"})", "{}"},
+             {"{figure: wgs84}", R"({"figure":"wgs84"})", R"({"figure":"wgs84"})"},
+             {"{R: 1}", R"({"figure":{"r":1}})", R"({"figure":{"r":1}})"},
+         }) {
+        F figure(FigureFactory::make_from_string(test.figure));
+        EXPECT(figure->spec_str() == test.spec);
+
+        spec::Custom projection_spec;
+        figure->fill_projection_spec(projection_spec);
+        EXPECT(projection_spec.str() == test.projection_spec);
+    }
+}
+
+
 CASE("Inline figure") {
     // figure described inline by a (JSON/YAML) string, as opposed to by name or by a sub-spec
     F f1(FigureFactory::build(spec::Custom{{"figure", R"({"R":6371229})"}}));
@@ -125,7 +149,7 @@ CASE("Figure::proj_str") {
     };
 
     for (const auto& test : tests) {
-        EXPECT_EQUAL(F(FigureFactory::build(test.spec))->proj_str(), test.proj_str);
+        EXPECT(F(FigureFactory::build(test.spec))->proj_str() == test.proj_str);
     }
 }
 
@@ -178,11 +202,11 @@ CASE("Unit Sphere") {
 
 
     SECTION("area hemispheres") {
-        auto area_hemisphere_north = s1._area({90., -180., 0., 180.});
-        auto area_hemisphere_south = s1._area({0., -180., -90., 180.});
+        auto area_hemisphere_north = s1.area({90., -180., 0., 180.});
+        auto area_hemisphere_south = s1.area({0., -180., -90., 180.});
 
-        EXPECT(area_hemisphere_north == 0.5 * s1.area());
-        EXPECT(area_hemisphere_north == area_hemisphere_south);
+        EXPECT(types::is_approximately_equal(area_hemisphere_north, 0.5 * s1.area()));
+        EXPECT(types::is_approximately_equal(area_hemisphere_north, area_hemisphere_south));
     }
 
 
@@ -304,9 +328,9 @@ CASE("Two-unit Sphere") {
 
         area::BoundingBox bbox({P2.lat(), P1.lon(), P1.lat(), P2.lon()});
 
-        auto local_1 = s1._area(bbox);
-        auto local_2 = s2._area(bbox);
-        EXPECT(4. * local_1 == local_2);
+        auto local_1 = s1.area(bbox);
+        auto local_2 = s2.area(bbox);
+        EXPECT(types::is_approximately_equal(4. * local_1, local_2));
     }
 }
 

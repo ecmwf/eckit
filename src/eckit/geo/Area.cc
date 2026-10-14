@@ -16,6 +16,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo {
@@ -53,6 +54,33 @@ const Area::Spec& Area::spec() const {
     }
 
     return *spec_;
+}
+
+
+std::string Area::uid() const {
+    return MD5{spec_str()}.digest();
+}
+
+
+void Area::fill_grid_spec(spec::Custom& custom) const {
+    if (is_default()) {
+        return;
+    }
+
+    spec::Custom area_spec;
+    fill_spec(area_spec);
+
+    if (area_spec.only(className())) {
+        custom.set(area_spec);
+        return;
+    }
+
+    custom.set(className(), area_spec);
+}
+
+
+bool Area::is_default() const {
+    return *this == area_default();
 }
 
 
@@ -110,14 +138,6 @@ Area::Spec* AreaFactory::make_spec(const Area::Spec& spec) {
 
     cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
 
-    // if (cfg->has("north") || cfg->has("east") || cfg->has("south") || cfg->has("west")) {
-    //     // back->set("type", "reduced_gg");
-    // }
-
-    // if (std::vector<double> area; cfg->get("area", area) && area.size() == 4) {
-    //     back->set("type", "regular_ll");
-    // }
-
     if (!back->empty()) {
         cfg->push_back(back.release());
     }
@@ -128,9 +148,23 @@ Area::Spec* AreaFactory::make_spec(const Area::Spec& spec) {
 
 void AreaFactory::add_library(const std::string& lib, Area::Spec* spec) {
     lock_type lock;
+
+    libraries()[lib].reset(spec);
+}
+
+
+spec::Custom* AreaFactory::library(const std::string& lib) {
+    lock_type lock;
     share::Area::instance();
 
-    libraries().emplace(lib, spec);
+    auto it = libraries().find(lib);
+    if (it == libraries().end()) {
+        throw exception::AreaError("AreaFactory: unknown area library '" + lib + "'", Here());
+    }
+
+    const auto* custom = dynamic_cast<const spec::Custom*>(it->second.get());
+    ASSERT(custom != nullptr);
+    return new spec::Custom(custom->container());
 }
 
 

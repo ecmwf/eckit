@@ -50,17 +50,27 @@ list(APPEND eckit_geo_srcs
     area/Polygon.h
     area/library/GeoJSON.cc
     area/library/GeoJSON.h
+    cache/Crop.cc
+    cache/Crop.h
+    cache/CropCache.cc
+    cache/CropCache.h
     cache/DiskCache.cc
     cache/DiskCache.h
     cache/Download.cc
     cache/Download.h
     cache/Grid.cc
     cache/Grid.h
+    cache/InMemoryCache.h
     cache/LatitudeLongitude.cc
     cache/LatitudeLongitude.h
     cache/MemoryCache.cc
     cache/MemoryCache.h
+    cache/MemoryUsage.cc
+    cache/MemoryUsage.h
     cache/RecordCache.h
+    cache/SearchCache.cc
+    cache/SearchCache.h
+    cache/Version.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -131,6 +141,7 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/PolarStereographic.cc
     projection/PolarStereographic.h
+    projection/Reverse.cc
     projection/Reverse.h
     projection/Rotation.cc
     projection/Rotation.h
@@ -142,16 +153,20 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
-    search/Tree.cc
-    search/Tree.h
-    search/TreeMapped.cc
-    search/TreeMapped.h
-    search/TreeMappedAnonymousMemory.cc
-    search/TreeMappedAnonymousMemory.h
-    search/TreeMappedFile.cc
-    search/TreeMappedFile.h
-    search/TreeMemory.cc
-    search/TreeMemory.h
+    range/RegularXY.cc
+    range/RegularXY.h
+    search/FileIO.cc
+    search/FileIO.h
+    search/KDTree.cc
+    search/KDTree.h
+    search/LoadedFile.cc
+    search/LoadedFile.h
+    search/MappedFile.cc
+    search/MappedFile.h
+    search/Memory.cc
+    search/Memory.h
+    search/SharedMemory.cc
+    search/SharedMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc
@@ -170,7 +185,6 @@ list(APPEND eckit_geo_srcs
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
     util/reverse.cc
-    util/sincos.h
 )
 
 set(eckit_geo_include_dirs
@@ -194,8 +208,6 @@ set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs
-        grid/regular/SwissLV03.cc
-        grid/regular/SwissLV95.cc
         projection/PROJ.cc
         projection/PROJ.h
     )
@@ -216,6 +228,7 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
         area/library/Shapefile.h
     )
     list(APPEND eckit_geo_private_libs shapelib::shp)
+    list(APPEND eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/shapefile.yaml")
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")

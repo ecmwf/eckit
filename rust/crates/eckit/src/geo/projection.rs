@@ -25,8 +25,8 @@ use crate::geo::{Figure, Point, Spec};
 /// let rotation = grid.projection();
 /// assert_eq!(rotation.projection_type()?, "rotation");
 ///
-/// // the rotated south pole is the given south pole
-/// let Point::LonLat { lat, .. } = rotation.fwd(Point::LonLat { lon: 0.0, lat: -90.0 })? else {
+/// // the rotated south pole is the given south pole (inv: from the rotated sphere)
+/// let Point::LonLat { lat, .. } = rotation.inv(Point::LonLat { lon: 0.0, lat: -90.0 })? else {
 ///     unreachable!("rotations map lon/lat to lon/lat");
 /// };
 /// assert!((lat + 40.0).abs() < 1e-9);

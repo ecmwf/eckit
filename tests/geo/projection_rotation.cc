@@ -282,6 +282,50 @@ CASE("rotation: South Pole at -90 (its longitude as the angle)") {
 }
 
 
+CASE("rotation: reverse (the inverse rotation)") {
+    struct test_t {
+        PointLonLat south_pole;
+        double angle;
+        std::string spec;  // reversed, as the inverse rotation
+    };
+
+    const std::vector<PointLonLat> points{{0., 0.}, {50., 30.}, {-120., -45.}, {179., 60.}};
+
+    for (const auto& test : std::vector<test_t>{
+             {{10., -40.}, 0., R"({"rotation_angle":-170,"south_pole":[-180,-40],"type":"rotation"})"},  // by matrix
+             {{10., -40.}, 25., R"({"rotation_angle":-170,"south_pole":[-155,-40],"type":"rotation"})"},
+             {{10., -90.}, 25., R"({"rotation_angle":-15,"type":"rotation"})"},  // by angle
+             {SOUTH_POLE, 0., "{}"},                                             // not a rotation
+         }) {
+        const projection::Rotation rotation(test.south_pole, test.angle);
+        const projection::Rotation reverse(test.south_pole, test.angle, true);
+        const projection::Reverse wrapped(new projection::Rotation(test.south_pole, test.angle));
+        const projection::Reverse reversed_reverse(new projection::Rotation(test.south_pole, test.angle, true));
+
+        EXPECT(reverse.spec_str() == test.spec);
+        EXPECT_NOT(reverse.reverse());
+        EXPECT(reverse.identity() == rotation.identity());
+
+        // as reversed by projection::Reverse, and by the spec
+        std::unique_ptr<const Projection> by_spec(ProjectionFactory::build(wrapped.spec()));
+        EXPECT(*by_spec == reverse);
+
+        // reversed again, as not reversed
+        std::unique_ptr<const Projection> by_spec_again(ProjectionFactory::build(reversed_reverse.spec()));
+        EXPECT(*by_spec_again == rotation);
+
+        for (const auto& p : points) {
+            EXPECT(points_equal(reverse.fwd(p), rotation.inv(p)));
+            EXPECT(points_equal(reverse.inv(p), rotation.fwd(p)));
+            EXPECT(points_equal(wrapped.fwd(p), reverse.fwd(p)));
+            EXPECT(points_equal(wrapped.inv(p), reverse.inv(p)));
+            EXPECT(points_equal(reversed_reverse.fwd(p), rotation.fwd(p)));
+            EXPECT(points_equal(reversed_reverse.inv(p), rotation.inv(p)));
+        }
+    }
+}
+
+
 CASE("rotation (5)") {
     spec::Custom spec({
         {"type", "rotation"},
@@ -443,14 +487,19 @@ CASE("rotation: vectors") {
 
 
     SECTION("reverse") {
-        projection::Reverse reverse(new projection::Rotation(PointLonLat{10., -40.}));
-        projection::Rotation rotation(PointLonLat{10., -40.});
+        const projection::Rotation rotation(PointLonLat{10., -40.});
+        const projection::Rotation reverse(PointLonLat{10., -40.}, 0., true);
+        const projection::Reverse wrapped(new projection::Rotation(PointLonLat{10., -40.}));
 
-        const auto a = reverse.fwd(lon, lat);
-        const auto b = rotation.inv(lon, lat);
+        check(reverse);
+        check(wrapped);
 
-        EXPECT(approx(a[0], b[0]));
-        EXPECT(approx(a[1], b[1]));
+        const auto a = rotation.inv(lon, lat);
+        for (const Projection* projection : std::vector<const Projection*>{&reverse, &wrapped}) {
+            const auto b = projection->fwd(lon, lat);
+            EXPECT(approx(a[0], b[0]));
+            EXPECT(approx(a[1], b[1]));
+        }
     }
 }
 

@@ -18,7 +18,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<Rotation> PROJECTION("rotation");
+static ProjectionRegisterType<Rotation> PROJECTION("rotation", true);
 
 
 Rotation::Rotation(const Spec& spec) :
@@ -45,12 +45,21 @@ Rotation::Rotation(const Spec& spec) :
             double angle = 0.;
             spec.get("rotation_angle", angle);
             return angle;
-        }()) {}
+        }(),
+        spec.get_bool("reverse", false)) {}
 
 
-Rotation::Rotation(const PointLonLat& south_pole, double angle) :
+Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
     Projection(nullptr, PointLonLat{}, PointLonLat{}), south_pole_(south_pole), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
+
+    if (reverse) {
+        // the inverse rotation, of South Pole (angle - 180, lat) and angle lon + 180
+        south_pole_ = {
+            PointLonLat::normalise_angle_to_minimum(angle - PointLonLat::FLAT_ANGLE, -PointLonLat::FLAT_ANGLE),
+            south_pole.lat()};
+        angle_ = south_pole.lon() + PointLonLat::FLAT_ANGLE;
+    }
 
     struct NonRotated final : Implementation {
         using Implementation::operator();
@@ -101,7 +110,7 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
         const M R_;
     };
 
-    const auto alpha = util::DEGREE_TO_RADIAN * angle;
+    const auto alpha = util::DEGREE_TO_RADIAN * angle_;
     const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_.lat() + 90.);
     const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_.lon();
 
@@ -164,20 +173,18 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
 
 
 void Rotation::fill_spec(spec::Custom& custom) const {
-    bool projection = false;
+    if (!rotated_) {
+        return;
+    }
+
+    custom.set("type", type());
 
     if (!points_equal(SOUTH_POLE, south_pole_)) {
         custom.set("south_pole", std::vector<double>{south_pole_.lon(), south_pole_.lat()});
-        projection = true;
     }
 
     if (!types::is_approximately_equal(angle_, 0., PointLonLat::EPS)) {
         custom.set("rotation_angle", angle_);
-        projection = true;
-    }
-
-    if (projection) {
-        custom.set("type", type());
     }
 }
 

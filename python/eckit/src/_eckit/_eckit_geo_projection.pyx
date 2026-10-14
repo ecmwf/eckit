@@ -164,6 +164,11 @@ cdef class Projection:
         return self._projection.reverse()
 
     @property
+    def identity(self) -> bool:
+        """If fwd/inv are the identity (e.g. a rotation not rotating)."""
+        return self._projection.identity()
+
+    @property
     def spec_str(self) -> str:
         return self._projection.spec_str()
 

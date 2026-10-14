@@ -21,6 +21,7 @@
 #include "eckit/geo/projection/None.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/projection/Stretch.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -35,6 +36,31 @@ CASE("projection: none") {
 
     EXPECT(points_equal(p, projection->inv(p)));
     EXPECT(points_equal(p, projection->fwd(p)));
+}
+
+
+CASE("projection: identity") {
+    const PointLonLat p{10., 20.};
+
+    const projection::Rotation rotation;
+    const projection::Reverse reverse(new projection::Rotation);
+    const projection::Reverse reverse_reverse(new projection::Reverse(new projection::Rotation));
+
+    for (const Projection* identity : std::vector<const Projection*>{&rotation, &reverse, &reverse_reverse}) {
+        EXPECT(identity->identity());
+        EXPECT_NOT(identity->reverse());
+        EXPECT(identity->spec_str() == "{}");
+        EXPECT(points_equal(identity->fwd(p), p));
+        EXPECT(points_equal(identity->inv(p), p));
+    }
+
+    // not the identity
+    const projection::Rotation rotated(PointLonLat{10., -40.});
+    const projection::Reverse reverse_rotated(new projection::Rotation(PointLonLat{10., -40.}));
+
+    EXPECT_NOT(rotated.identity());
+    EXPECT_NOT(reverse_rotated.identity());
+    EXPECT_NOT(projection::LonLatToXYZ(new figure::UnitSphere).identity());
 }
 
 
@@ -67,11 +93,38 @@ CASE("projection: reverse") {
     EXPECT(points_equal(p, ba.fwd(q)));
     EXPECT(points_equal(q, ba.inv(p)));
 
-    EXPECT(!ab.reverse());
+    EXPECT_NOT(ab.reverse());
     EXPECT(ba.reverse());
 
     EXPECT(ab.spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
     EXPECT(ba.spec_str() == R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})");
+}
+
+
+CASE("projection: stretch, reverse (by the inverse factor)") {
+    std::unique_ptr<const Projection> stretch(
+        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 2}"));
+    std::unique_ptr<const Projection> stretch_reverse(
+        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 2, reverse: true}"));
+    std::unique_ptr<const Projection> stretch_inverse(
+        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 0.5}"));
+
+    EXPECT(dynamic_cast<const projection::Stretch*>(stretch_reverse.get()) != nullptr);
+    EXPECT(!stretch_reverse->reverse());
+    EXPECT(*stretch_reverse == *stretch_inverse);
+
+    for (const auto& a : std::vector<PointLonLat>{{10., 20.}, {-30., -60.}}) {
+        const auto b = stretch->fwd(a);
+        EXPECT(points_equal(stretch_reverse->fwd(b), a));
+        EXPECT(points_equal(stretch_reverse->inv(a), b));
+    }
+
+    // reversed (by projection::Reverse), as not reversed
+    const projection::Reverse stretch_twice(ProjectionFactory::build(stretch_reverse->spec()));
+    EXPECT(stretch_twice.reverse());
+    EXPECT(points_equal(stretch_twice.fwd(PointLonLat{10., 20.}), stretch->fwd(PointLonLat{10., 20.})));
+
+    EXPECT_THROWS_AS(projection::Stretch(0., true), exception::ProjectionError);
 }
 
 
@@ -85,8 +138,6 @@ CASE("projection: reverse, from spec") {
     const PointLonLat p{10., 20.};
 
     for (const auto& test : std::vector<test_t>{
-             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
-              R"({"reverse":true,"south_pole":[10,-40],"type":"rotation"})"},
              {"{type: ll-to-xyz, R: 1}", R"({"figure":{"r":1},"type":"ll-to-xyz"})",
               R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})"},
              {"{type: eqc, lat_ts: 60, figure: wgs84}", R"({"figure":"wgs84","lat_ts":60,"type":"eqc"})",
@@ -102,6 +153,7 @@ CASE("projection: reverse, from spec") {
             EXPECT(reverse->spec_str() == test.reverse);
             EXPECT_NOT(plain->reverse());
             EXPECT(reverse->reverse());
+            EXPECT(dynamic_cast<const projection::Reverse*>(reverse.get()) != nullptr);
 
             // identical, if built from the spec of another
             for (const auto* projection : {plain.get(), reverse.get()}) {
@@ -114,6 +166,34 @@ CASE("projection: reverse, from spec") {
             const auto q = plain->fwd(p);
             EXPECT(points_equal(reverse->fwd(q), p));
             EXPECT(points_equal(reverse->inv(p), q));
+
+            // reversed (again): the plain reversed as the reverse, and the reverse reversed as the plain
+            struct reversed_t {
+                const Projection& projection;
+                const Projection& expected;
+                Point a;  // expected source point
+            };
+
+            for (const auto& r : std::vector<reversed_t>{{*plain, *reverse, q}, {*reverse, *plain, p}}) {
+                const projection::Reverse reversed(ProjectionFactory::build(r.projection.spec()));
+                EXPECT(reversed.spec_str() == r.expected.spec_str());
+                EXPECT(reversed.reverse() == r.expected.reverse());
+
+                std::unique_ptr<const Projection> same(ProjectionFactory::build(reversed.spec()));
+                EXPECT(*same == reversed);
+
+                const auto b = r.expected.fwd(r.a);
+                EXPECT(points_equal(reversed.fwd(r.a), b));
+                EXPECT(points_equal(reversed.inv(b), r.a));
+            }
+
+            // reversed thrice, as reversed once
+            const projection::Reverse thrice(
+                new projection::Reverse(new projection::Reverse(ProjectionFactory::build(plain->spec()))));
+            EXPECT(thrice.spec_str() == reverse->spec_str());
+            EXPECT(thrice.reverse());
+            EXPECT(points_equal(thrice.fwd(q), p));
+            EXPECT(points_equal(thrice.inv(p), q));
         }
     }
 }

@@ -20,7 +20,7 @@ public:
 
     // -- Constructors
 
-    explicit Stretch(double c);
+    explicit Stretch(double c, bool reverse = false);
     explicit Stretch(const Spec&);
 
     // -- Methods
@@ -45,7 +45,7 @@ private:
 
     // -- Members
 
-    double c_;
+    const double c_;
 
     // -- Methods
 

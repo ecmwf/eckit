@@ -165,12 +165,12 @@ def test_projection_spec(spec, expected):
     projection = Projection(spec)
     assert projection.spec == expected
     assert not projection.reverse
+    assert not projection.identity
 
 
 @pytest.mark.parametrize(
     "spec, expected",
     [
-        (dict(type="rotation", south_pole=[10, -40]), dict(type="rotation", south_pole=[10, -40])),
         (dict(type="ll-to-xyz", R=1.0), dict(type="ll-to-xyz", figure=dict(r=1))),
         (dict(type="eqc", lat_ts=60.0, figure="wgs84"), dict(type="eqc", lat_ts=60, figure="wgs84")),
         (dict(type="eqc"), dict()),
@@ -282,4 +282,16 @@ def test_projection_arguments_rejected():
     with pytest.raises(TypeError):
         eqc.fwd((10.0, 20.0))  # a point, not ordered coordinates
 
+
+def test_projection_rotation_reverse():
+    # reversed, as the inverse rotation: South Pole (angle - 180, lat) and angle lon + 180
+    plain = Projection(type="rotation", south_pole=[10, -40], rotation_angle=25.0)
+    reverse = Projection(type="rotation", south_pole=[10, -40], rotation_angle=25.0, reverse=True)
+
+    assert reverse.spec == dict(type="rotation", south_pole=[-155, -40], rotation_angle=-170)
+    assert not reverse.reverse
+
+    p = (10.0, 20.0)
+    assert reverse.fwd(*p) == pytest.approx(plain.inv(*p))
+    assert reverse.inv(*p) == pytest.approx(plain.fwd(*p))
 

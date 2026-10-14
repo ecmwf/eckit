@@ -117,12 +117,12 @@ void Composer::update_point_types() {
 
 
 Projection* Composer::compose_back(const Projection* p, const Spec& spec) {
-    return new Composer{p, Factory<Projection>::instance().get(spec.get_string("type")).create(spec)};
+    return new Composer{p, ProjectionFactory::build(spec)};
 }
 
 
 Projection* Composer::compose_front(const Spec& spec, const Projection* p) {
-    return new Composer{Factory<Projection>::instance().get(spec.get_string("type")).create(spec), p};
+    return new Composer{ProjectionFactory::build(spec), p};
 }
 
 

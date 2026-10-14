@@ -43,7 +43,7 @@ class lock_type {
 };
 
 
-/// Registered during static initialisation
+// Projection types interpreting "reverse": true themselves
 struct SelfReversing {
     util::recursive_mutex mutex;
     std::set<std::string> types;
@@ -55,7 +55,6 @@ struct SelfReversing {
 };
 
 
-/// Projection of a type, reversed if the spec has "reverse": true
 /// Projection types of optional features, if available (eg. "proj" with the PROJ database)
 void register_optional_types() {
 #if eckit_HAVE_PROJ
@@ -195,6 +194,14 @@ Projection::Projection(Figure* ptr, const Point& source, const Point& target) :
 }
 
 
+Projection::Projection(const Projection& other, bool reverse) :
+    figure_(other.figure_),
+    source_(reverse ? other.target_ : other.source_),
+    target_(reverse ? other.source_ : other.target_) {
+    ASSERT(figure_);
+}
+
+
 std::vector<std::vector<double>> Projection::fwd(const std::vector<double>& v1, const std::vector<double>& v2,
                                                  const std::vector<double>& v3) const {
     check_vectors(v1, v2, v3, source_);
@@ -238,11 +245,6 @@ void Projection::point_types(const Point& source, const Point& target) {
 void Projection::point_types_from(const Projection& first, const Projection& last) {
     source_ = first.source_;
     target_ = last.target_;
-}
-
-
-void Projection::reverse_point_types() {
-    std::swap(source_, target_);
 }
 
 

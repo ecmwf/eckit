@@ -16,6 +16,7 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/PROJ.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -383,6 +384,36 @@ CASE("projection: proj, reverse from spec") {
     const auto q = plain->fwd(p);
     EXPECT(points_equal(reverse->fwd(q), p));
     EXPECT(points_equal(reverse->inv(p), q, PointXY::EPS));
+
+    // reversed (again, by projection::Reverse): the spec as "reverse": true, built as the swapped source/target
+    struct reversed_t {
+        const Projection& projection;
+        const Projection& expected;
+        std::string spec;
+        Point a;  // expected source point
+    };
+
+    for (const auto& r : std::vector<reversed_t>{
+             {*plain, *reverse, R"({"reverse":true,"target":"EPSG:3035","type":"proj"})", q},
+             {*reverse, *plain, R"({"reverse":true,"source":"EPSG:3035","type":"proj"})", p},
+         }) {
+        const projection::Reverse reversed(ProjectionFactory::build(r.projection.spec()));
+        EXPECT(reversed.spec_str() == r.spec);
+        EXPECT(reversed.reverse());
+
+        P same(ProjectionFactory::build(reversed.spec()));
+        EXPECT(*same == r.expected);
+        EXPECT_NOT(same->reverse());
+
+        const auto b = r.expected.fwd(r.a);
+        EXPECT(points_equal(reversed.fwd(r.a), b, PointXY::EPS));
+        EXPECT(points_equal(reversed.inv(b), r.a, PointXY::EPS));
+
+        // reversed twice, as not reversed
+        const projection::Reverse twice(new projection::Reverse(ProjectionFactory::build(r.projection.spec())));
+        EXPECT(twice.spec_str() == r.projection.spec_str());
+        EXPECT(twice.reverse() == r.projection.reverse());
+    }
 }
 
 

@@ -17,14 +17,15 @@ namespace eckit::geo::projection {
 
 
 /// Rotation of the sphere, given the location of its South Pole and an angle: fwd from (lon, lat) to (lon, lat) on the
-/// rotated sphere (as PROJ ob_tran), inv the reverse (e.g. the grid points, from the rotated sphere)
+/// rotated sphere (as PROJ ob_tran), inv the reverse (e.g. the grid points, from the rotated sphere); reversed, as the
+/// inverse rotation
 class Rotation : public Projection {
 public:
 
     // -- Constructors
 
     explicit Rotation(const Spec&);
-    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
+    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0, bool reverse = false);
 
     // -- Methods
 
@@ -41,6 +42,8 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
+
+    bool identity() const override { return !rotated_; }
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }

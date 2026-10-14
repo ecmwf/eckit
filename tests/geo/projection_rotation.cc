@@ -4,6 +4,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -221,6 +223,61 @@ CASE("rotation (4)") {
 
         auto a = test.rotation.fwd(b);
         EXPECT(points_equal(a, test.a, EPS));
+    }
+}
+
+
+CASE("rotation: South Pole at -90 (its longitude as the angle)") {
+    struct test_t {
+        double south_pole_lon;
+        double angle;
+        double expected_angle;  // the angle less the South Pole longitude, in [-180, 180)
+        PointLonLat q;          // on the rotated sphere
+        PointLonLat p;          // geographic (inv(q))
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {10., 0., -10., {50., 30.}, {60., 30.}},
+             {10., 25., 15., {50., 30.}, {35., 30.}},
+             {-30., 5., 35., {0., -45.}, {-35., -45.}},
+             {170., -40., 150., {-120., 60.}, {90., 60.}},
+             {-120., 90., -150., {10., 0.}, {160., 0.}},
+             {45., 360., -45., {0., 60.}, {45., 60.}},
+         }) {
+        const projection::Rotation rotation({test.south_pole_lon, -90.}, test.angle);
+        const projection::Rotation equivalent(SOUTH_POLE, test.expected_angle);
+        const projection::Rotation close({test.south_pole_lon, -89.999}, test.angle);  // by the rotation matrix
+
+        EXPECT(rotation.rotated());
+        EXPECT(points_equal(rotation.south_pole(), SOUTH_POLE));
+        EXPECT(types::is_approximately_equal(rotation.angle(), test.expected_angle, PointLonLat::EPS));
+        EXPECT(rotation.spec_str() == equivalent.spec_str());
+
+        // from/to the rotated sphere
+        EXPECT(points_equal(rotation.inv(test.q), test.p));
+        EXPECT(points_equal(rotation.fwd(test.p), test.q));
+
+        // by spec
+        std::unique_ptr<const Projection> from_spec(ProjectionFactory::make_from_string(
+            "{type: rotation, south_pole_lon: " + std::to_string(test.south_pole_lon) +
+            ", south_pole_lat: -90, rotation_angle: " + std::to_string(test.angle) + "}"));
+        EXPECT(from_spec->spec_str() == rotation.spec_str());
+        EXPECT(points_equal(from_spec->inv(test.q), test.p));
+
+        // round trips, and as the rotation matrix (close to the South Pole)
+        for (const auto& q : std::vector<PointLonLat>{{0., 0.}, {50., 30.}, {-120., -45.}, {179., 60.}, test.q}) {
+            EXPECT(points_equal(rotation.inv(q), equivalent.inv(q)));
+            EXPECT(points_equal(rotation.inv(q), close.inv(q), 1e-2));
+            EXPECT(points_equal(rotation.fwd(rotation.inv(q)), q));
+            EXPECT(points_equal(rotation.inv(rotation.fwd(q)), q));
+        }
+    }
+
+    // the South Pole longitude and the angle cancelling out, not a rotation
+    for (const auto& [lon, angle] : std::vector<std::pair<double, double>>{{10., 10.}, {-30., 330.}}) {
+        const projection::Rotation rotation({lon, -90.}, angle);
+        EXPECT_NOT(rotation.rotated());
+        EXPECT(points_equal(rotation.inv(PointLonLat{50., 30.}), PointLonLat{50., 30.}));
     }
 }
 

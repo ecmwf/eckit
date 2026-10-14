@@ -113,8 +113,10 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
         angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon(), -PointLonLat::FLAT_ANGLE);
         rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
-        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);
-        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
+        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle_)) : new NonRotated);
+        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle_)) : new NonRotated);
+
+        south_pole_ = SOUTH_POLE;
         return;
     }
 

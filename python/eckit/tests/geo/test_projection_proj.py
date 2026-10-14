@@ -10,6 +10,7 @@ import pytest
 from eckit.geo import Grid
 from eckit.geo import Projection
 from eckit.geo._eckit_geo import projdb_is_available
+from eckit.geo._eckit_geo import projdb_reset
 from eckit.geo._eckit_geo import projdb_set_search_paths
 
 # Only meaningful when eckit was compiled with PROJ *and* a usable proj.db is
@@ -53,10 +54,7 @@ def _restore_proj_context():
 
     from eckit._utils import configure_projdb
 
-    # Recreate the context (drops any test database path, re-resolves the
-    # defaults from the now-restored environment), then re-apply the bundled
-    # fallback if this build relies on it.
-    projdb_set_search_paths("", [])
+    # A fresh context and the bundled fallback if this build relies on it
     configure_projdb()
 
 
@@ -67,13 +65,26 @@ def test_projdb_bad_search_paths():
 
 def test_projdb_bad_env():
     os.environ["PROJ_DATA"] = BAD_DIR
-    projdb_set_search_paths("", [])
+    projdb_reset()
     assert not projdb_is_available()
+
+
+def test_projdb_reset():
+    from eckit._utils import configure_projdb
+
+    available = projdb_is_available()
+
+    projdb_set_search_paths(BAD_DB, [BAD_DIR])
+    assert not projdb_is_available()
+
+    # as on import: a fresh context, and the bundled fallback if needed
+    configure_projdb()
+    assert projdb_is_available() == available
 
 
 @pytest.mark.skipif(db_path() is None, reason="no bundled proj.db")
 def test_projdb_fallback():
-    projdb_set_search_paths("", [])
+    projdb_reset()
     if projdb_is_available():
         pytest.skip("proj.db resolved without the bundled fallback")
 

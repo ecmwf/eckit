@@ -18,7 +18,6 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
@@ -98,7 +97,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Grid() = default;
+    virtual ~Grid();
 
     // -- Operators
 
@@ -222,7 +221,9 @@ private:
     mutable uid_type uid_;
 
     mutable std::shared_ptr<const Search> search_;
-    mutable util::once_flag search_once_;
+
+    struct Once;
+    const std::unique_ptr<Once> once_;
 
     // -- Methods
 

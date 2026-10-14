@@ -6,20 +6,14 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdlib>
 #include <limits>
-#include <memory>
-#include <utility>
-#include <vector>
 
 #include <proj.h>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {

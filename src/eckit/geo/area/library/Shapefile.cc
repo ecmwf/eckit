@@ -5,9 +5,7 @@
 #include "eckit/geo/area/library/Shapefile.h"
 
 #include <algorithm>
-#include <memory>
 #include <ostream>
-#include <string>
 #include <utility>
 #include <vector>
 

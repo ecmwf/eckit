@@ -5,7 +5,7 @@
 #include "eckit/geo/polygon/PolygonXY.h"
 
 #include <algorithm>
-#include <iostream>
+#include <ostream>
 
 #include "eckit/types/FloatCompare.h"
 

@@ -7,15 +7,12 @@
 #include <array>
 #include <limits>
 #include <map>
-#include <memory>
 #include <ostream>
 #include <set>
-#include <string>
 #include <utility>
 #include <variant>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"

@@ -5,7 +5,6 @@
 #include "eckit/geo/projection/Composer.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/spec/Custom.h"
 
 

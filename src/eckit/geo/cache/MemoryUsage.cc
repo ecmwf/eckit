@@ -5,7 +5,6 @@
 #include "eckit/geo/cache/MemoryUsage.h"
 
 #include <ostream>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/utils/StringTools.h"

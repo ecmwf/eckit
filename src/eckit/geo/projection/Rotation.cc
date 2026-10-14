@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"

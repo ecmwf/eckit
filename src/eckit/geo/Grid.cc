@@ -7,11 +7,7 @@
 #include <algorithm>
 #include <cctype>
 #include <ostream>
-#include <vector>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/cache/CropCache.h"
@@ -21,7 +17,6 @@
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"

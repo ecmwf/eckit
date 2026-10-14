@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 #include <ostream>
-#include <string>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/BoundingBox.h"

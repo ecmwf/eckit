@@ -96,10 +96,10 @@ CASE("PROJ strings of grids") {
         const auto& projection = grid->projection();
         EXPECT(projection.proj_str() == test.proj_str);
 
-        // rotations as PROJ (ob_tran), from the rotated (lon, lat)
+        // rotations as PROJ (ob_tran), to the rotated (lon, lat)
         if (projection.type() == "rotation") {
             P proj(ProjectionFactory::build(
-                spec::Custom{{"type", "proj"}, {"source", test.proj_str}, {"target", "+proj=longlat +R=6371229"}}));
+                spec::Custom{{"type", "proj"}, {"source", "+proj=longlat +R=6371229"}, {"target", test.proj_str}}));
 
             for (const auto& p : std::vector<PointLonLat>{{0., 0.}, {10., 20.}, {-35., 50.}, {120., -30.}}) {
                 EXPECT(points_equal(projection.fwd(p), proj->fwd(p), 1e-6));
@@ -393,22 +393,24 @@ CASE("projection: rotation, as PROJ") {
         std::string spec_as_proj;
     };
 
-    for (const auto& test : std::vector<test_t>{
-             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
-              R"({"source":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229",)"
-              R"("target":"+proj=longlat +R=6371229","type":"proj"})"},
-             {"{type: rotation, south_pole: [10, -40], rotation_angle: 25}",
-              R"({"rotation_angle":25,"south_pole":[10,-40],"type":"rotation"})",
-              R"({"source":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229",)"
-              R"("target":"+proj=longlat +R=6371229","type":"proj"})"},
-         }) {
+    const std::vector<test_t> tests{
+        {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
+         R"({"source":"+proj=longlat +R=6371229",)"
+         R"("target":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229","type":"proj"})"},
+        {"{type: rotation, south_pole: [10, -40], rotation_angle: 25}",
+         R"({"rotation_angle":25,"south_pole":[10,-40],"type":"rotation"})",
+         R"({"source":"+proj=longlat +R=6371229",)"
+         R"("target":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229","type":"proj"})"},
+    };
+
+    for (const auto& test : tests) {
         P rotation(ProjectionFactory::make_from_string(test.rotation));
         EXPECT(rotation->spec_str() == test.spec);
 
-        // from the rotated (lon, lat) to (lon, lat), on the figure
+        // from (lon, lat) to the rotated (lon, lat), on the figure
         P proj(ProjectionFactory::build(spec::Custom{{"type", "proj"},
-                                                     {"source", rotation->proj_str()},
-                                                     {"target", "+proj=longlat " + rotation->figure().proj_str()}}));
+                                                     {"source", "+proj=longlat " + rotation->figure().proj_str()},
+                                                     {"target", rotation->proj_str()}}));
         EXPECT(proj->spec_str() == test.spec_as_proj);
 
         // rebuilt from either spec, the same

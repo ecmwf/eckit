@@ -101,14 +101,14 @@ def test_projection_eqc_numpy():
 
 @pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_rotation():
-    # fwd: rotated (lon, lat) to geographic (lon, lat)
+    # fwd: geographic (lon, lat) to the rotated sphere (as PROJ ob_tran), inv the reverse
     rotation = Projection(type="rotation", south_pole=[10.0, -40.0])
     assert rotation.spec == dict(type="rotation", south_pole=[10, -40])
 
     # the rotated south pole is the given south pole, and the rotated equator is 90 degree away from it
-    assert rotation.fwd(0.0, -90.0)[1] == pytest.approx(-40.0, abs=EPS_LL)
-    assert rotation.inv(10.0, -40.0)[1] == pytest.approx(-90.0, abs=EPS_LL)
-    assert rotation.fwd(0.0, 0.0) == pytest.approx((10.0, 50.0), abs=EPS_LL)
+    assert rotation.inv(0.0, -90.0)[1] == pytest.approx(-40.0, abs=EPS_LL)
+    assert rotation.fwd(10.0, -40.0)[1] == pytest.approx(-90.0, abs=EPS_LL)
+    assert rotation.inv(0.0, 0.0) == pytest.approx((10.0, 50.0), abs=EPS_LL)
 
     for p in [(0.0, 0.0), (10.0, 20.0), (-30.0, 45.0), (170.0, -60.0)]:
         assert rotation.inv(*rotation.fwd(*p)) == pytest.approx(p, abs=EPS_LL)
@@ -281,3 +281,5 @@ def test_projection_arguments_rejected():
         eqc.fwd([1.0, 2.0], [3.0, 4.0], [5.0, 6.0])  # (longitude, latitude) are 2 coordinates
     with pytest.raises(TypeError):
         eqc.fwd((10.0, 20.0))  # a point, not ordered coordinates
+
+

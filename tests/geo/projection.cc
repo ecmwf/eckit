@@ -308,8 +308,8 @@ CASE("projection: coordinates") {
     SECTION("by spec") {
         std::unique_ptr<const Projection> rotation(
             ProjectionFactory::build(spec::Custom{{"type", "rotation"}, {"south_pole", v{10., -40.}}}));
-        EXPECT(approx(fwd(*rotation, v{0., 0.}), v{10., 50.}));
-        EXPECT(approx(inv(*rotation, fwd(*rotation, v{10., 20.})), v{10., 20.}));
+        EXPECT(approx(inv(*rotation, v{0., 0.}), v{10., 50.}));
+        EXPECT(approx(fwd(*rotation, inv(*rotation, v{10., 20.})), v{10., 20.}));
 
         std::unique_ptr<const Projection> eqc(ProjectionFactory::build(spec::Custom{{"type", "eqc"}, {"lat_ts", 60.}}));
         EXPECT(approx(fwd(*eqc, v{10., 20.}), v{5., 20.}));

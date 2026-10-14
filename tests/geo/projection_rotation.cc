@@ -71,8 +71,8 @@ CASE("rotation (3)") {
 
     SECTION("pole point") {
         PointLonLat a(0., 90.);
-        auto b = rot.fwd(a);
-        auto c = rot.inv(b);
+        auto b = rot.inv(a);
+        auto c = rot.fwd(b);
 
         EXPECT(points_equal(b, sp.antipode(), EPS));
         EXPECT(points_equal(a, c, EPS));
@@ -174,8 +174,8 @@ CASE("rotation (3)") {
             for (int j = 0; j < 2 * Nj + 1; j++, k++) {
                 PointLonLat a(static_cast<double>(i) * 360. / static_cast<double>(Ni),
                               static_cast<double>(j - Nj) * 90. / static_cast<double>(Nj));
-                auto b = rot.fwd(a);
-                auto c = rot.inv(b);
+                auto b = rot.inv(a);
+                auto c = rot.fwd(b);
 
                 EXPECT(points_equal(b, ref[k], EPS));
                 EXPECT(points_equal(a, c, EPS));
@@ -216,10 +216,10 @@ CASE("rotation (4)") {
     };
 
     for (const auto& test : tests) {
-        auto b = test.rotation.fwd(test.a);
+        auto b = test.rotation.inv(test.a);
         EXPECT(points_equal(b, test.b, EPS));
 
-        auto a = test.rotation.inv(b);
+        auto a = test.rotation.fwd(b);
         EXPECT(points_equal(a, test.a, EPS));
     }
 }
@@ -257,9 +257,9 @@ CASE("rotation (5)") {
         auto qs = dynamic_cast<projection::Composer*>(composition1.get())->fwd_points(p);
         EXPECT(qs.size() == 8);
 
-        EXPECT(points_equal(qs.front(), PointLonLat{-45., lat}));
-        EXPECT(points_equal(qs[1], PointLonLat{-90., lat}));
-        EXPECT(points_equal(qs[2], PointLonLat{-135., lat}));
+        EXPECT(points_equal(qs.front(), PointLonLat{45., lat}));
+        EXPECT(points_equal(qs[1], PointLonLat{90., lat}));
+        EXPECT(points_equal(qs[2], PointLonLat{135., lat}));
         // ...
         EXPECT(points_equal(qs.back(), p));
     }
@@ -303,7 +303,7 @@ CASE("make_from_projection (1)") {
              {{0., 0.}, {-160., 80.}},
              {{2., 0.}, {-171.370559, 79.803957}},
          }) {
-        EXPECT(points_equal(rotation.fwd(test.p), test.q, EPS));
+        EXPECT(points_equal(rotation.inv(test.p), test.q, EPS));
     }
 
     EXPECT_THROWS_AS(auto dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),

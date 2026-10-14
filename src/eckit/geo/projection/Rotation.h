@@ -16,7 +16,8 @@
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/// Rotation of the sphere, given the location of its South Pole and an angle: fwd from (lon, lat) to (lon, lat) on the
+/// rotated sphere (as PROJ ob_tran), inv the reverse (e.g. the grid points, from the rotated sphere)
 class Rotation : public Projection {
 public:
 

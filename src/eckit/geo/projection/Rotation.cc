@@ -113,8 +113,8 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
         angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon(), -PointLonLat::FLAT_ANGLE);
         rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
-        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
-        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);
+        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);
+        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
         return;
     }
 
@@ -125,21 +125,21 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
     const auto st = std::sin(theta);
     const auto sp = std::sin(phi);
 
-    // Rotate: rotate by α, then ϑ (y-axis, along the rotated Greenwich meridian), then φ (z-axis)
+    // inv (from the rotated sphere), rotate by α, then ϑ (y-axis, along the rotated Greenwich meridian), then φ:
     // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
     //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
     //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
-    fwd_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
+    inv_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
                                               cp * st,  //
                                               -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp,
                                               -sp * st,  //
                                               -ca * st, -sa * st, ct});
 
-    // Un-rotate (rotate by -φ, -ϑ, -α):
+    // fwd (to the rotated sphere), the reverse (rotate by -φ, -ϑ, -α):
     // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
     //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
     //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
-    inv_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
+    fwd_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
                                               -ca * st,  //
                                               sa * cp * ct + ca * sp, ca * cp - sa * ct * sp,
                                               -sa * st,  //

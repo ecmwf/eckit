@@ -221,7 +221,8 @@ const std::vector<std::string>& Projection::target_point_coordinates() const {
 
 Point Projection::from_grid_xy(double x, double y) const {
     // between (lon, lat), e.g. rotations, the grid's (x, y) are (lon, lat) on the source (e.g. the rotated sphere)
-    if (static const auto LL = Point{PointLonLat{}}.index(); source_ == LL && target_ == LL) {
+    static const size_t LONLAT = Point{PointLonLat{}}.index();
+    if (source_ == LONLAT && target_ == LONLAT) {
         return fwd(PointLonLat{x, y});
     }
 

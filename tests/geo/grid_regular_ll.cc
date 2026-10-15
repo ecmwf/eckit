@@ -45,6 +45,7 @@ CASE("rotated: spec equivalences") {
              R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
          }) {
         EXPECT(grd(spec)->spec_str() == R"({"grid":[5,5]})");
+        EXPECT(grd(spec)->projection().type() == "eqc");  // not a rotation
     }
 
     struct {
@@ -106,11 +107,11 @@ CASE("rotated") {
         ASSERT(points.size() == before.size());
 
         for (size_t i = 0; i < points.size(); ++i) {
-            EXPECT(points_equal(points[i], rotation.fwd(std::get<PointLonLat>(before[i]))));
+            EXPECT(points_equal(points[i], rotation.inv(std::get<PointLonLat>(before[i]))));
         }
 
         // the south pole of the rotated sphere is where (0, -90) lands
-        EXPECT(points_equal(rotation.fwd(SOUTH_POLE), south_pole));
+        EXPECT(points_equal(rotation.inv(SOUTH_POLE), south_pole));
     }
 
 
@@ -817,7 +818,7 @@ CASE("single point, row or column") {
 
         const projection::Rotation rotation(PointLonLat{10., -40.});
         const auto p = std::get<PointLonLat>(grid->to_points().front());
-        EXPECT(points_equal(p, rotation.fwd(PointLonLat{2., 1.})));
+        EXPECT(points_equal(p, rotation.inv(PointLonLat{2., 1.})));
         EXPECT(points_equal(p, PointLonLat{13.175624, 50.957540}, 1e-6));
     }
 }
@@ -831,9 +832,10 @@ CASE("RegularLL: rotated, projection as PROJ") {
     // rotated_ll (GRIB2.tmpl, latitudeOfSouthernPole=-40, longitudeOfSouthernPole=10)
     const std::string spec =
         R"({"area":[60,0,0,30],"grid":[2,2],"projection":{"south_pole":[10,-40],"type":"rotation"}})";
-    const std::string spec_as_proj = R"({"area":[60,0,0,30],"grid":[2,2],"projection":{)"
-                                     R"("source":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229",)"
-                                     R"("target":"+proj=longlat +R=6371229","type":"proj"}})";
+    const std::string spec_as_proj =
+        R"({"area":[60,0,0,30],"grid":[2,2],"projection":{)"
+        R"("source":"+proj=longlat +R=6371229",)"
+        R"("target":"+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_proj=longlat +R=6371229","type":"proj"}})";
 
     std::unique_ptr<const Grid> rotated(GridFactory::make_from_string(spec));
     std::unique_ptr<const Grid> rotated_as_proj(GridFactory::make_from_string(spec_as_proj));

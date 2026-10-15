@@ -11,7 +11,6 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/types/FloatCompare.h"
 
 

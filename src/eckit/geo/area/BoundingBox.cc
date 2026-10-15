@@ -6,9 +6,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
-#include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,7 +14,6 @@
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Tokenizer.h"
@@ -417,15 +413,14 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
         throw exception::ProjectionError("BoundingBox: projection from (lon, lat) to (lon, lat) expected", Here());
     }
 
-    // (lon, lat) to the projection's source (lon, lat) as (x, y), reversing a copy of the projection
+    // (lon, lat) to the projection's target (lon, lat) as (x, y), by a copy of the projection
     spec::Custom copy;
     projection.fill_spec(copy);
     if (!copy.has("type")) {
         copy.set("type", projection.type());
     }
 
-    projection::Composer composer{new projection::Reverse(ProjectionFactory::build(copy)),
-                                  new projection::EquidistantCylindrical};
+    projection::Composer composer{ProjectionFactory::build(copy), new projection::EquidistantCylindrical};
 
     auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     if (after->periodic()) {

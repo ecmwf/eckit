@@ -95,7 +95,7 @@ bool StreamWrapper::next_object() {
     return inner().next();
 }
 
-int64_t StreamWrapper::read_bytes(rust::Slice<uint8_t> buf) {
+int64_t StreamWrapper::read_bytes(rust::Slice<uint8_t> /*buf*/) {
     throw eckit::SeriousBug("read_bytes not supported on this stream type");
 }
 

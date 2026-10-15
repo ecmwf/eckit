@@ -5,7 +5,6 @@
 #include "eckit/geo/projection/Reverse.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -15,19 +14,16 @@ namespace eckit::geo::projection {
 namespace {
 
 
-Figure* figure_copy(const Projection* projection) {
+const Projection& checked(const Projection* projection) {
     ASSERT(projection != nullptr);
-    return FigureFactory::build(*std::unique_ptr<spec::Custom>(projection->figure().spec()));
+    return *projection;
 }
 
 
 }  // namespace
 
 
-Reverse::Reverse(const Projection* projection) : Projection(figure_copy(projection)), projection_(projection) {
-    point_types_from(*projection_, *projection_);
-    reverse_point_types();
-}
+Reverse::Reverse(const Projection* projection) : Projection(checked(projection), true), projection_(projection) {}
 
 
 Point Reverse::fwd(const Point& p) const {
@@ -46,18 +42,24 @@ const std::string& Reverse::type() const {
 
 
 void Reverse::fill_spec(spec::Custom& custom) const {
-    if (const auto* reversed = dynamic_cast<const Reverse*>(projection_.get()); reversed != nullptr) {
-        reversed->projection_->fill_spec(custom);
-        return;
-    }
-
     projection_->fill_spec(custom);
-    custom.set("reverse", true);
+
+    if (reverse()) {
+        custom.set("reverse", true);
+    }
+    else {
+        custom.erase("reverse");
+    }
 }
 
 
 bool Reverse::reverse() const {
-    return dynamic_cast<const Reverse*>(projection_.get()) == nullptr;
+    return !projection_->identity() && !projection_->reverse();
+}
+
+
+bool Reverse::identity() const {
+    return projection_->identity();
 }
 
 

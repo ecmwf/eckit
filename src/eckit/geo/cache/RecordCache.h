@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <cstddef>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util/mutex.h"
@@ -64,6 +62,9 @@ public:
 
     const value_type& set(const key_type& key, value_type&& record) {
         util::lock_guard<util::recursive_mutex> lock(mutex_);
+        if (cache_.contains(key)) {
+            return cache_[key];
+        }
         return cache_[key] = std::move(record);
     }
 

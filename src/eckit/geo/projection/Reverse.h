@@ -15,7 +15,8 @@
 namespace eckit::geo::projection {
 
 
-/// Projection with forward and inverse methods swapped
+/// Projection with forward and inverse methods swapped, sharing its figure (the spec "reverse": true toggled, unless
+/// the identity)
 class Reverse final : public Projection {
 public:
 
@@ -36,6 +37,7 @@ public:
     void fill_spec(spec::Custom&) const override;
 
     bool reverse() const override;
+    bool identity() const override;
 
 protected:
 

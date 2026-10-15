@@ -7,11 +7,7 @@
 #include <algorithm>
 #include <cctype>
 #include <ostream>
-#include <vector>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/cache/CropCache.h"
@@ -70,39 +66,53 @@ private:
 }  // namespace
 
 
+struct Grid::Once {
+    util::once_flag bbox;
+    util::once_flag projection;
+    util::once_flag catalog;
+    util::once_flag spec;
+    util::once_flag uid;
+    util::once_flag search;
+};
+
+
 Grid::Grid(BoundingBox* bbox, const Projection* proj) :
-    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()) {}
+    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()), once_(new Once) {}
+
+
+Grid::~Grid() = default;
 
 
 const spec::Spec& Grid::catalog() const {
-    if (!catalog_) {
+    util::call_once(once_->catalog, [this]() {
         auto get_name = [](const spec::Spec& spec) {
             std::string grid;
             return spec.get_string("name", spec.get("grid", grid) && is_uid(grid) ? "" : grid);
         };
 
         if (GridSpecByUID::instance().exists(uid())) {
-            catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
+            catalog_.reset(GridSpecByUID::instance().get_spec(uid()));
         }
         else if (std::string name = get_name(spec()); GridSpecByName::instance().matches(name)) {
-            catalog_.reset(GridSpecByName::instance().match(name).spec(name));
+            catalog_.reset(GridSpecByName::instance().match_spec(name, name));
         }
         else {
             catalog_.reset(new spec::Custom);
         }
 
         ASSERT(catalog_);
-    }
+    });
 
     return *catalog_;
 }
 
 
 const spec::Custom& Grid::custom_spec() const {
-    if (!spec_) {
-        spec_ = std::make_unique<spec::Custom>();
-        fill_spec(*spec_);
-    }
+    util::call_once(once_->spec, [this]() {
+        auto spec = std::make_unique<spec::Custom>();
+        fill_spec(*spec);
+        spec_ = std::move(spec);
+    });
 
     return *spec_;
 }
@@ -127,7 +137,7 @@ void Grid::cache() const {}
 
 const Search& Grid::search() const {
     // the grid holds its search, so it is not evicted from the cache while the grid exists
-    util::call_once(search_once_, [this]() { search_ = cache::SearchCache::instance().get(*this); });
+    util::call_once(once_->search, [this]() { search_ = cache::SearchCache::instance().get(*this); });
     return *search_;
 }
 
@@ -139,14 +149,18 @@ bool Grid::is_uid(const std::string& str) {
 
 
 Grid::uid_type Grid::uid() const {
-    if (uid_.empty()) {
+    util::call_once(once_->uid, [this]() {
+        if (!uid_.empty()) {
+            return;
+        }
+
         const_cast<Grid*>(this)->reset_uid(calculate_uid());
 
         lock_type lock;
         if (!GridSpecByUID::instance().exists(uid_)) {
             GridSpecByUID::regist(uid_, custom_spec());
         }
-    }
+    });
 
     return uid_;
 }
@@ -262,10 +276,12 @@ Grid* Grid::make_grid_reordered(const order_type&) const {
 
 
 const Area& Grid::area() const {
-    if (!bbox_) {
-        bbox_.reset(calculate_bbox());
-        ASSERT(bbox_);
-    }
+    util::call_once(once_->bbox, [this]() {
+        if (!bbox_) {
+            bbox_.reset(calculate_bbox());
+            ASSERT(bbox_);
+        }
+    });
 
     return *bbox_;
 }
@@ -277,8 +293,13 @@ Grid::renumber_type Grid::crop(const Area& area) const {
 
 
 const Projection& Grid::projection() const {
-    return projection_ ? *projection_
-                       : *(projection_ = std::unique_ptr<const Projection>(ProjectionFactory::make_default()));
+    util::call_once(once_->projection, [this]() {
+        if (!projection_) {
+            projection_.reset(ProjectionFactory::make_default());
+        }
+    });
+
+    return *projection_;
 }
 
 
@@ -370,10 +391,12 @@ const Range& Grid::lat() const {
 
 
 const Grid::BoundingBox& Grid::boundingBox() const {
-    if (!bbox_) {
-        bbox_.reset(calculate_bbox());
-        ASSERT(bbox_);
-    }
+    util::call_once(once_->bbox, [this]() {
+        if (!bbox_) {
+            bbox_.reset(calculate_bbox());
+            ASSERT(bbox_);
+        }
+    });
 
     return *bbox_;
 }
@@ -434,7 +457,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
             throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
         }
 
-        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
+        cfg->push_front(GridSpecByUID::instance().get_spec(uid));
     }
 
 
@@ -473,7 +496,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     }
 
     if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
-        cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
+        cfg->push_back(GridSpecByName::instance().match_spec(grid, grid));
     }
 
     // x and y (also of a named grid) are of a regular_xy
@@ -516,6 +539,11 @@ void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
 }
 
 
+void GridSpecByName::replace(const key_t& key, const spec::Custom& spec) {
+    instance().replace(key, new SpecByName(spec));
+}
+
+
 GridSpecByUID::generator_t& GridSpecByUID::instance() {
     share::Grid::instance();  // ensure load of supporting files
     return generator_t::instance();
@@ -524,6 +552,11 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
     regist(key, new SpecByUID(spec));
+}
+
+
+void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
+    instance().replace(key, new SpecByUID(spec));
 }
 
 

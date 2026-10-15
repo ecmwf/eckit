@@ -5,8 +5,6 @@
 #include "eckit/geo/cache/CropCache.h"
 
 #include <algorithm>
-#include <memory>
-#include <string>
 #include <type_traits>
 #include <variant>
 #include <vector>

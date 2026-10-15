@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <cstddef>
 
 namespace eckit {
 class PathName;

@@ -137,8 +137,6 @@ list(APPEND eckit_geo_srcs
     projection/LonLatToXYZ.h
     projection/Mercator.cc
     projection/Mercator.h
-    projection/None.cc
-    projection/None.h
     projection/PolarStereographic.cc
     projection/PolarStereographic.h
     projection/Reverse.cc

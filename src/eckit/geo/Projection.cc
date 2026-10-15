@@ -7,19 +7,15 @@
 #include <array>
 #include <limits>
 #include <map>
-#include <memory>
 #include <ostream>
 #include <set>
-#include <string>
 #include <utility>
 #include <variant>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
@@ -43,7 +39,7 @@ class lock_type {
 };
 
 
-/// Registered during static initialisation
+// Projection types interpreting "reverse": true themselves
 struct SelfReversing {
     util::recursive_mutex mutex;
     std::set<std::string> types;
@@ -55,7 +51,6 @@ struct SelfReversing {
 };
 
 
-/// Projection of a type, reversed if the spec has "reverse": true
 /// Projection types of optional features, if available (eg. "proj" with the PROJ database)
 void register_optional_types() {
 #if eckit_HAVE_PROJ
@@ -77,15 +72,21 @@ const Projection* make(const std::string& type, const Projection::Spec& spec) {
         throw exception::ProjectionError("ProjectionFactory: unknown projection type '" + type + "'", Here());
     }
 
-    const auto* projection = Factory<Projection>::instance().get(type).create(spec);
+    std::unique_ptr<const Projection> projection(Factory<Projection>::instance().get(type).create(spec));
+
+    // the identity as the default
+    if (projection->identity()) {
+        return ProjectionFactory::make_default();
+    }
+
     if (!spec.get_bool("reverse", false)) {
-        return projection;
+        return projection.release();
     }
 
     auto& self_reversing = SelfReversing::instance();
     util::lock_guard<util::recursive_mutex> lock(self_reversing.mutex);
 
-    return self_reversing.types.count(type) == 0 ? new projection::Reverse(projection) : projection;
+    return self_reversing.types.count(type) == 0 ? new projection::Reverse(projection.release()) : projection.release();
 }
 
 
@@ -112,30 +113,17 @@ void visit_point_type(size_t index, F&& f) {
 }
 
 
-const std::vector<std::string>& coordinates(size_t index) {
-    const std::vector<std::string>* names = nullptr;
-    visit_point_type(index, [&names](auto tag) { names = &point_coordinates<typename decltype(tag)::type>(); });
-    return *names;
-}
-
-
-size_t dims(size_t index) {
-    size_t n = 0;
-    visit_point_type(index, [&n](auto tag) { n = decltype(tag)::type::DIMS; });
-    return n;
-}
-
-
 /// Check the vectors of coordinates of points of a point type (v3 is empty for points of 2 coordinates)
 void check_vectors(const std::vector<double>& v1, const std::vector<double>& v2, const std::vector<double>& v3,
                    size_t type) {
-    const auto n = v1.size();
-    if (dims(type) == 3 ? v2.size() == n && v3.size() == n : v2.size() == n && v3.empty()) {
+    const auto n         = v1.size();
+    const auto& expected = point_coordinates(type);
+    if (expected.size() == 3 ? v2.size() == n && v3.size() == n : v2.size() == n && v3.empty()) {
         return;
     }
 
     std::string names;
-    for (const auto& name : coordinates(type)) {
+    for (const auto& name : expected) {
         names += (names.empty() ? "" : ", ") + name;
     }
 
@@ -152,7 +140,7 @@ std::vector<std::vector<double>> project_points(const std::vector<double>& v1, c
     const std::array<const std::vector<double>*, 3> in{&v1, &v2, &v3};
     const auto n = v1.size();
 
-    std::vector<std::vector<double>> out(dims(to), std::vector<double>(n));
+    std::vector<std::vector<double>> out(point_coordinates(to).size(), std::vector<double>(n));
 
     visit_point_type(from, [&](auto from_tag) {
         visit_point_type(to, [&](auto to_tag) {
@@ -195,6 +183,14 @@ Projection::Projection(Figure* ptr, const Point& source, const Point& target) :
 }
 
 
+Projection::Projection(const Projection& other, bool reverse) :
+    figure_(other.figure_),
+    source_(reverse ? other.target_ : other.source_),
+    target_(reverse ? other.source_ : other.target_) {
+    ASSERT(figure_);
+}
+
+
 std::vector<std::vector<double>> Projection::fwd(const std::vector<double>& v1, const std::vector<double>& v2,
                                                  const std::vector<double>& v3) const {
     check_vectors(v1, v2, v3, source_);
@@ -210,29 +206,25 @@ std::vector<std::vector<double>> Projection::inv(const std::vector<double>& v1, 
 
 
 const std::vector<std::string>& Projection::source_point_coordinates() const {
-    return coordinates(source_);
+    return point_coordinates(source_);
 }
 
 
 const std::vector<std::string>& Projection::target_point_coordinates() const {
-    return coordinates(target_);
+    return point_coordinates(target_);
 }
 
 
 Point Projection::from_grid_xy(double x, double y) const {
-    // between (lon, lat), e.g. rotations, the grid's (x, y) are (lon, lat) on the source (e.g. the rotated sphere)
-    if (static const auto LL = Point{PointLonLat{}}.index(); source_ == LL && target_ == LL) {
-        return fwd(PointLonLat{x, y});
-    }
-
-    return inv(PointXY{x, y});
+    static const size_t LONLAT = Point{PointLonLat{}}.index();
+    return target_ == LONLAT ? inv(PointLonLat{x, y}) : inv(PointXY{x, y});
 }
 
 
 void Projection::point_types(const Point& source, const Point& target) {
     // validates the point types (the empty point is not a point type)
-    dims(source.index());
-    dims(target.index());
+    point_coordinates(source);
+    point_coordinates(target);
 
     source_ = source.index();
     target_ = target.index();
@@ -242,11 +234,6 @@ void Projection::point_types(const Point& source, const Point& target) {
 void Projection::point_types_from(const Projection& first, const Projection& last) {
     source_ = first.source_;
     target_ = last.target_;
-}
-
-
-void Projection::reverse_point_types() {
-    std::swap(source_, target_);
 }
 
 
@@ -300,22 +287,11 @@ std::string Projection::proj_str(const spec::Custom& custom) {
     // projection types with a PROJ equivalent
     static const std::map<std::string, std::string> NAMES{
         {"", "longlat"},  // the default projection
-        {"none", "longlat"},
-        {"aea", "aea"},
-        {"albers", "aea"},
-        {"eqc", "eqc"},
-        {"plate-carree", "eqc"},
-        {"laea", "laea"},
-        {"lambert_azimuthal_equal_area", "laea"},
-        {"lcc", "lcc"},
-        {"lambert", "lcc"},
-        {"lambert_lam", "lcc"},
-        {"ll-to-xyz", "cart"},
-        {"merc", "merc"},
-        {"mercator", "merc"},
-        {"rotation", "ob_tran"},
-        {"stere", "stere"},
-        {"polar_stereographic", "stere"},
+        {"aea", "aea"},          {"albers", "aea"},  {"eqc", "eqc"},
+        {"plate-carree", "eqc"}, {"laea", "laea"},   {"lambert_azimuthal_equal_area", "laea"},
+        {"lcc", "lcc"},          {"lambert", "lcc"}, {"lambert_lam", "lcc"},
+        {"ll-to-xyz", "cart"},   {"merc", "merc"},   {"mercator", "merc"},
+        {"rotation", "ob_tran"}, {"stere", "stere"}, {"polar_stereographic", "stere"},
     };
 
     const auto name = NAMES.find(type);
@@ -389,13 +365,13 @@ bool Projection::is_default() const {
 
 
 const Projection& Projection::projection_default() {
-    static const projection::None PROJECTION;
+    static const projection::EquidistantCylindrical PROJECTION;
     return PROJECTION;
 }
 
 
 const Projection* ProjectionFactory::make_default() {
-    return ProjectionFactory::build(Projection::projection_default().spec());
+    return new projection::EquidistantCylindrical;
 }
 
 
@@ -443,7 +419,7 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
                 throw exception::ProjectionError("ProjectionFactory: unknown projection name '" + name + "'", Here());
             }
 
-            std::unique_ptr<Projection::Spec> cfg(ProjectionSpecByName::instance().match(name).spec(name));
+            std::unique_ptr<Projection::Spec> cfg(ProjectionSpecByName::instance().match_spec(name, name));
             return make(cfg->get_string("type"), *cfg);
         }
 
@@ -452,9 +428,7 @@ const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
     }
 
     if (spec.has("rotation")) {
-        if (auto* rotation = projection::Rotation::make_from_spec(spec); rotation != nullptr) {
-            return rotation;
-        }
+        return make("rotation", spec);
     }
 
     std::unique_ptr<Projection::Spec> cfg(make_spec(spec));

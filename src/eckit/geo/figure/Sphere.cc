@@ -11,7 +11,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/GreatCircle.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"

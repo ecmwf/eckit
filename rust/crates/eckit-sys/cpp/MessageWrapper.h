@@ -53,7 +53,7 @@ public:
 /// Wraps `eckit::message::Reader` for Rust FFI.
 /// Reads messages from a `DataHandle`.
 class ReaderWrapper {
-    std::unique_ptr<eckit::message::Reader> reader_;
+    eckit::message::Reader reader_;
 
 public:
 

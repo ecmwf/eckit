@@ -4,19 +4,15 @@
 
 #include "eckit/geo/grid/regular/RegularXY.h"
 
-#include <string>
 #include <tuple>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/BoundingBoxXY.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/projection/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -102,7 +98,7 @@ RegularXY::RegularXY(const Spec& spec) :
 
 RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, const Projection* p, const PointXY& false_xy) :
     Regular(order::Scan("i" + std::string(x.b() < x.a() ? "-" : "+") + "j" + std::string(y.b() < y.a() ? "-" : "+")),
-            p != nullptr ? p : new projection::None),
+            p),
     x_(x),
     y_(y),
     false_(false_xy),

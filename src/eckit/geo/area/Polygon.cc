@@ -8,9 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include <numeric>
-#include <string>
 #include <utility>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"

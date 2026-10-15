@@ -16,12 +16,42 @@ links = "eckit_rs"
 build = "build.rs"
 
 [features]
-default = ["vendored"]
+default = ["vendored", "geo"]
 vendored = ["eckit-sys/vendored"]
 system = ["eckit-sys/system"]
+
+# Geospatial grids (`eckit::geo`)
+geo = ["eckit-sys/eckit-geo"]
 
 [dependencies]
 eckit-sys.workspace = true
 
 [build-dependencies]
 bindman-utils.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[[example]]
+name = "grid_info"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_area"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_figure"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_grid"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_projection"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_search"
+required-features = ["geo"]

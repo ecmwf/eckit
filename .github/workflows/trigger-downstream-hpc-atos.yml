@@ -171,6 +171,23 @@ jobs:
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 1) }}
+  metkit:
+    name: metkit
+    needs:
+    - ci-approval
+    - context
+    - label-gate
+    - validate
+    - eccodes
+    uses: ecmwf/metkit/.github/workflows/cross-repo-trigger-hpc-atos.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["eckit/build-hpc"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+    secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 2) }}
   report-result:
     needs:
     - ci-approval
@@ -180,6 +197,7 @@ jobs:
     - atlas
     - eccodes
     - fckit
+    - metkit
     if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     permissions:
@@ -190,7 +208,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         state=success
-        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.eccodes.result }} ${{ needs.fckit.result }}; do
+        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.eccodes.result }} ${{ needs.fckit.result }} ${{ needs.metkit.result }}; do
           if [ "$r" = failure ] || [ "$r" = cancelled ]; then
             state=failure
           fi

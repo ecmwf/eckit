@@ -10,6 +10,7 @@
 #include <sys/types.h>
 
 #if defined(__linux__)
+#include <sys/sysmacros.h>  // for major() and minor() macros
 #include <sys/vfs.h>
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 #include <sys/param.h>
@@ -25,6 +26,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ios>
+#include <string>
 
 #include <cstring>  // for strlen
 #include <deque>
@@ -51,9 +53,7 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
@@ -936,6 +936,12 @@ std::string LocalPathName::fileSystemType() const {
 #else
     throw NotImplemented("LocalPathName::fileSystemType", Here());
 #endif
+}
+
+std::string LocalPathName::device() const {
+    Stat::Struct stat;
+    SYSCALL2(Stat::stat(path_.c_str(), &stat), *this);
+    return std::to_string(major(stat.st_dev)) + ':' + std::to_string(minor(stat.st_dev));
 }
 
 

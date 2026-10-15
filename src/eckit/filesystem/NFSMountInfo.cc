@@ -46,6 +46,7 @@ std::optional<std::string> local_lock_option(std::istream& mountinfo, std::strin
 
         std::istringstream options{super_options};
         for (std::string option; std::getline(options, option, ',');) {
+            // nolock overrides local_lock= in the kernel, so it counts whatever else is listed.
             if (option == "nolock" || option == "local_lock=posix" || option == "local_lock=all") {
                 return option;
             }

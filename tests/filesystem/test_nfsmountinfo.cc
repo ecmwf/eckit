@@ -34,6 +34,14 @@ constexpr const char* nfs3Flock =
 // Kernels that do not print local_lock= still print nolock.
 constexpr const char* nfs3Legacy =
     "594 515 0:65 / /mnt/legacy rw - nfs 10.0.0.1:/x rw,vers=3,hard,nolock,proto=tcp,sec=sys,addr=10.0.0.1";
+// The kernel lets nolock override local_lock= (nfs_try_mount_request) and prints local_lock=all for it. If a line still
+// lists nolock next to another local_lock= value, nolock decides, in whatever order they appear.
+constexpr const char* nfs3NoLockAndLocalLockNone =
+    "597 515 0:68 / /mnt/nolock-none rw - nfs 10.0.0.1:/x rw,vers=3,hard,nolock,proto=tcp,sec=sys,local_lock=none,"
+    "addr=10.0.0.1";
+constexpr const char* nfs3NoLockAndLocalLockFlock =
+    "598 515 0:69 / /mnt/nolock-flock rw - nfs 10.0.0.1:/x rw,vers=3,local_lock=flock,hard,nolock,proto=tcp,sec=sys,"
+    "addr=10.0.0.1";
 // Spaces in paths are escaped, and optional fields may precede the separator.
 constexpr const char* nfs3Spaces =
     "595 515 0:66 / /mnt/with\\040space rw,relatime shared:1 master:2 - nfs 10.0.0.1:/a\\040b "
@@ -88,6 +96,18 @@ CASE("client-local locking is reported with the offending option") {
     const auto spaces = nfsClientLocalLockOption(table, "0:66");
     EXPECT(spaces.has_value());
     EXPECT_EQUAL(*spaces, std::string("local_lock=posix"));
+}
+
+CASE("nolock is reported whatever local_lock= says") {
+    const std::string table = joined({nfs3NoLockAndLocalLockNone, nfs3NoLockAndLocalLockFlock});
+
+    const auto none = nfsClientLocalLockOption(table, "0:68");
+    EXPECT(none.has_value());
+    EXPECT_EQUAL(*none, std::string("nolock"));
+
+    const auto flock = nfsClientLocalLockOption(table, "0:69");
+    EXPECT(flock.has_value());
+    EXPECT_EQUAL(*flock, std::string("nolock"));
 }
 
 CASE("only NFS mounts are considered and malformed lines are skipped") {

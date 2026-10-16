@@ -28,6 +28,7 @@ ecbuild_add_test( TARGET  eckit_test_urlhandle
                   LIBS    eckit )
 
 foreach(_test
+        autocloser
         base64
         bitio
         buffer

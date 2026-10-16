@@ -94,7 +94,7 @@ if( eckit_HAVE_OMP )
     list( APPEND eckit_la_plibs OpenMP::OpenMP_CXX )
 endif()
 
-ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
+ecbuild_add_library( TARGET             eckit_linalg
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/linalg
                      SOURCES            ${eckit_la_srcs}

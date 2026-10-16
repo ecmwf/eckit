@@ -4,7 +4,6 @@
 
 ecbuild_add_library(
     TARGET eckit_spec
-    TYPE SHARED
     INSTALL_HEADERS ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/spec
     PUBLIC_LIBS eckit

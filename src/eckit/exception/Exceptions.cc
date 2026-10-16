@@ -7,6 +7,7 @@
 
 #include <csignal>
 #include <cstdlib>
+#include <exception>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
@@ -113,7 +114,7 @@ void Exception::reason(const std::string& w) {
 }
 
 bool Exception::throwing() {
-    return first() != nullptr;
+    return std::uncaught_exceptions() > 0;
 }
 
 TooManyRetries::TooManyRetries(int retries, const std::string& w) :

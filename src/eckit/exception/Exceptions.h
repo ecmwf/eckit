@@ -72,6 +72,7 @@ public:
     virtual bool retryOnClient() const { return false; }
     virtual bool terminateApplication() const { return false; }
 
+    /// Whether an exception is propagating on this thread
     static bool throwing();
     static void exceptionStack(std::ostream&, bool callStack = false);
 

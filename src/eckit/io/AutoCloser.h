@@ -9,12 +9,23 @@
 
 #include <exception>
 #include <ostream>
+#include <type_traits>
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
+
+namespace detail {
+
+template <typename T, typename = void>
+struct HasClose : std::false_type {};
+
+template <typename T>
+struct HasClose<T, std::void_t<decltype(std::declval<T&>().close())>> : std::true_type {};
+
+}  // namespace detail
 
 /// Calls `close()` on an object when the scope is left.
 ///
@@ -30,11 +41,20 @@ namespace eckit {
 template <typename T>
 class AutoCloser {
 
+    static_assert(detail::HasClose<T>::value, "AutoCloser needs an object with a close() member");
+
     T& obj_;
 
 public:  // methods
 
-    AutoCloser(T& obj) : obj_(obj) {}
+    explicit AutoCloser(T& obj) noexcept : obj_{obj} {}
+
+    AutoCloser(T&&) = delete;  // for a const T, a temporary would be gone before the scope ends
+
+    AutoCloser(const AutoCloser&)            = delete;
+    AutoCloser& operator=(const AutoCloser&) = delete;
+    AutoCloser(AutoCloser&&)                 = delete;
+    AutoCloser& operator=(AutoCloser&&)      = delete;
 
     /// Assume that close() can throw
     /// Otherwise we could test the interface with:

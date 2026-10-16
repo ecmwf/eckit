@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <type_traits>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/AutoCloser.h"
@@ -197,6 +198,22 @@ CASE("AutoCloser: works on a const object") {
     const ConstCloseable resource;
     { AutoCloser closer{resource}; }
     EXPECT_EQUAL(resource.closeCalls(), 1);
+}
+
+CASE("AutoCloser: is neither copyable nor movable") {
+    static_assert(!std::is_copy_constructible_v<AutoCloser<Closeable>>);
+    static_assert(!std::is_copy_assignable_v<AutoCloser<Closeable>>);
+    static_assert(!std::is_move_constructible_v<AutoCloser<Closeable>>);
+    static_assert(!std::is_move_assignable_v<AutoCloser<Closeable>>);
+}
+
+CASE("AutoCloser: guards an object that outlives it, never a temporary") {
+    static_assert(std::is_constructible_v<AutoCloser<Closeable>, Closeable&>);
+    static_assert(std::is_constructible_v<AutoCloser<const ConstCloseable>, const ConstCloseable&>);
+
+    static_assert(!std::is_constructible_v<AutoCloser<Closeable>, Closeable>);
+    static_assert(!std::is_constructible_v<AutoCloser<const ConstCloseable>, ConstCloseable>);
+    static_assert(!std::is_constructible_v<AutoCloser<const ConstCloseable>, const ConstCloseable>);
 }
 
 CASE("AutoCloser: closes a DataHandle") {

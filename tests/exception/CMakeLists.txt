@@ -4,3 +4,7 @@
 ecbuild_add_test( TARGET      eckit_test_exceptions
                   SOURCES     test_exceptions.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_firstfailure
+                  SOURCES     test_firstfailure.cc
+                  LIBS        eckit )

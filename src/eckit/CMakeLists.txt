@@ -531,6 +531,7 @@ list( APPEND eckit_log_srcs
 list( APPEND eckit_exception_srcs
     exception/Exceptions.cc
     exception/Exceptions.h
+    exception/FirstFailure.h
 )
 
 list( APPEND eckit_types_srcs

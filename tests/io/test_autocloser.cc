@@ -4,12 +4,15 @@
 #include <atomic>
 #include <cstdint>
 #include <exception>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <type_traits>
+#include <vector>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/exception/FirstFailure.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/log/Log.h"
@@ -118,6 +121,29 @@ CASE("AutoCloser: closer() makes a guard that closes at the end of the scope") {
     EXPECT_EQUAL(resource.closeCalls(), 1);
 }
 
+CASE("AutoCloser: closes explicitly, and the scope exit and a second call then do nothing") {
+    Closeable resource;
+    {
+        AutoCloser closer{resource};
+        closer.close();
+        EXPECT_EQUAL(resource.closeCalls(), 1);
+
+        closer.close();
+        EXPECT_EQUAL(resource.closeCalls(), 1);
+    }
+    EXPECT_EQUAL(resource.closeCalls(), 1);
+}
+
+CASE("AutoCloser: a failed explicit close reaches the caller and is not retried at the scope exit") {
+    Closeable resource{Closeable::Failure::StdException};
+    EXPECT_THROWS_AS(([&] {
+                         AutoCloser closer{resource};
+                         closer.close();
+                     })(),
+                     std::runtime_error);
+    EXPECT_EQUAL(resource.closeCalls(), 1);
+}
+
 CASE("AutoCloser: a failed close reaches the caller when the scope is left normally") {
     Closeable resource{Closeable::Failure::StdException};
     EXPECT_THROWS_AS(([&] { AutoCloser closer{resource}; })(), std::runtime_error);
@@ -205,6 +231,45 @@ CASE("AutoCloser: is neither copyable nor movable") {
     static_assert(!std::is_copy_assignable_v<AutoCloser<Closeable>>);
     static_assert(!std::is_move_constructible_v<AutoCloser<Closeable>>);
     static_assert(!std::is_move_assignable_v<AutoCloser<Closeable>>);
+}
+
+CASE("AutoCloser: guards held in a container report a failure through close(), and are then inert") {
+    Closeable failing{Closeable::Failure::StdException};
+    Closeable working;
+
+    {
+        std::vector<std::optional<AutoCloser<Closeable>>> guards(3);
+        guards[0].emplace(failing);
+        guards[2].emplace(working);
+
+        FirstFailure failure;
+        for (auto& guard : guards) {
+            if (guard) {
+                failure.run([&] { guard->close(); });
+            }
+        }
+        EXPECT_THROWS_AS(failure.rethrow(), std::runtime_error);
+    }  // destroying the container would terminate if a guard closed again
+
+    EXPECT_EQUAL(failing.closeCalls(), 1);
+    EXPECT_EQUAL(working.closeCalls(), 1);
+}
+
+CASE("AutoCloser: guards held in a container close when an exception propagates") {
+    Closeable failing{Closeable::Failure::StdException};
+    Closeable working;
+
+    try {
+        std::vector<std::optional<AutoCloser<Closeable>>> guards(2);
+        guards[0].emplace(failing);
+        guards[1].emplace(working);
+        throw std::logic_error{"the original error"};
+    }
+    catch (const std::logic_error&) {
+    }
+
+    EXPECT_EQUAL(failing.closeCalls(), 1);  // its failure was logged, not thrown
+    EXPECT_EQUAL(working.closeCalls(), 1);
 }
 
 CASE("AutoCloser: guards an object that outlives it, never a temporary") {

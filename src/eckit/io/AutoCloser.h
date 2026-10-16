@@ -36,6 +36,10 @@ struct HasClose<T, std::void_t<decltype(std::declval<T&>().close())>> : std::tru
 ///
 /// close() is not retried, so it has to release the resource even when it throws.
 ///
+/// Do not let a container or a std::optional of guards destroy them: their destructors cannot throw, so a close()
+/// failure at a normal exit would end in std::terminate. Call close() on each guard first, for example with a
+/// FirstFailure so that every one is attempted and the first failure is reported. The destructors then do nothing.
+///
 /// Not thread safe: a guard is a local of one thread. Whether close() may run alongside other calls is up to the
 /// object.
 template <typename T>
@@ -44,6 +48,7 @@ class AutoCloser {
     static_assert(detail::HasClose<T>::value, "AutoCloser needs an object with a close() member");
 
     T& obj_;
+    bool closed_ = false;
 
 public:  // methods
 
@@ -56,6 +61,15 @@ public:  // methods
     AutoCloser(AutoCloser&&)                 = delete;
     AutoCloser& operator=(AutoCloser&&)      = delete;
 
+    /// Closes now instead of at the end of the scope, and reports a failure to the caller. The scope exit then does
+    /// nothing, and so does a second call.
+    void close() {
+        if (!closed_) {
+            closed_ = true;
+            obj_.close();
+        }
+    }
+
     /// Assume that close() can throw
     /// Otherwise we could test the interface with:
     /// \code{.cpp}
@@ -63,6 +77,10 @@ public:  // methods
     /// \endcode
     /// but Intel compiler 17 on Cray XC40 has trouble with it
     ~AutoCloser() noexcept(false) {  // NOLINT
+        if (closed_) {
+            return;
+        }
+
         if (!Exception::throwing()) {
             obj_.close();
             return;

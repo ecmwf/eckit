@@ -104,9 +104,9 @@ void LatitudeLongitude::read(const PathName& p) {
 
 void LatitudeLongitude::write(const PathName& p) const {
     codec::RecordWriter record;
-    if (static const std::string cmp =
-            LibResource<std::string, LibEcKitGeo>("eckit-codec-compression;$ECKIT_CODEC_COMPRESSION", "lz4");
-        cmp.empty()) {
+    static const std::string cmp =
+        LibResource<std::string, LibEcKitGeo>("eckit-codec-compression;$ECKIT_CODEC_COMPRESSION", "lz4");
+    if (cmp.empty()) {
         record.compression(false);
     }
     else {

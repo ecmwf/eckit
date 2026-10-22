@@ -26,8 +26,5 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
             const string& db_path, const vector[string]& search_paths
         ) except +
 
-        @staticmethod
-        void projdb_reset() except +
-
         string version() except +
         string gitsha1(unsigned int n) except +  # n=40 for full sha1

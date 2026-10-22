@@ -19,12 +19,10 @@ def configure_projdb() -> None:
     from warnings import warn
 
     from eckit.geo._eckit_geo import projdb_is_available
-    from eckit.geo._eckit_geo import projdb_reset
     from eckit.geo._eckit_geo import projdb_set_search_paths
 
     msg_footer = "Projection support is limited. Please install PROJ and/or set the PROJ_DATA environment variable."
 
-    projdb_reset()
     if projdb_is_available():
         return
 

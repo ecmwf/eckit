@@ -185,7 +185,7 @@ container-credentials = true
 triggers = ["upstream-change", "rebuild-request"]
 
 [packages.eckit-rust]
-compiler-inputs = ["cxx-compiler"]
+compiler-inputs = ["cxx-compiler", "rust-compiler"]
 
 [[packages.eckit-rust.deps]]
 package = "eckit"

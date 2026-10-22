@@ -82,14 +82,6 @@ def projdb_set_search_paths(db_path, search_paths=()) -> None:
     eckit_geo.LibEcKitGeo.projdb_set_search_paths(_db_path, _search_paths)
 
 
-def projdb_reset() -> None:
-    """
-    Recreate eckit's PROJ context, (re-)resolves proj.db from env PROJ_DATA/PROJ_LIB
-    and the compiled-in defaults, dropping any search paths set).
-    """
-    eckit_geo.LibEcKitGeo.projdb_reset()
-
-
 def _spec_str(spec) -> str:
     from yaml import dump
 

@@ -38,8 +38,7 @@ public:
     using Spec      = spec::Spec;
 
     /**
-     * @brief Functions of the latitude [radian] for conformal projections, on an ellipsoid of eccentricity e (a sphere
-     * if e = 0), as PROJ (pj_msfn, pj_tsfn and pj_phi2)
+     * @brief Functions of latitude [radian] for conformal projections, on an ellipsoid
      * @ref Map Projections: A Working Manual, John P. Snyder (1987)
      */
     class Conformal {
@@ -47,13 +46,8 @@ public:
 
         explicit Conformal(double e) : e_(e) {}
 
-        /// Snyder (14-15)
         double m(double phi) const;
-
-        /// Snyder (15-9)
         double t(double phi) const;
-
-        /// The latitude of t, Snyder (7-9)
         double phi(double t) const;
 
     private:
@@ -62,8 +56,7 @@ public:
     };
 
     /**
-     * @brief Functions of the latitude [radian] for equal-area projections, on an ellipsoid of eccentricity e (a sphere
-     * if e = 0), as PROJ (pj_qsfn and pj_authlat)
+     * @brief Functions of latitude [radian] for equal-area projections, on an ellipsoid
      * @ref Map Projections: A Working Manual, John P. Snyder (1987)
      */
     class Authalic {
@@ -71,19 +64,14 @@ public:
 
         explicit Authalic(double e);
 
-        /// Snyder (3-12)
         double q(double sinphi) const;
-
-        /// The latitude of q, Snyder (3-16)
         double phi(double q) const;
-
-        /// q at the poles
         double qp() const { return qp_; }
 
     private:
 
         const double e_;
-        const double qp_;
+        const double qp_;  // q at the poles
     };
 
     // -- Constructors

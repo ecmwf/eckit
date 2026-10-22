@@ -39,7 +39,7 @@ int Shmget::shmget(key_t key, size_t size, int shmflg) {
 
 void* Shmget::shmat(int shmid, const void* shmaddr, int shmflg) {
     void* addr = ::shmat(shmid, shmaddr, shmflg);
-    if (addr) {
+    if (addr != reinterpret_cast<void*>(-1)) {  // failure is (void*)-1, not nullptr
         AutoLock<StaticMutex> lock(local_mutex);
         count_++;
         maxCount_ = std::max(count_, maxCount_);

@@ -243,7 +243,6 @@ install(
 
 ecbuild_add_library(
     TARGET             eckit_geo
-    TYPE               SHARED
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
     PUBLIC_LIBS        ${eckit_geo_libs}

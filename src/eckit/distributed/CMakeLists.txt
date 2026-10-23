@@ -30,7 +30,7 @@ if( HAVE_MPI )
         )
 endif()
 
-ecbuild_add_library( TARGET eckit_distributed TYPE SHARED
+ecbuild_add_library( TARGET eckit_distributed
                      INSTALL_HEADERS ALL
                      HEADER_DESTINATION
                          ${INSTALL_INCLUDE_DIR}/eckit/distributed

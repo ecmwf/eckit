@@ -93,7 +93,7 @@ set_source_files_properties(
         COMPILE_OPTIONS "${suppress_warnings}"
 )
 
-ecbuild_add_library( TARGET             eckit_cmd TYPE SHARED
+ecbuild_add_library( TARGET             eckit_cmd
                      INSTALL_HEADERS    LISTED
                      SOURCES            ${eckit_cmd_srcs}
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cmd

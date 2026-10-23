@@ -188,7 +188,10 @@ void disable_floating_point_exception(int excepts) {
 
 [[noreturn]] void custom_signal_handler(int signum, ::siginfo_t* si, [[maybe_unused]] void* ucontext) {
 #define STR(x) #x
-#define LOG(x) ::write(2 /*stderr*/, x "\n", sizeof(x))
+#define LOG(x)                                                      \
+    do {                                                            \
+        [[maybe_unused]] ssize_t _ = ::write(2, x "\n", sizeof(x)); \
+    } while (false)
 
     LOG("---"
         "\nFloatingPointExceptions");

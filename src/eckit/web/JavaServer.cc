@@ -16,6 +16,11 @@ JavaServer::JavaServer(int port) : java_(new JavaService(port)) {
     java_.start();
 }
 
+JavaServer::JavaServer(int port, ConcurrencyLimiter& limiter, bool preferProcess) :
+    java_(new JavaService(port, limiter, preferProcess)) {
+    java_.start();
+}
+
 JavaServer::~JavaServer() {
     java_.stop();
 }

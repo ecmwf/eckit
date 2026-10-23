@@ -11,7 +11,13 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-HttpServer::HttpServer(int port, bool visible) : HtmlResource("/"), http_(new HttpService(port, visible)) {
+HttpServer::HttpServer(int port, bool visible) :
+    HtmlResource("/"), http_(new HttpService(port, visible)) {
+    http_.start();
+}
+
+HttpServer::HttpServer(int port, bool visible, ConcurrencyLimiter& limiter, bool preferProcess) :
+    HtmlResource("/"), http_(new HttpService(port, visible, limiter, preferProcess)) {
     http_.start();
 }
 

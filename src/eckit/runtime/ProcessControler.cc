@@ -7,6 +7,7 @@
 
 #include "eckit/eckit.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
@@ -177,12 +178,12 @@ void ProcessControler::wait() {
         return;
     }
 
-    Log::info() << "ProcessControler::wait " << pid_ << " " << child_ << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "ProcessControler::wait " << pid_ << " " << child_ << std::endl;
     if (pid_ != -1 && !child_) {
         pid_t pid = ::waitpid(pid_, &status, 0);
 
         if (pid != pid_) {
-            Log::error() << "Wait pid returns " << errno << ' ' << pid << std::endl;
+            Log::error() << "Wait pid returns " << errno << " (" << strerror(errno) << ") " << pid << std::endl;
             Log::error() << Log::syserr << std::endl;
         }
         else {

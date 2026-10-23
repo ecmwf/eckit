@@ -26,6 +26,7 @@ public:
 private:
 
     virtual void serve(eckit::Stream&, std::istream&, std::ostream&);
+    void refuse(eckit::Stream&, std::istream&, std::ostream&, const std::string& reason) override;
 };
 
 //-----------------------------------------------------------------------------

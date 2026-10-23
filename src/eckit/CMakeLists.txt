@@ -373,6 +373,8 @@ list( APPEND eckit_filesystem_srcs
 
 list( APPEND eckit_thread_srcs
     thread/AutoLock.h
+    thread/ConcurrencyLimiter.cc
+    thread/ConcurrencyLimiter.h
     thread/Mutex.cc
     thread/Mutex.h
     thread/MutexCond.cc

@@ -15,7 +15,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpService::HttpService(int port, bool visible) : net::NetService(port, visible) {}
+HttpService::HttpService(int port, bool visible) : net::NetService(port, visible), preferProcess_(false) {}
+
+HttpService::HttpService(int port, bool visible, ConcurrencyLimiter& limiter, bool preferProcess) :
+    net::NetService(port, limiter, visible), preferProcess_(preferProcess) {}
 
 HttpService::~HttpService() {}
 
@@ -53,6 +56,20 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
     http.write(out, url, stream);
 
     Monitor::instance().show(false);
+}
+
+void HttpUser::refuse(eckit::Stream&, std::istream& in, std::ostream& out, const std::string& reason) {
+    HttpStream http;
+
+    // Consume the request before answering
+    Url url(in);
+
+    url.status(HttpError::TOO_MANY_REQUESTS);
+    url.type("text/plain");
+    http << reason;
+
+    InstantTCPSocketHandle stream(protocol_);
+    http.write(out, url, stream);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

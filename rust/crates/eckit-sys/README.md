@@ -9,7 +9,9 @@ Low-level Rust bindings to ECMWF's [eckit](https://github.com/ecmwf/eckit) C++
 library.
 
 This crate provides raw FFI bindings using [cxx](https://cxx.rs/). For a safe
-API, use the higher-level [`eckit`](https://crates.io/crates/eckit) crate.
+API, use the higher-level [`eckit`](https://crates.io/crates/eckit) crate. The
+design of both crates is described in the Rust Interface section of the eckit
+documentation (`docs/content/rust` in the repository).
 
 ## Cargo build features
 

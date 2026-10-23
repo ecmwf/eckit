@@ -5,20 +5,21 @@
 #include "eckit/geo/search/SharedMemory.h"
 
 #include <sys/ipc.h>
-#include <sys/shm.h>
 #include <unistd.h>
 
 #include <cstring>
 #include <fstream>
 #include <ostream>
 #include <set>
+#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Trace.h"
+#include "eckit/geo/util/Shmget.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/Shmget.h"
-#include "eckit/os/Stat.h"
 
 
 namespace eckit::geo::search {
@@ -54,21 +55,8 @@ size_t segment_size(size_t file_size) {
 }
 
 
-key_t shared_memory_key(const PathName& path) {
-    Stat::Struct s;
-    SYSCALL(Stat::stat(path.localPath(), &s));
-
-    // a rebuilt file (inode, modification time) is a different k-d tree, so it maps to a different segment
-    const auto key = ::ftok(path.localPath(), static_cast<int>(s.st_mtime % 255) + 1);
-    if (key == static_cast<key_t>(-1)) {
-        throw FailedSystemCall("ftok(" + path.asString() + ")");
-    }
-
-    return key;
-}
-
-
-/// Removes shared memory segments at exit, once detached (processes attached to them are unaffected)
+/// Removes shared memory segments at exit, once detached (processes attached to them are unaffected); by key, as
+/// segment ids are reused by the system once removed (e.g. by another process)
 class Unloader {
 public:
 
@@ -77,9 +65,9 @@ public:
         return unloader;
     }
 
-    void add(int shmid) {
+    void add(key_t key) {
         util::lock_guard<util::recursive_mutex> lock(mutex_);
-        shmids_.insert(shmid);
+        keys_.insert(key);
     }
 
     Unloader(const Unloader&)            = delete;
@@ -88,8 +76,10 @@ public:
     Unloader& operator=(Unloader&&)      = delete;
 
     ~Unloader() {
-        for (auto shmid : shmids_) {
-            ::shmctl(shmid, IPC_RMID, nullptr);  // failing if removed already (e.g. by another process)
+        for (auto key : keys_) {
+            if (auto shmid = util::Shmget::shmget(key, 0, 0); shmid >= 0) {  // not if removed already
+                util::Shmget::shmctl(shmid, IPC_RMID, nullptr);
+            }
         }
     }
 
@@ -98,7 +88,7 @@ private:
     Unloader() = default;
 
     util::recursive_mutex mutex_;
-    std::set<int> shmids_;
+    std::set<key_t> keys_;
 };
 
 
@@ -113,7 +103,7 @@ struct SharedMemory::Segment {
     Segment& operator=(const Segment&) = delete;
     Segment& operator=(Segment&&)      = delete;
 
-    ~Segment() { Shmget::shmdt(address); }
+    ~Segment() { util::Shmget::shmdt(address); }
 
     char* content() const { return static_cast<char*>(address) + INFO_SIZE; }
 
@@ -144,7 +134,7 @@ KDTree::MemoryUsage SharedMemory::estimate(size_t size) {
 
 bool SharedMemory::is_loaded(const PathName& path) {
     // the segment key is of the (existing) cache file
-    return path.exists() && ::shmget(shared_memory_key(path.realName()), 0, 0) >= 0;
+    return path.exists() && util::Shmget::shmget(util::Shmget::calculate_key(path), 0, 0) >= 0;
 }
 
 
@@ -153,8 +143,8 @@ void SharedMemory::unload(const PathName& path) {
         return;
     }
 
-    if (auto shmid = ::shmget(shared_memory_key(path.realName()), 0, 0); shmid >= 0) {
-        SYSCALL(::shmctl(shmid, IPC_RMID, nullptr));
+    if (auto shmid = util::Shmget::shmget(util::Shmget::calculate_key(path), 0, 0); shmid >= 0) {
+        SYSCALL(util::Shmget::shmctl(shmid, IPC_RMID, nullptr));
     }
 }
 
@@ -184,14 +174,22 @@ void SharedMemory::attach() {
     }
 
     const auto size  = segment_size(file_size);
-    const auto shmid = Shmget::shmget(shared_memory_key(real), size, IPC_CREAT | 0600);
+    const auto key   = util::Shmget::calculate_key(real);
+    const auto shmid = util::Shmget::shmget(key, size);
     if (shmid < 0) {
-        throw FailedSystemCall("shmget, check system limits (Linux: ipcs -l, macOS: ipcs -M)");
+        std::ostringstream msg;
+        msg << "shmget '" << name << "', size " << Bytes(static_cast<double>(size)) << ", key 0x" << std::hex << key
+            << std::dec;
+        if (const auto max = util::Shmget::max_size(); max > 0) {
+            msg << ", maximum " << Bytes(static_cast<double>(max));
+        }
+        msg << ", check system limits (Linux: ipcs -l, macOS: ipcs -M)";
+        throw FailedSystemCall(msg.str());
     }
 
-    auto* address = Shmget::shmat(shmid, nullptr, 0);
+    auto* address = util::Shmget::shmat(shmid, nullptr, 0);
     if (address == reinterpret_cast<void*>(-1)) {
-        throw FailedSystemCall("shmat");
+        throw FailedSystemCall("shmat '" + name + "'");
     }
 
     auto segment = std::make_unique<Segment>(address, size);
@@ -199,6 +197,8 @@ void SharedMemory::attach() {
 
     // new segments are zero-initialised, and loading is exclusive (under lock, as building)
     if (info->ready == 0) {
+        Trace trace("SharedMemory: load '" + name + "'");
+
         if (std::ifstream in(name, std::ios::binary);
             !in.read(segment->content(), static_cast<std::streamsize>(file_size))) {
             throw exception::SearchError("SharedMemory: failed to read '" + name + "'", Here());
@@ -214,7 +214,7 @@ void SharedMemory::attach() {
     }
 
     if (unload_at_exit_) {
-        Unloader::instance().add(shmid);
+        Unloader::instance().add(key);
     }
 
     segment_ = std::move(segment);

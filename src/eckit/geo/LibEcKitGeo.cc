@@ -143,6 +143,13 @@ bool LibEcKitGeo::searchFastBuild() {
 }
 
 
+bool LibEcKitGeo::searchSharedMemoryHugePages() {
+    static const bool yes{LibResource<bool, LibEcKitGeo>(
+        "eckit-geo-search-shared-memory-hugepages;$ECKIT_GEO_SEARCH_SHARED_MEMORY_HUGEPAGES", false)};
+    return yes;
+}
+
+
 std::string LibEcKitGeo::searchCacheCapacity() {
     static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
         "eckit-geo-cache-search-capacity;$ECKIT_GEO_CACHE_SEARCH_CAPACITY", eckit_GEO_CACHE_SEARCH_CAPACITY)};

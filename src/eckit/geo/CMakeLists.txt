@@ -173,6 +173,8 @@ list(APPEND eckit_geo_srcs
     share/Projection.h
     util.cc
     util.h
+    util/Shmget.cc
+    util/Shmget.h
     util/arange.cc
     util/gaussian_latitudes.cc
     util/gaussian_quadrature_weights.cc

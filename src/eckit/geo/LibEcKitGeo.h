@@ -38,6 +38,9 @@ public:
     static std::string searchLoader();
     static bool searchFastBuild();
 
+    /// Search loaders in shared memory prefer huge pages (where supported), off by default
+    static bool searchSharedMemoryHugePages();
+
     static std::string searchCacheCapacity();
     static std::string cropCacheCapacity();
 

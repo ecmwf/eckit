@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 
+#include <future>
 #include <memory>
 
 
@@ -69,25 +70,48 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Waits for the child process serving a connection to terminate, and releases its slot
+// Spawn a worker thread, that then spawns a sub-worker-process.
+// Similar mechanism to that used with the PipeHandler, and queue pickers in mars server. This allows us to monitor
+// work parallelism/account for slots inside one process, with worker threads, but then have process-global resources
+// used when doing the actual work, and avoid tearing down the whole httpsvr if something goes wrong
 
 class NetServiceChildWaiter : public Thread {
 public:
 
-    NetServiceChildWaiter(std::unique_ptr<NetServiceProcessControler> child, ConcurrencyLimiter& limiter, bool visible) :
-        child_(std::move(child)), limiter_(limiter), visible_(visible) {}
+    NetServiceChildWaiter(const std::string& name, NetUser* user, TCPServer& server, bool visible,
+                          ConcurrencyLimiter& limiter) :
+        name_(name), user_(user), server_(server), visible_(visible), limiter_(limiter) {}
+
+    std::future<void> forked() { return forked_.get_future(); }
 
 private:
 
-    std::unique_ptr<NetServiceProcessControler> child_;
-    ConcurrencyLimiter& limiter_;
+    std::string name_;
+    std::unique_ptr<NetUser> user_;
+    TCPServer& server_;
     bool visible_;
+    ConcurrencyLimiter& limiter_;
+    std::promise<void> forked_;
 
     void run() override {
-        Monitor::instance().show(visible_);
-        Log::status() << "Waiting for child process" << std::endl;
         AutoConcurrencySlot slot(limiter_);
-        child_->wait();
+
+        Monitor::instance().show(visible_);
+        Monitor::instance().name(name_);
+        Monitor::instance().kind(name_);
+
+        NetServiceProcessControler child(name_, user_.release(), server_, Monitor::instance().self(), visible_);
+        try {
+            child.start();
+        }
+        catch (...) {
+            forked_.set_exception(std::current_exception());
+            return;
+        }
+        forked_.set_value();
+
+        Log::status() << "Waiting for child process" << std::endl;
+        child.wait();
     }
 };
 
@@ -111,7 +135,7 @@ int NetService::port() const {
 
 void NetService::run() {
     Monitor::instance().show(visible_);
-    Monitor::instance().name(name());
+    Monitor::instance().name(name()+"-srv");
     Monitor::instance().kind(name());
 
     std::ostringstream oss;
@@ -170,13 +194,12 @@ void NetService::serveLimited(NetUser* u, ConcurrencyLimiter& limiter) {
         return;
     }
 
+    std::future<void> forked;
     try {
         if (runAsProcess()) {
-            // Fork in this thread, which closes the parent's copy of the connection before the next accept()
-            std::unique_ptr<NetServiceProcessControler> child(new NetServiceProcessControler(
-                name(), user.release(), server_, Monitor::instance().self(), visible_));
-            child->start();
-            ThreadControler t(new NetServiceChildWaiter(std::move(child), limiter, visible_));
+            auto* waiter = new NetServiceChildWaiter(name(), user.release(), server_, visible_, limiter);
+            forked       = waiter->forked();
+            ThreadControler t(waiter);
             t.start();
         }
         else {
@@ -188,6 +211,17 @@ void NetService::serveLimited(NetUser* u, ConcurrencyLimiter& limiter) {
         limiter.release();
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
+        return;
+    }
+
+    if (forked.valid()) {
+        try {
+            forked.get();
+        }
+        catch (std::exception& e) {
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
     }
 }
 

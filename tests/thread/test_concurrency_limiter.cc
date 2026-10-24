@@ -76,8 +76,7 @@ CASE("Concurrent activities never exceed the limit") {
                 AutoConcurrencySlot slot(limiter);
                 long n = ++running;
                 long p = peak;
-                while (n > p && !peak.compare_exchange_weak(p, n)) {
-                }
+                while (n > p && !peak.compare_exchange_weak(p, n)) {}
                 ::usleep(100);
                 --running;
             }

@@ -40,6 +40,7 @@ private:
     friend class NetService;
     friend class NetServiceProcessControler;
     friend class NetServiceWorker;
+    friend class NetServiceChildWaiter;
 };
 
 

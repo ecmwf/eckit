@@ -174,7 +174,7 @@ CASE("NetService limits concurrent connections served in processes") {
 }
 
 CASE("The slot of a killed child process is released") {
-    int port   = testPort(2);
+    int port = testPort(2);
     static ConcurrencyLimiter limiter("kill", 1);
     startService(port, limiter, true);
 

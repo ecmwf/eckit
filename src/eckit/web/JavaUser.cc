@@ -7,6 +7,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "eckit/log/Log.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/web/JavaAgent.h"
 
@@ -22,6 +23,7 @@ JavaUser::JavaUser(net::TCPSocket& socket) : net::NetUser(socket) {}
 JavaUser::~JavaUser() {}
 
 void JavaUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
+    Log::status() << "Waiting for agent from " << protocol_.remoteHost() << std::endl;
     JavaAgent::serve(s, in, out);
 }
 

@@ -64,6 +64,7 @@ private:
 
     void run() override {
         AutoConcurrencySlot slot(limiter_);
+        Log::status() << "Serving connection from " << user_->protocol_.remoteHost() << std::endl;
         user_->run();
     }
 };
@@ -100,6 +101,9 @@ private:
         Monitor::instance().name(name_);
         Monitor::instance().kind(name_);
 
+        std::string host = user_->protocol_.remoteHost();
+        Log::status() << "Starting child process for connection from " << host << std::endl;
+
         NetServiceProcessControler child(name_, user_.release(), server_, Monitor::instance().self(), visible_);
         try {
             child.start();
@@ -110,7 +114,7 @@ private:
         }
         forked_.set_value();
 
-        Log::status() << "Waiting for child process" << std::endl;
+        Log::status() << "Waiting for child process serving " << host << std::endl;
         child.wait();
     }
 };
@@ -135,7 +139,7 @@ int NetService::port() const {
 
 void NetService::run() {
     Monitor::instance().show(visible_);
-    Monitor::instance().name(name()+"-srv");
+    Monitor::instance().name(name());
     Monitor::instance().kind(name());
 
     std::ostringstream oss;
@@ -177,6 +181,7 @@ void NetService::serveLimited(NetUser* u, ConcurrencyLimiter& limiter) {
     if (!limiter.tryAcquire(reason)) {
 
         Log::warning() << "Refusing connection from " << user->protocol_.remoteHost() << ": " << reason << std::endl;
+        Log::status() << "Refusing connection from " << user->protocol_.remoteHost() << std::endl;
 
         // When refusing, we typically want to consume the input, and send back a nice response. But set a nice
         // snappy timeout, so that if the connection is misbehaving we don't block the server.
@@ -252,6 +257,7 @@ void NetServiceProcessControler::run() {
     Monitor::instance().show(visible_);
 
     LOG_DEBUG_LIB(LibEcKit) << "NetServiceProcessControler::run start" << std::endl;
+    Log::status() << "Serving connection from " << user_->protocol_.remoteHost() << std::endl;
 
     try {
         user_->run();

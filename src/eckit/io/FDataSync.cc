@@ -7,12 +7,18 @@
 #include <unistd.h>
 
 #include "eckit/eckit.h"
+#include "eckit/io/SyscallFault.h"
 #include "eckit/os/Stat.h"
 
 namespace eckit {
 
 
 int fsync(int fd) {
+    if (const int injected = SyscallFault::injected(Syscall::Fsync, fd); injected != 0) {
+        errno = injected;
+        return -1;
+    }
+
     Stat::Struct info;
     if (Stat::fstat(fd, &info) == 0 && !S_ISREG(info.st_mode) && !S_ISLNK(info.st_mode)) {
         return 0;
@@ -26,6 +32,11 @@ int fsync(int fd) {
 }
 
 int fdatasync(int fd) {
+    if (const int injected = SyscallFault::injected(Syscall::Fdatasync, fd); injected != 0) {
+        errno = injected;
+        return -1;
+    }
+
     int ret = 0;
 #if eckit_HAVE_FDATASYNC
     // usually available on Linux, but not Darwin (macosx) and xBSD

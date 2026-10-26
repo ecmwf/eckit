@@ -132,6 +132,13 @@ class FailedSystemCall : public Exception {
 public:
 
     FailedSystemCall(const std::string&, const CodeLocation& = {}, int = 0);
+
+    /// The errno of the failed call, 0 if unknown.
+    int errorNumber() const { return errorNumber_; }
+
+private:
+
+    int errorNumber_;
 };
 
 class AssertionFailed : public Exception {

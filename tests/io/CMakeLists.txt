@@ -40,7 +40,8 @@ foreach(_test
         multihandle
         partfilehandle
         pooledfile
-        pooledhandle )
+        pooledhandle
+        syscallfault )
   ecbuild_add_test( TARGET  eckit_test_${_test}
                     SOURCES test_${_test}.cc
                     LIBS    eckit )

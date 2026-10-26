@@ -125,7 +125,7 @@ TooManyRetries::TooManyRetries(int retries, const std::string& w) :
 TimeOut::TimeOut(const std::string& w, unsigned long timeout) :
     Exception("Timeout: " + std::to_string(timeout) + " (" + w + ")") {}
 
-FailedSystemCall::FailedSystemCall(const std::string& w, const CodeLocation& loc, int err) {
+FailedSystemCall::FailedSystemCall(const std::string& w, const CodeLocation& loc, int err) : errorNumber_{err} {
     errno = err;
 
     std::ostringstream s;

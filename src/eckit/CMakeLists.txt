@@ -148,6 +148,8 @@ list( APPEND eckit_io_srcs
     io/BufferedHandle.h
     io/CircularBuffer.cc
     io/CircularBuffer.h
+    io/Close.cc
+    io/Close.h
     io/CommandStream.cc
     io/CommandStream.h
     io/Compress.cc
@@ -232,6 +234,8 @@ list( APPEND eckit_io_srcs
     io/StdPipe.h
     io/StdioBuf.cc
     io/StdioBuf.h
+    io/SyscallFault.cc
+    io/SyscallFault.h
     io/TCPHandle.cc
     io/TCPHandle.h
     io/TCPSocketHandle.cc

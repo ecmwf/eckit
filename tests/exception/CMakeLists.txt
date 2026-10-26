@@ -8,3 +8,7 @@ ecbuild_add_test( TARGET      eckit_test_exceptions
 ecbuild_add_test( TARGET      eckit_test_firstfailure
                   SOURCES     test_firstfailure.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_signalhandler
+                  SOURCES     test_signalhandler.cc
+                  LIBS        eckit )

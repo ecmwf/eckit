@@ -6,7 +6,7 @@ Rust Interface
 
 EcKit ships with a Rust interface. It lives in the ``rust/`` directory of the
 eckit repository, is built with Cargo, and calls the same C++ library that the
-rest of the ECMWF stack uses. Nothing is reimplemented in Rust.
+rest of the ECMWF stack uses.
 
 The interface is a Cargo workspace with two crates:
 

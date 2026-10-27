@@ -4,7 +4,6 @@
 Approach
 ========
 
-The Rust interface calls the C++ library; no eckit code is ported to Rust.
 Every call ends up in the same eckit code that C++ applications run, so
 behaviour, file formats and configuration stay identical across languages. The
 design questions are all about the boundary: how the C++ library is built, how its types are

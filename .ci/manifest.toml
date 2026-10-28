@@ -127,13 +127,6 @@ c-compiler-binary = "gcc"
 cxx-compiler-binary = "g++"
 
 [[matrix.build-hpc.include]]
-cxx-compiler = "icpx-2023.2.0"
-platform = "hpc-atos-intel"
-modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja"]
-c-compiler-binary = "icx"
-cxx-compiler-binary = "icpx"
-
-[[matrix.build-hpc.include]]
 cxx-compiler = "icpc-2023.2.0"
 platform = "hpc-atos-intel"
 modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja"]
@@ -177,14 +170,6 @@ c-compiler-binary = "nvc"
 cxx-compiler-binary = "nvc++"
 c-flags = ""
 cxx-flags = ""
-
-[[matrix.build-hpc.include]]
-options = "mpi"
-cxx-compiler = "icpx-2023.2.0"
-platform = "hpc-atos-intel"
-modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja", "load hpcx-openmpi/2.21.3"]
-c-compiler-binary = "icx"
-cxx-compiler-binary = "icpx"
 
 [[matrix.build-hpc.include]]
 options = "mpi"

@@ -19,7 +19,7 @@ namespace eckit::test {
 
 static std::string msg("THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234567890");
 
-static std::vector<std::string> compressions{"none", "snappy", "lz4", "bzip2", "aec"};
+static std::vector<std::string> compressions{"none", "snappy", "lz4", "bzip2", "aec", "zstd"};
 
 //----------------------------------------------------------------------------------------------------------------------
 

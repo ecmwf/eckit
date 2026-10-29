@@ -32,6 +32,10 @@ if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()
 
+if( eckit_HAVE_ECKIT_BLOCKFILE )
+    add_subdirectory( blockfile )
+endif()
+
 if( eckit_HAVE_ECKIT_SPEC )
     add_subdirectory( spec )
 endif()

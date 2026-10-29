@@ -772,6 +772,13 @@ if(eckit_HAVE_LZ4)
     )
 endif()
 
+if(eckit_HAVE_ZSTD)
+    list( APPEND eckit_utils_srcs
+        utils/ZstdCompressor.cc
+        utils/ZstdCompressor.h
+    )
+endif()
+
 if(eckit_HAVE_AEC)
     list( APPEND eckit_utils_srcs
         utils/AECCompressor.cc
@@ -973,6 +980,7 @@ ecbuild_add_library(
               "${CURL_INCLUDE_DIRS}"
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
+              "${ZSTD_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
@@ -982,6 +990,7 @@ ecbuild_add_library(
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
               "${LZ4_LIBRARIES}"
+              "${ZSTD_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
@@ -1020,6 +1029,10 @@ add_subdirectory( web )
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
+endif()
+
+if( eckit_HAVE_ECKIT_BLOCKFILE )
+    add_subdirectory( blockfile )
 endif()
 
 if( eckit_HAVE_ECKIT_SPEC )

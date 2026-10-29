@@ -26,6 +26,12 @@ ecbuild_add_executable( TARGET      eckit_codec_list
                         SOURCES     eckit-codec-list.cc
                         LIBS        eckit_codec eckit_option )
 
+ecbuild_add_executable( TARGET      eckit_blockfile_tool
+                        OUTPUT_NAME eckit-blockfile
+                        CONDITION   eckit_HAVE_ECKIT_BLOCKFILE
+                        SOURCES     eckit-blockfile.cc
+                        LIBS        eckit_blockfile eckit_option )
+
 foreach( _name
         eckit-geo-area-list
         eckit-geo-gaussian-latitudes

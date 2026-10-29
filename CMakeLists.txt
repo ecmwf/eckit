@@ -155,6 +155,10 @@ ecbuild_add_option( FEATURE ZIP
                     DESCRIPTION "ZIP support for compression"
                     REQUIRED_PACKAGES libzip )
 
+ecbuild_add_option( FEATURE ZSTD
+                    DESCRIPTION "Zstandard support for compression"
+                    REQUIRED_PACKAGES Zstd )
+
 ### Hashing options
 
 ecbuild_add_option( FEATURE XXHASH
@@ -167,6 +171,13 @@ ecbuild_add_option( FEATURE ECKIT_CODEC
                     DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::blockfile
+
+ecbuild_add_option( FEATURE ECKIT_BLOCKFILE
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ZSTD
+                    DESCRIPTION "eckit::blockfile block-compressed record files (requires zstd)" )
 
 ### eckit::spec
 

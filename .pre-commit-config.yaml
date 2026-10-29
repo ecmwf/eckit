@@ -30,7 +30,7 @@ repos:
         exclude: 'src/_eckit/_.*\.(h|cpp)'
 
   - repo: https://github.com/ecmwf/ci-infrastructure
-    rev: 9f73827a9f0989dff94b78cad7590f508dba610b
+    rev: 0b356e9ee8a7d61d6ab9f5ab0345b20d269d9e9a
     hooks:
       - id: check-ci-approval
       - id: check-ci-result

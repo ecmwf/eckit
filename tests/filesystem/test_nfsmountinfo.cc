@@ -49,7 +49,7 @@ constexpr const char* nfs3Spaces =
 constexpr const char* localFilesystem = "20 1 8:1 / / rw,relatime - ext4 /dev/sda1 rw,errors=remount-ro";
 constexpr const char* notNfs          = "596 515 0:67 / /mnt/other rw - fuse.sshfs host:/ rw,local_lock=all";
 
-std::optional<std::string> nfsClientLocalLockOption(const std::string& mountinfo, const std::string& device) {
+std::optional<std::string> nfs_client_local_lock_option(const std::string& mountinfo, const std::string& device) {
     std::istringstream stream{mountinfo};
     return filesystem::nfs::local_lock_option(stream, device);
 }
@@ -70,30 +70,30 @@ std::string joined(std::initializer_list<const char*> lines) {
 CASE("shared locking is not reported") {
     const std::string table = joined({localFilesystem, nfs4Shared, nfs3Shared, nfs3Flock});
 
-    EXPECT(!nfsClientLocalLockOption(table, "0:60"));  // NFSv4
-    EXPECT(!nfsClientLocalLockOption(table, "0:61"));  // NFSv3, local_lock=none
-    EXPECT(!nfsClientLocalLockOption(table, "0:64"));  // local_lock=flock does not affect fcntl locks
-    EXPECT(!nfsClientLocalLockOption(table, "8:1"));   // not NFS
-    EXPECT(!nfsClientLocalLockOption(table, "0:99"));  // not listed
-    EXPECT(!nfsClientLocalLockOption("", "0:60"));
+    EXPECT(!nfs_client_local_lock_option(table, "0:60"));  // NFSv4
+    EXPECT(!nfs_client_local_lock_option(table, "0:61"));  // NFSv3, local_lock=none
+    EXPECT(!nfs_client_local_lock_option(table, "0:64"));  // local_lock=flock does not affect fcntl locks
+    EXPECT(!nfs_client_local_lock_option(table, "8:1"));   // not NFS
+    EXPECT(!nfs_client_local_lock_option(table, "0:99"));  // not listed
+    EXPECT(!nfs_client_local_lock_option("", "0:60"));
 }
 
 CASE("client-local locking is reported with the offending option") {
     const std::string table = joined({nfs4Shared, nfs3NoLock, nfs3Posix, nfs3Legacy, nfs3Spaces});
 
-    const auto noLock = nfsClientLocalLockOption(table, "0:62");
+    const auto noLock = nfs_client_local_lock_option(table, "0:62");
     EXPECT(noLock.has_value());
     EXPECT_EQUAL(*noLock, std::string("nolock"));
 
-    const auto posix = nfsClientLocalLockOption(table, "0:63");
+    const auto posix = nfs_client_local_lock_option(table, "0:63");
     EXPECT(posix.has_value());
     EXPECT_EQUAL(*posix, std::string("local_lock=posix"));
 
-    const auto legacy = nfsClientLocalLockOption(table, "0:65");
+    const auto legacy = nfs_client_local_lock_option(table, "0:65");
     EXPECT(legacy.has_value());
     EXPECT_EQUAL(*legacy, std::string("nolock"));
 
-    const auto spaces = nfsClientLocalLockOption(table, "0:66");
+    const auto spaces = nfs_client_local_lock_option(table, "0:66");
     EXPECT(spaces.has_value());
     EXPECT_EQUAL(*spaces, std::string("local_lock=posix"));
 }
@@ -101,11 +101,11 @@ CASE("client-local locking is reported with the offending option") {
 CASE("nolock is reported whatever local_lock= says") {
     const std::string table = joined({nfs3NoLockAndLocalLockNone, nfs3NoLockAndLocalLockFlock});
 
-    const auto none = nfsClientLocalLockOption(table, "0:68");
+    const auto none = nfs_client_local_lock_option(table, "0:68");
     EXPECT(none.has_value());
     EXPECT_EQUAL(*none, std::string("nolock"));
 
-    const auto flock = nfsClientLocalLockOption(table, "0:69");
+    const auto flock = nfs_client_local_lock_option(table, "0:69");
     EXPECT(flock.has_value());
     EXPECT_EQUAL(*flock, std::string("nolock"));
 }
@@ -113,8 +113,8 @@ CASE("nolock is reported whatever local_lock= says") {
 CASE("only NFS mounts are considered and malformed lines are skipped") {
     const std::string table = joined({"garbage without a separator", " - ", notNfs, nfs3NoLock});
 
-    EXPECT(!nfsClientLocalLockOption(table, "0:67"));  // local_lock=all, but not an NFS filesystem
-    EXPECT(nfsClientLocalLockOption(table, "0:62").has_value());
+    EXPECT(!nfs_client_local_lock_option(table, "0:67"));  // local_lock=all, but not an NFS filesystem
+    EXPECT(nfs_client_local_lock_option(table, "0:62").has_value());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

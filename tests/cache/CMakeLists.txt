@@ -4,7 +4,9 @@
 foreach(_test
         disk_cache
         file_cache
+        memory_cache
         loader
+        policy
         roots
         shmget)
     ecbuild_add_test(

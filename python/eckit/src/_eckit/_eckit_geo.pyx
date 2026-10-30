@@ -50,9 +50,26 @@ def git_sha1() -> str:
     return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
 
 
-def cache_dir() -> str:
-    """Cache directory (resolved once, eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH)"""
-    return eckit_geo.LibEcKitGeo.cacheDir()
+def cache() -> dict:
+    """Caching configuration and state, as of now (sizes in bytes): paths, in-process
+    memory (process and shared) of searches and crops (footprint, capacity, policy,
+    statistics), and cache files size"""
+    import json
+
+    return json.loads(eckit_geo.LibEcKitGeo.cacheInfo())
+
+
+def cache_purge() -> None:
+    """Release the in-process caches (searches and crops in use stay valid; values
+    returned by reference, e.g. Gaussian latitudes, are invalidated); cache files
+    are kept"""
+    eckit_geo.LibEcKitGeo.purgeCache()
+
+
+def cache_rmdir() -> None:
+    """Remove the cache directory where cache files are written (the first writable
+    cache path), if any"""
+    eckit_geo.LibEcKitGeo.removeCacheDir()
 
 
 def projdb_is_available() -> bool:

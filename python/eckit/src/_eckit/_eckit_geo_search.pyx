@@ -34,7 +34,8 @@ cdef class Search:
     increasing distance (chord length, in metres on the Earth).
 
     Searches are shared by grid and spec (k, radius, search, ..., see
-    eckit::geo::Search) in a cache, within its capacity (see search_cache_statistics).
+    eckit::geo::Search) in a cache, within its capacity; the k-d tree loader is the
+    library's (see eckit.geo.cache).
     """
     cdef eckit_geo_search.SearchHandle* _handle
 
@@ -90,15 +91,3 @@ cdef class Search:
 
     def __repr__(self) -> str:
         return eckit_geo_search.search_str(dereference(self._handle))
-
-
-def search_cache_statistics() -> dict:
-    """Cache of searches: hits, misses, evictions, size, and usage (bytes, in the
-    process and shared)."""
-    keys = ("hits", "misses", "evictions", "size", "memory", "shared")
-    return dict(zip(keys, eckit_geo_search.search_cache_statistics()))
-
-
-def search_cache_clear() -> None:
-    """Evict all searches (those in use remain valid)."""
-    eckit_geo_search.search_cache_clear()

@@ -93,6 +93,12 @@ public:
     /// In-process caches of eckit::geo (see purgeCache and cacheFootprint)
     static cache::MemoryCaches& memoryCaches();
 
+    /**
+     * Caching configuration and state (JSON, sizes in bytes): paths; in-process memory (process and shared) footprint,
+     * capacity, policy and statistics of searches and crops; cache files size under the cache directory
+     */
+    static std::string cacheInfo();
+
     /// Remove the cache directory for writing (see cacheDir), or parts of it
     static void removeCacheDir();
     static void removeCacheArea();

@@ -112,18 +112,6 @@ cdef extern from * namespace "eckit::geo::python":
         return str.str();
     }
 
-    inline std::vector<size_t> search_cache_statistics() {
-        const auto& cache = cache::SearchCache::instance();
-        const auto stats  = cache.statistics();
-        const auto usage  = cache.usage();
-        return {stats.hits, stats.misses, stats.evictions, cache.size(),
-                usage.memory(), usage.shared()};
-    }
-
-    inline void search_cache_clear() {
-        cache::SearchCache::instance().clear();
-    }
-
     }
     """
     cdef cppclass SearchHandle:
@@ -151,6 +139,3 @@ cdef extern from * namespace "eckit::geo::python":
     size_t search_size(const SearchHandle&) except +
     pair[size_t, size_t] search_footprint(const SearchHandle&) except +
     string search_str(const SearchHandle&) except +
-
-    vector[size_t] search_cache_statistics() except +
-    void search_cache_clear() except +

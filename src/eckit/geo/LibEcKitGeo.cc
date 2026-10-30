@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <regex>
+#include <sstream>
 #include <vector>
 
 #include "eckit/cache/DiskCache.h"
@@ -17,6 +18,7 @@
 #include "eckit/geo/cache/CropCache.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/StringTools.h"
 
 #if eckit_HAVE_PROJ
@@ -209,6 +211,123 @@ void LibEcKitGeo::purgeCacheCrop() {
 
 cache::MemoryUsage LibEcKitGeo::cacheFootprint() {
     return memoryCaches().footprint();
+}
+
+
+namespace {
+
+
+void json_usage(JSON& j, const cache::MemoryUsage& usage) {
+    j.startObject();
+    j << "memory" << usage.memory() << "shared" << usage.shared();
+    j.endObject();
+}
+
+
+template <typename Cache>
+void json_memory_cache(JSON& j, const Cache& cache) {
+    const auto stats = cache.statistics();
+
+    j.startObject();
+    j << "size" << cache.size();
+    j << "policy" << cache.policy().name();
+    j << "footprint";
+    json_usage(j, cache.usage());
+    j << "capacity";
+    json_usage(j, cache.capacity());
+    j << "statistics";
+    j.startObject();
+    j << "hits" << stats.hits << "misses" << stats.misses << "insertions" << stats.insertions << "evictions"
+      << stats.evictions;
+    j.endObject();
+    j.endObject();
+}
+
+
+/// Total size of the files under a path (bytes)
+size_t disk_usage(const PathName& path) {
+    if (!path.exists()) {
+        return 0;
+    }
+
+    if (!path.isDir()) {
+        return static_cast<size_t>(path.size());
+    }
+
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+    path.children(files, dirs);
+
+    size_t size = 0;
+    for (const auto& f : files) {
+        size += disk_usage(f);
+    }
+    for (const auto& d : dirs) {
+        size += disk_usage(d);
+    }
+    return size;
+}
+
+
+}  // namespace
+
+
+std::string LibEcKitGeo::cacheInfo() {
+    const auto writable = cacheWritablePaths();
+
+    std::ostringstream out;
+    JSON j(out);
+
+    j.startObject();
+    j << "caching" << caching();
+    j << "throw_on_miss" << cacheThrowOnMiss();
+
+    j << "paths";
+    j.startObject();
+    j << "readable";
+    j.startList();
+    for (const auto& p : cacheReadablePaths()) {
+        j << p.asString();
+    }
+    j.endList();
+    j << "writable";
+    j.startList();
+    for (const auto& p : writable) {
+        j << p.asString();
+    }
+    j.endList();
+    j.endObject();
+
+    j << "memory";
+    j.startObject();
+    j << "footprint";
+    json_usage(j, cacheFootprint());
+    j << "search";
+    json_memory_cache(j, geo::cache::SearchCache::instance());
+    j << "crop";
+    json_memory_cache(j, geo::cache::CropCache::instance());
+    j.endObject();
+
+    j << "search";
+    j.startObject();
+    j << "loader" << searchCacheLoader();
+    j << "shared_memory_huge_pages" << sharedMemoryHugePages();
+    j << "shared_memory_round_huge_pages" << sharedMemoryRoundHugePages();
+    j.endObject();
+
+    // cache files, where they are written (the first writable path)
+    j << "disk";
+    j.startObject();
+    for (const std::string name : {"search", "crop", "latlon", "download"}) {
+        j << name;
+        j.startObject();
+        j << "size" << (writable.empty() ? 0 : disk_usage(writable.front() / name));
+        j.endObject();
+    }
+    j.endObject();
+
+    j.endObject();
+    return out.str();
 }
 
 

@@ -124,10 +124,11 @@ def test_cropped(spec, area, type):
 def test_cache_is_temporary():
     import os
 
-    from eckit.geo import cache_dir
+    from eckit.geo import cache
 
     # tests do not write to the runtime cache (see conftest)
-    assert os.path.realpath(cache_dir()) == os.path.realpath(os.environ["ECKIT_GEO_CACHE_PATH"])
+    writable = cache()["paths"]["writable"]
+    assert os.path.realpath(writable[0]) == os.path.realpath(os.environ["ECKIT_GEO_CACHE_PATH"])
 
 
 @pytest.mark.parametrize("spec, type", [(dict(grid=[9, 9]), "regular_ll"), (dict(grid="O2"), "reduced_gg")])

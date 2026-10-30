@@ -9,6 +9,8 @@ import pytest
 from eckit.geo import Figure
 from eckit.geo import Grid
 from eckit.geo import Projection
+from eckit.geo import cache
+from eckit.geo import cache_purge
 
 SPECS = [
     (dict(grid="1/1"), (181, 360)),
@@ -237,6 +239,21 @@ def test_grid_search_spec():
 
     with pytest.raises(RuntimeError):
         grid.search(search="knn")  # k is required
+
+
+def test_grid_search_footprint():
+    grid = Grid(grid=[30, 30])
+
+    cache_purge()
+
+    # the k-d tree loader is the library's (see cache())
+    search = grid.search()
+
+    # the cache accounts for the loaded search, in process memory or shared
+    searches = cache()["memory"]["search"]
+    assert searches["size"] == 1
+    assert search.footprint["memory"] + search.footprint["shared"] > 0
+    assert searches["footprint"] == search.footprint
 
 
 @pytest.mark.parametrize(

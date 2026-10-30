@@ -23,6 +23,12 @@ public:
 
     static LibEcKitCache& instance();
 
+    /**
+     * If a missing cache file is an error, not created, for provisioned caches
+     * (eckit-cache-throw-on-miss;$ECKIT_CACHE_THROW_ON_MISS, default from CMake eckit_CACHE_THROW_ON_MISS)
+     */
+    static bool throwOnMiss();
+
 private:
 
     // -- Constructors

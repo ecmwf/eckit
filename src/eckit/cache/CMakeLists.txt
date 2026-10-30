@@ -7,13 +7,41 @@ list(APPEND eckit_cache_srcs
     DiskCache.h
     Exceptions.cc
     Exceptions.h
+    FileCache.cc
+    FileCache.h
     LibEcKitCache.cc
     LibEcKitCache.h
+    Loader.cc
+    Loader.h
+    MemoryUsage.cc
+    MemoryUsage.h
     PathLock.cc
     PathLock.h
     Roots.cc
     Roots.h
+    Shmget.cc
+    Shmget.h
+    loader/File.cc
+    loader/File.h
+    loader/Stream.cc
+    loader/Stream.h
+    loader/MappedAnonymousMemory.cc
+    loader/MappedAnonymousMemory.h
+    loader/MappedFile.cc
+    loader/MappedFile.h
+    loader/Memory.cc
+    loader/Memory.h
+    loader/SharedMemory.cc
+    loader/SharedMemory.h
     mutex.h
+)
+
+configure_file(eckit_cache_config.h.in eckit_cache_config.h @ONLY)
+
+list(APPEND eckit_cache_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_cache_config.h)
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_cache_config.h
+    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cache
 )
 
 ecbuild_add_library(

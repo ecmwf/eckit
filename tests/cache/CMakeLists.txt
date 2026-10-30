@@ -3,7 +3,10 @@
 
 foreach(_test
         disk_cache
-        roots)
+        file_cache
+        loader
+        roots
+        shmget)
     ecbuild_add_test(
         TARGET  eckit_test_cache_${_test}
         SOURCES ${_test}.cc

@@ -13,10 +13,14 @@ list(APPEND eckit_cache_srcs
     LibEcKitCache.h
     Loader.cc
     Loader.h
+    MemoryCache.cc
+    MemoryCache.h
     MemoryUsage.cc
     MemoryUsage.h
     PathLock.cc
     PathLock.h
+    Policy.cc
+    Policy.h
     Roots.cc
     Roots.h
     Shmget.cc

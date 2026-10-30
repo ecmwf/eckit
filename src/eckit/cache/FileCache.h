@@ -7,6 +7,7 @@
 #include <string>
 
 #include "eckit/cache/DiskCache.h"
+#include "eckit/cache/LibEcKitCache.h"
 #include "eckit/cache/Loader.h"
 
 
@@ -22,19 +23,10 @@ namespace eckit::cache {
 class FileCache {
 public:
 
-    // -- Types
-
-    struct Options {
-        bool throw_on_miss = false;
-
-        /// Loader options for files of this kind (e.g. magic number)
-        Loader::Options loader;
-    };
-
     // -- Constructors
 
-    FileCache(const Roots&, const std::string& name, int version, const std::string& extension);
-    FileCache(const Roots&, const std::string& name, int version, const std::string& extension, const Options&);
+    FileCache(const Roots&, const std::string& name, int version, const std::string& extension,
+              const Loader::Options& = {}, bool throw_on_miss = LibEcKitCache::throwOnMiss());
 
     FileCache(const FileCache&) = delete;
     FileCache(FileCache&&)      = delete;
@@ -72,7 +64,8 @@ private:
     const DiskCache disk_;
     const PathName prefix_;
     const std::string extension_;
-    const Options options_;
+    const Loader::Options loader_options_;
+    const bool throw_on_miss_;
 };
 
 

@@ -62,7 +62,7 @@ public:
 
     /**
      * If a missing cache file is an error rather than computed, for provisioned caches
-     * (eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS)
+     * (eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS, default LibEcKitCache::throwOnMiss)
      */
     static bool cacheThrowOnMiss();
 

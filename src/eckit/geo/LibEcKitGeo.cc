@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "eckit/cache/DiskCache.h"
+#include "eckit/cache/LibEcKitCache.h"
 #include "eckit/cache/MemoryCache.h"
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
@@ -181,8 +182,8 @@ std::string LibEcKitGeo::cropCachePolicy() {
 
 
 bool LibEcKitGeo::cacheThrowOnMiss() {
-    static const bool yes{
-        LibResource<bool, LibEcKitGeo>("eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS", false)};
+    static const bool yes{LibResource<bool, LibEcKitGeo>("eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS",
+                                                         LibEcKitCache::throwOnMiss())};
     return yes;
 }
 

@@ -13,6 +13,7 @@
 #include "eckit/cache/DiskCache.h"
 #include "eckit/cache/Exceptions.h"
 #include "eckit/cache/FileCache.h"
+#include "eckit/cache/LibEcKitCache.h"
 #include "eckit/cache/Roots.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
@@ -110,9 +111,9 @@ CASE("FileCache: found in a provisioned (read-only) cache, created in the writab
 
 CASE("FileCache: throwing on cache miss") {
     const auto root = unique_dir("throw");
-    FileCache::Options options;
-    options.throw_on_miss = true;
-    const FileCache cache(Roots(root), "kind", 1, "", options);
+    // off by default (LibEcKitCache::throwOnMiss)
+    EXPECT_NOT(LibEcKitCache::throwOnMiss());
+    const FileCache cache(Roots(root), "kind", 1, "", {}, true);
 
     EXPECT_THROWS_AS(cache.get_or_create("missing", writing("x")), CacheError);
     EXPECT_NOT((root / cache.relative("missing")).exists());

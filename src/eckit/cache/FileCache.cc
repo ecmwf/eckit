@@ -12,13 +12,13 @@
 namespace eckit::cache {
 
 
-FileCache::FileCache(const Roots& roots, const std::string& name, int version, const std::string& extension) :
-    FileCache(roots, name, version, extension, Options{}) {}
-
-
 FileCache::FileCache(const Roots& roots, const std::string& name, int version, const std::string& extension,
-                     const Options& options) :
-    disk_(roots), prefix_(PathName{name} / std::to_string(version)), extension_(extension), options_(options) {}
+                     const Loader::Options& loader_options, bool throw_on_miss) :
+    disk_(roots),
+    prefix_(PathName{name} / std::to_string(version)),
+    extension_(extension),
+    loader_options_(loader_options),
+    throw_on_miss_(throw_on_miss) {}
 
 
 PathName FileCache::relative(const std::string& key) const {
@@ -27,7 +27,7 @@ PathName FileCache::relative(const std::string& key) const {
 
 
 Loader* FileCache::load(const std::string& loader, const PathName& path) const {
-    return LoaderFactory::build(loader, path, options_.loader);
+    return LoaderFactory::build(loader, path, loader_options_);
 }
 
 
@@ -41,7 +41,7 @@ PathName FileCache::get_or_create(const std::string& key, const DiskCache::Write
     const auto relative = this->relative(key);
 
     PathName path;
-    if (!options_.throw_on_miss) {
+    if (!throw_on_miss_) {
         path = disk_.get_or_create(relative, write, valid, created);
     }
     else if (!disk_.find(relative, path, valid)) {

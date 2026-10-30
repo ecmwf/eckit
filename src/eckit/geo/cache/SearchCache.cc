@@ -19,14 +19,16 @@ SearchCache& SearchCache::instance() {
 
 
 const eckit::cache::FileCache& SearchCache::file_cache() {
-    static const eckit::cache::FileCache cache(LibEcKitGeo::cacheRoots(), "search", VERSION, ".kdtree", [] {
-        eckit::cache::FileCache::Options options;
-        options.throw_on_miss           = LibEcKitGeo::cacheThrowOnMiss();
-        options.loader.magic            = MAGIC;
-        options.loader.huge_pages       = LibEcKitGeo::sharedMemoryHugePages();
-        options.loader.round_huge_pages = LibEcKitGeo::sharedMemoryRoundHugePages();
-        return options;
-    }());
+    static const eckit::cache::FileCache cache(
+        LibEcKitGeo::cacheRoots(), "search", VERSION, ".kdtree",
+        [] {
+            eckit::cache::Loader::Options options;
+            options.magic            = MAGIC;
+            options.huge_pages       = LibEcKitGeo::sharedMemoryHugePages();
+            options.round_huge_pages = LibEcKitGeo::sharedMemoryRoundHugePages();
+            return options;
+        }(),
+        LibEcKitGeo::cacheThrowOnMiss());
     return cache;
 }
 

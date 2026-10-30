@@ -23,6 +23,9 @@ public:
 
     static LibEcKitCache& instance();
 
+    /// If a missing cache file is an error, not created (e.g. provisioned caches)
+    static bool throwOnMiss();
+
 private:
 
     // -- Constructors

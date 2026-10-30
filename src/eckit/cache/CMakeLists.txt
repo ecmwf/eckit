@@ -44,6 +44,14 @@ list(APPEND eckit_cache_srcs
     mutex.h
 )
 
+configure_file(eckit_cache_config.h.in eckit_cache_config.h @ONLY)
+
+list(APPEND eckit_cache_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_cache_config.h)
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_cache_config.h
+    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cache
+)
+
 set(eckit_cache_private_libs)
 if(eckit_HAVE_ZIP)
     list(APPEND eckit_cache_private_libs libzip::zip)

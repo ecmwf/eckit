@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "eckit/cache/eckit_cache_config.h"
+#include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
 
 
@@ -21,6 +23,13 @@ LibEcKitCache::LibEcKitCache() : Library("eckit_cache") {}
 LibEcKitCache& LibEcKitCache::instance() {
     static LibEcKitCache lib;
     return lib;
+}
+
+
+bool LibEcKitCache::throwOnMiss() {
+    static const bool yes{LibResource<bool, LibEcKitCache>("eckit-cache-throw-on-miss;$ECKIT_CACHE_THROW_ON_MISS",
+                                                           eckit_CACHE_THROW_ON_MISS != 0)};
+    return yes;
 }
 
 

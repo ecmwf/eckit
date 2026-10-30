@@ -127,7 +127,7 @@ PathName LatitudeLongitude::to_cached_path() const {
 
 const eckit::cache::FileCache& LatitudeLongitude::file_cache() {
     // written from the grid in memory, so never missing (no throw on miss)
-    static const eckit::cache::FileCache cache(LibEcKitGeo::cacheRoots(), "latlon", VERSION, ".ek");
+    static const eckit::cache::FileCache cache(LibEcKitGeo::cacheRoots(), "latlon", VERSION, ".ek", {}, false);
     return cache;
 }
 

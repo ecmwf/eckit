@@ -17,6 +17,7 @@ class HttpService : public eckit::net::NetService {
 public:
 
     explicit HttpService(int port, bool visible = false);
+    HttpService(int port, bool visible, eckit::ConcurrencyLimiter& limiter, bool preferProcess);
 
     ~HttpService() override;
 
@@ -24,6 +25,9 @@ private:
 
     eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const override;
     std::string name() const override { return "http"; }
+    bool preferToRunAsProcess() const override { return preferProcess_; }
+
+    bool preferProcess_;
 };
 
 }  // namespace eckit

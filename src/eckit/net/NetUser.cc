@@ -25,4 +25,17 @@ void NetUser::run() {
     serve(stream, in, out);
 }
 
+void NetUser::reject(const std::string& reason) {
+    SockBuf buf(protocol_);
+    std::ostream out(&buf);
+    std::istream in(&buf);
+    InstantTCPStream stream(protocol_);
+
+    refuse(stream, in, out, reason);
+}
+
+void NetUser::refuse(Stream&, std::istream&, std::ostream&, const std::string& reason) {
+    Log::warning() << "Refusing connection from " << protocol_.remoteHost() << ": " << reason << std::endl;
+}
+
 }  // namespace eckit::net

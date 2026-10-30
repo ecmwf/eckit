@@ -15,6 +15,11 @@ HttpServer::HttpServer(int port, bool visible) : HtmlResource("/"), http_(new Ht
     http_.start();
 }
 
+HttpServer::HttpServer(int port, bool visible, ConcurrencyLimiter& limiter, bool preferProcess) :
+    HtmlResource("/"), http_(new HttpService(port, visible, limiter, preferProcess)) {
+    http_.start();
+}
+
 HttpServer::~HttpServer() {
     http_.stop();
 }

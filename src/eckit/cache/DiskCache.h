@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <functional>
 
 #include "eckit/cache/Roots.h"
@@ -58,6 +59,9 @@ public:
 
     /// Remove a file or directory (recursively), if it exists
     static void remove(const PathName&);
+
+    /// Size of a file, or of the files under a directory (recursively) [byte], 0 if it does not exist
+    static size_t size(const PathName&);
 
 private:
 

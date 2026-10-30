@@ -53,6 +53,30 @@ void DiskCache::remove(const PathName& p) {
 }
 
 
+size_t DiskCache::size(const PathName& p) {
+    if (!p.exists()) {
+        return 0;
+    }
+
+    if (!p.isDir()) {
+        return static_cast<size_t>(p.size());
+    }
+
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+    p.children(files, dirs);
+
+    size_t s = 0;
+    for (const auto& f : files) {
+        s += size(f);
+    }
+    for (const auto& d : dirs) {
+        s += size(d);
+    }
+    return s;
+}
+
+
 DiskCache::DiskCache(const Roots& roots) : roots_(roots) {
     if (roots_.paths().empty()) {
         throw CacheError("DiskCache: no roots", Here());

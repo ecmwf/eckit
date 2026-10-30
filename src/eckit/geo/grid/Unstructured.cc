@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "eckit/cache/FileCache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/iterator/Unstructured.h"
@@ -50,7 +52,13 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
     reset_uid(uid);
     name_ = name;
 
-    spec::Custom::container_type custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
+    spec::Custom::container_type custom_map{{"type", type()}, {"uid", uid}};
+
+    // the coordinates file lets other processes use the grid by uid; with nowhere to write, only if found (else memory)
+    if (PathName path;
+        !LibEcKitGeo::cacheWritablePaths().empty() || cache::LatitudeLongitude::file_cache().find(uid, path)) {
+        custom_map["cached_path"] = record().to_cached_path();
+    }
     if (!name.empty()) {
         custom_map["name"] = name;
     }

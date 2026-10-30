@@ -5,6 +5,7 @@ import findlibs
 
 findlibs.load("eckit", "eckitlib")
 findlibs.load("eckit_maths", "eckitlib")
+findlibs.load("eckit_cache", "eckitlib")
 findlibs.load("eckit_geo", "eckitlib")
 
 from eckit._utils import configure_ca_bundle_from_certifi

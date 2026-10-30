@@ -27,17 +27,6 @@ namespace {
 using KDTree = search::KDTree;
 
 
-std::string loader(const spec::Spec& spec) {
-    return spec.get_string("search-loader",
-                           spec.get_bool("caching", LibEcKitGeo::caching()) ? LibEcKitGeo::searchLoader() : "memory");
-}
-
-
-bool fast_build(const spec::Spec& spec) {
-    return spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild());
-}
-
-
 std::string points_uid(const std::vector<PointXYZ>& points) {
     MD5 hash;
     hash.add(points.size());
@@ -76,34 +65,20 @@ struct Search::Shared {
 };
 
 
-template <typename Fill>
-void Search::build(const std::string& uid, size_t size, const Spec& spec, const Fill& fill) {
+void Search::build(const std::string& uid, size_t size, const Spec& spec, const KDTree::Fill& fill) {
     auto& kdtree = shared_->kdtree;
-    kdtree.reset(geo::search::KDTreeFactory::build(loader(spec), uid, size));
+    kdtree.reset(geo::search::KDTreeFactory::build(LibEcKitGeo::searchCacheLoader(), uid, size));
 
-    util::lock_guard<KDTree> lock(*kdtree);
-
-    if (kdtree->ready()) {
+    Trace trace("Search: build or load " + uid);
+    if (!kdtree->build(fill, spec.get_bool("search-fast-build", true))) {
         Log::debug() << "Search: loaded " << *kdtree << std::endl;
-        return;
     }
+}
 
-    Trace trace("Search: build " + uid);
 
-    std::vector<KDTree::Value> values;
-    fill(values);
-    ASSERT(values.size() == size);
-
-    if (fast_build(spec)) {
-        kdtree->build(values);
-    }
-    else {
-        for (const auto& value : values) {
-            kdtree->insert(value);
-        }
-    }
-
-    kdtree->commit();
+std::string Search::uid(const Grid& grid) {
+    const auto& figure = grid.figure();
+    return MD5{grid.uid() + projection::LonLatToXYZ(figure.a(), figure.b()).spec_str()}.digest();
 }
 
 
@@ -114,10 +89,7 @@ Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Sh
     const auto& figure = grid.figure();
     shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
 
-    // the k-d tree depends on the grid points and the figure they're converted on
-    const auto uid = MD5{grid.uid() + shared_->to_xyz->spec_str()}.digest();
-
-    build(uid, grid.size(), spec, [&grid](std::vector<KDTree::Value>& values) {
+    build(uid(grid), grid.size(), spec, [&grid](std::vector<KDTree::Value>& values) {
         const auto xyz = grid.to_xyz();
         ASSERT(xyz.size() == 3);
 
@@ -166,22 +138,16 @@ const search::KDTree& Search::kdtree() const {
 }
 
 
-Search::MemoryUsage Search::estimate(size_t size, const Spec& spec) {
-    return geo::search::KDTreeFactory::estimate(loader(spec), size);
+Search::MemoryUsage Search::estimate(size_t size) {
+    return geo::search::KDTreeFactory::estimate(LibEcKitGeo::searchCacheLoader(), size);
 }
 
 
 std::unique_ptr<spec::Custom> Search::spec_kdtree(const Spec& spec) {
     auto kdtree = std::make_unique<spec::Custom>();
 
-    if (spec.has("search-loader")) {
-        kdtree->set("search-loader", spec.get_string("search-loader"));
-    }
-
-    for (const std::string key : {"caching", "search-fast-build"}) {
-        if (spec.has(key)) {
-            kdtree->set(key, spec.get_bool(key));
-        }
+    if (spec.has("search-fast-build")) {
+        kdtree->set("search-fast-build", spec.get_bool("search-fast-build"));
     }
 
     return kdtree;

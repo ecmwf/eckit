@@ -123,6 +123,12 @@ public:
     /// Build an unstructured grid from its points, optionally named.
     static std::unique_ptr<GridWrapper> from_latlons(rust::Slice<const double> lat, rust::Slice<const double> lon,
                                                      rust::Str name);
+
+    /// Total size of eckit geo's in-memory caches, in bytes (see LibEcKitGeo::cacheFootprint).
+    static size_t cache_footprint();
+
+    /// Purge eckit geo's in-memory caches (see LibEcKitGeo::purgeCache).
+    static void cache_purge();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

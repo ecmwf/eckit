@@ -14,6 +14,7 @@ def pytest_configure(config):
     global _cache_path
     _cache_path = tempfile.mkdtemp(prefix="eckit_geo_cache.")
     os.environ["ECKIT_GEO_CACHE_PATH"] = _cache_path
+    os.environ["ECKIT_GEO_CACHING"] = "1"  # whatever the build default
 
 
 def pytest_unconfigure(config):

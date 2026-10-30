@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "eckit/geo/cache/MemoryUsage.h"
+#include "eckit/cache/MemoryUsage.h"
 
 
 namespace eckit {
@@ -30,7 +30,7 @@ struct Crop {
 
     // -- Methods
 
-    MemoryUsage footprint() const;
+    eckit::cache::MemoryUsage footprint() const;
 
     void read(const PathName&);
     void write(const PathName&) const;

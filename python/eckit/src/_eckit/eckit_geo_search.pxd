@@ -103,7 +103,7 @@ cdef extern from * namespace "eckit::geo::python":
 
     inline std::pair<size_t, size_t> search_footprint(const SearchHandle& h) {
         const auto f = h.search->footprint();
-        return {f.memory(), f.shared()};
+        return {f.processMemory(), f.sharedMemory()};
     }
 
     inline std::string search_str(const SearchHandle& h) {
@@ -117,7 +117,7 @@ cdef extern from * namespace "eckit::geo::python":
         const auto stats  = cache.statistics();
         const auto usage  = cache.usage();
         return {stats.hits, stats.misses, stats.evictions, cache.size(),
-                usage.memory(), usage.shared()};
+                usage.processMemory(), usage.sharedMemory()};
     }
 
     inline void search_cache_clear() {

@@ -16,8 +16,6 @@ use crate::geo::Spec;
 /// - a polygon of one ring, `{"type":"polygon","latitudes":[...],"longitudes":[...]}`,
 ///   or of several, `{"type":"polygon","uid":["<uid>",...]}` with each ring
 ///   an unstructured grid ([`Grid::from_latlons`](crate::Grid::from_latlons));
-///   rings keep their coordinates in eckit geo's cache (see the [module
-///   docs](crate::geo#caching));
 /// - a shapefile feature, `{"type":"shapefile","file":...,"name":...}`, with
 ///   eckit built with shapefile support.
 ///

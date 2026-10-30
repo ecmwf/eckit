@@ -33,8 +33,7 @@ namespace eckit::geo {
  * the same figure. Distances are chord lengths (metres, on the Earth). Results are by increasing distance, then index.
  *
  * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius), search-k, search-radius.
- * Spec, of the k-d tree: search-loader (see search::KDTreeFactory), caching, search-fast-build (defaults in
- * LibEcKitGeo).
+ * Spec, of the k-d tree: search-fast-build; its loader is of the library (LibEcKitGeo::searchCacheLoader).
  */
 class Search {
 public:
@@ -43,7 +42,7 @@ public:
 
     using Neighbour   = geo::search::Neighbour;
     using Neighbours  = geo::search::Neighbours;
-    using MemoryUsage = cache::MemoryUsage;
+    using MemoryUsage = eckit::cache::MemoryUsage;
     using Spec        = spec::Spec;
 
     // -- Constructors
@@ -119,8 +118,7 @@ private:
 
     void configure(const Spec&);
 
-    template <typename Fill>
-    void build(const std::string& uid, size_t size, const Spec&, const Fill&);
+    void build(const std::string& uid, size_t size, const Spec&, const search::KDTree::Fill&);
 
     PointXYZ to_xyz(const Point&) const;
 
@@ -128,11 +126,14 @@ private:
 
     // -- Class methods
 
+    /// k-d tree identifier of a grid: its points, on the figure they are converted on (see Grid::to_xyz)
+    static std::string uid(const Grid&);
+
     /// k-d tree configuration, so searches of other behaviours can share it
     static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
 
     /// Footprint of a search of size points, before building or loading it
-    static MemoryUsage estimate(size_t size, const Spec&);
+    static MemoryUsage estimate(size_t size);
     static bool spec_has_behaviour(const Spec&);
 };
 

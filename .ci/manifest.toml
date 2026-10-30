@@ -132,6 +132,9 @@ platform = "hpc-atos-intel"
 modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja"]
 c-compiler-binary = "icc"
 cxx-compiler-binary = "icpc"
+# Trial: the old self-hosted HPC runners, on the host (no container), instead of hpc-submit pods.
+runs-on = "hpc"
+container = ""
 
 [[matrix.build-hpc.include]]
 cxx-compiler = "icpx-2025.3.1"

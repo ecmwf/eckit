@@ -4,7 +4,10 @@
 
 #include "eckit/geo/search/KDTree.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <numeric>
 #include <ostream>
 #include <sstream>
 
@@ -65,6 +68,50 @@ std::vector<KDTree::Value> KDTree::values(const Fill& fill) const {
     }
 
     return values;
+}
+
+
+std::vector<size_t> KDTree::query_order(const std::vector<Point>& points) {
+    std::vector<size_t> order(points.size());
+    std::iota(order.begin(), order.end(), 0);
+
+    if (points.size() < 2) {
+        return order;
+    }
+
+    // coordinates as 21-bit integers, in the points bounding box
+    Point min = points.front();
+    Point max = points.front();
+    for (const auto& p : points) {
+        min = {std::min(min.X(), p.X()), std::min(min.Y(), p.Y()), std::min(min.Z(), p.Z())};
+        max = {std::max(max.X(), p.X()), std::max(max.Y(), p.Y()), std::max(max.Z(), p.Z())};
+    }
+
+    auto quantise = [](double x, double lo, double hi) -> std::uint64_t {
+        constexpr double top = (1 << 21) - 1;
+        return hi > lo ? static_cast<std::uint64_t>((x - lo) / (hi - lo) * top) : 0;
+    };
+
+    // the bits of a 21-bit integer, spread to every third bit
+    auto spread = [](std::uint64_t v) {
+        v = (v | v << 32) & 0x1f00000000ffffULL;
+        v = (v | v << 16) & 0x1f0000ff0000ffULL;
+        v = (v | v << 8) & 0x100f00f00f00f00fULL;
+        v = (v | v << 4) & 0x10c30c30c30c30c3ULL;
+        v = (v | v << 2) & 0x1249249249249249ULL;
+        return v;
+    };
+
+    // Morton code: coordinate bits interleaved, so points near in space are mostly near in order
+    std::vector<std::uint64_t> code;
+    code.reserve(points.size());
+    for (const auto& p : points) {
+        code.push_back(spread(quantise(p.X(), min.X(), max.X())) | spread(quantise(p.Y(), min.Y(), max.Y())) << 1 |
+                       spread(quantise(p.Z(), min.Z(), max.Z())) << 2);
+    }
+
+    std::stable_sort(order.begin(), order.end(), [&code](size_t a, size_t b) { return code[a] < code[b]; });
+    return order;
 }
 
 

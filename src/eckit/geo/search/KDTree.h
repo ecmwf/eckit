@@ -91,6 +91,11 @@ public:
 
     size_t size() const { return size_; }
 
+    // -- Class methods
+
+    /// Morton order to query many points in, so nearby points are queried consecutively (memory and page locality)
+    static std::vector<size_t> query_order(const std::vector<Point>&);
+
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const KDTree& kdtree) {

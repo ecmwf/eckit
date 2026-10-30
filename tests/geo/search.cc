@@ -186,6 +186,12 @@ CASE("Search: search(point), configured behaviour") {
         EXPECT(indices(search->search(q)) == std::vector<size_t>({1}));
     }
 
+    SECTION("knn_or_same_radius") {
+        auto search = make({{"search", "knn_or_same_radius"}, {"search-k", 2}, {"search-tolerance", 0.5}});
+        EXPECT(search->search(q) == search->search_knn_or_same_radius(q, 2, 0.5));
+        EXPECT(indices(search->search(q)) == std::vector<size_t>({1, 2}));
+    }
+
     SECTION("invalid configuration") {
         EXPECT_THROWS_AS(make({{"search", "unknown"}}), exception::SearchError);
         EXPECT_THROWS_AS(make({{"search", "knn"}}), exception::SearchError);
@@ -193,11 +199,82 @@ CASE("Search: search(point), configured behaviour") {
         EXPECT_THROWS_AS(make({{"search", "radius"}, {"search-radius", -1.}}), exception::SearchError);
         EXPECT_THROWS_AS(make({{"search", "knn_or_radius"}, {"search-k", 1}}), exception::SearchError);
         EXPECT_THROWS_AS(make({{"search", "knn_and_radius"}, {"search-radius", 1.}}), exception::SearchError);
+        EXPECT_THROWS_AS(make({{"search", "knn_or_same_radius"}}), exception::SearchError);
+        EXPECT_THROWS_AS(make({{"search", "knn_or_same_radius"}, {"search-k", 1}, {"search-tolerance", -1.}}),
+                         exception::SearchError);
     }
 
     SECTION("no points") {
         EXPECT_THROWS_AS(Search(std::vector<PointXYZ>{}), exception::SearchError);
     }
+}
+
+
+CASE("Search: search_knn_or_same_radius, all the points as near as the k nearest") {
+    // around the origin (metres): four points at 1000, one 0.5 further (as near, within the default tolerance of 1),
+    // and two further away
+    const std::vector<PointXYZ> points{{1000., 0., 0.},  {0., 1000., 0.}, {-1000., 0., 0.}, {0., -1000., 0.},
+                                       {0., 0., 1000.5}, {0., 0., 1500.}, {0., 0., -3000.}};
+    const Search search(points);
+
+    const PointXYZ origin{0., 0., 0.};
+
+    SECTION("as near: all of them, not k") {
+        EXPECT(indices(search.search_knn_or_same_radius(origin, 1)) == std::vector<size_t>({0, 1, 2, 3, 4}));
+        EXPECT(indices(search.search_knn_or_same_radius(origin, 3)) == std::vector<size_t>({0, 1, 2, 3, 4}));
+    }
+
+    SECTION("not as near: the k nearest") {
+        EXPECT(indices(search.search_knn_or_same_radius(origin, 6)) == std::vector<size_t>({0, 1, 2, 3, 4, 5}));
+        EXPECT(search.search_knn_or_same_radius(origin, 6) == search.search_knn(origin, 6));
+    }
+
+    SECTION("tolerance") {
+        // stricter: the point 0.5 further is not as near
+        EXPECT(indices(search.search_knn_or_same_radius(origin, 2, 0.1)) == std::vector<size_t>({0, 1, 2, 3}));
+
+        // looser: the point 500 further is as near
+        EXPECT(indices(search.search_knn_or_same_radius(origin, 2, 500.)) == std::vector<size_t>({0, 1, 2, 3, 4, 5}));
+
+        EXPECT_THROWS_AS(search.search_knn_or_same_radius(origin, 2, -1.), exception::SearchError);
+    }
+
+    SECTION("k = 0: nothing") {
+        EXPECT(search.search_knn_or_same_radius(origin, 0).empty());
+    }
+}
+
+
+CASE("Search: search(points), as search(point) for each") {
+    const auto points = random_points_on_unit_sphere(1000, 42);
+
+    std::vector<Point> queries;
+    for (const auto& q : random_points_on_unit_sphere(200, 7)) {
+        queries.emplace_back(q);
+    }
+
+    const Search search(points, spec::Custom{{{"search", "knn"}, {"search-k", 4}}});
+
+    const auto result = search.search(queries);
+    ASSERT(result.size() == queries.size());
+
+    for (size_t i = 0; i < queries.size(); ++i) {
+        EXPECT(result[i] == search.search(queries[i]));
+    }
+
+    EXPECT(search.search(std::vector<Point>{}).empty());
+}
+
+
+CASE("KDTree::query_order: every point once, nearby points consecutively") {
+    // two clusters, interleaved
+    const std::vector<PointXYZ> points{{0., 0., 0.}, {10., 10., 10.}, {0.1, 0., 0.}, {10.1, 10., 10.}, {0., 0.1, 0.}};
+
+    const auto order = search::KDTree::query_order(points);
+    EXPECT(order == std::vector<size_t>({0, 2, 4, 1, 3}));
+
+    EXPECT(search::KDTree::query_order(std::vector<PointXYZ>{}).empty());
+    EXPECT(search::KDTree::query_order(std::vector<PointXYZ>{PointXYZ{1., 2., 3.}}) == std::vector<size_t>({0}));
 }
 
 

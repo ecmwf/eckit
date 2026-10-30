@@ -565,7 +565,8 @@ impl Grid {
     /// A search configured by a spec, so that [`Search::search`] runs it.
     ///
     /// Keys: `search` (`nn`, `knn`, `radius`, `knn_or_radius`,
-    /// `knn_and_radius`), `search-k`, `search-radius` (metres), and for the
+    /// `knn_and_radius`, `knn_or_same_radius`), `search-k`, `search-radius` (metres),
+    /// `search-tolerance` (metres, default 1), and for the
     /// k-d tree `search-fast-build` (its loader is the library's,
     /// `eckit-geo-search-loader`).
     ///

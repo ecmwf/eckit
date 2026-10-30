@@ -187,7 +187,8 @@ mod ffi {
         fn search(self: &GridWrapper) -> Result<UniquePtr<SearchWrapper>>;
 
         /// A search configured by a spec: keys `search` (`nn`, `knn`,
-        /// `radius`, `knn_or_radius`, `knn_and_radius`), `search-k`,
+        /// `radius`, `knn_or_radius`, `knn_and_radius`, `knn_or_same_radius`), `search-k`,
+        /// `search-tolerance` (metres, default 1),
         /// `search-radius`, `search-fast-build` (the k-d tree loader is the
         /// library's, `eckit-geo-search-loader`).
         fn search_with_spec(self: &GridWrapper, spec: &str) -> Result<UniquePtr<SearchWrapper>>;

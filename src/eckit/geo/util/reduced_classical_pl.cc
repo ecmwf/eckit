@@ -7,8 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/util.h"
 
 
@@ -1334,9 +1335,9 @@ bool reduced_classical_pl_known(size_t N) {
 const pl_type& reduced_classical_pl(size_t N) {
     ASSERT(N > 0);
 
-    static cache::MemoryCacheT<size_t, pl_type> cache;
-    if (cache.contains(N)) {
-        return cache[N];
+    static eckit::cache::MemoryCacheT<size_t, pl_type> cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(N)) {
+        return *cached;
     }
 
     auto pl_half = CLASSICAL_PLS.find(N);
@@ -1353,7 +1354,7 @@ const pl_type& reduced_classical_pl(size_t N) {
         pl[i] = pl[j] = *p++;
     }
 
-    return (cache[N] = std::move(pl));
+    return cache.insert(N, std::move(pl));
 }
 
 

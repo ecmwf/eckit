@@ -55,10 +55,6 @@ def cache_dir() -> str:
     return eckit_geo.LibEcKitGeo.cacheDir()
 
 
-def cache_dir_purge() -> None:
-    eckit_geo.LibEcKitGeo.purgeCacheDir()
-
-
 def projdb_is_available() -> bool:
     """
     If PROJ has a usable database.

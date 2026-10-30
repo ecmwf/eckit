@@ -133,7 +133,7 @@ fn search_spec_sets_the_behaviour() {
     let grid = grid(r#"{"grid":[30,30]}"#);
 
     let search = grid
-        .search_with_spec(r#"{"search-loader":"memory","search":"knn","search-k":3}"#)
+        .search_with_spec(r#"{"search":"knn","search-k":3}"#)
         .expect("search");
     assert_eq!(
         search.search(lonlat(15.0, 0.0)).expect("configured"),
@@ -170,20 +170,20 @@ fn search_cache_accounts_for_loaded_searches() {
     let before = search_cache_statistics().expect("statistics");
 
     let search = grid
-        .search_with_spec(r#"{"search-loader":"memory"}"#)
+        .search()
         .expect("search");
     let footprint = search.footprint().expect("footprint");
-    assert!(footprint.memory > 0);
+    assert!(footprint.memory + footprint.shared > 0);
 
     // the cache accounts for the loaded search (other tests may add to it concurrently)
     let after = search_cache_statistics().expect("statistics");
     assert!(after.misses > before.misses);
     assert!(after.size >= 1);
-    assert!(after.usage.memory >= footprint.memory);
+    assert!(after.usage.memory >= footprint.memory && after.usage.shared >= footprint.shared);
 
     // a second search of the same configuration is a hit
     let again = grid
-        .search_with_spec(r#"{"search-loader":"memory"}"#)
+        .search()
         .expect("search");
     assert!(search_cache_statistics().expect("statistics").hits > after.hits);
     assert_eq!(again.footprint().expect("footprint"), footprint);

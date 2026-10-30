@@ -8,13 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "eckit/cache/Download.h"
+#include "eckit/cache/FileCache.h"
 #include "eckit/codec/codec.h"
 #include "eckit/config/Resource.h"
-#include "eckit/container/CacheManager.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Spec.h"
@@ -26,6 +25,7 @@ namespace eckit::geo::cache {
 namespace {
 
 
+// coordinates are loaded once (loading can be a download), not concurrently
 class lock_type {
     inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
@@ -52,7 +52,7 @@ struct Loader final : Cache::Loader {
         }
 
         if (spec->has("url")) {
-            static const Download download;
+            static const eckit::cache::Download download(LibEcKitGeo::cacheRoots() / "download");
             record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }
@@ -64,7 +64,7 @@ struct Loader final : Cache::Loader {
 
 Cache& cache() {
     static const Loader loader;
-    static Cache CACHE(loader);
+    static Cache CACHE(LibEcKitGeo::memoryCaches(), loader);
     return CACHE;
 }
 
@@ -120,39 +120,15 @@ void LatitudeLongitude::write(const PathName& p) const {
 
 
 PathName LatitudeLongitude::to_cached_path() const {
-    // the cache file (as Download, not in memory), created exclusively across processes (eckit::CacheManager: the
-    // creation is locked, written to a process-specific file then renamed, so other processes never read a partial
-    // file)
-    struct Traits {
-        using value_type = PathName;
-        using Locker     = CacheManagerFileFlock;
+    const auto uid = grid::Unstructured::uid_from_latlons(latitude(), longitude());
+    return file_cache().get_or_create(uid, [this](const PathName& tmp) { write(tmp); });
+}
 
-        static const char* name() { return "latlon"; }
-        static int version() { return version::LATLON; }
-        static const char* extension() { return ".ek"; }
 
-        static void save(const CacheManagerBase&, const value_type&, const PathName&) {}  // by the creator
-        static void load(const CacheManagerBase&, value_type& path, const PathName& cached) { path = cached; }
-    };
-
-    using LatLonCache = CacheManager<Traits>;
-    static const LatLonCache CACHE(Traits::name(), LibEcKitGeo::cacheDir(), false, 0);
-
-    struct Creator final : LatLonCache::CacheContentCreator {
-        explicit Creator(const LatitudeLongitude& ll) : ll_(ll) {}
-        void create(const PathName& path, PathName&, bool& saved) override {
-            ll_.write(path);
-            saved = true;
-        }
-        const LatitudeLongitude& ll_;
-    } creator(*this);
-
-    // the file lock is per process
-    lock_type lock;
-
-    PathName path;
-    CACHE.getOrCreate(grid::Unstructured::uid_from_latlons(latitude(), longitude()), creator, path);
-    return path;
+const eckit::cache::FileCache& LatitudeLongitude::file_cache() {
+    // written from the grid in memory, so never missing (no throw on miss)
+    static const eckit::cache::FileCache cache(LibEcKitGeo::cacheRoots(), "latlon", VERSION, ".ek");
+    return cache;
 }
 
 

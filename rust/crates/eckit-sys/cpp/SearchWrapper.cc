@@ -28,7 +28,7 @@ rust::Vec<Neighbour> to_neighbours(const eckit::geo::Search::Neighbours& neighbo
     return out;
 }
 
-MemoryUsage to_usage(const eckit::geo::cache::MemoryUsage& usage) {
+MemoryUsage to_usage(const eckit::cache::MemoryUsage& usage) {
     return {usage.memory(), usage.shared()};
 }
 

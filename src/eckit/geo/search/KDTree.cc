@@ -4,15 +4,39 @@
 
 #include "eckit/geo/search/KDTree.h"
 
-#include <map>
+#include <memory>
 #include <ostream>
 #include <sstream>
 
+#include "eckit/cache/Loader.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/util/mutex.h"
+#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/search/KDTreeCache.h"
+#include "eckit/geo/search/KDTreeMemory.h"
 
 
 namespace eckit::geo::search {
+
+
+namespace {
+
+
+[[noreturn]] void unknown(const std::string& loader) {
+    std::ostringstream msg;
+    msg << "KDTreeFactory: unknown '" << loader << "', choices are: ";
+
+    const char* sep = "";
+    for (const auto& name : eckit::cache::LoaderFactory::names()) {
+        if (KDTreeFactory::has(name)) {
+            msg << sep << name;
+            sep = ", ";
+        }
+    }
+    throw exception::SearchError(msg.str(), Here());
+}
+
+
+}  // namespace
 
 
 std::ostream& operator<<(std::ostream& out, const Neighbour& n) {
@@ -30,77 +54,56 @@ KDTree::KDTree(size_t size) : size_(size) {
 KDTree::~KDTree() = default;
 
 
-namespace {
+std::vector<KDTree::Value> KDTree::values(const Fill& fill) const {
+    std::vector<Value> values;
+    values.reserve(size_);
+    fill(values);
 
-
-struct Registry {
-    util::recursive_mutex mutex;
-    std::map<std::string, const KDTreeFactory*> loaders;
-};
-
-
-// constructed on first registration, so it outlives the (static) builders
-Registry& registry() {
-    static Registry r;
-    return r;
-}
-
-
-}  // namespace
-
-
-KDTreeFactory::KDTreeFactory(const std::string& loader) : loader_(loader) {
-    auto& r = registry();
-    util::lock_guard<util::recursive_mutex> lock(r.mutex);
-
-    if (!r.loaders.try_emplace(loader, this).second) {
-        throw exception::SearchError("KDTreeFactory: duplicate '" + loader + "'", Here());
-    }
-}
-
-
-KDTreeFactory::~KDTreeFactory() {
-    auto& r = registry();
-    util::lock_guard<util::recursive_mutex> lock(r.mutex);
-
-    r.loaders.erase(loader_);
-}
-
-
-const KDTreeFactory& KDTreeFactory::get(const std::string& loader) {
-    auto& r = registry();
-    util::lock_guard<util::recursive_mutex> lock(r.mutex);
-
-    if (auto it = r.loaders.find(loader); it != r.loaders.end()) {
-        return *it->second;
+    if (values.size() != size_) {
+        throw exception::SearchError(
+            "KDTree: expected " + std::to_string(size_) + " values, got " + std::to_string(values.size()), Here());
     }
 
-    std::ostringstream msg;
-    list(msg << "KDTreeFactory: unknown '" << loader << "', choices are: ");
-    throw exception::SearchError(msg.str(), Here());
+    return values;
 }
 
 
 KDTree* KDTreeFactory::build(const std::string& loader, const std::string& uid, size_t size) {
-    return get(loader).make(uid, size);
+    // in memory, a k-d tree has its own layout (nodes allocated separately)
+    if (loader == "memory") {
+        return new KDTreeMemory(size);
+    }
+
+    if (!has(loader)) {
+        unknown(loader);
+    }
+
+    std::unique_ptr<KDTreeCache> cached(new KDTreeCache(loader, uid, size));
+
+    // with nowhere to write, use a cache file only if found, else build in memory (unless a miss is an error)
+    if (LibEcKitGeo::cacheWritablePaths().empty() && !LibEcKitGeo::cacheThrowOnMiss() && !cached->found()) {
+        return new KDTreeMemory(size);
+    }
+
+    return cached.release();
 }
 
 
 KDTree::MemoryUsage KDTreeFactory::estimate(const std::string& loader, size_t size) {
-    return get(loader).make_estimate(size);
+    if (loader == "memory") {
+        return KDTreeMemory::estimate(size);
+    }
+
+    if (has(loader)) {
+        return KDTreeCache::estimate(loader, size);
+    }
+
+    unknown(loader);
 }
 
 
-std::ostream& KDTreeFactory::list(std::ostream& out) {
-    auto& r = registry();
-    util::lock_guard<util::recursive_mutex> lock(r.mutex);
-
-    const char* sep = "";
-    for (const auto& [loader, factory] : r.loaders) {
-        out << sep << loader;
-        sep = ", ";
-    }
-    return out;
+bool KDTreeFactory::has(const std::string& loader) {
+    return loader == "memory" || KDTreeCache::loads(loader);
 }
 
 

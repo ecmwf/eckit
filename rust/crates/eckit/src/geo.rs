@@ -566,8 +566,8 @@ impl Grid {
     ///
     /// Keys: `search` (`nn`, `knn`, `radius`, `knn_or_radius`,
     /// `knn_and_radius`), `search-k`, `search-radius` (metres), and for the
-    /// k-d tree `search-loader` (`memory`, `mapped-memory`, `file-io`,
-    /// `shmem`, ...), `caching`, `search-fast-build`.
+    /// k-d tree `search-fast-build` (its loader is the library's,
+    /// `eckit-geo-search-loader`).
     ///
     /// ```
     /// # fn main() -> eckit::Result<()> {
@@ -723,7 +723,7 @@ impl SpecGet for Vec<String> {
 /// process should watch this and call [`cache_purge`].
 #[must_use]
 pub fn cache_footprint() -> usize {
-    eckit_sys::geo::MemoryCache::total_footprint()
+    eckit_sys::geo::GridWrapper::cache_footprint()
 }
 
 /// Drop every entry from eckit geo's process-global memory caches.
@@ -733,5 +733,5 @@ pub fn cache_footprint() -> usize {
 /// purge while another thread is inside [`Grid::fill_latlons`],
 /// [`Grid::to_latlons`] or any other grid call.
 pub fn cache_purge() {
-    eckit_sys::geo::MemoryCache::total_purge();
+    eckit_sys::geo::GridWrapper::cache_purge();
 }

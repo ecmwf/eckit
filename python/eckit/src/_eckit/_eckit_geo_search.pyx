@@ -10,7 +10,6 @@ from libcpp.vector cimport vector
 
 # Python-friendly spec keys
 _KEYS = {
-    "loader": "search-loader",
     "k": "search-k",
     "radius": "search-radius",
     "fast_build": "search-fast-build",
@@ -34,7 +33,7 @@ cdef class Search:
     Points are (lon, lat) or geocentric (x, y, z); results are (index, distance), by
     increasing distance (chord length, in metres on the Earth).
 
-    Searches are shared by grid and spec (loader, k, radius, search, ..., see
+    Searches are shared by grid and spec (k, radius, search, ..., see
     eckit::geo::Search) in a cache, within its capacity (see search_cache_statistics).
     """
     cdef eckit_geo_search.SearchHandle* _handle

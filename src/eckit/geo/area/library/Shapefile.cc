@@ -11,13 +11,13 @@
 
 #include "shapefil.h"
 
+#include "eckit/cache/Download.h"
+#include "eckit/cache/Unzip.h"
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/Polygon.h"
-#include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
@@ -41,14 +41,14 @@ namespace {
 PathName path_shp(const PathName& file) {
     if (file.extension() == ".zip") {
         // check for exactly one .shp file in the zip
-        if (auto list = cache::Unzip::list(file, true); std::count_if(list.begin(), list.end(), [](const auto& what) {
-                                                            return PathName(what).extension() == ".shp";
-                                                        }) != 1) {
+        if (auto list = eckit::cache::Unzip::list(file, true);
+            std::count_if(list.begin(), list.end(),
+                          [](const auto& what) { return PathName(what).extension() == ".shp"; }) != 1) {
             throw ReadError("Shapefile: found none/more than one .shp file(s) in '" + file + "', expecting one",
                             Here());
         }
 
-        static cache::Unzip unzip(LibEcKitGeo::cacheDir() + "/shapefile");
+        static eckit::cache::Unzip unzip(LibEcKitGeo::cacheRoots() / "shapefile");
 
         auto dir = unzip.to_cached_path(file);
 
@@ -83,11 +83,11 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 
 
 PathName download(const std::string& url) {
-    static const cache::Download download;
+    static const eckit::cache::Download download(LibEcKitGeo::cacheRoots() / "download");
 
     const auto u = LibEcKitGeo::url(url);
-    return download.to_cached_path(u, cache::Download::url_file_basename(u, false),
-                                   cache::Download::url_file_extension(u));
+    return download.to_cached_path(u, eckit::cache::Download::url_file_basename(u, false),
+                                   eckit::cache::Download::url_file_extension(u));
 }
 
 

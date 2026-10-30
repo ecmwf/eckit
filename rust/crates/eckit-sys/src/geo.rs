@@ -188,7 +188,8 @@ mod ffi {
 
         /// A search configured by a spec: keys `search` (`nn`, `knn`,
         /// `radius`, `knn_or_radius`, `knn_and_radius`), `search-k`,
-        /// `search-radius`, `search-loader`, `caching`, `search-fast-build`.
+        /// `search-radius`, `search-fast-build` (the k-d tree loader is the
+        /// library's, `eckit-geo-search-loader`).
         fn search_with_spec(self: &GridWrapper, spec: &str) -> Result<UniquePtr<SearchWrapper>>;
 
         // ==================== Spec ====================
@@ -367,24 +368,14 @@ mod ffi {
 
         // ==================== Caches ====================
 
-        include!("eckit/geo/cache/MemoryCache.h");
-
-        /// eckit geo's process-global memory caches. They grow as distinct
-        /// grids are built and are never evicted, so a long-running process
-        /// has to reclaim them explicitly.
-        #[namespace = "eckit::geo::cache"]
-        type MemoryCache;
-
-        /// Total size of the caches, in bytes.
-        #[namespace = "eckit::geo::cache"]
-        #[Self = "MemoryCache"]
+        /// Total size of eckit geo's in-memory caches, in bytes.
+        #[Self = "GridWrapper"]
         #[must_use]
-        fn total_footprint() -> usize;
+        fn cache_footprint() -> usize;
 
-        /// Drop every cached entry.
-        #[namespace = "eckit::geo::cache"]
-        #[Self = "MemoryCache"]
-        fn total_purge();
+        /// Purge eckit geo's in-memory caches.
+        #[Self = "GridWrapper"]
+        fn cache_purge();
     }
 }
 

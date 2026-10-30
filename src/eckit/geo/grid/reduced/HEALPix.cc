@@ -9,30 +9,18 @@
 #include <regex>
 #include <utility>
 
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::range {
-
-
-namespace {
-
-
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-}  // namespace
 
 
 class HEALPixLatitude final : public Range {
@@ -47,14 +35,12 @@ public:
     [[nodiscard]] HEALPixLatitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        lock_type lock;
-
-        using cache_t = cache::MemoryCacheT<size_t, std::vector<double>>;
+        using cache_t = eckit::cache::MemoryCacheT<size_t, std::vector<double>>;
         const cache_t::key_type key{Nside_};
 
-        static cache_t cache;
-        if (cache.contains(key)) {
-            return cache[key];
+        static cache_t cache(LibEcKitGeo::memoryCaches());
+        if (const auto* cached = cache.find(key)) {
+            return *cached;
         }
 
         const auto Nj = size();
@@ -73,7 +59,7 @@ public:
 
         *i = 0.;
 
-        return (cache[key] = std::move(lats));
+        return cache.insert(key, std::move(lats));
     }
 
     size_t size() const override { return 4 * Nside_ - 1; }
@@ -100,14 +86,12 @@ public:
     [[nodiscard]] HEALPixLongitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        lock_type lock;
-
-        using cache_t = cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
+        using cache_t = eckit::cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
         const cache_t::key_type key{Nside_, j_};
 
-        static cache_t cache;
-        if (cache.contains(key)) {
-            return cache[key];
+        static cache_t cache(LibEcKitGeo::memoryCaches());
+        if (const auto* cached = cache.find(key)) {
+            return *cached;
         }
 
         const auto Ni = size();
@@ -120,7 +104,7 @@ public:
         std::generate_n(lons.begin(), Ni,
                         [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
 
-        return (cache[key] = std::move(lons));
+        return cache.insert(key, std::move(lons));
     }
 
     size_t size() const override {

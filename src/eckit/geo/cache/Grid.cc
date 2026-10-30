@@ -10,7 +10,7 @@
 #include <ostream>
 #include <string>
 
-#include "eckit/container/CacheManager.h"
+#include "eckit/cache/PathLock.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
@@ -18,7 +18,6 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/thread/AutoLock.h"
 #include "eckit/value/Content.h"
 
 
@@ -46,7 +45,8 @@ Grid& Grid::instance() {
 void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     lock_type lock;
 
-    if (!LibEcKitGeo::caching()) {
+    // not caching, or nowhere to write (a read-only cache)
+    if (!LibEcKitGeo::caching() || LibEcKitGeo::cacheWritablePaths().empty()) {
         return;
     }
 
@@ -61,8 +61,8 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     path.dirName().mkdir();
 
     // across processes: the read-modify-write is locked, and the file replaced (renamed), never seen partially written
-    CacheManagerFileFlock locker(path);
-    AutoLock<CacheManagerFileFlock> flock(locker);
+    eckit::cache::PathLock locker(path);
+    util::lock_guard<eckit::cache::PathLock> flock(locker);
 
     if (path.exists()) {
         ValueMap map(YAMLParser::decodeFile(path));
@@ -111,6 +111,16 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
                               << (name.empty() ? "" : ", name='" + name + "'") << ")" << std::endl;
 
     const auto tmp = PathName::unique(path);
+
+    struct RemoveIfLeft {
+        const PathName& tmp;
+        ~RemoveIfLeft() {
+            if (tmp.exists()) {
+                tmp.unlink(false);
+            }
+        }
+    } remove_if_left{tmp};
+
     std::ofstream fs(tmp.asString());
     ASSERT(fs);
 

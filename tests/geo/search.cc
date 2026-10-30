@@ -14,6 +14,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/search/KDTreeCache.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -83,16 +84,15 @@ std::vector<PointXYZ> random_points_on_unit_sphere(size_t n, unsigned seed) {
 }
 
 
+// the k-d tree loader is the library's (LibEcKitGeo::searchCacheLoader): this test runs for each (see CMakeLists.txt)
+
+
 // points along the X axis: 0, 1, 2, 3 and 10
 const std::vector<PointXYZ> LINE{{0., 0., 0.}, {1., 0., 0.}, {2., 0., 0.}, {3., 0., 0.}, {10., 0., 0.}};
 
 
-// shared memory removed at exit (tmp-shmem)
-const std::vector<std::string> LOADERS{"memory", "mmap", "file-io", "tmp-shmem"};
-
-
 CASE("Search: examples") {
-    const Search search(LINE, spec::Custom{{{"search-loader", "memory"}}});
+    const Search search(LINE);
     EXPECT(search.size() == LINE.size());
 
     SECTION("search_nn: nearest point") {
@@ -153,11 +153,7 @@ CASE("Search: examples") {
 CASE("Search: search(point), configured behaviour") {
     const PointXYZ q{1.4, 0., 0.};
 
-    auto make = [](const spec::Custom::container_type& c) {
-        auto custom = spec::Custom{c};
-        custom.set("search-loader", std::string{"memory"});
-        return std::make_unique<Search>(LINE, custom);
-    };
+    auto make = [](const spec::Custom::container_type& c) { return std::make_unique<Search>(LINE, spec::Custom{c}); };
 
     SECTION("nn (default)") {
         auto search = make({});
@@ -199,17 +195,15 @@ CASE("Search: search(point), configured behaviour") {
         EXPECT_THROWS_AS(make({{"search", "knn_and_radius"}, {"search-radius", 1.}}), exception::SearchError);
     }
 
-    SECTION("invalid loader") {
-        EXPECT_THROWS_AS(Search(LINE, spec::Custom{{{"search-loader", "unknown"}}}), exception::SearchError);
-        EXPECT_THROWS_AS(Search(std::vector<PointXYZ>{}, spec::Custom{{{"search-loader", "memory"}}}),
-                         exception::SearchError);
+    SECTION("no points") {
+        EXPECT_THROWS_AS(Search(std::vector<PointXYZ>{}), exception::SearchError);
     }
 }
 
 
 CASE("Search: (lon, lat) points") {
     // unit sphere, as configured
-    const spec::Custom spec{{{"search-loader", "memory"}, {"R", 1.}}};
+    const spec::Custom spec{{{"R", 1.}}};
 
     projection::LonLatToXYZ to_xyz(1.);
     const std::vector<PointXYZ> points{to_xyz.fwd(PointLonLat{0., 0.}), to_xyz.fwd(PointLonLat{90., 0.}),
@@ -242,7 +236,7 @@ CASE("Search: grid") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
     ASSERT(grid);
 
-    const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
+    const Search search(*grid, spec::Custom{});
     EXPECT(search.size() == grid->size());
 
     const auto nx = 360 / 30;
@@ -272,7 +266,7 @@ CASE("Search: grid, on the grid figure") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
     const auto R = grid->figure().R();  // spherical Earth
 
-    const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
+    const Search search(*grid, spec::Custom{});
 
     // equidistant to two points on the equator (lon = 0 and 30): chords subtending 15 degrees
     auto knn = search.search_knn(PointLonLat{15., 0.}, 2);
@@ -297,7 +291,7 @@ CASE("Search: grid points find themselves, on their figure") {
 
     for (const auto& g : grids) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(g));
-        const Search search(*grid, spec::Custom{{{"search-loader", "memory"}}});
+        const Search search(*grid, spec::Custom{});
 
         for (const auto& p : *grid) {
             EXPECT(search.search_nn(p).distance < 1e-6);
@@ -314,7 +308,7 @@ CASE("Grid::search") {
     EXPECT(&search == &grid->search());
     EXPECT(search.size() == grid->size());
 
-    const Search reference(*grid, spec::Custom{{{"search-loader", "memory"}}});
+    const Search reference(*grid, spec::Custom{});
 
     // away from ties (e.g. the poles, represented by coincident points)
     for (const auto& p : {PointLonLat{14., 1.}, PointLonLat{-100., 44.}, PointLonLat{170., -50.}}) {
@@ -329,36 +323,43 @@ CASE("Grid::search") {
 }
 
 
-CASE("Search: all loaders, compared to brute force") {
-    const auto points  = random_points_on_unit_sphere(1000, 42);
+CASE("Search: compared to brute force") {
+    // points new on every run (and build), so k-d trees are built, not loaded from a previous cache file
+    static const auto run = std::random_device{}();
+
     const auto queries = random_points_on_unit_sphere(50, 7);
 
     constexpr size_t k   = 7;
     constexpr double rad = 0.2;
 
-    for (const auto& loader : LOADERS) {
-        for (bool fast : {true, false}) {
-            SECTION(loader + (fast ? " (fast build)" : " (build by insertion)")) {
-                const Search search(points, spec::Custom{{{"search-loader", loader}, {"search-fast-build", fast}}});
-                EXPECT(search.size() == points.size());
+    for (bool fast : {true, false}) {
+        SECTION(fast ? "fast build" : "build by insertion") {
+            const auto points = random_points_on_unit_sphere(1000, run + (fast ? 0 : 1));
 
-                for (const auto& q : queries) {
-                    const auto all = brute_force(points, q);
+            const Search search(points, spec::Custom{{{"search-fast-build", fast}}});
+            EXPECT(search.size() == points.size());
 
-                    auto nn = search.search_nn(q);
-                    EXPECT(nn.index == all.front().index);
-                    EXPECT(approx(nn.distance, all.front().distance));
-                    EXPECT(nn.point == points[nn.index]);
+            for (const auto& q : queries) {
+                const auto all = brute_force(points, q);
 
-                    EXPECT(search.search_knn(q, k) == brute_force_knn(points, q, k));
-                    EXPECT(search.search_radius(q, rad) == brute_force_radius(points, q, rad));
+                auto nn = search.search_nn(q);
+                EXPECT(nn.index == all.front().index);
+                EXPECT(approx(nn.distance, all.front().distance));
+                EXPECT(nn.point == points[nn.index]);
 
-                    // union/intersection of prefixes (by distance) of the same sorted list: the longest/shortest
-                    auto knn    = brute_force_knn(points, q, k);
-                    auto radius = brute_force_radius(points, q, rad);
-                    EXPECT(search.search_knn_or_radius(q, k, rad) == (knn.size() > radius.size() ? knn : radius));
-                    EXPECT(search.search_knn_and_radius(q, k, rad) == (knn.size() < radius.size() ? knn : radius));
-                }
+                EXPECT(search.search_knn(q, k) == brute_force_knn(points, q, k));
+                EXPECT(search.search_radius(q, rad) == brute_force_radius(points, q, rad));
+
+                // union/intersection of prefixes (by distance) of the same sorted list: the longest/shortest
+                auto knn    = brute_force_knn(points, q, k);
+                auto radius = brute_force_radius(points, q, rad);
+                EXPECT(search.search_knn_or_radius(q, k, rad) == (knn.size() > radius.size() ? knn : radius));
+                EXPECT(search.search_knn_and_radius(q, k, rad) == (knn.size() < radius.size() ? knn : radius));
+            }
+
+            // not left in the cache directory (new on every run)
+            if (const auto* cached = dynamic_cast<const search::KDTreeCache*>(&search.kdtree()); cached != nullptr) {
+                cached->path().unlink(false);
             }
         }
     }

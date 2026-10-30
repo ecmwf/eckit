@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/cache/FileCache.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -18,7 +19,6 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/cache/CropCache.h"
-#include "eckit/geo/cache/Version.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -394,7 +394,7 @@ CASE("crop: cache") {
 
     // on disk, loaded once the in-memory cache is cleared
     if (LibEcKitGeo::caching()) {
-        const auto dir = PathName{LibEcKitGeo::cacheDir()} / "crop" / std::to_string(cache::version::CROP);
+        const auto dir = (PathName{LibEcKitGeo::cacheDir()} / cache::CropCache::file_cache().relative("key")).dirName();
         EXPECT(dir.exists());
 
         std::vector<PathName> files;

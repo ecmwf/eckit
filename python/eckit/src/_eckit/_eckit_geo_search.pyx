@@ -12,6 +12,7 @@ from libcpp.vector cimport vector
 _KEYS = {
     "k": "search-k",
     "radius": "search-radius",
+    "tolerance": "search-tolerance",
     "fast_build": "search-fast-build",
 }
 

@@ -32,7 +32,8 @@ namespace eckit::geo {
  * @details Points are geocentric (X, Y, Z): grid points as Grid::to_xyz, and queries either (X, Y, Z) or (lon, lat) on
  * the same figure. Distances are chord lengths (metres, on the Earth). Results are by increasing distance, then index.
  *
- * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius), search-k, search-radius.
+ * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius, knn_or_same_radius), search-k,
+ * search-radius, search-tolerance (metres, default 1).
  * Spec, of the k-d tree: search-fast-build; its loader is of the library (LibEcKitGeo::searchCacheLoader).
  */
 class Search {
@@ -70,11 +71,20 @@ public:
     /// As configured (spec)
     Neighbours search(const Point&) const;
 
+    /// As configured, for many points (queried in search::KDTree::query_order); @return neighbours in point order
+    std::vector<Neighbours> search(const std::vector<Point>&) const;
+
     Neighbour search_nn(const Point&) const;
     Neighbours search_knn(const Point&, size_t k) const;
     Neighbours search_radius(const Point&, double radius) const;
     Neighbours search_knn_or_radius(const Point&, size_t k, double radius) const;
     Neighbours search_knn_and_radius(const Point&, size_t k, double radius) const;
+
+    /**
+     * k nearest points or, if all as near (within tolerance, metres), all points as near, not an arbitrary k of them
+     * (e.g. at a pole)
+     */
+    Neighbours search_knn_or_same_radius(const Point&, size_t k, double tolerance = 1.) const;
 
     size_t size() const;
 
@@ -101,6 +111,7 @@ private:
         RADIUS,
         KNN_OR_RADIUS,
         KNN_AND_RADIUS,
+        KNN_OR_SAME_RADIUS,
     };
 
     /// k-d tree and (lon, lat) conversion, shareable between searches
@@ -110,9 +121,10 @@ private:
 
     std::shared_ptr<Shared> shared_;
 
-    Mode mode_     = Mode::NN;
-    size_t k_      = 0;
-    double radius_ = 0.;
+    Mode mode_        = Mode::NN;
+    size_t k_         = 0;
+    double radius_    = 0.;
+    double tolerance_ = 1.;
 
     // -- Methods
 

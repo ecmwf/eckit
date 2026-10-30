@@ -23,6 +23,19 @@ public:
 
     static LibEcKitCache& instance();
 
+    /**
+     * If a missing cache file is an error, not created, for provisioned caches
+     * (eckit-cache-throw-on-miss;$ECKIT_CACHE_THROW_ON_MISS, default from CMake eckit_CACHE_THROW_ON_MISS)
+     */
+    static bool throwOnMiss();
+
+    /**
+     * Maximum wait for another process loading into shared memory [s], then an error; 0 waits without a limit
+     * (eckit-cache-shared-memory-wait;$ECKIT_CACHE_SHARED_MEMORY_WAIT, default from CMake
+     * eckit_CACHE_SHARED_MEMORY_WAIT)
+     */
+    static int sharedMemoryWait_s();
+
 private:
 
     // -- Constructors

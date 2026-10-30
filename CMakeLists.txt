@@ -192,6 +192,11 @@ if( eckit_HAVE_CONVEX_HULL )
     target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
 endif()
 
+### eckit::cache
+
+set( eckit_CACHE_THROW_ON_MISS OFF CACHE BOOL "eckit::cache throw on cache miss default" )
+set( eckit_CACHE_SHARED_MEMORY_WAIT 60 CACHE STRING "eckit::cache maximum wait for shared memory being loaded [s] default" )
+
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO

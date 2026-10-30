@@ -3,6 +3,8 @@
 
 foreach(_test
         disk_cache
+        file_cache
+        loader
         roots)
     ecbuild_add_test(
         TARGET  eckit_test_cache_${_test}

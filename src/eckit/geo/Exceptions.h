@@ -38,13 +38,6 @@ public:
 };
 
 
-class DownloadError : public geo::Exception {
-public:
-
-    explicit DownloadError(const std::string&, const CodeLocation&);
-};
-
-
 class FigureError : public geo::Exception {
 public:
 

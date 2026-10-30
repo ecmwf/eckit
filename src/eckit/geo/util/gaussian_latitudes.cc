@@ -9,8 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/util.h"
 
 
@@ -20,12 +21,12 @@ namespace eckit::geo::util {
 const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
     ASSERT(N > 0);
 
-    using cache_t = cache::MemoryCacheT<std::pair<size_t, bool>, std::vector<double>>;
+    using cache_t = eckit::cache::MemoryCacheT<std::pair<size_t, bool>, std::vector<double>>;
     const cache_t::key_type key{N, increasing};
 
-    static cache_t cache;
-    if (cache.contains(key)) {
-        return cache[key];
+    static cache_t cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(key)) {
+        return *cached;
     }
 
 
@@ -103,7 +104,7 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
     }
 
 
-    return (cache[key] = std::move(lats));
+    return cache.insert(key, std::move(lats));
 }
 
 

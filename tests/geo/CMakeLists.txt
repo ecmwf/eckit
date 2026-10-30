@@ -9,7 +9,8 @@ function(eckit_geo_add_test _source_we)
         TARGET      eckit_test_geo_${_source_we}
         SOURCES     ${_source_we}.cc
         LIBS        eckit_geo ${_p_LIBS}
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" ${_p_ENVIRONMENT}
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" "ECKIT_GEO_CACHING=1"
+                    "ECKIT_GEO_SEARCH_LOADER=mapped-file" ${_p_ENVIRONMENT}
         ${_p_UNPARSED_ARGUMENTS} )
 endfunction()
 
@@ -17,7 +18,6 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
-        download
         figure
         figure_earth
         figure_sun
@@ -53,7 +53,6 @@ foreach(_test
         projection_space_view
         projection_stere
         range
-        search
         search_kdtree
         sh
         util)
@@ -76,7 +75,32 @@ foreach(_test
     eckit_geo_add_test(${_test} CONDITION eckit_HAVE_PROJ)
 endforeach()
 
-eckit_geo_add_test(unzip ARGS --unzip "${CMAKE_CURRENT_SOURCE_DIR}/test.zip" CONDITION eckit_HAVE_ZIP)
 eckit_geo_add_test(area_library WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+# searches, by each k-d tree loader (of the library, LibEcKitGeo::searchCacheLoader); shared memory not on macOS, where
+# the default limits (shmmax 4 MiB) are below the test grids k-d trees
+set(_loaders memory mapped-file file mapped-anonymous-memory)
+if(NOT APPLE)
+    list(APPEND _loaders tmp-shared-memory)
+endif()
+
+foreach(_loader ${_loaders})
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_search_${_loader}
+        SOURCES     search.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" "ECKIT_GEO_CACHING=1"
+                    "ECKIT_GEO_SEARCH_LOADER=${_loader}" )
+endforeach()
+
+# cache directories: read-only, then writable (given by an environment variable, as an expansion)
+eckit_geo_add_test(cache_roots ENVIRONMENT
+    "ECKIT_GEO_TEST_CACHE_RW=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/rw"
+    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/ro:{ENVVAR?ECKIT_GEO_TEST_CACHE_RW}")
+
+# read-only cache (not caching): cache files are only found, and computed in memory otherwise
+eckit_geo_add_test(cache_readonly ENVIRONMENT
+    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_readonly"
+    "ECKIT_GEO_CACHING=0")
 
 add_subdirectory(integration)

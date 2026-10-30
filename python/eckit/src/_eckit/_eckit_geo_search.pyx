@@ -10,7 +10,6 @@ from libcpp.vector cimport vector
 
 # Python-friendly spec keys
 _KEYS = {
-    "loader": "search-loader",
     "k": "search-k",
     "radius": "search-radius",
     "fast_build": "search-fast-build",
@@ -34,8 +33,9 @@ cdef class Search:
     Points are (lon, lat) or geocentric (x, y, z); results are (index, distance), by
     increasing distance (chord length, in metres on the Earth).
 
-    Searches are shared by grid and spec (loader, k, radius, search, ..., see
-    eckit::geo::Search) in a cache, within its capacity (see search_cache_statistics).
+    Searches of a grid share a k-d tree, cached by grid and k-d tree configuration
+    within the cache capacity (see search_cache_statistics); k, radius, ... are per
+    search.
     """
     cdef eckit_geo_search.SearchHandle* _handle
 
@@ -84,7 +84,7 @@ cdef class Search:
         """Memory used (bytes), in the process and shared (shared memory, page
         cache)."""
         usage = eckit_geo_search.search_footprint(dereference(self._handle))
-        return dict(zip(("memory", "shared"), usage))
+        return dict(zip(("process", "shared"), usage))
 
     def __len__(self) -> int:
         return eckit_geo_search.search_size(dereference(self._handle))

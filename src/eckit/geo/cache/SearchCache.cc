@@ -18,13 +18,29 @@ SearchCache& SearchCache::instance() {
 }
 
 
-SearchCache::SearchCache() : InMemoryCache(MemoryUsage{LibEcKitGeo::searchCacheCapacity()}) {}
+const eckit::cache::FileCache& SearchCache::file_cache() {
+    static const eckit::cache::FileCache cache(
+        LibEcKitGeo::cacheRoots(), "search", VERSION, ".kdtree",
+        [] {
+            eckit::cache::Loader::Options options;
+            options.magic            = MAGIC;
+            options.huge_pages       = LibEcKitGeo::sharedMemoryHugePages();
+            options.round_huge_pages = LibEcKitGeo::sharedMemoryRoundHugePages();
+            return options;
+        }(),
+        LibEcKitGeo::cacheThrowOnMiss());
+    return cache;
+}
+
+
+SearchCache::SearchCache() :
+    MemoryCache(LibEcKitGeo::memoryCaches(), LibEcKitGeo::searchCacheCapacity(), LibEcKitGeo::searchCachePolicy()) {}
 
 
 std::shared_ptr<const Search> SearchCache::get(const Grid& grid, const spec::Spec& spec) {
     const auto kdtree = Search::spec_kdtree(spec);
-    const auto search = InMemoryCache::get(grid.uid() + kdtree->str(), Search::estimate(grid.size(), *kdtree),
-                                           [&]() { return std::make_shared<const Search>(grid, *kdtree); });
+    const auto search = MemoryCache::get(Search::uid(grid) + kdtree->str(), Search::estimate(grid.size()),
+                                         [&]() { return std::make_shared<const Search>(grid, *kdtree); });
 
     if (!Search::spec_has_behaviour(spec)) {
         return search;

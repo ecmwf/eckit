@@ -54,23 +54,14 @@ list(APPEND eckit_geo_srcs
     cache/Crop.h
     cache/CropCache.cc
     cache/CropCache.h
-    cache/DiskCache.cc
-    cache/DiskCache.h
-    cache/Download.cc
     cache/Download.h
     cache/Grid.cc
     cache/Grid.h
-    cache/InMemoryCache.h
     cache/LatitudeLongitude.cc
     cache/LatitudeLongitude.h
-    cache/MemoryCache.cc
-    cache/MemoryCache.h
-    cache/MemoryUsage.cc
-    cache/MemoryUsage.h
     cache/RecordCache.h
     cache/SearchCache.cc
     cache/SearchCache.h
-    cache/Version.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -153,18 +144,12 @@ list(APPEND eckit_geo_srcs
     range/Regular.h
     range/RegularXY.cc
     range/RegularXY.h
-    search/FileIO.cc
-    search/FileIO.h
     search/KDTree.cc
     search/KDTree.h
-    search/LoadedFile.cc
-    search/LoadedFile.h
-    search/MappedFile.cc
-    search/MappedFile.h
-    search/Memory.cc
-    search/Memory.h
-    search/SharedMemory.cc
-    search/SharedMemory.h
+    search/KDTreeCache.cc
+    search/KDTreeCache.h
+    search/KDTreeMemory.cc
+    search/KDTreeMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc
@@ -190,7 +175,7 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_codec eckit_maths eckit_spec)
+set(eckit_geo_libs eckit_cache eckit_codec eckit_maths eckit_spec)
 set(eckit_geo_private_libs)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID
@@ -210,14 +195,6 @@ if(eckit_HAVE_PROJ)
         projection/PROJ.h
     )
     list(APPEND eckit_geo_private_libs PROJ::proj)
-endif()
-
-if(eckit_HAVE_ZIP)
-    list(APPEND eckit_geo_srcs
-        cache/Unzip.cc
-        cache/Unzip.h
-    )
-    list(APPEND eckit_geo_private_libs libzip::zip)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)

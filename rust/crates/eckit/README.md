@@ -78,10 +78,9 @@ fn main() -> eckit::Result<()> {
 }
 ```
 
-Unstructured grids (from coordinates, or cropping projected grids) keep their
-points in eckit geo's cache, enabled with `ECKIT_GEO_CACHING=true` and located
-by `ECKIT_GEO_CACHE_PATH` (default `~/.cache/eckit/geo`); see the `geo` module
-documentation.
+Searches, crops and unstructured grids are kept in memory, and also in cache
+files with `ECKIT_GEO_CACHING=true`, located by `ECKIT_GEO_CACHE_PATH` (default
+`~/.cache/eckit/geo`); see the `geo` module documentation.
 
 ## Cargo build features
 

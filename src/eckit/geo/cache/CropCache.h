@@ -5,9 +5,12 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
+#include "eckit/cache/FileCache.h"
+#include "eckit/cache/MemoryCache.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/cache/Crop.h"
-#include "eckit/geo/cache/InMemoryCache.h"
 
 
 namespace eckit::geo {
@@ -21,21 +24,30 @@ namespace eckit::geo::cache {
 
 /**
  * @brief Crops shared in the process, by grid and area, within a capacity (as mir's area cache)
- * @details When caching, crops are loaded from the cache directory (crop/VERSION/<key>.crop), or calculated and saved
- * there exclusively across processes (eckit::CacheManager: the creation is locked, written to a process-specific file
- * then renamed, so other processes never read a partial file). Capacity is from resource
- * eckit-geo-cache-crop-capacity;$ECKIT_GEO_CACHE_CROP_CAPACITY, as "memory[,shared]" (bytes).
+ * @details When caching, also shared across processes by cache file (see file_cache()), an eckit::FileStream (see
+ * eckit::cache::loader::Stream) so a truncated or foreign file fails to read.
  */
-class CropCache final : public InMemoryCache<Crop> {
+class CropCache final : public eckit::cache::MemoryCache<Crop> {
 public:
 
     // -- Methods
 
     std::shared_ptr<const Crop> get(const Grid&, const Area&);
 
+    // -- Class members
+
+    /// Cache file layout version (part of its path)
+    static constexpr int VERSION = 2;
+
+    /// Content kind, where shared between processes (see eckit::cache::Loader::Options)
+    static constexpr int MAGIC = 0x63726f70;  // "crop"
+
     // -- Class methods
 
     static CropCache& instance();
+
+    /// Cache files of crops (crop/VERSION/<key>.crop)
+    static const eckit::cache::FileCache& file_cache();
 
     /// Grid points contained in the area, by index, as the grid; cropping unprojected grids by a bounding box, points
     /// are as the cropped grid (rows are from the bounding box west)

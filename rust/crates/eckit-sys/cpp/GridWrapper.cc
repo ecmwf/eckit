@@ -13,6 +13,7 @@
 #include "eckit-sys/src/geo.rs.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
@@ -91,7 +92,7 @@ bool has_longitudes(const Grid& grid) {
 }
 
 // Copied, not borrowed: `Range::values()` may return a reference into the
-// process-global memory cache, which `MemoryCache::total_purge()` frees.
+// process-global memory cache, which `LibEcKitGeo::purgeCache()` frees.
 rust::Vec<double> values(const Range& range) {
     return RustVec::copy<double>(range.values());
 }
@@ -338,5 +339,15 @@ std::unique_ptr<GridWrapper> GridWrapper::from_latlons(rust::Slice<const double>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+size_t GridWrapper::cache_footprint() {
+    return eckit::LibEcKitGeo::cacheFootprint().total();
+}
+
+
+void GridWrapper::cache_purge() {
+    eckit::LibEcKitGeo::purgeCache();
+}
+
 
 }  // namespace eckit_bridge

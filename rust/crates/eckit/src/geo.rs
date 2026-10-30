@@ -16,14 +16,14 @@
 //!
 //! # Caching
 //!
-//! Unstructured grids ([`Grid::from_latlons`], [`Grid::to_unstructured_ll`],
-//! [`Grid::cropped_unstructured_ll`], and so the cropping of projected grids)
-//! and polygon areas keep their coordinates in eckit geo's cache, which has to
-//! be enabled: resource `eckit-geo-caching` or environment variable
-//! `ECKIT_GEO_CACHING`, defaulting to the `geo-caching` feature of `eckit-sys`
-//! (off). The cache directory is resource `eckit-geo-cache-path` or
-//! `ECKIT_GEO_CACHE_PATH`, by default `~/.cache/eckit/geo`. Without it, those
-//! grids fail to build with a `CacheManager cannot create key` error.
+//! Searches, crops and the coordinates of unstructured grids ([`Grid::from_latlons`],
+//! [`Grid::to_unstructured_ll`], [`Grid::cropped_unstructured_ll`]) are kept in
+//! memory, and also written to cache files when caching is enabled: resource
+//! `eckit-geo-caching` or environment variable `ECKIT_GEO_CACHING`, defaulting
+//! to the `geo-caching` feature of `eckit-sys` (off). Cache paths are resource
+//! `eckit-geo-cache-path` or `ECKIT_GEO_CACHE_PATH` (`path1:path2:...`,
+//! searched in order, written to the first writable), by default
+//! `~/.cache/eckit/geo`.
 //!
 //! eckit registers every unstructured grid by uid in a process-wide registry
 //! as it is built, re-registering on each build. Building grids of the same
@@ -167,7 +167,7 @@ impl Grid {
     /// Named, it is also rebuilt by [`Grid::from_name`]; the name does not
     /// change the uid.
     ///
-    /// Needs eckit geo's cache (see the [module docs](self#caching)).
+    /// Its coordinates are cached (see the [module docs](self#caching)).
     ///
     /// ```no_run
     /// # fn main() -> eckit::Result<()> {
@@ -484,7 +484,7 @@ impl Grid {
     }
 
     /// This grid as an unstructured grid of the same (lon, lat) points,
-    /// optionally named; see [`Grid::from_latlons`], and the cache it needs.
+    /// optionally named; see [`Grid::from_latlons`].
     pub fn to_unstructured_ll(&self, name: Option<&str>) -> Result<Self> {
         self.inner
             .to_unstructured_ll(name.unwrap_or_default())
@@ -517,9 +517,7 @@ impl Grid {
     /// geographic grid by a bounding box), otherwise unstructured; its points
     /// are those of [`Grid::crop`], in that order.
     ///
-    /// An unstructured result needs eckit geo's cache (see the [module
-    /// docs](self#caching)); an empty intersection is a
-    /// [`Error::GridError`](crate::Error).
+    /// An empty intersection is a [`Error::GridError`](crate::Error).
     pub fn cropped(&self, area: impl AsRef<Area>) -> Result<Self> {
         self.inner
             .make_grid_cropped(area.as_ref().as_sys())
@@ -566,8 +564,8 @@ impl Grid {
     ///
     /// Keys: `search` (`nn`, `knn`, `radius`, `knn_or_radius`,
     /// `knn_and_radius`), `search-k`, `search-radius` (metres), and for the
-    /// k-d tree `search-loader` (`memory`, `mapped-memory`, `file-io`,
-    /// `shmem`, ...), `caching`, `search-fast-build`.
+    /// k-d tree `search-fast-build` (its loader is the library's,
+    /// `eckit-geo-search-loader`).
     ///
     /// ```
     /// # fn main() -> eckit::Result<()> {
@@ -718,12 +716,14 @@ impl SpecGet for Vec<String> {
 
 /// Total size of eckit geo's process-global memory caches, in bytes.
 ///
-/// These caches grow as distinct grids are built (Gaussian latitudes, `HEALPix`
+/// Searches and crops are evicted beyond their capacities (resources
+/// `eckit-geo-cache-search-capacity`, `eckit-geo-cache-crop-capacity`); the
+/// other caches grow as distinct grids are built (Gaussian latitudes, `HEALPix`
 /// tables, downloaded grid data) and are never evicted, so a long-running
 /// process should watch this and call [`cache_purge`].
 #[must_use]
 pub fn cache_footprint() -> usize {
-    eckit_sys::geo::MemoryCache::total_footprint()
+    eckit_sys::geo::GridWrapper::cache_footprint()
 }
 
 /// Drop every entry from eckit geo's process-global memory caches.
@@ -733,5 +733,5 @@ pub fn cache_footprint() -> usize {
 /// purge while another thread is inside [`Grid::fill_latlons`],
 /// [`Grid::to_latlons`] or any other grid call.
 pub fn cache_purge() {
-    eckit_sys::geo::MemoryCache::total_purge();
+    eckit_sys::geo::GridWrapper::cache_purge();
 }

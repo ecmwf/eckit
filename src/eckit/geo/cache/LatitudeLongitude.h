@@ -12,6 +12,11 @@
 #include "eckit/geo/cache/RecordCache.h"
 
 
+namespace eckit::cache {
+class FileCache;
+}
+
+
 namespace eckit::geo::cache {
 
 
@@ -20,18 +25,24 @@ public:
 
     using uid_type = geo::Grid::uid_type;
 
+    /// Cache file layout version (part of its path)
+    static constexpr int VERSION = 1;
+
     LatitudeLongitude() = default;
     LatitudeLongitude(const std::vector<double>&, const std::vector<double>&);
 
     static const LatitudeLongitude& get(const uid_type&);
     static const LatitudeLongitude& set(const uid_type&, LatitudeLongitude&&);
 
-    bytes_size_t footprint() const override { return 2 * size() * sizeof(double); }
+    eckit::cache::MemoryUsage footprint() const override { return {2 * size() * sizeof(double), 0}; }
 
     void read(const PathName&) override;
     void write(const PathName&) const;
 
     PathName to_cached_path() const;
+
+    /// Cache files of coordinates (latlon/VERSION/<uid>.ek), written locally for grids defined by their points
+    static const eckit::cache::FileCache& file_cache();
 
     size_t size() const;
 

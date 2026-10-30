@@ -7,11 +7,17 @@
 #include <string>
 #include <vector>
 
+#include "eckit/cache/MemoryUsage.h"
+#include "eckit/cache/Roots.h"
 #include "eckit/system/Library.h"
 
 
 namespace eckit {
 class PathName;
+}
+
+namespace eckit::cache {
+class MemoryCaches;
 }
 
 
@@ -31,20 +37,74 @@ public:
     static PathName cacheGrid();
     static PathName cacheProjection();
 
+    // -- Caching
+    //
+    // Expensive results (k-d trees, crops, grid coordinates) are cached in-process and in cache files, set by resources
+
+    /**
+     * If cache files are written (eckit-geo-caching;$ECKIT_GEO_CACHING, default from CMake feature GEO_CACHING);
+     * otherwise existing cache files are still found, and misses are computed in-process (searches in memory, see
+     * searchCacheLoader) or fail (downloads)
+     */
     static bool caching();
+
+    /**
+     * Cache paths (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH, "path1:path2:...", see eckit::cache::Roots), read once:
+     * searched in order, written to the first writable
+     */
+    static const cache::Roots& cacheRoots();
+
+    /// Cache paths existing (searched) and writable (none if not caching), as they are when called
+    static std::vector<PathName> cacheReadablePaths();
+    static std::vector<PathName> cacheWritablePaths();
+
+    /// Cache path for writing, the first writable (throws if none)
     static std::string cacheDir();
 
-    /// Search loader when caching (see search::KDTreeFactory)
-    static std::string searchLoader();
-    static bool searchFastBuild();
+    /**
+     * If a missing cache file is an error rather than computed, for provisioned caches
+     * (eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS, default LibEcKitCache::throwOnMiss)
+     */
+    static bool cacheThrowOnMiss();
 
-    static std::string searchCacheCapacity();
-    static std::string cropCacheCapacity();
+    /// k-d tree loader (eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER, default mapped-file), memory if not caching
+    static std::string searchCacheLoader();
 
-    static void purgeCacheDir();
-    static void purgeCacheArea();
-    static void purgeCacheGrid();
-    static void purgeCacheProjection();
+    /**
+     * If shared memory uses huge pages (where reserved), and if its size is rounded up to the huge page size
+     * (eckit-geo-shared-memory-[round-]hugepages, default false)
+     */
+    static bool sharedMemoryHugePages();
+    static bool sharedMemoryRoundHugePages();
+
+    /**
+     * In-process cache capacities, "process[,shared]" (eckit-geo-cache-{search,crop}-capacity, default from CMake
+     * eckit_GEO_CACHE_{SEARCH,CROP}_CAPACITY; see eckit::cache::MemoryCache)
+     */
+    static cache::MemoryUsage searchCacheCapacity();
+    static cache::MemoryUsage cropCacheCapacity();
+
+    /// In-process cache eviction policies (eckit-geo-cache-{search,crop}-policy, default lru; see eckit::cache::Policy)
+    static std::string searchCachePolicy();
+    static std::string cropCachePolicy();
+
+    /**
+     * Release in-process caches, all or by kind (cache files are kept); searches and crops in use stay valid, but
+     * purgeCache invalidates values returned by reference (e.g. Gaussian latitudes)
+     */
+    static void purgeCache();
+    static void purgeCacheSearch();
+    static void purgeCacheCrop();
+    static cache::MemoryUsage cacheFootprint();
+
+    /// In-process caches of eckit::geo (see purgeCache and cacheFootprint)
+    static cache::MemoryCaches& memoryCaches();
+
+    /// Remove the cache directory for writing (none: nothing to remove), or parts of it (none: throws, see cacheDir)
+    static void removeCacheDir();
+    static void removeCacheArea();
+    static void removeCacheGrid();
+    static void removeCacheProjection();
 
     static std::string url(const std::string& url_path);
     static std::string url(const std::string& url_path, const std::string& url_prefix);

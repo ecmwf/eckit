@@ -11,16 +11,17 @@
 namespace eckit::geo::search {
 
 
-class Memory final : public KDTree {
+/// k-d tree in private memory, built every time (no cache file, see KDTreeCache)
+class KDTreeMemory final : public KDTree {
 public:
 
     // -- Types
 
-    using Container = KDTreeMemory<Traits>;
+    using Container = eckit::KDTreeMemory<Traits>;
 
     // -- Constructors
 
-    Memory(const std::string& uid, size_t size);
+    explicit KDTreeMemory(size_t size);
 
     // -- Class methods
 
@@ -28,16 +29,11 @@ public:
 
     // -- Overridden methods
 
-    void build(std::vector<Value>&) override;
-    void insert(const Value&) override;
+    bool build(const Fill&, bool balanced = true) override;
 
     Neighbour nearest_neighbour(const Point&) override;
     Neighbours k_nearest_neighbours(const Point&, size_t k) override;
     Neighbours find_in_sphere(const Point&, double radius) override;
-
-    bool ready() override { return false; }
-    void commit() override {}
-
 
     void stats_print(std::ostream&, bool pretty) const override;
     void stats_reset() override;

@@ -5,6 +5,8 @@
 list(APPEND eckit_cache_srcs
     DiskCache.cc
     DiskCache.h
+    Download.cc
+    Download.h
     Exceptions.cc
     Exceptions.h
     FileCache.cc
@@ -23,6 +25,8 @@ list(APPEND eckit_cache_srcs
     Policy.h
     Roots.cc
     Roots.h
+    Unzip.cc
+    Unzip.h
     loader/File.cc
     loader/File.h
     loader/Stream.cc
@@ -46,12 +50,18 @@ install(
     DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cache
 )
 
+set(eckit_cache_private_libs)
+if(eckit_HAVE_ZIP)
+    list(APPEND eckit_cache_private_libs libzip::zip)
+endif()
+
 ecbuild_add_library(
     TARGET eckit_cache
     TYPE SHARED
     INSTALL_HEADERS ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cache
     PUBLIC_LIBS eckit
+    PRIVATE_LIBS ${eckit_cache_private_libs}
 
     PUBLIC_INCLUDES
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>

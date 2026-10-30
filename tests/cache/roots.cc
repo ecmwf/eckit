@@ -11,9 +11,13 @@
 #include <string>
 
 #include "eckit/cache/DiskCache.h"
+#include "eckit/cache/Download.h"
+#include "eckit/cache/Exceptions.h"
 #include "eckit/cache/Roots.h"
+#include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit::cache::test {
@@ -157,6 +161,32 @@ CASE("Roots: readable and writable paths, as they are when asked") {
 
     DiskCache::remove(a.dirName());
 }
+
+
+#if eckit_HAVE_CURL
+CASE("Download: found in any root, downloaded to the first writable") {
+    const auto a = unique_dir("download-a");
+    const auto b = unique_dir("download-b");
+
+    // never downloaded, found in the second root
+    const std::string url = "file:///does/not/exist/eckit_test_cache_roots";
+    write(b / (MD5{url}.digest() + ".download"), "cached");
+
+    const Download download(Roots(std::vector<PathName>{a, b}));
+    const auto path = download.toCachedPath(url, "", ".download");
+    EXPECT(path == b / (MD5{url}.digest() + ".download"));
+    EXPECT(read(path) == "cached");
+
+    // downloaded to the first (writable) root
+    const auto source = unique_dir("download-source");
+    write(source, "source");
+
+    const auto url_source = "file://" + source.fullName().asString();
+    EXPECT(download.toCachedPath(url_source).dirName() == a);
+
+    DiskCache::remove(a.dirName());
+}
+#endif
 
 
 }  // namespace eckit::cache::test

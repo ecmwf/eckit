@@ -181,6 +181,7 @@ fn build_system() -> std::path::PathBuf {
     #[cfg(feature = "eckit-geo")]
     {
         println!("cargo:rustc-link-lib=dylib=eckit_geo");
+        println!("cargo:rustc-link-lib=dylib=eckit_cache");
         println!("cargo:rustc-link-lib=dylib=eckit_spec");
         println!("cargo:rustc-link-lib=dylib=eckit_maths");
     }
@@ -479,6 +480,7 @@ fn build_vendored() -> std::path::PathBuf {
     #[cfg(feature = "eckit-geo")]
     {
         println!("cargo:rustc-link-lib=dylib=eckit_geo");
+        println!("cargo:rustc-link-lib=dylib=eckit_cache");
         println!("cargo:rustc-link-lib=dylib=eckit_spec");
         println!("cargo:rustc-link-lib=dylib=eckit_maths");
     }

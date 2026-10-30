@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/cache/MemoryCache.h"
-#include "eckit/geo/util/mutex.h"
 
 
 namespace eckit::spec {
@@ -20,11 +22,9 @@ namespace eckit::geo::cache {
 class RecordCache {
 public:
 
-    using bytes_size_t = MemoryCache::bytes_size_t;
-
     virtual ~RecordCache() = default;
 
-    virtual MemoryCache::bytes_size_t footprint() const = 0;
+    virtual eckit::cache::MemoryUsage footprint() const = 0;
     virtual void read(const PathName&)                  = 0;
 };
 
@@ -41,42 +41,27 @@ public:
         virtual void load(const key_type&, value_type&) const = 0;
     };
 
-    explicit RecordCacheT(const Loader& loader) : loader_(loader) {}
+    RecordCacheT(eckit::cache::MemoryCaches& group, const Loader& loader) : cache_(group), loader_(loader) {}
 
-    bool has(const key_type& key) {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-        return cache_.contains(key);
-    }
+    bool has(const key_type& key) const { return cache_.find(key) != nullptr; }
 
     const value_type& get(const key_type& key) {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-        if (cache_.contains(key)) {
-            return cache_[key];
+        if (const auto* cached = cache_.find(key)) {
+            return *cached;
         }
 
-        auto& record = cache_[key];
+        value_type record;
         loader_.load(key, record);
-
-        return record;
+        return cache_.insert(key, std::move(record));
     }
 
-    const value_type& set(const key_type& key, value_type&& record) {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-        if (cache_.contains(key)) {
-            return cache_[key];
-        }
-        return cache_[key] = std::move(record);
-    }
+    const value_type& set(const key_type& key, value_type&& record) { return cache_.insert(key, std::move(record)); }
 
-    void purge() {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-        cache_.purge();
-    }
+    void purge() { cache_.purge(); }
 
 private:
 
-    util::recursive_mutex mutex_;
-    MemoryCacheT<key_type, value_type> cache_;
+    eckit::cache::MemoryCacheT<key_type, value_type> cache_;
     const Loader& loader_;
 };
 

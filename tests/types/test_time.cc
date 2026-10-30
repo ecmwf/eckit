@@ -160,6 +160,24 @@ CASE("Time with unit (__h__m__s)") {
     EXPECT(Time("2D3h", true) == Time("51h", true));
 }
 
+CASE("Time weeks unit") {
+    EXPECT(Time("1w", true) == Time("168h", true));
+    EXPECT(Time("1W", true) == Time("7d", true));
+    EXPECT(Time("2w", true) == Time(14 * 86400, true));
+    EXPECT(Time("1w2d3h4m5s", true) == Time(7 * 86400 + 2 * 86400 + 3 * 3600 + 4 * 60 + 5, true));
+    EXPECT(Time("1w3h", true) == Time("171h", true));
+    EXPECT(Time("-1w", true) == Time(-168, 0, 0, true));
+    EXPECT(Time("0w3h10m20s") == Time("3h10m20s"));
+
+    EXPECT_THROWS(Time("1w"));
+    EXPECT_THROWS(Time("1w2d"));
+    EXPECT_THROWS(Time("1d1w", true));
+    EXPECT_THROWS(Time("1h1w", true));
+    EXPECT_THROWS(Time("1w1w", true));
+    EXPECT_THROWS(Time("1.5w", true));
+    EXPECT_THROWS(Time("1:00w", true));
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test

@@ -4,7 +4,9 @@
 foreach(_test
         disk_cache
         file_cache
+        memory_cache
         loader
+        policy
         roots)
     ecbuild_add_test(
         TARGET  eckit_test_cache_${_test}

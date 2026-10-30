@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <locale>
 
@@ -18,8 +20,21 @@ DateTime::DateTime(const DateTime& other) : date_(other.date_), time_(other.time
 
 DateTime::DateTime(double julian) : date_(long(julian), true), time_((julian - long(julian)) * 24 * 60 * 60) {}
 
-DateTime::DateTime(const std::string& s) {
-    Tokenizer parse(" ");
+DateTime::DateTime(const std::string& str) {
+    // A trailing 'Z' is the UTC designator; DateTime is always UTC
+    const std::string s = (!str.empty() && str.back() == 'Z') ? str.substr(0, str.length() - 1) : str;
+
+    // Compact forms: YYYYMMDDHHMMSS and YYYYMMDDHHMM
+    if ((s.length() == 14 || s.length() == 12) &&
+        std::all_of(s.begin(), s.end(), [](unsigned char c) { return std::isdigit(c); })) {
+        date_ = Date(s.substr(0, 8));
+        time_ = Time(s.substr(8));
+        return;
+    }
+
+    // Separator is a space or an upper case 'T' (ISO 8601); a lower case 't' is not accepted
+    // because it can be part of a month name (e.g. "oct")
+    Tokenizer parse(s.find(' ') != std::string::npos ? " " : "T");
     std::vector<std::string> result;
 
     parse(s, result);

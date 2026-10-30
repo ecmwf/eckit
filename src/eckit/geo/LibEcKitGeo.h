@@ -13,8 +13,9 @@
 
 
 namespace eckit {
+class JSON;
 class PathName;
-}
+}  // namespace eckit
 
 namespace eckit::cache {
 class MemoryCaches;
@@ -99,6 +100,15 @@ public:
 
     /// In-process caches of eckit::geo (see purgeCache and cacheFootprint)
     static cache::MemoryCaches& memoryCaches();
+
+    /**
+     * Caching state (JSON, sizes in bytes): memory, in-process (process and shared) footprint, capacity, policy and
+     * statistics of searches and crops; disk, its control (caching, throw on miss, paths) and cache files by kind
+     */
+    static std::string cacheInfo();
+
+    /// As cacheInfo, into a JSON (e.g. a section of the cache report of a library using eckit::geo)
+    static void cacheInfo(JSON&);
 
     /// Remove the cache directory for writing (none: nothing to remove), or parts of it (none: throws, see cacheDir)
     static void removeCacheDir();

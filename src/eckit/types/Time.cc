@@ -31,7 +31,8 @@ enum class TimeFormat {
 struct tokenized_time {
     TimeFormat type;
     bool minus{false};
-    std::string_view integers[4];
+    // Tokens are: weeks, days, hours, minutes, seconds
+    std::string_view integers[5];
 };
 
 tokenized_time checkTimeFormat(const std::string_view time) {
@@ -47,54 +48,50 @@ tokenized_time checkTimeFormat(const std::string_view time) {
     size_t tokenId    = 0;
     size_t tokenStart = start;
 
+    // Handles a unit letter, storing the preceding digits in integers[unitId]; units must appear in order
+    auto setUnit = [&](size_t unitId, size_t i) {
+        if (hasColon || hasDecimal || tokenId > unitId) {
+            tt.type = TimeFormat::INVALID;
+            return false;
+        }
+        hasUnits            = true;
+        tt.type             = TimeFormat::UNITS;
+        tt.integers[unitId] = time.substr(tokenStart, i - tokenStart);
+        tokenId             = unitId + 1;
+        tokenStart          = i + 1;
+        return true;
+    };
+
     for (auto i = start; i < time.length(); i++) {
         switch (std::tolower(time[i])) {
-            case 'd': {
-                if (hasColon || hasDecimal || tokenId > 0) {
-                    tt.type = TimeFormat::INVALID;
+            case 'w': {
+                if (!setUnit(0, i)) {
                     return tt;
                 }
-                hasUnits       = true;
-                tt.type        = TimeFormat::UNITS;
-                tt.integers[0] = time.substr(tokenStart, i - tokenStart);
-                tokenId        = 1;
-                tokenStart     = i + 1;
+                break;
+            }
+            case 'd': {
+                if (!setUnit(1, i)) {
+                    return tt;
+                }
                 break;
             }
             case 'h': {
-                if (hasColon || hasDecimal || tokenId > 1) {
-                    tt.type = TimeFormat::INVALID;
+                if (!setUnit(2, i)) {
                     return tt;
                 }
-                hasUnits       = true;
-                tt.type        = TimeFormat::UNITS;
-                tt.integers[1] = time.substr(tokenStart, i - tokenStart);
-                tokenId        = 2;
-                tokenStart     = i + 1;
                 break;
             }
             case 'm': {
-                if (hasColon || hasDecimal || tokenId > 2) {
-                    tt.type = TimeFormat::INVALID;
+                if (!setUnit(3, i)) {
                     return tt;
                 }
-                hasUnits       = true;
-                tt.type        = TimeFormat::UNITS;
-                tt.integers[2] = time.substr(tokenStart, i - tokenStart);
-                tokenId        = 3;
-                tokenStart     = i + 1;
                 break;
             }
             case 's': {
-                if (hasColon || hasDecimal || tokenId > 3) {
-                    tt.type = TimeFormat::INVALID;
+                if (!setUnit(4, i)) {
                     return tt;
                 }
-                hasUnits       = true;
-                tt.type        = TimeFormat::UNITS;
-                tt.integers[3] = time.substr(tokenStart, i - tokenStart);
-                tokenId        = 4;
-                tokenStart     = i + 1;
                 break;
             }
             case '.': {
@@ -106,12 +103,12 @@ tokenized_time checkTimeFormat(const std::string_view time) {
                 break;
             }
             case ':': {
-                if (!hasColon) {  // First colon, skip the dd token
+                if (!hasColon) {  // First colon, skip the weeks and days tokens
                     tt.type  = TimeFormat::COLON;
                     hasColon = true;
-                    tokenId  = 1;
+                    tokenId  = 2;
                 }
-                if (tokenId > 2 || i <= tokenStart) {
+                if (tokenId > 3 || i <= tokenStart) {
                     tt.type = TimeFormat::INVALID;
                     return tt;
                 }
@@ -135,7 +132,7 @@ tokenized_time checkTimeFormat(const std::string_view time) {
         }
     }
     else if (!hasUnits) {
-        tt.integers[1] = time.substr(tokenStart);
+        tt.integers[2] = time.substr(tokenStart);
         tt.type        = hasDecimal ? TimeFormat::DECIMAL : TimeFormat::DIGITS;
     }
     return tt;
@@ -201,7 +198,7 @@ Time::Time(const std::string& s, bool extended) {
 
     switch (tt.type) {
         case TimeFormat::DIGITS: {
-            long t   = (tt.minus ? -1 : 1) * s2l(tt.integers[1]);
+            long t   = (tt.minus ? -1 : 1) * s2l(tt.integers[2]);
             int sign = (tt.minus ? 1 : 0);
             if (extended || s.length() <= 2 + sign) {  // cases: h, hh, (or hhh..h for step parsing)
                 hh = t;
@@ -220,7 +217,7 @@ Time::Time(const std::string& s, bool extended) {
             break;
         }
         case TimeFormat::DECIMAL: {
-            long sec = std::lround((tt.minus ? -1 : 1) * s2d(tt.integers[1]) * 3600);
+            long sec = std::lround((tt.minus ? -1 : 1) * s2d(tt.integers[2]) * 3600);
             hh       = sec / 3600;
             sec -= hh * 3600;
             mm = sec / 60;
@@ -229,15 +226,15 @@ Time::Time(const std::string& s, bool extended) {
             break;
         }
         case TimeFormat::COLON:
-            hh = s2l(tt.integers[1]);
-            mm = s2l(tt.integers[2]);
-            ss = s2l(tt.integers[3]);
+            hh = s2l(tt.integers[2]);
+            mm = s2l(tt.integers[3]);
+            ss = s2l(tt.integers[4]);
             break;
         case TimeFormat::UNITS:
-            dd = s2l(tt.integers[0]);
-            hh = s2l(tt.integers[1]);
-            mm = s2l(tt.integers[2]);
-            ss = s2l(tt.integers[3]);
+            dd = 7 * s2l(tt.integers[0]) + s2l(tt.integers[1]);
+            hh = s2l(tt.integers[2]);
+            mm = s2l(tt.integers[3]);
+            ss = s2l(tt.integers[4]);
 
             ss += 60 * (mm + 60 * (hh + 24 * dd));
             if (tt.minus) {

@@ -21,6 +21,14 @@ ecbuild_add_test( TARGET      eckit_test_types_time
                   SOURCES     test_time.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_types_date
+                  SOURCES     test_date.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_types_datetime
+                  SOURCES     test_datetime.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_types_uuid
                   SOURCES     test_uuid.cc
                   LIBS        eckit )

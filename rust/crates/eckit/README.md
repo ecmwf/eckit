@@ -27,11 +27,10 @@ This crate provides a safe API on top of the low-level
 
 ## Installation
 
-Add the crate to your `Cargo.toml`:
+Add the crate to your project:
 
-```toml
-[dependencies]
-eckit = "2.2"
+```bash
+cargo add eckit
 ```
 
 The default `vendored` feature builds the eckit C++ library from source, which

@@ -66,6 +66,7 @@ mod ffi {
 
     unsafe extern "C++" {
         include!("EckitGeoBridge.h");
+        include!("eckit_exceptions.h");
 
         // ==================== Grid ====================
 

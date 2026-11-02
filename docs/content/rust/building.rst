@@ -33,13 +33,9 @@ exclusive.
    Requires eckit 2.0.7 or later. Set ``ECKIT_DIR`` or ``CMAKE_PREFIX_PATH``
    if it is not in a default location:
 
-   .. code-block:: toml
-
-      [dependencies]
-      eckit = { version = "2.5", default-features = false, features = ["system", "geo"] }
-
    .. code-block:: bash
 
+      cargo add eckit --no-default-features --features system,geo
       ECKIT_DIR=/path/to/eckit/install cargo build
 
 Use ``system`` when the program must share one eckit installation with other
@@ -132,11 +128,10 @@ Features that are off by default need the corresponding external library to
 be installed. To switch one on, add ``eckit-sys`` as a dependency next to
 ``eckit`` and enable the feature there:
 
-.. code-block:: toml
+.. code-block:: bash
 
-   [dependencies]
-   eckit = "2.5"
-   eckit-sys = { version = "2.5", features = ["geo-caching", "lz4"] }
+   cargo add eckit
+   cargo add eckit-sys --features geo-caching,lz4
 
 ``geo-caching`` and ``lz4`` together are what unstructured grids need; see
 :doc:`usage`.

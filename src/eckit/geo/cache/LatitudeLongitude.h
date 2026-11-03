@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
@@ -25,14 +26,20 @@ public:
 
     using uid_type = geo::Grid::uid_type;
 
+    /// Coordinates of a grid type, from its spec (default: from 'cached_path', or downloaded from 'url')
+    using load_type = LatitudeLongitude (*)(const geo::Grid::Spec&);
+
     /// Cache file layout version (part of its path)
     static constexpr int VERSION = 1;
 
     LatitudeLongitude() = default;
-    LatitudeLongitude(const std::vector<double>&, const std::vector<double>&);
+    LatitudeLongitude(std::vector<double> lat, std::vector<double> lon);
 
     static const LatitudeLongitude& get(const uid_type&);
     static const LatitudeLongitude& set(const uid_type&, LatitudeLongitude&&);
+
+    /// Register the coordinates loading of a grid type (a 'cached_path' takes precedence)
+    static void register_load(const std::string& type, load_type);
 
     eckit::cache::MemoryUsage footprint() const override { return {2 * size() * sizeof(double), 0}; }
 

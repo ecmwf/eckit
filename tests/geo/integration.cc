@@ -116,7 +116,8 @@ CASE("gridSpec") {
 
     SECTION("gridSpec (FESOM)") {
         std::vector<test_type> tests{
-            {R"({"grid":"pi_N"})", {3140}},
+            {R"({"grid":"CORE2_N"})", {126858}},
+            {R"({"grid":"tORCA025_C"})", {1801435}},
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));

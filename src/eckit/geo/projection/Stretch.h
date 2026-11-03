@@ -13,8 +13,14 @@
 namespace eckit::geo::projection {
 
 
-/// Latitude stretching by a factor: fwd from unstretched to the stretched sphere, inv the reverse (as by the inverse
-/// factor)
+/**
+ * @brief Latitude stretching (Schmidt transform) by a factor c > 0 ('factor'): tan(colat' / 2) = c tan(colat / 2),
+ * attracting points to the North Pole (c < 1) or to the South Pole (c > 1)
+ * @details Conformal, keeping longitudes and the poles, it refines the resolution around the North Pole by 1 / c
+ * (F. Schmidt, 1977, "Variable fine mesh in spectral global models"); with a rotation placing that pole, it stretches
+ * variable resolution grids (e.g. LFRic's stretch_mesh, see factor_from_equatorial_latitude). fwd stretches, inv
+ * reverses (as the inverse factor); points are (lon, lat) or Cartesian (on the unit sphere).
+ */
 class Stretch : public Projection {
 public:
 
@@ -25,15 +31,25 @@ public:
 
     // -- Methods
 
-    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), c_)); }
-    inline PointLonLat inv(const PointLonLat& q) const { return PointLonLat::make(q.lon(), stretch(q.lat(), 1. / c_)); }
+    inline PointLonLat fwd(const PointLonLat& p) const { return stretch(p, C_, S_); }
+    inline PointLonLat inv(const PointLonLat& q) const { return stretch(q, -C_, S_); }
+
+    inline PointXYZ fwd(const PointXYZ& p) const { return stretch(p, C_, S_); }
+    inline PointXYZ inv(const PointXYZ& q) const { return stretch(q, -C_, S_); }
+
+    double factor() const { return c_; }
 
     // -- Overridden methods
 
     const std::string& type() const override;
 
-    inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
-    inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
+    Point fwd(const Point&) const override;
+    Point inv(const Point&) const override;
+
+    // -- Class methods
+
+    /// Stretching factor taking the equator to the given latitude [degree], c = sqrt((1 - sin(lat)) / (1 + sin(lat)))
+    static double factor_from_equatorial_latitude(double);
 
 protected:
 
@@ -46,10 +62,13 @@ private:
     // -- Members
 
     const double c_;
+    const double C_;
+    const double S_;
 
-    // -- Methods
+    // -- Class methods
 
-    static double stretch(double a, double c);
+    static PointLonLat stretch(const PointLonLat&, double C, double S);
+    static PointXYZ stretch(const PointXYZ&, double C, double S);
 };
 
 

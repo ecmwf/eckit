@@ -126,6 +126,22 @@ def test_projection_rotation():
     assert identity.fwd(10.0, 20.0) == pytest.approx((10.0, 20.0), abs=EPS_LL)
 
 
+def test_projection_stretch():
+    # stretching factor c < 1 attracts points to the North Pole, e.g. the equator to latitude 30 for c = 1 / sqrt(3)
+    stretch = Projection(type="stretch", factor=3**-0.5)
+    assert stretch.spec["type"] == "stretch"
+
+    assert stretch.fwd(10.0, 0.0) == pytest.approx((10.0, 30.0), abs=EPS_LL)
+    assert stretch.fwd(10.0, 90.0)[1] == pytest.approx(90.0, abs=EPS_LL)
+
+    for p in [(0.0, 0.0), (10.0, 20.0), (330.0, 45.0), (170.0, -60.0)]:  # longitudes in [0, 360)
+        assert stretch.inv(*stretch.fwd(*p)) == pytest.approx(p, abs=EPS_LL)
+
+    # reversed, as by the inverse factor
+    reverse = Projection(type="stretch", factor=3**-0.5, reverse=True)
+    assert reverse.fwd(10.0, 30.0) == pytest.approx((10.0, 0.0), abs=EPS_LL)
+
+
 def test_projection_equidistant_cylindrical():
     eqc = Projection(type="eqc")
     assert eqc.fwd(10.0, 20.0) == pytest.approx((10.0, 20.0))

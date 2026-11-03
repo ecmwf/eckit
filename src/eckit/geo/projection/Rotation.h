@@ -11,6 +11,7 @@
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/maths/Matrix3.h"
 
 
 namespace eckit::geo::projection {
@@ -38,6 +39,10 @@ public:
 
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
     inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
+
+    /// Rotation of Cartesian points (on the unit sphere)
+    inline PointXYZ fwd(const PointXYZ& p) const { return fwd_matrix_ * p; }
+    inline PointXYZ inv(const PointXYZ& q) const { return inv_matrix_ * q; }
 
     // -- Overridden methods
 
@@ -96,6 +101,9 @@ private:
 
     std::shared_ptr<Implementation> fwd_;
     std::shared_ptr<Implementation> inv_;
+
+    maths::Matrix3<double> fwd_matrix_;
+    maths::Matrix3<double> inv_matrix_;
 
     PointLonLat south_pole_;
     double angle_;

@@ -351,6 +351,7 @@ endif()
 # sources
 
 include(cmake/compiler_warnings.cmake) # optionally handle compiler specific warnings
+include(cmake/compiler_flags.cmake)    # handle compiler specific fixes
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 

@@ -247,6 +247,24 @@ CASE("test_comparisons_involving_nan") {
     maths::FloatingPointExceptions::enable_floating_point_exceptions();
 }
 
+CASE("test_comparisons_involving_runtime_nan") {
+    Log::info() << "test_comparisons_involving_runtime_nan" << std::endl;
+
+    // NaN only known at runtime, guards against std::isnan being optimised away (e.g. IntelLLVM finite-math-only)
+    volatile double vNaN = qNaN;
+    const double nan     = vNaN;
+
+    EXPECT(!is_equal(nan, nan));
+    EXPECT(!is_equal(nan, 0.0));
+    EXPECT(!is_equal(0.0, nan));
+    EXPECT(!is_equal(nan, 1.0));
+    EXPECT(!is_equal(1.0, nan));
+    EXPECT(!is_equal(nan, dMax));
+    EXPECT(!is_equal(dMax, nan));
+    EXPECT(!is_equal(nan, 1.0, dMax));
+    EXPECT(!is_equal(1.0, nan, dMax));
+}
+
 CASE("test_comparisons_opposite_side_of_zero") {
     Log::info() << "test_comparisons_opposite_side_of_zero" << std::endl;
 

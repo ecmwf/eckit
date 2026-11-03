@@ -297,6 +297,17 @@ CASE("Fraction inverse") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("Fraction from NaN") {
+    // NaN only known at runtime, guards against std::isnan being optimised away (e.g. IntelLLVM finite-math-only)
+    volatile double vNaN = std::numeric_limits<double>::quiet_NaN();
+    const double nan     = vNaN;
+
+    EXPECT_THROWS_AS(Fraction{nan}, AssertionFailed);
+    EXPECT_THROWS_AS(Fraction{"nan"}, AssertionFailed);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE("String to double to fraction to double to string") {
     Translator<std::string, double> s2d;
 

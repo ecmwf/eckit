@@ -20,6 +20,14 @@ namespace eckit::geo::projection {
 static ProjectionRegisterType<Rotation> PROJECTION("rotation", true);
 
 
+/// Rotation about the z-axis (right-handed), by angle [degree]
+static maths::Matrix3<double> rotation_z(double angle) {
+    const auto c = std::cos(util::DEGREE_TO_RADIAN * angle);
+    const auto s = std::sin(util::DEGREE_TO_RADIAN * angle);
+    return {c, -s, 0, s, c, 0, 0, 0, 1};
+}
+
+
 Rotation::Rotation(const Spec& spec) :
     Rotation(
         [&spec]() -> PointLonLat {
@@ -49,7 +57,12 @@ Rotation::Rotation(const Spec& spec) :
 
 
 Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
-    Projection(nullptr, PointLonLat{}, PointLonLat{}), south_pole_(south_pole), angle_(angle), rotated_(true) {
+    Projection(nullptr, PointLonLat{}, PointLonLat{}),
+    fwd_matrix_(maths::Matrix3<double>::identity()),
+    inv_matrix_(maths::Matrix3<double>::identity()),
+    south_pole_(south_pole),
+    angle_(angle),
+    rotated_(true) {
     using M = maths::Matrix3<double>;
 
     if (reverse) {
@@ -85,7 +98,7 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
     };
 
     struct RotationMatrix final : Implementation {
-        explicit RotationMatrix(M&& R) : R_(R) {}
+        explicit RotationMatrix(const M& R) : R_(R) {}
         using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override {
             return figure::UnitSphere::_convertCartesianToSpherical(
@@ -124,6 +137,11 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
         fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle_)) : new NonRotated);
         inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle_)) : new NonRotated);
 
+        if (rotated_) {
+            fwd_matrix_ = rotation_z(angle_);
+            inv_matrix_ = rotation_z(-angle_);
+        }
+
         south_pole_ = SOUTH_POLE;
         return;
     }
@@ -139,21 +157,31 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
     // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
     //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
     //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
-    inv_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
-                                              cp * st,  //
-                                              -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp,
-                                              -sp * st,  //
-                                              -ca * st, -sa * st, ct});
+    inv_matrix_ = M{ca * cp * ct - sa * sp,
+                    sa * cp * ct + ca * sp,
+                    cp * st,  //
+                    -sa * cp - ca * ct * sp,
+                    ca * cp - sa * ct * sp,
+                    -sp * st,  //
+                    -ca * st,
+                    -sa * st,
+                    ct};
+    inv_        = std::make_shared<RotationMatrix>(inv_matrix_);
 
     // fwd (to the rotated sphere), the reverse (rotate by -φ, -ϑ, -α):
     // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
     //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
     //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
-    fwd_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
-                                              -ca * st,  //
-                                              sa * cp * ct + ca * sp, ca * cp - sa * ct * sp,
-                                              -sa * st,  //
-                                              cp * st, -sp * st, ct});
+    fwd_matrix_ = M{ca * cp * ct - sa * sp,
+                    -sa * cp - ca * ct * sp,
+                    -ca * st,  //
+                    sa * cp * ct + ca * sp,
+                    ca * cp - sa * ct * sp,
+                    -sa * st,  //
+                    cp * st,
+                    -sp * st,
+                    ct};
+    fwd_        = std::make_shared<RotationMatrix>(fwd_matrix_);
 
     angle_ = PointLonLat::normalise_angle_to_minimum(angle_, -PointLonLat::FLAT_ANGLE);
 }

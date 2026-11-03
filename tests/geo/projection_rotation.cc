@@ -13,6 +13,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
@@ -182,6 +183,90 @@ CASE("rotation: points") {
                 EXPECT(points_equal(b, ref[k], EPS));
                 EXPECT(points_equal(a, c, EPS));
             }
+        }
+    }
+}
+
+
+CASE("rotation: reference values (unchanged)") {
+    struct test_t {
+        PointLonLat south_pole;
+        double angle;
+        bool reverse;
+        struct point_t {
+            PointLonLat p;
+            PointLonLat fwd;
+            PointLonLat inv;
+        };
+        std::vector<point_t> points;
+    };
+
+    auto equal = [](const PointLonLat& a, const PointLonLat& b) {
+        constexpr double eps = 1e-13;
+        return types::is_approximately_equal(a.lon(), b.lon(), eps) &&
+               types::is_approximately_equal(a.lat(), b.lat(), eps);
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {{-170, -40},
+              0,
+              false,
+              {
+                  {{0, 0}, {164.66018550081202, 48.973538629984482}, {-170, 50}},
+                  {{45, 30}, {-98.357608405488492, 59.863378649840755}, {-80.991973918468091, 52.232103403067178}},
+                  {{-120, -75}, {162.60862457655958, -48.44580743019327}, {171.15585767188364, -46.056015998070222}},
+                  {{200, 89}, {0.22347998625483151, 39.014976050799163}, {10.440450110344683, 39.059467872760983}},
+                  {{359.5, -10}, {166.63627038013868, 39.061559302015937}, {-170.64277271017221, 39.99785153021093}},
+              }},
+             {{10, 30},
+              45,
+              false,
+              {
+                  {{0, 0}, {-115.5745998593172, -58.525051110814516}, {-106.56505117707799, 37.761243907035045}},
+                  {{45, 30}, {126.04108905836918, -59.810165310934941}, {-170, 30.000000000000011}},
+                  {{-120, -75}, {-120.25492619999616, 38.832061508544676}, {6.0147343911104096, 15.453519938899289}},
+                  {{200, 89}, {44.801439427321178, -29.015043294064469}, {-170.49253361821448, -30.905391253195102}},
+                  {{359.5, -10}, {-119.20755799152265, -48.743333046184155}, {-95.496205493111205, 43.204750530168795}},
+              }},
+             {{0, -90},
+              30,
+              false,
+              {
+                  {{0, 0}, {30, 0}, {-30, 0}},
+                  {{45, 30}, {75, 30}, {15, 30}},
+                  {{-120, -75}, {-90, -75}, {-150, -75}},
+                  {{200, 89}, {230, 89}, {170, 89}},
+                  {{359.5, -10}, {389.5, -10}, {329.5, -10}},
+              }},
+             {{120, -60},
+              0,
+              true,
+              {
+                  {{0, 0}, {119.99999999999999, 29.999999999999996}, {-116.56505117707799, 14.477512185929925}},
+                  {{45, 30}, {-174.59722268438219, 47.663220464467678}, {-62.035751879637075, 18.719828073965907}},
+                  {{-120, -75}, {88.85379626866461, -64.31903787106684}, {159.3590939000303, -50.516843646153468}},
+                  {{200, 89}, {-59.334818641605857, 59.058593425220508}, {1.9587647109907336, 59.811781157052422}},
+                  {{359.5, -10}, {119.47599789091922, 19.99885680926927}, {-121.48537769414297, 5.7121135915180918}},
+              }},
+         }) {
+        projection::Rotation rotation(test.south_pole, test.angle, test.reverse);
+        for (const auto& [p, fwd, inv] : test.points) {
+            EXPECT(equal(rotation.fwd(p), fwd));
+            EXPECT(equal(rotation.inv(p), inv));
+        }
+    }
+}
+
+
+CASE("rotation: Cartesian points") {
+    for (const auto& [south_pole, angle] : std::vector<std::pair<PointLonLat, double>>{
+             {{-170., -40.}, 0.}, {{10., 30.}, 45.}, {{0., -90.}, 30.}, {{0., -90.}, 0.}}) {
+        projection::Rotation rotation(south_pole, angle);
+
+        for (const auto& p : std::vector<PointLonLat>{{0., 0.}, {45., 30.}, {-120., -75.}, {200., 89.}}) {
+            const auto xyz = figure::UnitSphere::_convertSphericalToCartesian(p);
+            EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(rotation.fwd(xyz)), rotation.fwd(p)));
+            EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(rotation.inv(xyz)), rotation.inv(p)));
         }
     }
 }

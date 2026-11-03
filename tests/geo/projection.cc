@@ -121,12 +121,11 @@ CASE("projection: reverse") {
 
 
 CASE("projection: stretch, reverse (by the inverse factor)") {
-    std::unique_ptr<const Projection> stretch(
-        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 2}"));
+    std::unique_ptr<const Projection> stretch(ProjectionFactory::make_from_string("{type: stretch, factor: 2}"));
     std::unique_ptr<const Projection> stretch_reverse(
-        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 2, reverse: true}"));
+        ProjectionFactory::make_from_string("{type: stretch, factor: 2, reverse: true}"));
     std::unique_ptr<const Projection> stretch_inverse(
-        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 0.5}"));
+        ProjectionFactory::make_from_string("{type: stretch, factor: 0.5}"));
 
     EXPECT(dynamic_cast<const projection::Stretch*>(stretch_reverse.get()) != nullptr);
     EXPECT(!stretch_reverse->reverse());

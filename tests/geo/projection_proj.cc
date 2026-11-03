@@ -151,7 +151,7 @@ CASE("PROJ strings of projections") {
     // no PROJ equivalent
     for (const auto& spec : std::vector<std::string>{
              "{type: space_view, h: 35785831}",
-             "{type: stretch, stretching_factor: 2}",
+             "{type: stretch, factor: 2}",
          }) {
         P projection(ProjectionFactory::make_from_string(spec));
         EXPECT_THROWS_AS(projection->proj_str(), exception::ProjectionError);

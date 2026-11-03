@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -113,6 +114,7 @@ private:
 
 /**
  * @brief Values shared in the process by key, bounded by a memory capacity (private and shared, accounted separately)
+ * and optionally a number of values
  * @details Room is made before making a value, using an estimate, as making can peak above the capacity. Values not in
  * use are evicted, in the order of the eviction policy (see Policy, default least recently used), so eviction never
  * invalidates a value. A value is made once even if requested concurrently, and cached even if larger than the
@@ -134,10 +136,14 @@ public:
         size_t evictions  = 0;
     };
 
+    /// No limit on the number of values (the default)
+    static constexpr size_t UNLIMITED = std::numeric_limits<size_t>::max();
+
     // -- Constructors
 
-    MemoryCache(MemoryCaches& caches, const MemoryUsage& capacity, const std::string& policy = Policy::DEFAULT) :
-        MemoryCacheBase(caches), capacity_(capacity), policy_(Policy::build(policy)) {
+    MemoryCache(MemoryCaches& caches, const MemoryUsage& capacity, const std::string& policy = Policy::DEFAULT,
+                size_t count_limit = UNLIMITED) :
+        MemoryCacheBase(caches), capacity_(capacity), count_limit_(count_limit), policy_(Policy::build(policy)) {
         register_cache();
     }
 
@@ -224,6 +230,18 @@ public:
         evict();
     }
 
+    /// Maximum number of values, besides their memory (e.g. for values whose footprint isn't known)
+    size_t count_limit() const {
+        util::lock_guard<util::recursive_mutex> lock(mutex_);
+        return count_limit_;
+    }
+
+    void count_limit(size_t count_limit) {
+        util::lock_guard<util::recursive_mutex> lock(mutex_);
+        count_limit_ = count_limit;
+        evict();
+    }
+
     const Policy& policy() const { return *policy_; }
 
     Statistics statistics() const {
@@ -265,6 +283,7 @@ private:
     std::map<key_type, MemoryUsage> reserved_;                           // estimates, of values being made
     std::map<key_type, std::unique_ptr<util::recursive_mutex>> making_;  // per key, never released (keys are few)
     MemoryUsage capacity_;
+    size_t count_limit_;
     std::unique_ptr<const Policy> policy_;
     Statistics statistics_;
     size_t clock_ = 0;
@@ -281,15 +300,18 @@ private:
         return *m;
     }
 
-    /// Evict values not in use (in policy order), until values and estimates of those being made fit
+    /// Evict values not in use (in policy order), until values and those being made fit (memory and count)
     void evict() {
         auto usage = this->usage();
         for (const auto& [key, estimate] : reserved_) {
             usage += estimate;
         }
 
-        while (usage.exceeds(capacity_)) {
-            const auto over = usage - capacity_;
+        auto over_count = [this]() { return entries_.size() + reserved_.size() > count_limit_; };
+
+        while (usage.exceeds(capacity_) || over_count()) {
+            const auto over  = usage - capacity_;
+            const bool count = over_count();
 
             auto victim = entries_.end();
             for (auto it = entries_.begin(); it != entries_.end(); ++it) {
@@ -297,7 +319,7 @@ private:
 
                 // skip values in use (evicting doesn't release them) and those not relieving what is over
                 const bool in_use   = entry.value.use_count() > 1;
-                const bool relieves = (over.processMemory() > 0 && entry.info.footprint.processMemory() > 0) ||
+                const bool relieves = count || (over.processMemory() > 0 && entry.info.footprint.processMemory() > 0) ||
                                       (over.sharedMemory() > 0 && entry.info.footprint.sharedMemory() > 0);
 
                 if (!in_use && relieves &&
@@ -307,7 +329,7 @@ private:
             }
 
             if (victim == entries_.end()) {
-                return;  // beyond capacity, nothing else to evict
+                return;  // beyond capacity or count, nothing else to evict
             }
 
             usage -= victim->second.info.footprint;

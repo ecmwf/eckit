@@ -232,6 +232,40 @@ CASE("MemoryCache: values without footprint(), erased, and statistics") {
 }
 
 
+CASE("MemoryCache: limited in number of values (unlimited by default)") {
+    MemoryCaches caches;
+    MemoryCache<std::string> cached(caches, MemoryUsage{1000, 0});
+    EXPECT(cached.count_limit() == MemoryCache<std::string>::UNLIMITED);
+
+    // values of no memory (e.g. not known), limited by number
+    auto none = [](const std::string&) { return MemoryUsage{}; };
+    auto get  = [&cached, &none](const std::string& key) {
+        return cached.get(key, MemoryUsage{}, [&key]() { return std::make_shared<const std::string>(key); }, none);
+    };
+
+    cached.count_limit(2);
+    get("a");
+    get("b");
+    get("a");  // "a" is now more recently used than "b"
+    get("c");  // over the limit: the least recently used is evicted
+    EXPECT(cached.size() == 2);
+    EXPECT(cached.statistics().evictions == 1);
+
+    // values in use are not evicted, even over the limit
+    auto c = get("c");
+    auto d = get("d");
+    EXPECT(cached.size() == 2);
+    EXPECT(cached.statistics().evictions == 2);  // "a", not in use
+
+    cached.count_limit(1);
+    EXPECT(cached.size() == 2);  // both in use
+
+    c.reset();
+    cached.count_limit(1);
+    EXPECT(cached.size() == 1);  // "d", in use
+}
+
+
 CASE("MemoryCaches: footprint and purge, of a group of caches") {
     struct Cache final : MemoryCacheBase {
         explicit Cache(MemoryCaches& group) : MemoryCacheBase(group) { register_cache(); }

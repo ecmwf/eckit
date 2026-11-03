@@ -4,6 +4,7 @@
 
 #include "eckit/geo/cache/LatitudeLongitude.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -35,6 +36,12 @@ class lock_type {
 using Cache = cache::RecordCacheT<LatitudeLongitude, LatitudeLongitude::uid_type>;
 
 
+std::map<std::string, LatitudeLongitude::load_type>& loads() {
+    static std::map<std::string, LatitudeLongitude::load_type> loads;
+    return loads;
+}
+
+
 struct Loader final : Cache::Loader {
     Loader() = default;
 
@@ -48,6 +55,11 @@ struct Loader final : Cache::Loader {
 
         if (spec->has("cached_path")) {
             record.read(spec->get_string("cached_path"));
+            return;
+        }
+
+        if (auto load = loads().find(spec->get_string("type")); load != loads().end()) {
+            record = load->second(*spec);
             return;
         }
 
@@ -72,8 +84,8 @@ Cache& cache() {
 }  // namespace
 
 
-LatitudeLongitude::LatitudeLongitude(const std::vector<double>& lat, const std::vector<double>& lon) :
-    lon_(lon), lat_(lat) {
+LatitudeLongitude::LatitudeLongitude(std::vector<double> lat, std::vector<double> lon) :
+    lon_(std::move(lon)), lat_(std::move(lat)) {
     ASSERT(lat_.size() == lon_.size());
 }
 
@@ -87,6 +99,12 @@ const LatitudeLongitude& LatitudeLongitude::get(const uid_type& uid) {
 const LatitudeLongitude& LatitudeLongitude::set(const uid_type& uid, LatitudeLongitude&& ll) {
     lock_type lock;
     return cache().set(uid, std::move(ll));
+}
+
+
+void LatitudeLongitude::register_load(const std::string& type, load_type load) {
+    lock_type lock;
+    loads()[type] = load;
 }
 
 

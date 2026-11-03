@@ -222,6 +222,18 @@ cdef class Grid:
         return self._grid.uid()
 
     @property
+    def name(self) -> str:
+        """Name, for the grids identified by it (eg. ORCA, ICON), otherwise
+        empty."""
+        return self._grid.name()
+
+    @property
+    def arrangement(self) -> str:
+        """Staggering arrangement, for the grids identified by it (eg. "T" for ORCA, "C"
+        for cell centres), otherwise empty."""
+        return self._grid.arrangement()
+
+    @property
     def order(self) -> str:
         return self._grid.order()
 

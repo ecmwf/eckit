@@ -13,7 +13,7 @@ std::vector<double> reverse(const std::vector<double>& v) {
     std::vector<double> flipped(v.size());
     std::reverse_copy(v.begin(), v.end(), flipped.begin());
 
-    return v;
+    return flipped;
 }
 
 

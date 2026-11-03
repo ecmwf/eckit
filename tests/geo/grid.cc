@@ -49,6 +49,11 @@ CASE("Grid from spec/uid") {
 
         EXPECT(*same == *grid);
 
+        // every grid known by uid has a type and uid
+        std::unique_ptr<const spec::Spec> by_uid(GridSpecByUID::instance().get_spec(grid->uid()));
+        EXPECT(by_uid->get_string("type") == grid->type());
+        EXPECT(by_uid->get_string("uid") == grid->uid());
+
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
         EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
@@ -75,6 +80,12 @@ CASE("Grid name/arrangement") {
 
         EXPECT(grid->name() == test.name);
         EXPECT(grid->arrangement().empty());
+
+        // every grid known by name has a type
+        if (!grid->name().empty()) {
+            std::unique_ptr<const spec::Spec> by_name(GridSpecByName::instance().match_spec(test.name, test.name));
+            EXPECT(by_name->has("type"));
+        }
     }
 }
 
@@ -83,7 +94,7 @@ CASE("Grid from name") {
     struct {
         const char* name;
         size_t size;
-    } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
+    } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}, {"LAEA-EFAS-5km", 1000 * 950}};
 
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));

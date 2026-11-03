@@ -73,13 +73,14 @@ CASE("Grid name/arrangement") {
         {"{grid: h2}", "H2"},              //
         {"{grid: h2n}", "H2"},             //
         {"{grid: t20}", "T20"},            //
+        {"{grid: CS-LFR-2}", "CS-LFR-2"},  //
     };
 
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
         EXPECT(grid->name() == test.name);
-        EXPECT(grid->arrangement().empty());
+        EXPECT(grid->arrangement().empty() == (grid->type() != "cubed_sphere_lfric"));
 
         // every grid known by name has a type
         if (!grid->name().empty()) {

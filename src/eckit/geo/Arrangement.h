@@ -15,6 +15,10 @@ enum Arrangement {
     ARAKAWA_C_U,
     ARAKAWA_C_V,
 
+    CUBED_SPHERE_C,
+    CUBED_SPHERE_N,
+    CUBED_SPHERE_E,
+
     FESOM_C,
     FESOM_N,
 

@@ -24,6 +24,8 @@ foreach(_test
         gaussian
         great_circle
         grid
+        grid_cubed_sphere
+        grid_cubed_sphere_lfric
         grid_healpix
         grid_reduced_gg
         grid_reduced_ll

@@ -47,6 +47,11 @@ pl_type pl_convert(const pl_type&);
 std::vector<double> arange(double start, double stop, double step);
 
 
+/// Gnomonic coordinates tan(a) of the ends of n equiangular intervals of a in [-pi/4, pi/4] (n + 1 values), exactly
+/// antisymmetric (cubed sphere panels); cached
+const std::vector<double>& equiangular_tangents(size_t n);
+
+
 /// Gaussian latitudes [degree] of Gaussian number N (2 N values), increasing or decreasing; cached
 const std::vector<double>& gaussian_latitudes(size_t N, bool increasing);
 

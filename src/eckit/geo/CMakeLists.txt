@@ -74,6 +74,8 @@ list(APPEND eckit_geo_srcs
     figure/Sun.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
+    grid/CubedSphere.cc
+    grid/CubedSphere.h
     grid/ORCA.cc
     grid/ORCA.h
     grid/Reduced.cc
@@ -84,6 +86,8 @@ list(APPEND eckit_geo_srcs
     grid/SphericalHarmonics.h
     grid/Unstructured.cc
     grid/Unstructured.h
+    grid/cubedsphere/LFRic.cc
+    grid/cubedsphere/LFRic.h
     grid/reduced/HEALPix.cc
     grid/reduced/HEALPix.h
     grid/reduced/ReducedGaussian.cc
@@ -100,6 +104,8 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
     grid/unstructured/ICON.h
+    iterator/CubedSphere.cc
+    iterator/CubedSphere.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc
@@ -159,6 +165,7 @@ list(APPEND eckit_geo_srcs
     util.cc
     util.h
     util/arange.cc
+    util/equiangular_tangents.cc
     util/gaussian_latitudes.cc
     util/gaussian_quadrature_weights.cc
     util/hash_vector.cc

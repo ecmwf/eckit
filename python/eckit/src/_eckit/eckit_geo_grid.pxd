@@ -24,6 +24,8 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         string type() const
         string uid() const
         string order() const
+        string name() const
+        string arrangement() const
 
         pair[vector[double], vector[double]] to_latlons() except +
         vector[vector[double]] to_xyz() except +

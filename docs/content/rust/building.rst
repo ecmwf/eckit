@@ -4,77 +4,47 @@
 Building the Rust Crates
 ========================
 
-The crates build with Cargo. CMake is driven by the build script of
-``eckit-sys`` and does not need to be run by hand.
+.. code-block:: bash
 
-Toolchain Requirements
-----------------------
+   cargo add eckit
+   cargo build
 
-* Rust 1.90 or later
-* A C++17 compiler
-* CMake and git
+This builds eckit from source as part of ``cargo build`` (the ``vendored``
+feature, on by default). It needs Rust 1.90 or later, a C++17 compiler, CMake
+and git. The first build also needs network access, to download ecbuild and
+the eckit release matching the crate version. When the crate comes from a checkout of
+the eckit repository, as a path or git dependency, the C++ sources of that
+checkout are compiled instead.
 
-Vendored and System Builds
---------------------------
+To link an installed eckit, 2.0.7 or later, switch to the ``system`` feature
+and point CMake at it with ``ECKIT_DIR`` or ``CMAKE_PREFIX_PATH``:
 
-Two Cargo features select where the C++ library comes from. They are mutually
-exclusive.
+.. code-block:: bash
 
-``vendored`` (default)
-   Builds eckit from source into Cargo's output directory, using ecbuild, which
-   is downloaded automatically. When the crate is used from a checkout of the
-   eckit repository, by path or as a git dependency, the C++ sources of that
-   same checkout are compiled, so Rust and C++ changes can be developed and
-   tested together. Otherwise the release tag matching the ``eckit-sys``
-   version is cloned.
-
-``system``
-   Links an installed eckit, located with CMake ``find_package(eckit)``.
-   Requires eckit 2.0.7 or later. Set ``ECKIT_DIR`` or ``CMAKE_PREFIX_PATH``
-   if it is not in a default location:
-
-   .. code-block:: bash
-
-      cargo add eckit --no-default-features --features system,geo
-      ECKIT_DIR=/path/to/eckit/install cargo build
+   cargo add eckit --no-default-features --features system,geo
+   ECKIT_DIR=/path/to/eckit/install cargo build
 
 Use ``system`` when the program must share one eckit installation with other
-software, for example on the HPC or in a bundle build. Use ``vendored`` for a
+software, for example on the HPC or in a bundle build and ``vendored`` for a
 self-contained build.
 
-The shared libraries of a vendored build are found at run time through rpath
-entries on the final binary. An application adds them from its build script
-with ``bindman_utils::emit_rpaths()``.
+Running the Examples
+--------------------
 
-Crate Versions
---------------
+The programs quoted in :doc:`usage` are examples of the ``eckit`` crate, in
+``rust/crates/eckit/examples``. From a checkout of the repository:
 
-Both crates carry the version of the eckit release they wrap. The version is
-set once for the workspace in ``rust/Cargo.toml``, and a test in each crate
-fails if it drifts from the ``VERSION`` file of the repository.
+.. code-block:: bash
+
+   cd rust
+   cargo run -p eckit --example quickstart
+   cargo run -p eckit --example search
 
 Cargo Features
 --------------
 
-The ``eckit`` crate has three features:
-
-.. list-table::
-   :widths: 25 15 60
-   :header-rows: 1
-
-   * - Feature
-     - Default
-     - Effect
-   * - ``vendored``
-     - on
-     - Build eckit from source
-   * - ``system``
-     - off
-     - Link an installed eckit
-   * - ``geo``
-     - on
-     - The ``eckit::geo`` module: ``Grid``, ``Spec``, ``Area``, ``Projection``,
-       ``Figure`` and ``Search``
+Besides ``vendored`` and ``system``, the ``eckit`` crate has ``geo``, on by
+default, which adds the ``eckit::geo`` module.
 
 ``eckit-sys`` exposes the CMake options of eckit as features, so a vendored
 build can be configured from ``Cargo.toml``. A feature switches on the
@@ -117,7 +87,7 @@ build can be configured from ``Cargo.toml``. A feature switches on the
      - off
    * - Geo
      - ``geo-codec-grids``, ``geo-caching``, ``geo-bitreproducible``,
-       ``geo-projection-proj-default``, ``geo-area-shapefile``, ``proj``
+       ``geo-area-shapefile``, ``proj``
      - off
    * - Other
      - ``rados``, ``jemalloc``, ``rsync``, ``convex-hull``, ``experimental``,
@@ -132,38 +102,3 @@ be installed. To switch one on, add ``eckit-sys`` as a dependency next to
 
    cargo add eckit
    cargo add eckit-sys --features geo-caching,lz4
-
-``geo-caching`` and ``lz4`` together are what unstructured grids need; see
-:doc:`usage`.
-
-Build Environment Variables
----------------------------
-
-.. list-table::
-   :widths: 30 70
-   :header-rows: 1
-
-   * - Variable
-     - Effect
-   * - ``ECKIT_DIR``
-     - Install prefix of eckit, used by ``system`` builds
-   * - ``CMAKE_PREFIX_PATH``
-     - Additional CMake search paths
-   * - ``DOCS_RS``
-     - When set, the C++ build is skipped and only the generated error type is
-       produced, which is enough for ``cargo doc``
-
-Working on the Crates
----------------------
-
-All commands run from the ``rust/`` directory of the repository:
-
-.. code-block:: bash
-
-   cargo clippy --all-targets     # lint; the workspace enables pedantic lints
-   cargo fmt                      # format Rust sources
-   cargo test                     # tests
-   cargo doc --no-deps --open     # API reference
-
-The first build compiles the whole C++ library. Later builds reuse it and
-recompile only when C++ sources change.

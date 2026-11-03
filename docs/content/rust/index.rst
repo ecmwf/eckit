@@ -4,41 +4,24 @@
 Rust Interface
 ==============
 
-EcKit ships with a Rust interface. It lives in the ``rust/`` directory of the
-eckit repository, is built with Cargo, and calls the same C++ library that the
-rest of the ECMWF stack uses.
+The Rust interface lives in the ``rust/`` directory of the eckit repository
+and calls the eckit C++ library. This chapter is for developers writing
+applications against the crates.
 
-The interface is a Cargo workspace with two crates:
+``eckit`` is the crate applications depend on; it gives the C++ library a
+Rust API, with an ``eckit::Error`` enum to match on and the ``std::io``
+traits on data handles. ``eckit-sys`` builds or links the C++ library
+underneath it.
 
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
+.. note::
 
-   * - Crate
-     - Purpose
-   * - ``eckit``
-     - The high-level crate. A safe Rust API: ``Result`` instead of
-       exceptions, ``std::io`` traits on data handles, iterators, and lifetimes
-       that encode the C++ ownership rules. This is the crate applications
-       depend on.
-   * - ``eckit-sys``
-     - The low-level crate. It builds (or locates) the C++ library, declares the
-       FFI bridge, and generates the error type from the eckit exception
-       hierarchy. Bindings for other ECMWF packages depend on it to share
-       eckit's types, errors and logging.
+   Use ``eckit`` in your code. ``eckit-sys`` goes into a ``Cargo.toml`` only
+   to switch on a build feature of the C++ library (:doc:`building`); calling
+   it directly means handling ``cxx`` pointers and raw exception strings
+   yourself.
 
-The split is what lets eckit's concepts hold across packages. Every C++
-exception is caught at the boundary and turned into a variant of one
-``eckit::Error`` enum, generated from the exception headers at build time;
-bindings for a package built on eckit (metkit, fdb, odc) inherit those
-variants, so an ``eckit::NotFound`` thrown inside metkit reaches Rust as the
-same typed error. In the same way there is one logging bridge, routing every
-library's ``eckit::Log`` output to the Rust ``log`` crate, and one
-``DataHandle``, ``Config`` and ``Stream`` type that every package's API
-accepts and returns. :doc:`approach` describes each of these.
-
-What the Rust Interface Covers
-------------------------------
+Coverage
+--------
 
 .. list-table::
    :widths: 30 35 35
@@ -49,7 +32,7 @@ What the Rust Interface Covers
      - Notes
    * - ``eckit::init``
      - ``eckit::Main``
-     - Runtime initialisation; routes ``eckit::Log`` to the Rust ``log`` crate
+     - Runtime initialisation and logging
    * - ``eckit::Error``
      - ``eckit::Exception`` and subclasses
      - One enum variant per exception class
@@ -58,7 +41,7 @@ What the Rust Interface Covers
      - YAML loading, typed access, sub-configurations
    * - ``eckit::DataHandle``
      - ``eckit::DataHandle``
-     - Implements ``Read``, ``Seek`` and ``Write``
+     - Files, buffers, byte ranges and Rust readers or writers
    * - ``eckit::Message``, ``eckit::MessageReader``
      - ``eckit::message::Message``, ``eckit::message::Reader``
      - Iterate the messages in a data handle
@@ -67,7 +50,7 @@ What the Rust Interface Covers
      - Tagged binary serialisation
    * - ``eckit::geo::Grid``, ``eckit::geo::Spec``
      - ``eckit::geo::Grid``, ``eckit::spec::Spec``
-     - Grids by gridSpec; behind the ``geo`` Cargo feature, on by default
+     - Grids by gridSpec; feature ``geo``, on by default
    * - ``eckit::geo::Area``, ``eckit::geo::BoundingBox``
      - ``eckit::geo::Area``, ``eckit::geo::area::BoundingBox``
      - Select and crop grid points
@@ -78,41 +61,27 @@ What the Rust Interface Covers
      - ``eckit::geo::Search``
      - Nearest-neighbour queries on grid points
 
-Rust Quick Start
-----------------
+Quick Start
+-----------
 
-Add the high-level crate to the project:
+Add the crate:
 
 .. code-block:: bash
 
    cargo add eckit
 
-The crate version is the version of the eckit release it wraps. By default the
-build compiles the eckit C++ sources as part of ``cargo build``, so a C++17
-compiler, CMake and git are required. To link an eckit that is already
-installed, see :doc:`building`.
+The crate version is the version of the eckit release it wraps.
+:doc:`building` lists the requirements and the alternative of linking an
+installed eckit.
 
-.. code-block:: rust
-
-   use std::io::Read;
-
-   fn main() -> Result<(), Box<dyn std::error::Error>> {
-       eckit::init();
-
-       let handle = eckit::DataHandle::from_path("data.grib")?;
-       let (mut reading, length) = handle.open_for_read()?;
-       println!("handle holds {length} bytes");
-
-       let mut buf = Vec::new();
-       reading.read_to_end(&mut buf)?;
-       Ok(())
-   }
-
-Rust Documentation Contents
----------------------------
+.. literalinclude:: ../../../rust/crates/eckit/examples/quickstart.rs
+   :language: rust
+   :start-after: // [main]
+   :end-before: // [end main]
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents
 
    approach
    usage

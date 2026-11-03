@@ -238,7 +238,7 @@ def test_projection_proj_str_rotation():
     assert rotation.proj_str == "+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229"
 
 
-@pytest.mark.parametrize("spec", [dict(type="space_view", h=35785831.0), dict(type="stretch", stretching_factor=2.0)])
+@pytest.mark.parametrize("spec", [dict(type="space_view", h=35785831.0), dict(type="stretch", factor=2.0)])
 def test_projection_proj_str_not_available(spec):
     with pytest.raises(RuntimeError):
         Projection(spec).proj_str

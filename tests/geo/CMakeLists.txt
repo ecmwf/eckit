@@ -50,6 +50,7 @@ foreach(_test
         projection_mercator
         projection_plate-caree
         projection_rotation
+        projection_stretch
         projection_space_view
         projection_stere
         range

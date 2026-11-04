@@ -4,7 +4,6 @@
 
 #include "eckit/geo/grid/reduced/HEALPix.h"
 
-#include <algorithm>
 #include <cmath>
 #include <regex>
 #include <utility>
@@ -13,8 +12,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
@@ -94,21 +91,23 @@ public:
             return *cached;
         }
 
-        const auto Ni = size();
-        ASSERT(0 < Ni);
-
-        const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(Ni);
-        const auto start = j_ < Nside_ || 3 * Nside_ - 1 < j_ || static_cast<bool>((j_ + Nside_) % 2) ? step / 2. : 0.;
-
-        std::vector<double> lons(Ni);
-        std::generate_n(lons.begin(), Ni,
-                        [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+        std::vector<double> lons(size());
+        for (size_t i = 0; i < lons.size(); ++i) {
+            lons[i] = value(i);
+        }
 
         return cache.insert(key, std::move(lons));
     }
 
     size_t size() const override {
         return j_ < Nside_ ? 4 * (j_ + 1) : j_ < 3 * Nside_ ? 4 * Nside_ : 4 * (4 * Nside_ - 1 - j_);
+    }
+
+    /// Longitude of the i-th point, without the values of the whole row
+    double value(size_t i) const {
+        const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(size());
+        const auto start = j_ < Nside_ || 3 * Nside_ - 1 < j_ || static_cast<bool>((j_ + Nside_) % 2) ? step / 2. : 0.;
+        return start + static_cast<double>(i) * step;
     }
 
     double a() const override { return values().front(); }
@@ -141,37 +140,39 @@ HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projec
 }
 
 
-Grid::iterator HEALPix::cbegin() const {
-    if (order_.order() == order::HEALPix::RING) {
-        return iterator{new geo::iterator::Reduced(*this, 0)};
+/// Nested order: no row to remember, as consecutive points jump across rings
+struct HEALPix::Nested final : Iterator::State {
+    explicit Nested(const HEALPix& grid) :
+        grid_(grid),
+        projection_(grid.projection()),
+        nxacc_(grid.nxacc()),
+        latitudes_(grid.latitudes()),
+        renumber_(grid.Nside_) {}
+
+    Point point(size_t index) override {
+        const auto ring = renumber_.nest_to_ring(index);
+        const auto j    = grid_.row(ring);
+        return projection_.from_grid_xy(range::HEALPixLongitude{grid_.Nside_, j}.value(ring - nxacc_[j]),
+                                        latitudes_.at(j));
     }
 
-    // order=nested: cache full latitudes/longitudes for the unstructured iterator
-    if (nested_latitudes_.empty()) {
-        const auto ren = order::HEALPix{}.reorder(order(), Nside_);
+    [[nodiscard]] Iterator::State* clone() const override { return new Nested(*this); }
 
-        nested_latitudes_.resize(size());
-        nested_longitudes_.resize(size());
+    const HEALPix& grid_;
+    const Projection& projection_;
+    const std::vector<size_t>& nxacc_;
+    const std::vector<double>& latitudes_;
+    const order::HEALPix::Renumber renumber_;
+};
 
-        const auto& latvec = latitudes();
-        for (size_t j = 0, k = 0; j < latvec.size(); ++j) {
-            for (const auto lon : longitudes(j)) {
-                nested_latitudes_[ren.at(k)]  = latvec[j];
-                nested_longitudes_[ren.at(k)] = lon;
-                ++k;
-            }
-        }
-    }
 
-    return iterator{new geo::iterator::Unstructured(*this, 0, nested_longitudes_, nested_latitudes_)};
+Point HEALPix::point(size_t index) const {
+    return order_.order() == order::HEALPix::RING ? Reduced::point(index) : Nested(*this).point(index);
 }
 
 
-Grid::iterator HEALPix::cend() const {
-    if (order_.order() == order::HEALPix::RING) {
-        return iterator{new geo::iterator::Reduced(*this, size())};
-    }
-    return iterator{new geo::iterator::Unstructured(*this)};
+Grid::Iterator::State* HEALPix::make_state() const {
+    return order_.order() == order::HEALPix::RING ? Reduced::make_state() : new Nested(*this);
 }
 
 
@@ -211,28 +212,6 @@ size_t HEALPix::nside_from_size(size_t size) {
 
 size_t HEALPix::size() const {
     return size_from_nside(Nside_);
-}
-
-
-std::vector<Point> HEALPix::to_points() const {
-    // This isn't very efficient
-    std::vector<Point> points;
-    points.reserve(size());
-
-    if (!nested_latitudes_.empty() || !nested_longitudes_.empty()) {
-        ASSERT(nested_latitudes_.size() == size() && nested_longitudes_.size() == size());
-        for (size_t i = 0; i < size(); ++i) {
-            points.emplace_back(PointLonLat{nested_longitudes_[i], nested_latitudes_[i]});
-        }
-        return points;
-    }
-
-    auto [lats, lons] = to_latlons();
-    for (size_t i = 0; i < size(); ++i) {
-        points.emplace_back(PointLonLat{lons[i], lats[i]});
-    }
-
-    return points;
 }
 
 

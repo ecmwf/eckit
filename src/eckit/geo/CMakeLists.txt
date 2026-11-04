@@ -14,8 +14,6 @@ list(APPEND eckit_geo_srcs
     GreatCircle.h
     Grid.cc
     Grid.h
-    Iterator.cc
-    Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
     Point.cc
@@ -100,12 +98,6 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
     grid/unstructured/ICON.h
-    iterator/Reduced.cc
-    iterator/Reduced.h
-    iterator/Regular.cc
-    iterator/Regular.h
-    iterator/Unstructured.cc
-    iterator/Unstructured.h
     order/HEALPix.cc
     order/HEALPix.h
     order/Scan.cc

@@ -39,14 +39,12 @@ public:
 
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
+    [[nodiscard]] Point point(size_t index) const override;
 
     std::vector<size_t> shape() const override;
 
     BoundingBox* calculate_bbox() const override;
 
-    [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     uid_type calculate_uid() const override;
@@ -69,6 +67,10 @@ protected:
     // -- Methods
 
     [[nodiscard]] const cache::LatitudeLongitude& record() const;
+
+    // -- Overridden methods
+
+    [[nodiscard]] Iterator::State* make_state() const override;
 
 private:
 

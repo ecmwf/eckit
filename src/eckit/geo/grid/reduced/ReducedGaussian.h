@@ -41,9 +41,6 @@ public:
 
     std::string name() const override;
 
-    iterator cbegin() const override;
-    iterator cend() const override;
-
     size_t size() const override { return nxacc().back(); }
     size_t nxj(size_t j) const override { return longitude_.at(j)->size(); }
     const Range& lat() const override { return latitude_; };

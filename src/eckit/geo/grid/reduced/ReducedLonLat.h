@@ -34,9 +34,6 @@ public:
 
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
-
     size_t size() const override;
     size_t nxj(size_t j) const override;
     const Range& lat() const override { return *latitude_; }

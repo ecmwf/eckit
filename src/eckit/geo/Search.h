@@ -17,10 +17,7 @@
 
 namespace eckit::geo {
 class Grid;
-namespace cache {
-class SearchCache;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -92,14 +89,26 @@ public:
 
     const geo::search::KDTree& kdtree() const;
 
+    // -- Class methods
+
+    /// k-d tree identifier of a grid: its points, on the figure they are converted on (see Grid::to_xyz)
+    static std::string uid(const Grid&);
+
+    /// k-d tree configuration, so searches of other behaviours can share it
+    static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
+
+    /// Footprint of a search of size points, before building or loading it
+    static MemoryUsage estimate(size_t size);
+
+    /// If the spec sets a behaviour, so the search is not the shared one as is
+    static bool spec_has_behaviour(const Spec&);
+
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const Search& s) {
         s.print(out);
         return out;
     }
-
-    friend class cache::SearchCache;
 
 private:
 
@@ -135,18 +144,6 @@ private:
     PointXYZ to_xyz(const Point&) const;
 
     void print(std::ostream&) const;
-
-    // -- Class methods
-
-    /// k-d tree identifier of a grid: its points, on the figure they are converted on (see Grid::to_xyz)
-    static std::string uid(const Grid&);
-
-    /// k-d tree configuration, so searches of other behaviours can share it
-    static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
-
-    /// Footprint of a search of size points, before building or loading it
-    static MemoryUsage estimate(size_t size);
-    static bool spec_has_behaviour(const Spec&);
 };
 
 

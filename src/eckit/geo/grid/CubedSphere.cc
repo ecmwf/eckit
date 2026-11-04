@@ -11,7 +11,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/iterator/CubedSphere.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/projection/Stretch.h"
 #include "eckit/geo/util.h"
@@ -196,16 +195,6 @@ CubedSphere::CubedSphere(size_t n, Arrangement a, std::string name, Panels panel
 CubedSphere::~CubedSphere() = default;
 
 
-Grid::iterator CubedSphere::cbegin() const {
-    return iterator{new geo::iterator::CubedSphere(*this, 0)};
-}
-
-
-Grid::iterator CubedSphere::cend() const {
-    return iterator{new geo::iterator::CubedSphere(*this, size())};
-}
-
-
 std::vector<size_t> CubedSphere::shape() const {
     if (arrangement_ == Arrangement::CUBED_SPHERE_C) {
         return {PANELS, n_, n_};
@@ -223,24 +212,6 @@ size_t CubedSphere::size() const {
 
 std::string CubedSphere::arrangement() const {
     return arrangement_ == Arrangement::CUBED_SPHERE_C ? "C" : arrangement_ == Arrangement::CUBED_SPHERE_N ? "N" : "E";
-}
-
-
-std::pair<std::vector<double>, std::vector<double>> CubedSphere::to_latlons() const {
-    std::pair<std::vector<double>, std::vector<double>> latlons;
-    auto& [lat, lon] = latlons;
-
-    const auto N = size();
-    lat.resize(N);
-    lon.resize(N);
-
-    for (size_t k = 0; k < N; ++k) {
-        const auto p = std::get<PointLonLat>(point(k));
-        lat[k]       = p.lat();
-        lon[k]       = p.lon();
-    }
-
-    return latlons;
 }
 
 

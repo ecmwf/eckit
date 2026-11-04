@@ -58,7 +58,7 @@ private:
 
     // -- Overridden methods
 
-    Point point(double x, double y) const override;
+    Point point_xy(double x, double y) const override;
     void fill_spec(spec::Custom&) const override;
 };
 

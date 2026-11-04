@@ -191,7 +191,7 @@ CASE("stretching and rotation") {
 
     auto point = [](const Grid& grid, size_t k) {
         auto it = grid.begin();
-        EXPECT(it += static_cast<Grid::iterator::difference_type>(k));
+        EXPECT(it += static_cast<Grid::Iterator::difference_type>(k));
         return std::get<PointLonLat>(*it);
     };
 

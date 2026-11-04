@@ -105,12 +105,9 @@ public:
 
     size_t n() const { return n_; }
 
-    Point point(size_t index) const;
-
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
+    [[nodiscard]] Point point(size_t index) const override;
 
     std::vector<size_t> shape() const override;
     size_t size() const override;
@@ -118,7 +115,6 @@ public:
 
     [[nodiscard]] Point first_point() const override { return point(0); }
     [[nodiscard]] Point last_point() const override { return point(size() - 1); }
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 

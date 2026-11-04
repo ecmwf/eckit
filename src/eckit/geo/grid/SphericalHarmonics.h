@@ -30,8 +30,7 @@ public:
 
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
+    [[nodiscard]] Point point(size_t index) const override;
 
     std::string name() const override { return "T" + std::to_string(truncation_); }
 

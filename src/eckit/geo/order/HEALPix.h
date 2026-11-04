@@ -22,6 +22,23 @@ public:
     using renumber_type = Grid::renumber_type;
     using Spec          = spec::Spec;
 
+    /// Between the ring and nested index of a point; Nside must be a power of 2
+    class Renumber {
+    public:
+
+        explicit Renumber(size_t Nside);
+
+        size_t ring_to_nest(size_t index) const;
+        size_t nest_to_ring(size_t index) const;
+
+    private:
+
+        const int Nside_;  // up to 2^13
+        const int Npix_;
+        const int Ncap_;
+        const int k_;
+    };
+
     // -- Constructors
 
     explicit HEALPix(const order_type& = order_default());

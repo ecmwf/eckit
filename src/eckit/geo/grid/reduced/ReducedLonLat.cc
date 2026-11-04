@@ -10,7 +10,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/iterator/Reduced.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
 
@@ -75,16 +74,6 @@ ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, const P
 
     latitude_.reset(make_lat_range(pl.size(), bbox));
     ASSERT(latitude_);
-}
-
-
-Grid::iterator ReducedLonLat::cbegin() const {
-    return iterator{new geo::iterator::Reduced(*this, 0)};
-}
-
-
-Grid::iterator ReducedLonLat::cend() const {
-    return iterator{new geo::iterator::Reduced(*this, size())};
 }
 
 

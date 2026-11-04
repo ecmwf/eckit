@@ -25,6 +25,7 @@ public:
 
     // -- Overridden methods
 
+    [[nodiscard]] Point point(size_t index) const override;
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
@@ -32,8 +33,6 @@ public:
 
     virtual const std::vector<double>& latitudes() const        = 0;
     virtual const std::vector<double>& longitudes(size_t) const = 0;
-
-    const std::vector<size_t>& nxacc() const;
 
 protected:
 
@@ -43,9 +42,22 @@ protected:
 
     // -- Methods
 
+    const std::vector<size_t>& nxacc() const;
+
+    /// Row of the point of this index (some rows can be empty)
+    size_t row(size_t index) const;
+
     virtual size_t nxj(size_t) const = 0;
 
+    // -- Overridden methods
+
+    [[nodiscard]] Iterator::State* make_state() const override;
+
 private:
+
+    // -- Types
+
+    struct State;
 
     // -- Members
 

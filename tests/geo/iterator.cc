@@ -9,7 +9,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/testing/Test.h"
 
@@ -28,8 +27,10 @@ CASE("iterator") {
         EXPECT(points.size() == expected_size);
 
         size_t i = 0;
-        for (auto iter = grid->begin(), end = grid->end(); iter; ++iter) {
-            EXPECT(points_equal(*iter, points[i++]));
+        for (auto iter = grid->begin(); iter; ++iter) {
+            EXPECT(points_equal(*iter, points[i]));
+            EXPECT(points_equal(grid->point(i), points[i]));
+            ++i;
         }
         EXPECT(i == expected_size);
 
@@ -39,20 +40,6 @@ CASE("iterator") {
             EXPECT(points_equal(point, points[j++]));
         }
         EXPECT(j == expected_size);
-
-        // test NextIterator
-        decltype(points) next_points;
-        Point point = PointLonLat{};
-        for (auto point : *grid) {
-            next_points.emplace_back(point);
-        }
-
-        EXPECT(next_points.size() == expected_size);
-
-        size_t k = 0;
-        for (const auto& next_point : next_points) {
-            EXPECT(points_equal(next_point, points[k++]));
-        }
     };
 
 
@@ -75,6 +62,68 @@ CASE("iterator") {
             test("{grid: F" + std::to_string(N) + "}", 8 * N * N);
         }
     }
+}
+
+
+CASE("iterator: moving around") {
+    using difference_type = Grid::Iterator::difference_type;
+
+    for (const std::string spec :
+         {"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}", "{grid: O8}", "{grid: H4}", "{grid: H4n}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        const auto points = grid->to_points();
+        const auto size   = static_cast<difference_type>(points.size());
+
+        auto it = grid->begin();
+        EXPECT(it != grid->end());
+
+        // anywhere, in any direction (e.g. across rows)
+        for (const difference_type k : {size - 1, size / 2, difference_type{1}, size / 3}) {
+            auto at = grid->begin();
+            EXPECT(at += k);
+            EXPECT(at.index() == static_cast<size_t>(k));
+            EXPECT(points_equal(*at, points[k]));
+
+            EXPECT(--at);
+            EXPECT(points_equal(*at, points[k - 1]));
+        }
+
+        // a copy stays where it was
+        EXPECT(it += size / 2);
+        auto copy = it;
+        EXPECT(++it);
+        EXPECT(points_equal(*copy, points[size / 2]));
+        EXPECT(points_equal(*it, points[size / 2 + 1]));
+        EXPECT(copy != it);
+
+        // past either end is the end
+        auto past = grid->begin();
+        EXPECT_NOT(past += size);
+        EXPECT_NOT(past);
+        EXPECT(past == grid->end());
+
+        auto before = grid->begin();
+        EXPECT_NOT(--before);
+        EXPECT(before == grid->end());
+    }
+}
+
+
+CASE("iterator: a reduced grid with rows without points") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O32, area: [60, -10, 30, 40]}"));
+
+    size_t i = 0;
+    for (const auto& point : *grid) {
+        EXPECT(points_equal(point, grid->point(i++)));
+    }
+    EXPECT(i == grid->size());
+}
+
+
+CASE("iterator: a grid without points") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{type: sh, truncation: 21}"));
+    EXPECT_THROWS_AS(*grid->begin(), exception::GridError);
+    EXPECT_THROWS_AS((void)grid->point(0), exception::GridError);
 }
 
 

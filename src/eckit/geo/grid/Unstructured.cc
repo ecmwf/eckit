@@ -12,7 +12,6 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
@@ -85,34 +84,19 @@ std::vector<size_t> Unstructured::shape() const {
 }
 
 
-Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record().longitude(), record().latitude())};
+Point Unstructured::point(size_t index) const {
+    return record().point(index);
 }
 
 
-Grid::iterator Unstructured::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this)};
+Grid::Iterator::State* Unstructured::make_state() const {
+    return record().make_state();
 }
 
 
 Grid::BoundingBox* Unstructured::calculate_bbox() const {
     // NOTE: a grid declaring its own bounding box (eg. a regional ICON) gets it from its spec, at construction
     return new BoundingBox;
-}
-
-
-std::vector<Point> Unstructured::to_points() const {
-    const auto& lons = record().longitude();
-    const auto& lats = record().latitude();
-
-    std::vector<Point> pts;
-    pts.reserve(size());
-
-    for (size_t i = 0; i < lons.size(); ++i) {
-        pts.emplace_back(PointLonLat{lons[i], lats[i]});
-    }
-
-    return pts;
 }
 
 

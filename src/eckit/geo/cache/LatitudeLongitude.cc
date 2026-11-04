@@ -26,6 +26,28 @@ namespace eckit::geo::cache {
 namespace {
 
 
+struct State final : geo::Grid::Iterator::State {
+    explicit State(const LatitudeLongitude& record) : record_(record) {}
+
+    Point point(size_t index) override { return record_.point(index); }
+
+    [[nodiscard]] geo::Grid::Iterator::State* clone() const override { return new State(*this); }
+
+    const LatitudeLongitude& record_;
+};
+
+
+}  // namespace
+
+
+geo::Grid::Iterator::State* LatitudeLongitude::make_state() const {
+    return new State(*this);
+}
+
+
+namespace {
+
+
 // coordinates are loaded once (loading can be a download), not concurrently
 class lock_type {
     inline static util::recursive_mutex MUTEX;

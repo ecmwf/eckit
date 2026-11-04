@@ -20,17 +20,15 @@ public:
 
     // -- Methods
 
-    size_t size() const override { return nxacc().back(); }
-    std::vector<size_t> shape() const override { return {size()}; }
+    virtual const std::vector<double>& latitudes() const        = 0;
+    virtual const std::vector<double>& longitudes(size_t) const = 0;
 
     // -- Overridden methods
 
     [[nodiscard]] Point point(size_t index) const override;
 
-    // -- Methods
-
-    virtual const std::vector<double>& latitudes() const        = 0;
-    virtual const std::vector<double>& longitudes(size_t) const = 0;
+    size_t size() const override { return nxacc().back(); }
+    std::vector<size_t> shape() const override { return {size()}; }
 
 protected:
 

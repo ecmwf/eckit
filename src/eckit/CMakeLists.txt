@@ -1012,7 +1012,6 @@ if( eckit_HAVE_ECKIT_SQL )
     add_subdirectory( sql )
 endif()
 
-add_subdirectory( cache )
 add_subdirectory( distributed )
 add_subdirectory( geometry )
 add_subdirectory( linalg )
@@ -1020,6 +1019,10 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( eckit_HAVE_ECKIT_CACHE )
+    add_subdirectory( cache )
+endif()
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )

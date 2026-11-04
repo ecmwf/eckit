@@ -71,18 +71,6 @@ Grid::Iterator::State* ORCA::make_state() const {
 }
 
 
-Point ORCA::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record().longitude().front(), record().latitude().front()};
-}
-
-
-Point ORCA::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record().longitude().back(), record().latitude().back()};
-}
-
-
 std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
     return {record().latitude(), record().longitude()};
 }

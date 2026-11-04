@@ -145,8 +145,8 @@ public:
     uid_type uid() const;
     [[nodiscard]] virtual uid_type calculate_uid() const;
 
-    [[nodiscard]] virtual Point first_point() const;
-    [[nodiscard]] virtual Point last_point() const;
+    [[nodiscard]] Point first_point() const;
+    [[nodiscard]] Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
 
     /// Coordinate names of the grid, eg. ("x", "y") or ("longitude", "latitude") (see point_coordinates)

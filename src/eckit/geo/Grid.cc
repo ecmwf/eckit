@@ -246,13 +246,13 @@ void Grid::reset_uid(uid_type id) {
 
 Point Grid::first_point() const {
     ASSERT(!empty());
-    return *cbegin();
+    return point(0);
 }
 
 
 Point Grid::last_point() const {
     ASSERT(!empty());
-    return to_points().back();
+    return point(size() - 1);
 }
 
 

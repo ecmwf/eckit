@@ -380,6 +380,18 @@ CASE("RegularXY") {
 }
 
 
+CASE("first and last points") {
+    for (const std::string spec : {"{x: [0, 2, 1], y: [3, 0, -1]}", "{x: [0, 2, 1], y: [3, 0, -1], order: i+-j-}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

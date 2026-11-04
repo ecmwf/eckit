@@ -26,8 +26,6 @@ public:
     // -- Overridden methods
 
     [[nodiscard]] Point point(size_t index) const override;
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
 
     // -- Methods
 

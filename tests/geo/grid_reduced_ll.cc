@@ -238,6 +238,19 @@ CASE("points (contains zeros)") {
 }
 
 
+CASE("first and last points") {
+    for (const std::string spec :
+         {"{type: reduced_ll, pl: [20, 24, 24, 20]}", "{type: reduced_ll, pl: [0, 10, 0], area: [10, 0, -10, 40]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

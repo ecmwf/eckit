@@ -39,8 +39,6 @@ public:
 
     const std::string& type() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
 

@@ -116,18 +116,6 @@ const std::string& RegularLL::type() const {
 }
 
 
-Point RegularLL::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};
-}
-
-
-Point RegularLL::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().back(), y().values().back()};
-}
-
-
 grid::Regular* RegularLL::make_regular_cropped(const BoundingBox& bbox) const {
     return new RegularLL({std::abs(dx()), std::abs(dy())}, bbox, reference(), scan());
 }

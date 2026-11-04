@@ -52,8 +52,6 @@ public:
 
     BoundingBox* calculate_bbox() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     const order_type& order() const override;

@@ -13,14 +13,9 @@
 #include "eckit/geo/Projection.h"
 
 
-namespace eckit::geo {
-namespace cache {
+namespace eckit::geo::cache {
 class LatitudeLongitude;
 }
-namespace iterator {
-class Unstructured;
-}
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
@@ -85,10 +80,6 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-
-    // -- Friends
-
-    friend class geo::iterator::Unstructured;
 };
 
 

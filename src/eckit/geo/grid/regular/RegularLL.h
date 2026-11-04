@@ -84,10 +84,6 @@ private:
 
     const range::RegularLongitude x_;
     const range::RegularLatitude y_;
-
-    // -- Friends
-
-    friend class geo::iterator::Regular;
 };
 
 

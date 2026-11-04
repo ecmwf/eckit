@@ -12,16 +12,18 @@
 #include "eckit/geo/order/Scan.h"
 
 
-namespace eckit::geo::iterator {
-class Regular;
-}
-
-
 namespace eckit::geo::grid {
 
 
 class Regular : public Grid {
 public:
+
+    // -- Methods
+
+    /// Point of grid coordinates (x, y)
+    virtual Point point(double x, double y) const { return projection().from_grid_xy(x, y); }
+
+    const order::Scan& scan() const { return scan_; }
 
     // -- Overridden methods
 
@@ -57,9 +59,6 @@ protected:
 
     // -- Methods
 
-    /// Point of grid coordinates (x, y)
-    virtual Point point(double x, double y) const { return projection().from_grid_xy(x, y); }
-
     /// Index of the point of the i-th x and j-th y values, in the grid order (scanning mode)
     size_t index(size_t i, size_t j) const;
 
@@ -68,7 +67,6 @@ protected:
 
     void scan(const order_type& to);
     void scan(order::Scan);
-    const order::Scan& scan() const { return scan_; }
 
 private:
 
@@ -79,10 +77,6 @@ private:
     // -- Methods
 
     [[nodiscard]] Regular* regular_cropped(const Area&) const;
-
-    // -- Friends
-
-    friend class geo::iterator::Regular;
 };
 
 

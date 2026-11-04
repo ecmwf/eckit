@@ -78,12 +78,6 @@ protected:
     // -- Constructors
 
     Iterator() = default;
-
-private:
-
-    // -- Friends
-
-    friend class Grid;
 };
 
 

@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
@@ -52,43 +52,53 @@ public:
     using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
-    struct Iterator final : std::unique_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+    /// Position in a grid, by index (the end is the grid size)
+    class Iterator final {
+    public:
 
-        Iterator(const Iterator& other) : unique_ptr(other->clone()) {}
+        /// What a grid remembers between points, besides the index (e.g. the current row)
+        struct State {
+            virtual ~State()                           = default;
+            virtual Point point(size_t index)          = 0;
+            [[nodiscard]] virtual State* clone() const = 0;
+        };
+
+        using iterator_category = std::input_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = Point;
+        using pointer           = value_type*;
+        using reference         = value_type&;
+
+        explicit Iterator(const Grid&, bool end = false);
+
+        Iterator(const Iterator&);
         Iterator(Iterator&&) noexcept = default;
 
-        Iterator& operator=(const Iterator& other) {
-            if (this != &other) {
-                reset(other->clone());
-            }
-            return *this;
-        }
+        ~Iterator() = default;
 
+        Iterator& operator=(const Iterator&);
         Iterator& operator=(Iterator&&) noexcept = default;
 
-        using iterator_category = element_type::iterator_category;
-        using difference_type   = element_type::difference_type;
-        using value_type        = element_type::value_type;
-        using pointer           = element_type::pointer;
-        using reference         = element_type::reference;
+        bool operator==(const Iterator& other) const { return index_ == other.index_; }
+        bool operator!=(const Iterator& other) const { return index_ != other.index_; }
 
-        bool operator==(const Iterator& other) const { return get()->operator==(*(other.get())); }
-        bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
+        bool operator++() { return operator+=(1); }
+        bool operator--() { return operator+=(-1); }
+        bool operator+=(difference_type);
+        bool operator-=(difference_type d) { return operator+=(-d); }
 
-        bool operator++() { return get()->operator++(); }
-        bool operator+=(difference_type d) { return get()->operator+=(d); }
+        explicit operator bool() const { return index_ < size_; }
+        Point operator*() const { return state_ ? state_->point(index_) : grid_->point(index_); }
 
-        bool operator--() { return get()->operator--(); }
-        bool operator-=(difference_type d) { return get()->operator-=(d); }
+        size_t index() const { return index_; }
 
-        explicit operator bool() const { return get()->operator bool(); }
-        Point operator*() const { return get()->operator*(); }
+    private:
 
-        size_t index() const { return get()->index(); }
+        const Grid* grid_;
+        size_t index_;
+        size_t size_;
+        std::unique_ptr<State> state_;
     };
-
-    using iterator = Iterator;
 
     // -- Constructors
 
@@ -106,11 +116,14 @@ public:
 
     // -- Methods
 
-    iterator begin() const { return cbegin(); }
-    iterator end() const { return cend(); }
+    Iterator begin() const { return cbegin(); }
+    Iterator end() const { return cend(); }
 
-    virtual iterator cbegin() const = 0;
-    virtual iterator cend() const   = 0;
+    Iterator cbegin() const { return Iterator{*this}; }
+    Iterator cend() const { return Iterator{*this, true}; }
+
+    /// Point by index, in the grid order; iterating is faster over many points
+    [[nodiscard]] virtual Point point(size_t index) const = 0;
 
     [[nodiscard]] const Spec& spec() const { return custom_spec(); }
     [[nodiscard]] std::string spec_str() const { return spec().str(); }
@@ -202,6 +215,9 @@ protected:
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
+
+    /// What iterating over this grid remembers between points, if anything
+    [[nodiscard]] virtual Iterator::State* make_state() const { return nullptr; }
 
     void reset_uid(uid_type = {});
 

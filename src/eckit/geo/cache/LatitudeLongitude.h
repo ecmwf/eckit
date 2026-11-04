@@ -56,6 +56,11 @@ public:
     const std::vector<double>& longitude() const { return lon_; }
     const std::vector<double>& latitude() const { return lat_; }
 
+    Point point(size_t index) const { return PointLonLat{lon_.at(index), lat_.at(index)}; }
+
+    /// Iterating over these coordinates, rather than getting them by uid on each point
+    [[nodiscard]] geo::Grid::Iterator::State* make_state() const;
+
 private:
 
     std::vector<double> lon_;

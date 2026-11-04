@@ -102,6 +102,39 @@ struct Grid::Once {
 };
 
 
+Grid::Iterator::Iterator(const Grid& grid, bool end) :
+    grid_(&grid), index_(end ? grid.size() : 0), size_(grid.size()), state_(end ? nullptr : grid.make_state()) {}
+
+
+Grid::Iterator::Iterator(const Iterator& other) :
+    grid_(other.grid_),
+    index_(other.index_),
+    size_(other.size_),
+    state_(other.state_ ? other.state_->clone() : nullptr) {}
+
+
+Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
+    if (this != &other) {
+        grid_  = other.grid_;
+        index_ = other.index_;
+        size_  = other.size_;
+        state_.reset(other.state_ ? other.state_->clone() : nullptr);
+    }
+    return *this;
+}
+
+
+bool Grid::Iterator::operator+=(difference_type d) {
+    if (const auto i = static_cast<difference_type>(index_) + d; 0 <= i && i < static_cast<difference_type>(size_)) {
+        index_ = static_cast<size_t>(i);
+        return true;
+    }
+
+    index_ = size_;  // invalid, the end
+    return false;
+}
+
+
 Grid::Grid(BoundingBox* bbox, const Projection* proj) :
     bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()), once_(new Once) {}
 
@@ -224,7 +257,14 @@ Point Grid::last_point() const {
 
 
 std::vector<Point> Grid::to_points() const {
-    return {cbegin(), cend()};
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (const auto& p : *this) {
+        points.emplace_back(p);
+    }
+
+    return points;
 }
 
 

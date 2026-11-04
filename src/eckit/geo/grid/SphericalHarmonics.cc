@@ -58,12 +58,7 @@ Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
 }
 
 
-Grid::iterator SphericalHarmonics::cbegin() const {
-    throw exception::GridError(NOT_SUPPORTED, Here());
-}
-
-
-Grid::iterator SphericalHarmonics::cend() const {
+Point SphericalHarmonics::point(size_t) const {
     throw exception::GridError(NOT_SUPPORTED, Here());
 }
 

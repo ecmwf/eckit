@@ -122,6 +122,7 @@ const std::vector<double>& ReducedLonLat::longitudes(size_t j) const {
 void ReducedLonLat::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
+    custom.set("type", type());
     custom.set("pl", pl_);
 
     if (order() != order::Scan::order_default()) {

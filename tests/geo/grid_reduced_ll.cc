@@ -22,6 +22,10 @@ CASE("points (global)") {
 
     EXPECT(grid->size() == 88);
 
+    // gridspec (type is explicit, not to be taken as reduced_gg by its pl) builds the same grid
+    EXPECT(grid->spec_str() == R"({"pl":[20,24,24,20],"type":"reduced_ll"})");
+    EXPECT(*grid == *std::unique_ptr<const Grid>(GridFactory::make_from_string(grid->spec_str())));
+
     const std::vector<PointLonLat> ref{
         {0., 90.},    {18., 90.},   {36., 90.},   {54., 90.},   {72., 90.},    //
         {90., 90.},   {108., 90.},  {126., 90.},  {144., 90.},  {162., 90.},   //

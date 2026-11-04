@@ -18,15 +18,10 @@
 #include "eckit/maths/Matrix3.h"
 
 
-namespace eckit::geo {
-namespace iterator {
-class CubedSphere;
-}
-namespace projection {
+namespace eckit::geo::projection {
 class Rotation;
 class Stretch;
-}  // namespace projection
-}  // namespace eckit::geo
+}  // namespace eckit::geo::projection
 
 
 namespace eckit::geo::grid {
@@ -110,6 +105,8 @@ public:
 
     size_t n() const { return n_; }
 
+    Point point(size_t index) const;
+
     // -- Overridden methods
 
     iterator cbegin() const override;
@@ -163,11 +160,6 @@ private:
     PointXYZ node(size_t panel, size_t i, size_t j) const;
     PointXYZ cell(size_t panel, size_t i, size_t j) const;
     PointXYZ edge(size_t panel, size_t i, size_t j, char side) const;
-    Point point(size_t index) const;
-
-    // -- Friends
-
-    friend class geo::iterator::CubedSphere;
 };
 
 

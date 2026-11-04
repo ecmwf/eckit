@@ -12,11 +12,6 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 
-namespace eckit::geo::iterator {
-class Reduced;
-}
-
-
 namespace eckit::geo::grid {
 
 
@@ -38,6 +33,8 @@ public:
     virtual const std::vector<double>& latitudes() const        = 0;
     virtual const std::vector<double>& longitudes(size_t) const = 0;
 
+    const std::vector<size_t>& nxacc() const;
+
 protected:
 
     // -- Constructors
@@ -46,8 +43,6 @@ protected:
 
     // -- Methods
 
-    const std::vector<size_t>& nxacc() const;
-
     virtual size_t nxj(size_t) const = 0;
 
 private:
@@ -55,10 +50,6 @@ private:
     // -- Members
 
     mutable std::vector<size_t> nxacc_;
-
-    // -- Friends
-
-    friend class geo::iterator::Reduced;
 };
 
 

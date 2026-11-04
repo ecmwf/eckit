@@ -207,6 +207,19 @@ CASE("equals") {
 }
 
 
+CASE("first and last points") {
+    for (const std::string spec :
+         {"{grid: O8}", "{grid: N32}", "{grid: O8, rotation: [30, 30]}", "{grid: O32, area: [60, -10, 30, 40]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

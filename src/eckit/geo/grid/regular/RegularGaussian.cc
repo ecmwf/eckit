@@ -96,18 +96,6 @@ const std::string& RegularGaussian::type() const {
 }
 
 
-Point RegularGaussian::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};
-}
-
-
-Point RegularGaussian::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().back(), y().values().back()};
-}
-
-
 Grid::BoundingBox* RegularGaussian::calculate_bbox() const {
     return new BoundingBox{y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max(),   //
                            x_.min(),                                                       //

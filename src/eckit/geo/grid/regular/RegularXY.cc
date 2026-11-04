@@ -116,18 +116,6 @@ const std::string& RegularXY::type() const {
 }
 
 
-Point RegularXY::first_point() const {
-    ASSERT(!empty());
-    return point_xy(x_.values().front(), y_.values().front());
-}
-
-
-Point RegularXY::last_point() const {
-    ASSERT(!empty());
-    return point_xy(x_.values().back(), y_.values().back());
-}
-
-
 Grid::BoundingBox* RegularXY::calculate_bbox() const {
     if (!projected_) {
         return new BoundingBox;  // (x, y) points, not geographic

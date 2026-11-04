@@ -239,6 +239,19 @@ CASE("errors") {
 }
 
 
+CASE("first and last points") {
+    for (const std::string spec : {"{type: cubed_sphere, n: 4, panels: lfric}", "{grid: CS-LFR-4}",
+                                   "{grid: CS-LFR-4-N}", "{grid: CS-LFR-4-E}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

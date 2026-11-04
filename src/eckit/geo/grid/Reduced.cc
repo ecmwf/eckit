@@ -47,22 +47,6 @@ Grid::Iterator::State* Reduced::make_state() const {
 }
 
 
-Point Reduced::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{longitudes(0).front(), latitudes().front()};
-}
-
-
-Point Reduced::last_point() const {
-    ASSERT(!empty());
-
-    auto j = static_cast<int>(ny()) - 1;
-    ASSERT(0 <= j);
-
-    return PointLonLat{longitudes(j).back(), latitudes().back()};
-}
-
-
 const std::vector<size_t>& Reduced::nxacc() const {
     if (nxacc_.empty()) {
         nxacc_.resize(1 + ny());

@@ -113,9 +113,6 @@ public:
     size_t size() const override;
     std::string arrangement() const override;
 
-    [[nodiscard]] Point first_point() const override { return point(0); }
-    [[nodiscard]] Point last_point() const override { return point(size() - 1); }
-
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     const std::string& type() const override;

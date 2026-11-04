@@ -12,6 +12,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
 #include "eckit/geo/order/Scan.h"
@@ -92,9 +93,11 @@ CASE("rotated") {
     }
 
 
-    SECTION("first and last points (rotated frame)") {
-        EXPECT(points_equal(grid->first_point(), PointLonLat{-10., 10.}));
-        EXPECT(points_equal(grid->last_point(), PointLonLat{10., -10.}));
+    SECTION("x and y (rotated frame)") {
+        const auto& x = grid->x().values();
+        const auto& y = grid->y().values();
+        EXPECT(points_equal(PointLonLat{x.front(), y.front()}, PointLonLat{-10., 10.}));
+        EXPECT(points_equal(PointLonLat{x.back(), y.back()}, PointLonLat{10., -10.}));
     }
 
 
@@ -859,6 +862,19 @@ CASE("RegularLL: rotated, projection as PROJ") {
         for (size_t i = 0; i < points.size(); ++i) {
             EXPECT(points_equal(other[i], points[i], 1e-6));
         }
+    }
+}
+
+
+CASE("first and last points") {
+    for (const std::string spec : {"{grid: [5, 5]}", "{grid: [5, 5], rotation: [-40, -20]}",
+                                   "{grid: [5, 5], order: i+-j-}", "{grid: [5, 5], order: j-i+}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
     }
 }
 

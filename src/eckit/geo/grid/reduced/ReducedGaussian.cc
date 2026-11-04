@@ -20,6 +20,33 @@
 namespace eckit::geo::grid::reduced {
 
 
+namespace {
+
+
+// Compare a pl to a reference pl on its non-zero rows only, such that a cropped grid (with rows outside the area
+// zero-padded, as in GRIB sub-areas) still matches the global pl it was cropped from
+bool pl_matches(const pl_type& pl, const pl_type& ref) {
+    if (pl.size() != ref.size()) {
+        return false;
+    }
+
+    auto any = false;
+    for (size_t j = 0; j < pl.size(); ++j) {
+        if (pl[j] != 0) {
+            if (pl[j] != ref[j]) {
+                return false;
+            }
+            any = true;
+        }
+    }
+
+    return any;
+}
+
+
+}  // namespace
+
+
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
     ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
 
@@ -78,7 +105,7 @@ std::string ReducedGaussian::name() const {
 
 
 bool ReducedGaussian::octahedral() const {
-    return pl_ == util::reduced_octahedral_pl(N_);
+    return pl_matches(pl_, util::reduced_octahedral_pl(N_));
 }
 
 
@@ -87,7 +114,8 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", name());
 
-    if (!octahedral() && !util::reduced_classical_pl_known(N_)) {
+    const auto classical = util::reduced_classical_pl_known(N_) && pl_matches(pl_, util::reduced_classical_pl(N_));
+    if (!octahedral() && !classical) {
         custom.set("pl", pl_);
     }
 

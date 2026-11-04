@@ -12,6 +12,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
+#include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -204,6 +205,121 @@ CASE("equals") {
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == *grid4);
     EXPECT(*grid4 == *grid1);
+}
+
+
+CASE("cropped octahedral (zero-padded pl)") {
+    constexpr size_t N = 16;
+
+    const auto& pl_global = util::reduced_octahedral_pl(N);
+    const auto lats       = range::GaussianLatitude(N, false).values();
+
+    // contiguous band of rows, the others zeroed (as in a GRIB sub-area)
+    constexpr size_t first = 6;
+    constexpr size_t last  = 25;
+
+    pl_type pl(pl_global.size(), 0);
+    for (size_t j = first; j <= last; ++j) {
+        pl[j] = pl_global[j];
+    }
+
+    const area::BoundingBox bbox(lats[first], -25., lats[last], 55.);
+
+    SECTION("zero-padded octahedral pl") {
+        ReducedGaussian grid(pl, bbox);
+
+        EXPECT(grid.octahedral());
+        EXPECT(grid.name() == "O16");
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.get_string("grid") == "O16");
+        EXPECT(!spec.has("pl"));
+        EXPECT(spec.has("area"));
+
+        // the spec builds the same grid
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+        EXPECT(rebuilt->size() < ReducedGaussian(N).size());
+        EXPECT(rebuilt->name() == "O16");
+
+        auto a = grid.to_points();
+        auto b = rebuilt->to_points();
+        ASSERT(a.size() == b.size());
+        for (size_t i = 0; i < a.size(); ++i) {
+            EXPECT(points_equal(a[i], b[i]));
+        }
+    }
+
+    SECTION("zero-padded classical pl") {
+        ASSERT(util::reduced_classical_pl_known(N));
+        const auto& pl_classical = util::reduced_classical_pl(N);
+
+        pl_type pl_c(pl_classical.size(), 0);
+        for (size_t j = first; j <= last; ++j) {
+            pl_c[j] = pl_classical[j];
+        }
+
+        ReducedGaussian grid(pl_c, bbox);
+
+        EXPECT(!grid.octahedral());
+        EXPECT(grid.name() == "N16");
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.get_string("grid") == "N16");
+        EXPECT(!spec.has("pl"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+    }
+
+    SECTION("pl matching neither octahedral nor classical") {
+        auto pl_other = pl;
+        pl_other[first + 1] += 4;
+
+        ReducedGaussian grid(pl_other, bbox);
+
+        EXPECT(!grid.octahedral());
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.has("pl"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+    }
+}
+
+
+CASE("spec pl") {
+    // global grids: octahedral and classical have no pl, anything else keeps it
+    {
+        ReducedGaussian grid(16);
+        EXPECT(grid.octahedral());
+        EXPECT(grid.name() == "O16");
+        EXPECT(grid.spec_str() == R"({"grid":"O16"})");
+    }
+
+    {
+        ASSERT(util::reduced_classical_pl_known(16));
+        ReducedGaussian grid(util::reduced_classical_pl(16));
+        EXPECT(!grid.octahedral());
+        EXPECT(grid.name() == "N16");
+        EXPECT(grid.spec_str() == R"({"grid":"N16"})");
+    }
+
+    {
+        // known N, but a pl which is neither octahedral nor classical
+        auto pl = util::reduced_classical_pl(16);
+        pl[3] += 2;
+
+        ReducedGaussian grid(pl);
+        EXPECT(!grid.octahedral());
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.has("pl"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+    }
 }
 
 

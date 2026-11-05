@@ -57,6 +57,14 @@ It features facilities to easily handle, in a cross-platform way:
 * space partition trees
 * file-mapped arrays
 
+## Rust interface
+
+EcKit can be used from Rust. The `eckit` crate provides a safe API on top of
+the C++ library, and `eckit-sys` provides the low-level bindings that other
+ECMWF packages build on. Both live in [rust/](rust/) and are documented
+in the [Rust Interface](docs/content/rust/index.rst) section of the
+documentation.
+
 ## Requirements
 
 Make sure ecbuild is installed and the ecbuild executable script is found (`which ecbuild`).

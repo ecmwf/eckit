@@ -349,6 +349,8 @@ list( APPEND eckit_filesystem_srcs
     filesystem/detail/FileSystemType.h
     filesystem/LocalPathName.cc
     filesystem/LocalPathName.h
+    filesystem/NFSMountInfo.cc
+    filesystem/NFSMountInfo.h
     filesystem/PathExpander.cc
     filesystem/PathExpander.h
     filesystem/PathName.cc

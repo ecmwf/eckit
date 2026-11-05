@@ -242,6 +242,10 @@ public:  // methods
     /// @throws NotImplemented if filesystem interrogation is unsupported
     std::string fileSystemType() const;
 
+    /// Device of the filesystem holding this path, as "major:minor"
+    /// @throws FailedSystemCall if the path cannot be stat'ed
+    std::string device() const;
+
     DataHandle* fileHandle(bool overwrite) const;
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;

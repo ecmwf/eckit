@@ -9,6 +9,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/filesystem/NFSMountInfo.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpDir.h"
 #include "eckit/filesystem/TmpFile.h"
@@ -485,6 +486,32 @@ CASE("test_localpathname_filesystemtype_on_real_nfs") {
     EXPECT(mount.exists());
     EXPECT_EQUAL(mount.fileSystemType(), std::string("nfs"));
     EXPECT_EQUAL(PathName(mount).fileSystemType(), std::string("nfs"));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_localpathname_device") {
+    // a path that cannot be interrogated is an error, not a silent answer
+    EXPECT_THROWS_AS(LocalPathName("/does/not/exist/at/all").device(), FailedSystemCall);
+
+    // "major:minor", the same on every path of a filesystem
+    const auto cwd    = LocalPathName::cwd();
+    const auto device = cwd.device();
+    const auto colon  = device.find(':');
+    EXPECT(colon != std::string::npos && colon > 0 && colon + 1 < device.size());
+    EXPECT(device.find_first_not_of("0123456789:") == std::string::npos);
+    EXPECT_EQUAL(cwd.device(), device);
+
+    // the mount table of this process is readable whatever the filesystem
+    EXPECT_NO_THROW(filesystem::nfs::local_lock_option(device));
+
+    const char* nfs_mount = ::getenv("ECKIT_TEST_NFS_MOUNT");
+    if (nfs_mount == nullptr || nfs_mount[0] == '\0') {
+        Log::info() << "NFS mount (ECKIT_TEST_NFS_MOUNT) not available -- skipping NFS-backed test" << std::endl;
+        return;
+    }
+
+    EXPECT_NO_THROW(filesystem::nfs::local_lock_option(LocalPathName(nfs_mount).device()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

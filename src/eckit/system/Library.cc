@@ -16,7 +16,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/system/LibraryManager.h"
@@ -186,6 +185,10 @@ std::string Library::expandPath(const std::string& p) const {
 void Library::print(std::ostream& out) const {
     out << "Library("
         << "name=" << name_ << ", path=" << libraryPath() << ", prefix=" << prefixDirectory() << ")";
+}
+
+std::vector<std::string> Library::pluginManifestPaths() const {
+    return {"~" + name_ + "/share/plugins"};
 }
 
 //----------------------------------------------------------------------------------------------------------------------

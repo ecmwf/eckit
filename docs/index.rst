@@ -24,5 +24,7 @@ serialisation, networking, logging and error handling.
    :caption: Contents
 
    content/concepts
+   content/plugins
+   content/string_tools
    content/reference
    content/rust/index

@@ -6,12 +6,20 @@
 
 #include <algorithm>
 #include <regex>
+#include <sstream>
+#include <vector>
 
+#include "eckit/cache/DiskCache.h"
+#include "eckit/cache/LibEcKitCache.h"
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/cache/CropCache.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/StringTools.h"
 
 #if eckit_HAVE_PROJ
@@ -27,41 +35,12 @@ static std::vector<PathName> paths(const std::string& rsrc, const std::string& r
     auto vs = StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default));
     std::vector<PathName> ps(vs.begin(), vs.end());
 
-    if (LibEcKitGeo::caching()) {
-        ps.emplace_back(PathName{LibEcKitGeo::cacheDir(), true} / path_in_cache);
+    // as cached, if found
+    for (const auto& root : LibEcKitGeo::cacheRoots().paths()) {
+        ps.emplace_back(root / path_in_cache);
     }
 
     return ps;
-}
-
-
-static void purge_path_recursive(const PathName& p) {
-    std::vector<PathName> files;
-    std::vector<PathName> dirs;
-    p.children(files, dirs);
-
-    for (auto& f : files) {
-        f.unlink();
-    }
-
-    for (auto& d : dirs) {
-        purge_path_recursive(d);
-    }
-
-    if (p.exists()) {
-        p.rmdir();
-    }
-}
-
-static void purge_path(const PathName& p) {
-    if (p.exists()) {
-        try {
-            purge_path_recursive(p);
-        }
-        catch (const Exception& e) {
-            throw SeriousBug("LibEcKitGeo: failed to remove path '" + p + "': " + e.what(), Here());
-        }
-    }
 }
 
 
@@ -121,59 +100,250 @@ bool LibEcKitGeo::caching() {
 }
 
 
-std::string LibEcKitGeo::cacheDir() {
-    static const std::string path = PathName{
+const cache::Roots& LibEcKitGeo::cacheRoots() {
+    static const cache::Roots roots{
         LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH),
-        true};
-    return path;
+        caching()};
+    return roots;
 }
 
 
-std::string LibEcKitGeo::searchLoader() {
-    static const std::string loader{
-        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-memory")};
+std::vector<PathName> LibEcKitGeo::cacheReadablePaths() {
+    return cacheRoots().readable_paths();
+}
+
+
+std::vector<PathName> LibEcKitGeo::cacheWritablePaths() {
+    return cacheRoots().writable_paths();
+}
+
+
+std::string LibEcKitGeo::cacheDir() {
+    const auto writable = cacheWritablePaths();
+    if (writable.empty()) {
+        throw UserError(
+            "LibEcKitGeo: no writable cache path (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH), or not "
+            "caching (eckit-geo-caching;$ECKIT_GEO_CACHING)",
+            Here());
+    }
+    return writable.front().asString();
+}
+
+
+std::string LibEcKitGeo::searchCacheLoader() {
+    // not caching: memory (nothing written)
+    static const std::string loader{caching() ? std::string{LibResource<std::string, LibEcKitGeo>(
+                                                    "eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-file")}
+                                              : std::string{"memory"}};
     return loader;
 }
 
 
-bool LibEcKitGeo::searchFastBuild() {
+bool LibEcKitGeo::sharedMemoryHugePages() {
     static const bool yes{
-        LibResource<bool, LibEcKitGeo>("eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD", true)};
+        LibResource<bool, LibEcKitGeo>("eckit-geo-shared-memory-hugepages;$ECKIT_GEO_SHARED_MEMORY_HUGEPAGES", false)};
     return yes;
 }
 
 
-std::string LibEcKitGeo::searchCacheCapacity() {
-    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+bool LibEcKitGeo::sharedMemoryRoundHugePages() {
+    static const bool yes{LibResource<bool, LibEcKitGeo>(
+        "eckit-geo-shared-memory-round-hugepages;$ECKIT_GEO_SHARED_MEMORY_ROUND_HUGEPAGES", false)};
+    return yes;
+}
+
+
+cache::MemoryUsage LibEcKitGeo::searchCacheCapacity() {
+    static const cache::MemoryUsage capacity{LibResource<std::string, LibEcKitGeo>(
         "eckit-geo-cache-search-capacity;$ECKIT_GEO_CACHE_SEARCH_CAPACITY", eckit_GEO_CACHE_SEARCH_CAPACITY)};
     return capacity;
 }
 
 
-std::string LibEcKitGeo::cropCacheCapacity() {
-    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+cache::MemoryUsage LibEcKitGeo::cropCacheCapacity() {
+    static const cache::MemoryUsage capacity{LibResource<std::string, LibEcKitGeo>(
         "eckit-geo-cache-crop-capacity;$ECKIT_GEO_CACHE_CROP_CAPACITY", eckit_GEO_CACHE_CROP_CAPACITY)};
     return capacity;
 }
 
 
-void LibEcKitGeo::purgeCacheDir() {
-    purge_path_recursive(cacheDir());
+std::string LibEcKitGeo::searchCachePolicy() {
+    static const std::string policy{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-search-policy;$ECKIT_GEO_CACHE_SEARCH_POLICY", "lru")};
+    return policy;
 }
 
 
-void LibEcKitGeo::purgeCacheArea() {
-    purge_path(cacheArea());
+std::string LibEcKitGeo::cropCachePolicy() {
+    static const std::string policy{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-crop-policy;$ECKIT_GEO_CACHE_CROP_POLICY", "lru")};
+    return policy;
 }
 
 
-void LibEcKitGeo::purgeCacheGrid() {
-    purge_path(cacheGrid());
+bool LibEcKitGeo::cacheThrowOnMiss() {
+    static const bool yes{LibResource<bool, LibEcKitGeo>("eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS",
+                                                         LibEcKitCache::throwOnMiss())};
+    return yes;
 }
 
 
-void LibEcKitGeo::purgeCacheProjection() {
-    purge_path(cacheProjection());
+cache::MemoryCaches& LibEcKitGeo::memoryCaches() {
+    // never destroyed, as the caches (static objects) are destroyed in any order
+    static auto* caches = new cache::MemoryCaches;
+    return *caches;
+}
+
+
+void LibEcKitGeo::purgeCache() {
+    memoryCaches().purge();
+}
+
+
+void LibEcKitGeo::purgeCacheSearch() {
+    geo::cache::SearchCache::instance().purge();
+}
+
+
+void LibEcKitGeo::purgeCacheCrop() {
+    geo::cache::CropCache::instance().purge();
+}
+
+
+cache::MemoryUsage LibEcKitGeo::cacheFootprint() {
+    return memoryCaches().footprint();
+}
+
+
+namespace {
+
+
+void json_usage(JSON& j, const cache::MemoryUsage& usage) {
+    j.startObject();
+    j << "process" << usage.processMemory() << "shared" << usage.sharedMemory();
+    j.endObject();
+}
+
+
+template <typename Cache>
+void json_memory_cache(JSON& j, const Cache& cache) {
+    const auto stats = cache.statistics();
+
+    j.startObject();
+    j << "size" << cache.size();
+    if (cache.count_limit() != Cache::UNLIMITED) {
+        j << "count_limit" << cache.count_limit();
+    }
+    j << "policy" << cache.policy().name();
+    j << "footprint";
+    json_usage(j, cache.usage());
+    j << "capacity";
+    json_usage(j, cache.capacity());
+    j << "statistics";
+    j.startObject();
+    j << "hits" << stats.hits << "misses" << stats.misses << "insertions" << stats.insertions << "evictions"
+      << stats.evictions;
+    j.endObject();
+    j.endObject();
+}
+
+
+}  // namespace
+
+
+std::string LibEcKitGeo::cacheInfo() {
+    std::ostringstream out;
+    JSON j(out);
+    cacheInfo(j);
+    return out.str();
+}
+
+
+void LibEcKitGeo::cacheInfo(JSON& j) {
+    const auto writable = cacheWritablePaths();
+
+    j.startObject();
+
+    j << "memory";
+    j.startObject();
+    j << "footprint";
+    json_usage(j, cacheFootprint());
+    j << "search";
+    json_memory_cache(j, geo::cache::SearchCache::instance());
+    j << "crop";
+    json_memory_cache(j, geo::cache::CropCache::instance());
+    j.endObject();
+
+    j << "disk";
+    j.startObject();
+
+    j << "control";
+    j.startObject();
+    j << "caching" << caching();
+    j << "throw_on_miss" << cacheThrowOnMiss();
+    j << "paths";
+    j.startObject();
+    j << "readable";
+    j.startList();
+    for (const auto& p : cacheReadablePaths()) {
+        j << p.asString();
+    }
+    j.endList();
+    j << "writable";
+    j.startList();
+    for (const auto& p : writable) {
+        j << p.asString();
+    }
+    j.endList();
+    j.endObject();
+    j.endObject();
+
+    // cache files size, where they are written (the first writable path)
+    auto size = [&writable](const std::string& name) {
+        return writable.empty() ? 0 : cache::DiskCache::size(writable.front() / name);
+    };
+
+    j << "search";
+    j.startObject();
+    j << "loader" << searchCacheLoader();
+    j << "shared_memory_huge_pages" << sharedMemoryHugePages();
+    j << "shared_memory_round_huge_pages" << sharedMemoryRoundHugePages();
+    j << "size" << size("search");
+    j.endObject();
+
+    for (const std::string name : {"crop", "latlon", "download"}) {
+        j << name;
+        j.startObject();
+        j << "size" << size(name);
+        j.endObject();
+    }
+
+    j.endObject();
+
+    j.endObject();
+}
+
+
+void LibEcKitGeo::removeCacheDir() {
+    // nothing written, if nowhere to write
+    if (!cacheWritablePaths().empty()) {
+        cache::DiskCache::remove(cacheDir());
+    }
+}
+
+
+void LibEcKitGeo::removeCacheArea() {
+    cache::DiskCache::remove(cacheArea());
+}
+
+
+void LibEcKitGeo::removeCacheGrid() {
+    cache::DiskCache::remove(cacheGrid());
+}
+
+
+void LibEcKitGeo::removeCacheProjection() {
+    cache::DiskCache::remove(cacheProjection());
 }
 
 

@@ -11,7 +11,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/BoundingBoxXY.h"
-#include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -117,18 +116,6 @@ const std::string& RegularXY::type() const {
 }
 
 
-Point RegularXY::first_point() const {
-    ASSERT(!empty());
-    return point(x_.values().front(), y_.values().front());
-}
-
-
-Point RegularXY::last_point() const {
-    ASSERT(!empty());
-    return point(x_.values().back(), y_.values().back());
-}
-
-
 Grid::BoundingBox* RegularXY::calculate_bbox() const {
     if (!projected_) {
         return new BoundingBox;  // (x, y) points, not geographic
@@ -140,7 +127,7 @@ Grid::BoundingBox* RegularXY::calculate_bbox() const {
 }
 
 
-Point RegularXY::point(double x, double y) const {
+Point RegularXY::point_xy(double x, double y) const {
     const PointXY p{x, y};
     return projected_ ? projection().fwd(p - false_) : p;
 }

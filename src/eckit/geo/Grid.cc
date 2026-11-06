@@ -41,8 +41,34 @@ class lock_type {
 };
 
 
+/// Grid spec registered by uid, with 'type' and 'uid' (the key)
+spec::Custom* spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
+    if (!spec.has("type")) {
+        throw exception::SpecError("Grid: spec registered by uid '" + uid + "' without 'type'", Here());
+    }
+
+    if (std::string _uid; spec.get("uid", _uid) && _uid != uid) {
+        throw exception::SpecError("Grid: spec registered by uid '" + uid + "' with uid '" + _uid + "'", Here());
+    }
+
+    auto* custom = new spec::Custom(spec.container());
+    custom->set("uid", uid);
+    return custom;
+}
+
+
+/// Grid spec registered by name, with 'type'
+spec::Custom* spec_by_name(const std::string& name, const spec::Custom& spec) {
+    if (!spec.has("type")) {
+        throw exception::SpecError("Grid: spec registered by name '" + name + "' without 'type'", Here());
+    }
+
+    return new spec::Custom(spec.container());
+}
+
+
 struct SpecByUID final : GridSpecByUID::concrete_generator_t {
-    explicit SpecByUID(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    explicit SpecByUID(spec::Custom* spec) : spec_(spec) {}
     spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
     bool match(const spec::Custom& other) const override { return other == *spec_; }
 
@@ -53,7 +79,7 @@ private:
 
 
 struct SpecByName final : GridSpecByName::concrete_generator_t {
-    explicit SpecByName(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    explicit SpecByName(spec::Custom* spec) : spec_(spec) {}
     spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
     bool match(const spec::Custom& other) const override { return other == *spec_; }
 
@@ -74,6 +100,39 @@ struct Grid::Once {
     util::once_flag uid;
     util::once_flag search;
 };
+
+
+Grid::Iterator::Iterator(const Grid& grid, bool end) :
+    grid_(&grid), index_(end ? grid.size() : 0), size_(grid.size()), state_(end ? nullptr : grid.make_state()) {}
+
+
+Grid::Iterator::Iterator(const Iterator& other) :
+    grid_(other.grid_),
+    index_(other.index_),
+    size_(other.size_),
+    state_(other.state_ ? other.state_->clone() : nullptr) {}
+
+
+Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
+    if (this != &other) {
+        grid_  = other.grid_;
+        index_ = other.index_;
+        size_  = other.size_;
+        state_.reset(other.state_ ? other.state_->clone() : nullptr);
+    }
+    return *this;
+}
+
+
+bool Grid::Iterator::operator+=(difference_type d) {
+    if (const auto i = static_cast<difference_type>(index_) + d; 0 <= i && i < static_cast<difference_type>(size_)) {
+        index_ = static_cast<size_t>(i);
+        return true;
+    }
+
+    index_ = size_;  // invalid, the end
+    return false;
+}
 
 
 Grid::Grid(BoundingBox* bbox, const Projection* proj) :
@@ -158,7 +217,9 @@ Grid::uid_type Grid::uid() const {
 
         lock_type lock;
         if (!GridSpecByUID::instance().exists(uid_)) {
-            GridSpecByUID::regist(uid_, custom_spec());
+            spec::Custom custom(custom_spec().container());
+            custom.set("type", type());
+            GridSpecByUID::regist(uid_, custom);
         }
     });
 
@@ -185,18 +246,25 @@ void Grid::reset_uid(uid_type id) {
 
 Point Grid::first_point() const {
     ASSERT(!empty());
-    return *cbegin();
+    return point(0);
 }
 
 
 Point Grid::last_point() const {
     ASSERT(!empty());
-    return to_points().back();
+    return point(size() - 1);
 }
 
 
 std::vector<Point> Grid::to_points() const {
-    return {cbegin(), cend()};
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (const auto& p : *this) {
+        points.emplace_back(p);
+    }
+
+    return points;
 }
 
 
@@ -535,12 +603,12 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 
 
 void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
-    regist(key, new SpecByName(spec));
+    regist(key, new SpecByName(spec_by_name(key, spec)));
 }
 
 
 void GridSpecByName::replace(const key_t& key, const spec::Custom& spec) {
-    instance().replace(key, new SpecByName(spec));
+    instance().replace(key, new SpecByName(spec_by_name(key, spec)));
 }
 
 
@@ -551,12 +619,12 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
-    regist(key, new SpecByUID(spec));
+    regist(key, new SpecByUID(spec_by_uid(key, spec)));
 }
 
 
 void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
-    instance().replace(key, new SpecByUID(spec));
+    instance().replace(key, new SpecByUID(spec_by_uid(key, spec)));
 }
 
 

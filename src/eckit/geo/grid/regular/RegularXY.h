@@ -39,10 +39,7 @@ public:
 
     const std::string& type() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
-
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
@@ -58,7 +55,7 @@ private:
 
     // -- Overridden methods
 
-    Point point(double x, double y) const override;
+    Point point_xy(double x, double y) const override;
     void fill_spec(spec::Custom&) const override;
 };
 

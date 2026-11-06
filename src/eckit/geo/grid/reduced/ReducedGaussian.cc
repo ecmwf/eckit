@@ -12,7 +12,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 
@@ -60,16 +59,6 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, con
 
 ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, const Projection* p) :
     ReducedGaussian(util::reduced_octahedral_pl(N), bbox, p) {}
-
-
-Grid::iterator ReducedGaussian::cbegin() const {
-    return iterator{new geo::iterator::Reduced(*this, 0)};
-}
-
-
-Grid::iterator ReducedGaussian::cend() const {
-    return iterator{new geo::iterator::Reduced(*this, size())};
-}
 
 
 std::string ReducedGaussian::name() const {

@@ -22,6 +22,10 @@ CASE("points (global)") {
 
     EXPECT(grid->size() == 88);
 
+    // gridspec (type is explicit, not to be taken as reduced_gg by its pl) builds the same grid
+    EXPECT(grid->spec_str() == R"({"pl":[20,24,24,20],"type":"reduced_ll"})");
+    EXPECT(*grid == *std::unique_ptr<const Grid>(GridFactory::make_from_string(grid->spec_str())));
+
     const std::vector<PointLonLat> ref{
         {0., 90.},    {18., 90.},   {36., 90.},   {54., 90.},   {72., 90.},    //
         {90., 90.},   {108., 90.},  {126., 90.},  {144., 90.},  {162., 90.},   //
@@ -231,6 +235,19 @@ CASE("points (contains zeros)") {
     EXPECT(points_equal(points[239], PointLonLat{182.1951219512, 80.64}));
     EXPECT(points_equal(points[320], PointLonLat{0., 80.28}));
     EXPECT(points_equal(points[321], PointLonLat{2.1176470588, 80.28}));
+}
+
+
+CASE("first and last points") {
+    for (const std::string spec :
+         {"{type: reduced_ll, pl: [20, 24, 24, 20]}", "{type: reduced_ll, pl: [0, 10, 0], area: [10, 0, -10, 40]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
 }
 
 

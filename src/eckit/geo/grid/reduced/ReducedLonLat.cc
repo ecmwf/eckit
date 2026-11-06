@@ -10,7 +10,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/iterator/Reduced.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
 
@@ -78,16 +77,6 @@ ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, const P
 }
 
 
-Grid::iterator ReducedLonLat::cbegin() const {
-    return iterator{new geo::iterator::Reduced(*this, 0)};
-}
-
-
-Grid::iterator ReducedLonLat::cend() const {
-    return iterator{new geo::iterator::Reduced(*this, size())};
-}
-
-
 size_t ReducedLonLat::size() const {
     return nxacc().back();
 }
@@ -122,6 +111,7 @@ const std::vector<double>& ReducedLonLat::longitudes(size_t j) const {
 void ReducedLonLat::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
+    custom.set("type", type());
     custom.set("pl", pl_);
 
     if (order() != order::Scan::order_default()) {

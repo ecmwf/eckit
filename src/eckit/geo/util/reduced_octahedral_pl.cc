@@ -5,7 +5,8 @@
 #include <cstddef>
 #include <utility>
 
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/util.h"
 
 
@@ -13,9 +14,9 @@ namespace eckit::geo::util {
 
 
 const pl_type& reduced_octahedral_pl(size_t N) {
-    static cache::MemoryCacheT<size_t, pl_type> cache;
-    if (cache.contains(N)) {
-        return cache[N];
+    static eckit::cache::MemoryCacheT<size_t, pl_type> cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(N)) {
+        return *cached;
     }
 
     pl_type pl(N * 2);
@@ -26,7 +27,7 @@ const pl_type& reduced_octahedral_pl(size_t N) {
         p += 4;
     }
 
-    return (cache[N] = std::move(pl));
+    return cache.insert(N, std::move(pl));
 }
 
 

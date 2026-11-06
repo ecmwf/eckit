@@ -13,17 +13,19 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {
 
 
-const std::string GRID_N   = "pi_N";
-const Grid::uid_type UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-const std::vector<size_t> SHAPE_N{3140};
+const std::string GRID_N   = "CORE2_N";
+const Grid::uid_type UID_N = "1d03f0efefdc1a3a8798ad53ee983140";  // {grid:CORE2_N}
+const std::vector<size_t> SHAPE_N{126858};
 
-const std::string GRID_C   = "pi_C";
-const Grid::uid_type UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
+const std::string GRID_C   = "CORE2_C";
+const Grid::uid_type UID_C = "9930995170a9d054187b13962a648880";  // {grid:CORE2_C}
+const std::vector<size_t> SHAPE_C{244659};
 
 
 CASE("spec") {
@@ -53,7 +55,7 @@ CASE("spec") {
 CASE("name") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
 
-    EXPECT(grid->name() == "pi");
+    EXPECT(grid->name() == "CORE2");
     EXPECT(grid->arrangement() == "N");
 }
 
@@ -62,6 +64,18 @@ CASE("type") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
 
     EXPECT(grid->type() == "FESOM");
+}
+
+
+CASE("cell centres") {
+    // as FESOM's elem_center (the mean of the node coordinates), the first cell
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID_C}})));
+    EXPECT(grid->shape() == SHAPE_C);
+
+    const auto [lat, lon] = grid->to_latlons();
+    EXPECT(lat.size() == SHAPE_C.front());
+    EXPECT(types::is_approximately_equal(lon.front(), -153.771, 1e-3));
+    EXPECT(types::is_approximately_equal(lat.front(), -76.8972, 1e-4));
 }
 
 
@@ -83,6 +97,16 @@ CASE("equals") {
         EXPECT(grid2->uid() == grid3->calculate_uid());
         EXPECT(grid3->uid() == grid2->calculate_uid());
     }
+}
+
+
+CASE("first and last points") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{uid:" + UID_N + "}"));
+
+    EXPECT(points_equal(grid->first_point(), grid->point(0)));
+    EXPECT(points_equal(grid->first_point(), *grid->begin()));
+    EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+    EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
 }
 
 

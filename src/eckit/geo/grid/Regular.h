@@ -12,11 +12,6 @@
 #include "eckit/geo/order/Scan.h"
 
 
-namespace eckit::geo::iterator {
-class Regular;
-}
-
-
 namespace eckit::geo::grid {
 
 
@@ -25,8 +20,7 @@ public:
 
     // -- Overridden methods
 
-    iterator cbegin() const final;
-    iterator cend() const final;
+    [[nodiscard]] Point point(size_t index) const final;
 
     size_t size() const final { return nx() * ny(); }
     std::vector<size_t> shape() const final { return {ny(), nx()}; }
@@ -54,11 +48,12 @@ protected:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    [[nodiscard]] Iterator::State* make_state() const override;
 
     // -- Methods
 
     /// Point of grid coordinates (x, y)
-    virtual Point point(double x, double y) const { return projection().from_grid_xy(x, y); }
+    virtual Point point_xy(double x, double y) const { return projection().from_grid_xy(x, y); }
 
     /// Index of the point of the i-th x and j-th y values, in the grid order (scanning mode)
     size_t index(size_t i, size_t j) const;
@@ -72,6 +67,10 @@ protected:
 
 private:
 
+    // -- Types
+
+    struct State;
+
     // -- Members
 
     order::Scan scan_;
@@ -79,10 +78,6 @@ private:
     // -- Methods
 
     [[nodiscard]] Regular* regular_cropped(const Area&) const;
-
-    // -- Friends
-
-    friend class geo::iterator::Regular;
 };
 
 

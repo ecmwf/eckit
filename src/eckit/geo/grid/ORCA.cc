@@ -10,7 +10,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 
@@ -62,39 +61,13 @@ Grid::uid_type ORCA::calculate_uid() const {
 }
 
 
-Grid::iterator ORCA::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record().longitude(), record().latitude())};
+Point ORCA::point(size_t index) const {
+    return record().point(index);
 }
 
 
-Grid::iterator ORCA::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this)};
-}
-
-
-Point ORCA::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record().longitude().front(), record().latitude().front()};
-}
-
-
-Point ORCA::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record().longitude().back(), record().latitude().back()};
-}
-
-
-std::vector<Point> ORCA::to_points() const {
-    const auto& lon = record().longitude();
-    const auto& lat = record().latitude();
-
-    std::vector<Point> p;
-    p.reserve(size());
-
-    for (size_t i = 0; i < size(); ++i) {
-        p.emplace_back(PointLonLat{lon[i], lat[i]});
-    }
-    return p;
+Grid::Iterator::State* ORCA::make_state() const {
+    return record().make_state();
 }
 
 

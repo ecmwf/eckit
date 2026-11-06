@@ -7,10 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "eckit/cache/FileCache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
@@ -50,7 +51,13 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
     reset_uid(uid);
     name_ = name;
 
-    spec::Custom::container_type custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
+    spec::Custom::container_type custom_map{{"type", type()}, {"uid", uid}};
+
+    // the coordinates file lets other processes use the grid by uid; with nowhere to write, only if found (else memory)
+    if (PathName path;
+        !LibEcKitGeo::cacheWritablePaths().empty() || cache::LatitudeLongitude::file_cache().find(uid, path)) {
+        custom_map["cached_path"] = record().to_cached_path();
+    }
     if (!name.empty()) {
         custom_map["name"] = name;
     }
@@ -78,34 +85,19 @@ std::vector<size_t> Unstructured::shape() const {
 }
 
 
-Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record().longitude(), record().latitude())};
+Point Unstructured::point(size_t index) const {
+    return record().point(index);
 }
 
 
-Grid::iterator Unstructured::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this)};
+Grid::Iterator::State* Unstructured::make_state() const {
+    return record().make_state();
 }
 
 
 Grid::BoundingBox* Unstructured::calculate_bbox() const {
     // NOTE: a grid declaring its own bounding box (eg. a regional ICON) gets it from its spec, at construction
     return new BoundingBox;
-}
-
-
-std::vector<Point> Unstructured::to_points() const {
-    const auto& lons = record().longitude();
-    const auto& lats = record().latitude();
-
-    std::vector<Point> pts;
-    pts.reserve(size());
-
-    for (size_t i = 0; i < lons.size(); ++i) {
-        pts.emplace_back(PointLonLat{lons[i], lats[i]});
-    }
-
-    return pts;
 }
 
 

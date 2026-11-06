@@ -12,11 +12,6 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 
-namespace eckit::geo::iterator {
-class Reduced;
-}
-
-
 namespace eckit::geo::grid {
 
 
@@ -25,18 +20,15 @@ public:
 
     // -- Methods
 
-    size_t size() const override { return nxacc().back(); }
-    std::vector<size_t> shape() const override { return {size()}; }
+    virtual const std::vector<double>& latitudes() const        = 0;
+    virtual const std::vector<double>& longitudes(size_t) const = 0;
 
     // -- Overridden methods
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
+    [[nodiscard]] Point point(size_t index) const override;
 
-    // -- Methods
-
-    virtual const std::vector<double>& latitudes() const        = 0;
-    virtual const std::vector<double>& longitudes(size_t) const = 0;
+    size_t size() const override { return nxacc().back(); }
+    std::vector<size_t> shape() const override { return {size()}; }
 
 protected:
 
@@ -48,17 +40,24 @@ protected:
 
     const std::vector<size_t>& nxacc() const;
 
+    /// Row of the point of this index (some rows can be empty)
+    size_t row(size_t index) const;
+
     virtual size_t nxj(size_t) const = 0;
 
+    // -- Overridden methods
+
+    [[nodiscard]] Iterator::State* make_state() const override;
+
 private:
+
+    // -- Types
+
+    struct State;
 
     // -- Members
 
     mutable std::vector<size_t> nxacc_;
-
-    // -- Friends
-
-    friend class geo::iterator::Reduced;
 };
 
 

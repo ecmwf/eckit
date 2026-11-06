@@ -9,8 +9,8 @@ import pytest
 from eckit.geo import Figure
 from eckit.geo import Grid
 from eckit.geo import Projection
-from eckit.geo import search_cache_clear
-from eckit.geo import search_cache_statistics
+from eckit.geo import cache
+from eckit.geo import cache_purge
 
 SPECS = [
     (dict(grid="1/1"), (181, 360)),
@@ -234,41 +234,26 @@ def test_grid_search():
 def test_grid_search_spec():
     grid = Grid(grid=[30, 30])
 
-    search = grid.search(loader="memory", search="knn", k=3)
+    search = grid.search(search="knn", k=3)
     assert search.search((15, 0)) == search.search_knn((15, 0), 3)
 
     with pytest.raises(RuntimeError):
         grid.search(search="knn")  # k is required
 
 
-LOADERS = [
-    ("memory", "memory"),
-    ("mmap", "shared"),
-    ("mapped-memory", "shared"),  # the default, as mir
-    ("file-io", "memory"),
-    ("tmp-shmem", "shared"),  # removed at exit
-    ("tmp-shared-memory", "shared"),
-]
-
-
-@pytest.mark.parametrize("loader, usage", LOADERS)
-def test_grid_search_loaders(loader, usage):
+def test_grid_search_footprint():
     grid = Grid(grid=[30, 30])
 
-    search_cache_clear()
-    before = search_cache_statistics()
+    cache_purge()
 
-    search = grid.search(loader=loader)
+    # the k-d tree loader is the library's (see cache())
+    search = grid.search()
 
     # the cache accounts for the loaded search, in process memory or shared
-    after = search_cache_statistics()
-    assert after["misses"] == before["misses"] + 1
-    assert after[usage] - before[usage] == search.footprint[usage] > 0
-
-    # whatever the loader, the same results
-    reference = grid.search(loader="memory")
-    for point in ((14, 1), (-100, 44), (170, -50)):
-        assert indices(search.search_knn(point, 4)) == indices(reference.search_knn(point, 4))
+    searches = cache()["memory"]["search"]
+    assert searches["size"] == 1
+    assert search.footprint["process"] + search.footprint["shared"] > 0
+    assert searches["footprint"] == search.footprint
 
 
 @pytest.mark.parametrize(

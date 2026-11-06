@@ -50,13 +50,61 @@ def git_sha1() -> str:
     return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
 
 
-def cache_dir() -> str:
-    """Cache directory (resolved once, eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH)"""
-    return eckit_geo.LibEcKitGeo.cacheDir()
+def _human_bytes(n) -> str:
+    """Bytes in binary units, e.g. 1536 -> '1.5 KiB'"""
+    for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
+        if abs(n) < 1024 or unit == "TiB":
+            return f"{n} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024
 
 
-def cache_dir_purge() -> None:
-    eckit_geo.LibEcKitGeo.purgeCacheDir()
+def _cache_info_lines(info, path=()) -> list:
+    pad = "  " * len(path)
+    lines = []
+    for key, value in info.items():
+        if isinstance(value, dict):
+            lines.append(f"{pad}{key}:")
+            lines += _cache_info_lines(value, path + (key,))
+        elif isinstance(value, list):
+            lines.append(f"{pad}{key}:" + ("" if value else " []"))
+            lines += [f"{pad}  - {v}" for v in value]
+        elif value is True or value is False:  # before sizes: bool is an int
+            lines.append(f"{pad}{key}: {str(value).lower()}")
+        elif path[-1:] in (("footprint",), ("capacity",)) or (
+            "disk" in path and key == "size"
+        ):
+            lines.append(f"{pad}{key}: {_human_bytes(value)}")
+        else:
+            lines.append(f"{pad}{key}: {value}")
+    return lines
+
+
+class CacheInfo(dict):
+    """Caching configuration and state (see cache): a dict (sizes in bytes), shown as
+    indented text (sizes in binary units, e.g. KiB, MiB)"""
+
+    def __repr__(self) -> str:
+        return "\n".join(_cache_info_lines(self))
+
+
+def cache() -> CacheInfo:
+    """Caching state, as of now: memory (in-process caches) and disk (control and
+    cache files by kind), see LibEcKitGeo::cacheInfo"""
+    import json
+
+    return CacheInfo(json.loads(eckit_geo.LibEcKitGeo.cacheInfo()))
+
+
+def cache_purge() -> None:
+    """Release the in-process caches (cache files are kept); searches and crops in
+    use stay valid"""
+    eckit_geo.LibEcKitGeo.purgeCache()
+
+
+def cache_rmdir() -> None:
+    """Remove the cache directory where cache files are written (the first writable
+    cache path), if any"""
+    eckit_geo.LibEcKitGeo.removeCacheDir()
 
 
 def projdb_is_available() -> bool:
@@ -80,14 +128,6 @@ def projdb_set_search_paths(db_path, search_paths=()) -> None:
         _search_paths.push_back(p.encode("utf-8") if isinstance(p, str) else p)
     _db_path = db_path.encode("utf-8") if isinstance(db_path, str) else db_path
     eckit_geo.LibEcKitGeo.projdb_set_search_paths(_db_path, _search_paths)
-
-
-def projdb_reset() -> None:
-    """
-    Recreate eckit's PROJ context, (re-)resolves proj.db from env PROJ_DATA/PROJ_LIB
-    and the compiled-in defaults, dropping any search paths set).
-    """
-    eckit_geo.LibEcKitGeo.projdb_reset()
 
 
 def _spec_str(spec) -> str:

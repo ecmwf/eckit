@@ -15,7 +15,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/iterator/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
@@ -114,18 +113,6 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 const std::string& RegularLL::type() const {
     static const std::string type{"regular_ll"};
     return type;
-}
-
-
-Point RegularLL::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};
-}
-
-
-Point RegularLL::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().back(), y().values().back()};
 }
 
 

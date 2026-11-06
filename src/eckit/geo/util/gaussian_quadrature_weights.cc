@@ -9,8 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/util.h"
 
 
@@ -20,12 +21,12 @@ namespace eckit::geo::util {
 const std::vector<double>& gaussian_quadrature_weights(size_t N) {
     ASSERT(N > 0);
 
-    using cache_t = cache::MemoryCacheT<size_t, std::vector<double>>;
+    using cache_t = eckit::cache::MemoryCacheT<size_t, std::vector<double>>;
     const cache_t::key_type key{N};
 
-    static cache_t cache;
-    if (cache.contains(key)) {
-        return cache[key];
+    static cache_t cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(key)) {
+        return *cached;
     }
 
 
@@ -104,7 +105,7 @@ const std::vector<double>& gaussian_quadrature_weights(size_t N) {
     }
 
 
-    return (cache[key] = std::move(weights));
+    return cache.insert(key, std::move(weights));
 }
 
 

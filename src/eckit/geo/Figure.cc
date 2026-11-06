@@ -127,18 +127,22 @@ double Figure::flattening() const {
 
 
 double Figure::Conformal::m(double phi) const {
+    // Snyder (14-15), as PROJ pj_msfn
     const auto s = e_ * std::sin(phi);
     return std::cos(phi) / std::sqrt(1. - s * s);
 }
 
 
 double Figure::Conformal::t(double phi) const {
+    // Snyder (15-9), as PROJ pj_tsfn
     const auto s = e_ * std::sin(phi);
     return std::tan(M_PI_4 - phi / 2.) / std::pow((1. - s) / (1. + s), e_ / 2.);
 }
 
 
 double Figure::Conformal::phi(double t) const {
+    // Latitude of t, Snyder (7-9), as PROJ pj_phi2
+
     constexpr int max_iter = 15;
     constexpr double eps   = 1e-12;
 
@@ -160,6 +164,8 @@ Figure::Authalic::Authalic(double e) : e_(e), qp_(q(1.)) {}
 
 
 double Figure::Authalic::q(double sinphi) const {
+    // Snyder (3-12), as PROJ pj_qsfn
+
     if (types::is_approximately_equal(e_, 0.)) {
         return 2. * sinphi;
     }
@@ -170,6 +176,8 @@ double Figure::Authalic::q(double sinphi) const {
 
 
 double Figure::Authalic::phi(double q) const {
+    // Latitude of q, Snyder (3-16), as PROJ pj_authlat
+
     auto phi = std::asin(std::max(-1., std::min(1., q / 2.)));
     if (types::is_approximately_equal(e_, 0.)) {
         return phi;

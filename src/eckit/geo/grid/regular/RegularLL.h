@@ -53,9 +53,6 @@ public:
 
     const std::string& type() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
-
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     /// Bounding box in the grid's own (possibly rotated) frame
@@ -84,10 +81,6 @@ private:
 
     const range::RegularLongitude x_;
     const range::RegularLatitude y_;
-
-    // -- Friends
-
-    friend class geo::iterator::Regular;
 };
 
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -11,7 +12,9 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
+#include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -204,6 +207,247 @@ CASE("equals") {
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == *grid4);
     EXPECT(*grid4 == *grid1);
+}
+
+
+CASE("cropped octahedral (zero-padded pl)") {
+    constexpr size_t N = 16;
+
+    const auto& pl_global = util::reduced_octahedral_pl(N);
+    const auto lats       = range::GaussianLatitude(N, false).values();
+
+    // contiguous band of rows, the others zeroed (as in a GRIB sub-area)
+    constexpr size_t first = 6;
+    constexpr size_t last  = 25;
+
+    pl_type pl(pl_global.size(), 0);
+    for (size_t j = first; j <= last; ++j) {
+        pl[j] = pl_global[j];
+    }
+
+    const area::BoundingBox bbox(lats[first], -25., lats[last], 55.);
+
+    SECTION("zero-padded octahedral pl") {
+        ReducedGaussian grid(pl, bbox);
+
+        EXPECT(grid.octahedral());
+        EXPECT(grid.name() == "O16");
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.get_string("grid") == "O16");
+        EXPECT(!spec.has("pl"));
+        EXPECT(spec.has("area"));
+
+        // the spec builds the same grid
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+        EXPECT(rebuilt->size() < ReducedGaussian(N).size());
+        EXPECT(rebuilt->name() == "O16");
+
+        auto a = grid.to_points();
+        auto b = rebuilt->to_points();
+        ASSERT(a.size() == b.size());
+        for (size_t i = 0; i < a.size(); ++i) {
+            EXPECT(points_equal(a[i], b[i]));
+        }
+    }
+
+    SECTION("zero-padded classical pl") {
+        ASSERT(util::reduced_classical_pl_known(N));
+        const auto& pl_classical = util::reduced_classical_pl(N);
+
+        pl_type pl_c(pl_classical.size(), 0);
+        for (size_t j = first; j <= last; ++j) {
+            pl_c[j] = pl_classical[j];
+        }
+
+        ReducedGaussian grid(pl_c, bbox);
+
+        EXPECT(!grid.octahedral());
+        EXPECT(grid.name() == "N16");
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.get_string("grid") == "N16");
+        EXPECT(!spec.has("pl"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+    }
+
+    SECTION("pl matching neither octahedral nor classical") {
+        auto pl_other = pl;
+        pl_other[first + 1] += 4;
+
+        ReducedGaussian grid(pl_other, bbox);
+
+        EXPECT(!grid.octahedral());
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.has("pl"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+    }
+}
+
+
+CASE("zero rows inside the band") {
+    // a pl with zero rows between non-zero rows is not a cropped global pl: the area cannot describe the gap, so the
+    // pl must be kept in the spec (rebuilding from "O<N>" and the area would bring the absent rows back)
+    // compare points row by row (the grid iterator does not support empty rows between non-empty ones)
+    auto same_points = [](const Grid& a, const Grid& b) {
+        const auto* ra = dynamic_cast<const grid::Reduced*>(&a);
+        const auto* rb = dynamic_cast<const grid::Reduced*>(&b);
+        ASSERT(ra != nullptr && rb != nullptr);
+        ASSERT(ra->latitudes().size() == rb->latitudes().size());
+
+        for (size_t j = 0; j < ra->latitudes().size(); ++j) {
+            EXPECT(std::abs(ra->latitudes()[j] - rb->latitudes()[j]) < 1e-9);
+
+            const auto& lonsa = ra->longitudes(j);
+            const auto& lonsb = rb->longitudes(j);
+            ASSERT(lonsa.size() == lonsb.size());
+            for (size_t i = 0; i < lonsa.size(); ++i) {
+                EXPECT(std::abs(lonsa[i] - lonsb[i]) < 1e-9);
+            }
+        }
+    };
+
+    SECTION("global, N=2") {
+        const ReducedGaussian global(2);
+        const ReducedGaussian grid(pl_type{20, 0, 24, 20});
+
+        EXPECT(global.size() == 88);
+        EXPECT(grid.size() == 64);
+
+        EXPECT(!grid.octahedral());
+        EXPECT(grid.name() == "N2");
+        EXPECT(grid.spec().has("pl"));
+
+        // (no classical pl is known for N=2, so the name "N2" cannot be resolved: rebuild from the pl itself)
+        std::unique_ptr<const Grid> rebuilt(GridFactory::build(spec::Custom({{"pl", grid.spec().get_long_vector("pl")}})));
+        EXPECT(rebuilt->size() == grid.size());
+        same_points(grid, *rebuilt);
+        EXPECT(*rebuilt == grid);
+
+        // not the global O2 grid
+        EXPECT(!(grid == global));
+        EXPECT(grid.uid() != global.uid());
+        EXPECT(rebuilt->uid() == grid.uid());
+    }
+
+    SECTION("cropped, N=16") {
+        constexpr size_t N     = 16;
+        constexpr size_t first = 6;
+        constexpr size_t last  = 25;
+        constexpr size_t gap   = 10;
+
+        const auto& pl_global = util::reduced_octahedral_pl(N);
+        const auto lats       = range::GaussianLatitude(N, false).values();
+
+        const area::BoundingBox bbox(lats[first], -25., lats[last], 55.);
+
+        pl_type pl(pl_global.size(), 0);
+        pl_type pl_nogap(pl_global.size(), 0);
+        for (size_t j = first; j <= last; ++j) {
+            pl[j]       = j == gap ? 0 : pl_global[j];
+            pl_nogap[j] = pl_global[j];
+        }
+
+        const ReducedGaussian grid(pl, bbox);
+
+        // the same area without the gap (cropped octahedral)
+        std::unique_ptr<const Grid> cropped(new ReducedGaussian(pl_nogap, bbox));
+
+        EXPECT(cropped->name() == "O16");
+        EXPECT(!grid.octahedral());
+        EXPECT(grid.name() == "N16");
+        EXPECT(grid.spec().has("pl"));
+        EXPECT(grid.size() < cropped->size());
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+        same_points(grid, *rebuilt);
+
+        EXPECT(!(grid == *cropped));
+        EXPECT(grid.uid() != cropped->uid());
+    }
+}
+
+
+CASE("single retained row") {
+    constexpr size_t N = 16;
+
+    // the first row of the classical and the octahedral pl coincide (20 points), a single row cannot tell them apart
+    ASSERT(util::reduced_classical_pl_known(N));
+    ASSERT(util::reduced_classical_pl(N)[0] == util::reduced_octahedral_pl(N)[0]);
+    ASSERT(util::reduced_classical_pl(N)[1] != util::reduced_octahedral_pl(N)[1]);
+
+    const auto& pl_global = util::reduced_octahedral_pl(N);
+    const auto lats       = range::GaussianLatitude(N, false).values();
+
+    for (size_t j : {size_t{0}, size_t{5}}) {
+        pl_type pl(pl_global.size(), 0);
+        pl[j] = pl_global[j];
+
+        const ReducedGaussian grid(pl, area::BoundingBox(lats[j], -25., lats[j], 55.));
+
+        // octahedral takes precedence, and no pl is needed
+        EXPECT(grid.octahedral());
+        EXPECT(grid.name() == "O16");
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.get_string("grid") == "O16");
+        EXPECT(!spec.has("pl"));
+        EXPECT(spec.has("area"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->name() == "O16");
+        EXPECT(rebuilt->size() == grid.size());
+        EXPECT(grid.size() > 0);
+        EXPECT(grid.size() < ReducedGaussian(N).size());
+
+        auto a = grid.to_points();
+        auto b = rebuilt->to_points();
+        ASSERT(a.size() == b.size());
+        for (size_t i = 0; i < a.size(); ++i) {
+            EXPECT(points_equal(a[i], b[i]));
+        }
+    }
+}
+
+
+CASE("spec pl") {
+    // global grids: octahedral and classical have no pl, anything else keeps it
+    {
+        ReducedGaussian grid(16);
+        EXPECT(grid.octahedral());
+        EXPECT(grid.name() == "O16");
+        EXPECT(grid.spec_str() == R"({"grid":"O16"})");
+    }
+
+    {
+        ASSERT(util::reduced_classical_pl_known(16));
+        ReducedGaussian grid(util::reduced_classical_pl(16));
+        EXPECT(!grid.octahedral());
+        EXPECT(grid.name() == "N16");
+        EXPECT(grid.spec_str() == R"({"grid":"N16"})");
+    }
+
+    {
+        // known N, but a pl which is neither octahedral nor classical
+        auto pl = util::reduced_classical_pl(16);
+        pl[3] += 2;
+
+        ReducedGaussian grid(pl);
+        EXPECT(!grid.octahedral());
+
+        const auto& spec = grid.spec();
+        EXPECT(spec.has("pl"));
+
+        std::unique_ptr<const Grid> rebuilt(GridFactory::make_from_string(grid.spec_str()));
+        EXPECT(rebuilt->size() == grid.size());
+    }
 }
 
 

@@ -169,7 +169,7 @@ set_source_files_properties(
         COMPILE_OPTIONS "${suppress_warnings}"
 )
 
-ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
+ecbuild_add_library( TARGET              eckit_sql
                      INSTALL_HEADERS     ALL
                      HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/eckit/sql
                      SOURCES             ${eckit_sql_lib_srcs}

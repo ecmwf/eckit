@@ -3,8 +3,10 @@
 
 
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <unistd.h>
 
+#include <cstdlib>
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -17,9 +19,13 @@
 #include "eckit/cache/Roots.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Clock.h"
 
 
 namespace eckit::cache::test {
+
+
+constexpr int CONFIGURED_KEPT = 100;  // less than the times used below
 
 
 // unique per test run (and process)
@@ -109,6 +115,61 @@ CASE("FileCache: found in a provisioned (read-only) cache, created in the writab
 }
 
 
+CASE("FileCache: the time recently used files are kept is configurable") {
+    EXPECT(LibEcKitCache::fileCacheKept_s() == CONFIGURED_KEPT);
+}
+
+
+CASE("FileCache: within a capacity, the least recently used files are removed") {
+    const auto root = unique_dir("capacity");
+    const FileCache cache(Roots(root), "kind", 1, "", {}, false, 10);
+
+    auto exists = [&](const std::string& key) { return (root / cache.relative(key)).exists(); };
+
+    // last used some time ago (access and modification times)
+    auto last_used = [&](const std::string& key, long seconds_ago) {
+        const auto time = static_cast<long>(Clock::now()) - seconds_ago;
+        const timeval times[2]{{time, 0}, {time, 0}};
+        ASSERT(::utimes((root / cache.relative(key)).localPath(), times) == 0);
+    };
+
+    cache.getOrCreate("a", writing("aaaa"));
+    cache.getOrCreate("b", writing("bbbb"));
+    EXPECT(exists("a"));
+    EXPECT(exists("b"));
+
+    last_used("a", 300);
+    last_used("b", 200);
+
+    // over capacity: only as many as necessary, the least recently used first
+    cache.getOrCreate("c", writing("cccc"));
+    EXPECT_NOT(exists("a"));
+    EXPECT(exists("b"));
+    EXPECT(exists("c"));
+
+    // finding a file is using it
+    last_used("b", 300);
+    last_used("c", 200);
+    EXPECT(cache.find("b"));
+
+    cache.getOrCreate("d", writing("dddd"));
+    EXPECT(exists("b"));
+    EXPECT_NOT(exists("c"));
+    EXPECT(exists("d"));
+
+    // recently used files are kept, even over capacity
+    cache.getOrCreate("e", writing("eeee"));
+    EXPECT(exists("b"));
+    EXPECT(exists("d"));
+    EXPECT(exists("e"));
+
+    // removed files are created again
+    EXPECT(read(cache.getOrCreate("a", writing("again"))) == "again");
+
+    DiskCache::remove(root.dirName());
+}
+
+
 CASE("FileCache: throwing on cache miss") {
     const auto root = unique_dir("throw");
     // off by default (LibEcKitCache::throwOnMiss)
@@ -130,5 +191,8 @@ CASE("FileCache: throwing on cache miss") {
 
 
 int main(int argc, char** argv) {
+    // as a user would, read once
+    ::setenv("ECKIT_CACHE_FILE_KEPT", std::to_string(eckit::cache::test::CONFIGURED_KEPT).c_str(), 1);
+
     return eckit::testing::run_tests(argc, argv);
 }

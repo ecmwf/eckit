@@ -40,6 +40,13 @@ int LibEcKitCache::sharedMemoryWait_s() {
 }
 
 
+int LibEcKitCache::fileCacheKept_s() {
+    static const int seconds{
+        LibResource<int, LibEcKitCache>("eckit-cache-file-kept;$ECKIT_CACHE_FILE_KEPT", eckit_CACHE_FILE_KEPT)};
+    return seconds;
+}
+
+
 const void* LibEcKitCache::addr() const {
     return this;
 }

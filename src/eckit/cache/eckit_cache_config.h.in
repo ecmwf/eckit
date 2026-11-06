@@ -7,3 +7,4 @@
 
 #cmakedefine01 eckit_CACHE_THROW_ON_MISS
 #define eckit_CACHE_SHARED_MEMORY_WAIT @eckit_CACHE_SHARED_MEMORY_WAIT@
+#define eckit_CACHE_FILE_KEPT @eckit_CACHE_FILE_KEPT@

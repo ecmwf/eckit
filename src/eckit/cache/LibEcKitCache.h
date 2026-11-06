@@ -36,6 +36,12 @@ public:
      */
     static int sharedMemoryWait_s();
 
+    /**
+     * Time cache files are kept since last used [s], when limiting them to a capacity (see FileCache), as a process may
+     * be about to open them (eckit-cache-file-kept;$ECKIT_CACHE_FILE_KEPT, default from CMake eckit_CACHE_FILE_KEPT)
+     */
+    static int fileCacheKept_s();
+
 private:
 
     // -- Constructors

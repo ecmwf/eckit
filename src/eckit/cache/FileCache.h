@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <optional>
 #include <string>
 
@@ -18,8 +19,12 @@ namespace eckit::cache {
 /**
  * @brief Cache files of one kind, found in the cache directories or else created once
  * @details Files are <root>/<name>/<version>/<key><extension>; the version separates incompatible layouts. A miss can
- * be an error (throw_on_miss). Their total size is not bounded (cache directories are managed, e.g. provisioned or
- * cleaned, outside the processes using them).
+ * be an error (throw_on_miss), and the total size can be limited (capacity [byte], 0 without a limit): creating a file
+ * removes the least recently used files of the kind, of any version, in the first writable root. There is no index:
+ * this relies on the access time of the files, set when used (the modification time is the version of a file, see
+ * loader::SharedMemory). Recently used files are kept (see LibEcKitCache::fileCacheKept_s), so the capacity can be
+ * exceeded for a while. Processes that mapped or attached a removed file are unaffected, and provisioned (read-only)
+ * cache directories aren't managed.
  */
 class FileCache {
 public:
@@ -27,7 +32,7 @@ public:
     // -- Constructors
 
     FileCache(const Roots&, const std::string& name, int version, const std::string& extension,
-              const Loader::Options& = {}, bool throw_on_miss = LibEcKitCache::throwOnMiss());
+              const Loader::Options& = {}, bool throw_on_miss = LibEcKitCache::throwOnMiss(), size_t capacity = 0);
 
     FileCache(const FileCache&) = delete;
     FileCache(FileCache&&)      = delete;
@@ -61,10 +66,17 @@ private:
     // -- Members
 
     const DiskCache disk_;
+    const PathName name_;
     const PathName prefix_;
     const std::string extension_;
     const Loader::Options loader_options_;
     const bool throw_on_miss_;
+    const size_t capacity_;
+
+    // -- Methods
+
+    /// Remove least recently used files, to fit the capacity; failing to is not an error, a file was created
+    void limit() const;
 };
 
 

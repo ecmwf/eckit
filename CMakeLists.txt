@@ -200,6 +200,7 @@ ecbuild_add_option( FEATURE ECKIT_CACHE
 
 set( eckit_CACHE_THROW_ON_MISS OFF CACHE BOOL "eckit::cache throw on cache miss default" )
 set( eckit_CACHE_SHARED_MEMORY_WAIT 60 CACHE STRING "eckit::cache maximum wait for shared memory being loaded [s] default" )
+set( eckit_CACHE_FILE_KEPT 60 CACHE STRING "eckit::cache time recently used cache files are kept [s] default" )
 
 ### eckit::geo
 

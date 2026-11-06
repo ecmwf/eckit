@@ -26,10 +26,6 @@
 namespace eckit::cache {
 
 
-const std::string Download::PREFIX = "";
-const std::string Download::SUFFIX = ".download";
-
-
 std::string Download::url_file_basename(const url_type& url, bool ext) {
     std::string n = url;
 

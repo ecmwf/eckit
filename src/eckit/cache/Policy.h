@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "eckit/cache/MemoryUsage.h"
@@ -23,7 +24,7 @@ public:
 
     // -- Constants
 
-    static const std::string DEFAULT;
+    static constexpr std::string_view DEFAULT = "lru";
 
     // -- Types
 
@@ -56,14 +57,19 @@ public:
     /// If a is evicted before b
     virtual bool before(const Entry& a, const Entry& b) const = 0;
 
-    /// Name
-    virtual const std::string& name() const = 0;
+    const std::string& name() const { return name_; }
 
     // -- Class methods
 
     static std::unique_ptr<Policy> build(const std::string& name);
 
     static std::vector<std::string> names();
+
+private:
+
+    // -- Members
+
+    std::string name_;
 };
 
 

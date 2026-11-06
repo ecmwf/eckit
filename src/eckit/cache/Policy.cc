@@ -4,7 +4,7 @@
 
 #include "eckit/cache/Policy.h"
 
-#include <map>
+#include <utility>
 
 #include "eckit/cache/Exceptions.h"
 
@@ -12,18 +12,11 @@
 namespace eckit::cache {
 
 
-const std::string Policy::DEFAULT = "lru";
-
-
 namespace {
 
 
 struct LeastRecentlyUsed final : Policy {
     bool before(const Entry& a, const Entry& b) const override { return a.last_use < b.last_use; }
-    const std::string& name() const override {
-        static const std::string NAME{"lru"};
-        return NAME;
-    }
 };
 
 
@@ -32,19 +25,11 @@ struct LeastFrequentlyUsed final : Policy {
         // Least used first (then least recently used)
         return a.uses < b.uses || (a.uses == b.uses && a.last_use < b.last_use);
     }
-    const std::string& name() const override {
-        static const std::string NAME{"lfu"};
-        return NAME;
-    }
 };
 
 
 struct FirstInFirstOut final : Policy {
     bool before(const Entry& a, const Entry& b) const override { return a.inserted < b.inserted; }
-    const std::string& name() const override {
-        static const std::string NAME{"fifo"};
-        return NAME;
-    }
 };
 
 
@@ -55,10 +40,6 @@ struct Largest final : Policy {
         const auto y = b.footprint.total();
         return x > y || (x == y && a.last_use < b.last_use);
     }
-    const std::string& name() const override {
-        static const std::string NAME{"largest"};
-        return NAME;
-    }
 };
 
 
@@ -68,11 +49,12 @@ std::unique_ptr<Policy> make() {
 }
 
 
-const std::map<std::string, std::unique_ptr<Policy> (*)()> POLICIES{
-    {"lru", &make<LeastRecentlyUsed>},
-    {"lfu", &make<LeastFrequentlyUsed>},
+// Constant, as a MemoryCache can be constructed during static initialisation of another translation unit
+constexpr std::pair<std::string_view, std::unique_ptr<Policy> (*)()> POLICIES[]{
     {"fifo", &make<FirstInFirstOut>},
     {"largest", &make<Largest>},
+    {"lfu", &make<LeastFrequentlyUsed>},
+    {"lru", &make<LeastRecentlyUsed>},
 };
 
 
@@ -80,8 +62,14 @@ const std::map<std::string, std::unique_ptr<Policy> (*)()> POLICIES{
 
 
 std::unique_ptr<Policy> Policy::build(const std::string& name) {
-    if (auto it = POLICIES.find(name); it != POLICIES.end()) {
-        return it->second();
+    for (const auto& [key, make] : POLICIES) {
+        if (key == name) {
+            auto policy = make();
+            ASSERT(policy);
+
+            policy->name_ = key;
+            return policy;
+        }
     }
 
     std::string choices;
@@ -96,7 +84,7 @@ std::unique_ptr<Policy> Policy::build(const std::string& name) {
 std::vector<std::string> Policy::names() {
     std::vector<std::string> names;
     for (const auto& [name, make] : POLICIES) {
-        names.push_back(name);
+        names.emplace_back(name);
     }
     return names;
 }

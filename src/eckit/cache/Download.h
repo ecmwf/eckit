@@ -21,11 +21,6 @@ namespace eckit::cache {
 class Download final : public DiskCache {
 public:
 
-    // -- Constants
-
-    static const std::string PREFIX;
-    static const std::string SUFFIX;
-
     // -- Types
 
     using url_type     = std::string;
@@ -40,8 +35,8 @@ public:
 
     /// Download a URL once, to a file named by its MD5 (any URL makes a valid file name)
     /// @return its path
-    PathName toCachedPath(const url_type&, const std::string& prefix = PREFIX,
-                          const std::string& suffix = SUFFIX) const;
+    PathName toCachedPath(const url_type&, const std::string& prefix = "",
+                          const std::string& suffix = ".download") const;
 
     // -- Class methods
 

@@ -136,8 +136,8 @@ public:
 
     // -- Constructors
 
-    MemoryCache(MemoryCaches& caches, const MemoryUsage& capacity, const std::string& policy = Policy::DEFAULT) :
-        MemoryCacheBase(caches), capacity_(capacity), policy_(Policy::build(policy)) {
+    MemoryCache(MemoryCaches& caches, const MemoryUsage& capacity, const std::string_view& policy = Policy::DEFAULT) :
+        MemoryCacheBase(caches), capacity_(capacity), policy_(Policy::build(std::string{policy})) {
         registerCache();
     }
 

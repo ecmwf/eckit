@@ -371,12 +371,14 @@ CASE("SharedMemory: a file rebuilt with the same segment key is loaded again, no
     SharedMemory a(path, {});
     const auto key = SharedMemory::key(path);
 
+    // the time of the key, before rewriting moves it (to a later second, possibly)
+    struct stat st{};
+    ASSERT(::stat(path.localPath(), &st) == 0);
+
     // rebuilt in place (same inode, same size, other content) 255s later, so of the same key (mtime modulo 255)
     const std::vector<char> d(c.rbegin(), c.rend());
     std::ofstream(path.localPath(), std::ios::binary).write(d.data(), static_cast<std::streamsize>(d.size()));
 
-    struct stat st{};
-    ASSERT(::stat(path.localPath(), &st) == 0);
     const timeval times[2]{{st.st_atime, 0}, {st.st_mtime + 255, 0}};
     ASSERT(::utimes(path.localPath(), times) == 0);
     ASSERT(SharedMemory::key(path) == key);

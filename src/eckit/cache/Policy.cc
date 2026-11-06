@@ -4,6 +4,7 @@
 
 #include "eckit/cache/Policy.h"
 
+#include <tuple>
 #include <utility>
 
 #include "eckit/cache/Exceptions.h"
@@ -15,76 +16,61 @@ namespace eckit::cache {
 namespace {
 
 
-struct LeastRecentlyUsed final : Policy {
-    bool before(const Entry& a, const Entry& b) const override { return a.last_use < b.last_use; }
-};
+constexpr bool least_recently_used(const Policy::Entry& a, const Policy::Entry& b) noexcept {
+    return a.last_use < b.last_use;
+}
 
 
-struct LeastFrequentlyUsed final : Policy {
-    bool before(const Entry& a, const Entry& b) const override {
-        // Least used first (then least recently used)
-        return a.uses < b.uses || (a.uses == b.uses && a.last_use < b.last_use);
-    }
-};
+constexpr bool least_frequently_used(const Policy::Entry& a, const Policy::Entry& b) noexcept {
+    return std::tie(a.uses, a.last_use) < std::tie(b.uses, b.last_use);
+}
 
 
-struct FirstInFirstOut final : Policy {
-    bool before(const Entry& a, const Entry& b) const override { return a.inserted < b.inserted; }
-};
+constexpr bool first_in_first_out(const Policy::Entry& a, const Policy::Entry& b) noexcept {
+    return a.inserted < b.inserted;
+}
 
 
-struct Largest final : Policy {
-    bool before(const Entry& a, const Entry& b) const override {
-        // Largest first (then least recently used)
-        const auto x = a.footprint.total();
-        const auto y = b.footprint.total();
-        return x > y || (x == y && a.last_use < b.last_use);
-    }
-};
-
-
-template <typename P>
-std::unique_ptr<Policy> make() {
-    return std::make_unique<P>();
+constexpr bool largest(const Policy::Entry& a, const Policy::Entry& b) noexcept {
+    // Largest first (then least recently used)
+    const auto x = a.footprint.total();
+    const auto y = b.footprint.total();
+    return x > y || (x == y && a.last_use < b.last_use);
 }
 
 
 // Constant, as a MemoryCache can be constructed during static initialisation of another translation unit
-constexpr std::pair<std::string_view, std::unique_ptr<Policy> (*)()> POLICIES[]{
-    {"fifo", &make<FirstInFirstOut>},
-    {"largest", &make<Largest>},
-    {"lfu", &make<LeastFrequentlyUsed>},
-    {"lru", &make<LeastRecentlyUsed>},
+constexpr std::pair<std::string_view, Policy::EvictsBefore> POLICIES[]{
+    {"fifo", &first_in_first_out},
+    {"largest", &largest},
+    {"lfu", &least_frequently_used},
+    {"lru", &least_recently_used},
 };
 
 
 }  // namespace
 
 
-std::unique_ptr<Policy> Policy::build(const std::string& name) {
-    for (const auto& [key, make] : POLICIES) {
+Policy Policy::build(std::string_view name) {
+    for (const auto& [key, evicts_before] : POLICIES) {
         if (key == name) {
-            auto policy = make();
-            ASSERT(policy);
-
-            policy->name_ = key;
-            return policy;
+            return {key, evicts_before};
         }
     }
 
     std::string choices;
-    for (const auto& n : names()) {
-        choices += (choices.empty() ? "" : ", ") + n;
+    for (const auto& [key, evicts_before] : POLICIES) {
+        choices += (choices.empty() ? "" : ", ") + std::string{key};
     }
 
-    throw CacheError("Policy: unknown '" + name + "', choices are: " + choices, Here());
+    throw CacheError("Policy: unknown '" + std::string{name} + "', choices are: " + choices, Here());
 }
 
 
 std::vector<std::string> Policy::names() {
     std::vector<std::string> names;
-    for (const auto& [name, make] : POLICIES) {
-        names.emplace_back(name);
+    for (const auto& [key, evicts_before] : POLICIES) {
+        names.emplace_back(key);
     }
     return names;
 }

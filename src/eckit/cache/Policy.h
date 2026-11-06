@@ -5,7 +5,6 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -36,40 +35,30 @@ public:
         size_t uses     = 0;
     };
 
-    // -- Constructors
-
-    Policy() = default;
-
-    Policy(const Policy&) = delete;
-    Policy(Policy&&)      = delete;
-
-    // -- Destructor
-
-    virtual ~Policy() = default;
-
-    // -- Operators
-
-    Policy& operator=(const Policy&) = delete;
-    Policy& operator=(Policy&&)      = delete;
+    using EvictsBefore = bool (*)(const Entry& a, const Entry& b) noexcept;
 
     // -- Methods
 
-    /// If a is evicted before b
-    virtual bool before(const Entry& a, const Entry& b) const = 0;
+    constexpr bool evicts_before(const Entry& a, const Entry& b) const noexcept { return evicts_before_(a, b); }
 
-    const std::string& name() const { return name_; }
+    constexpr std::string_view name() const noexcept { return name_; }
 
     // -- Class methods
 
-    static std::unique_ptr<Policy> build(const std::string& name);
+    static Policy build(std::string_view name);
 
     static std::vector<std::string> names();
 
 private:
 
+    // -- Constructors
+
+    constexpr Policy(std::string_view name, EvictsBefore evicts_before) : name_(name), evicts_before_(evicts_before) {}
+
     // -- Members
 
-    std::string name_;
+    std::string_view name_;
+    EvictsBefore evicts_before_;
 };
 
 

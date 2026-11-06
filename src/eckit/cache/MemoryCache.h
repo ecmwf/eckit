@@ -136,8 +136,8 @@ public:
 
     // -- Constructors
 
-    MemoryCache(MemoryCaches& caches, const MemoryUsage& capacity, const std::string_view& policy = Policy::DEFAULT) :
-        MemoryCacheBase(caches), capacity_(capacity), policy_(Policy::build(std::string{policy})) {
+    MemoryCache(MemoryCaches& caches, const MemoryUsage& capacity, std::string_view policy = Policy::DEFAULT) :
+        MemoryCacheBase(caches), capacity_(capacity), policy_(Policy::build(policy)) {
         registerCache();
     }
 
@@ -221,7 +221,7 @@ public:
         evict();
     }
 
-    const Policy& policy() const { return *policy_; }
+    const Policy& policy() const { return policy_; }
 
     Statistics statistics() const {
         util::lock_guard<util::recursive_mutex> lock(mutex_);
@@ -261,7 +261,7 @@ private:
     std::map<key_type, Entry> entries_;
     std::map<key_type, MemoryUsage> reserved_;  // estimates, of values being made
     MemoryUsage capacity_;
-    std::unique_ptr<const Policy> policy_;
+    const Policy policy_;
     Statistics statistics_;
     size_t clock_ = 0;
 
@@ -306,7 +306,7 @@ private:
                                       (over.sharedMemory() > 0 && entry.info.footprint.sharedMemory() > 0);
 
                 if (!in_use && relieves &&
-                    (victim == entries_.end() || policy_->before(entry.info, victim->second.info))) {
+                    (victim == entries_.end() || policy_.evicts_before(entry.info, victim->second.info))) {
                     victim = it;
                 }
             }

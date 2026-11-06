@@ -23,25 +23,25 @@ const Entry A{{100, 0}, 1, 5, 9};
 const Entry B{{900, 0}, 6, 7, 1};
 
 
-bool before(const std::string& policy, const Entry& a, const Entry& b) {
+bool evicts_before(const std::string& policy, const Entry& a, const Entry& b) {
     const auto p = Policy::build(policy);
-    EXPECT(p->name() == policy);
-    return p->before(a, b);
+    EXPECT(p.name() == policy);
+    return p.evicts_before(a, b);
 }
 
 
 CASE("Policy: which value is evicted first") {
     EXPECT(Policy::names() == std::vector<std::string>({"fifo", "largest", "lfu", "lru"}));
 
-    EXPECT(before("lru", A, B));      // least recently used
-    EXPECT(before("lfu", B, A));      // least frequently used
-    EXPECT(before("fifo", A, B));     // first inserted
-    EXPECT(before("largest", B, A));  // largest
+    EXPECT(evicts_before("lru", A, B));      // least recently used
+    EXPECT(evicts_before("lfu", B, A));      // least frequently used
+    EXPECT(evicts_before("fifo", A, B));     // first inserted
+    EXPECT(evicts_before("largest", B, A));  // largest
 
     // ties: the least recently used
     const Entry C{{900, 0}, 2, 3, 1};
-    EXPECT(before("largest", C, B));
-    EXPECT(before("lfu", C, B));
+    EXPECT(evicts_before("largest", C, B));
+    EXPECT(evicts_before("lfu", C, B));
 
     EXPECT_THROWS_AS(Policy::build("unknown"), CacheError);
 }

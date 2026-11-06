@@ -49,8 +49,6 @@ public:
 
     // -- Methods
 
-    const Roots& roots() const { return disk_.cacheRoots(); }
-
     PathName relative(const std::string& key) const;
 
     std::optional<PathName> find(const std::string& key, const DiskCache::Valid& = {}) const;

@@ -93,14 +93,14 @@ PathName FileCache::getOrCreate(const std::string& key, const DiskCache::Write& 
     }
 
     std::ostringstream msg;
-    msg << "FileCache: '" << relative << "' not found in " << roots() << " (throwing on cache miss)";
+    msg << "FileCache: '" << relative << "' not found in " << disk_.cacheRoots() << " (throwing on cache miss)";
     throw CacheError(msg.str(), Here());
 }
 
 
 void FileCache::limit() const {
     try {
-        const auto writable = roots().writablePaths();
+        const auto writable = disk_.cacheRoots().writablePaths();
         if (writable.empty()) {
             return;
         }

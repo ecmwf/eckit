@@ -17,6 +17,7 @@
 #include "eckit/cache/FileCache.h"
 #include "eckit/cache/LibEcKitCache.h"
 #include "eckit/cache/Roots.h"
+#include "eckit/cache/loader/SharedMemory.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
 #include "eckit/utils/Clock.h"
@@ -166,6 +167,34 @@ CASE("FileCache: within a capacity, the least recently used files are removed") 
     // removed files are created again
     EXPECT(read(cache.getOrCreate("a", writing("again"))) == "again");
 
+    DiskCache::remove(root.dirName());
+}
+
+
+CASE("FileCache: loaded by the named loader, with the options of its kind") {
+    const auto root = unique_dir("load");
+
+    Loader::Options options;
+    options.magic = 1;
+    const FileCache cache(Roots(root), "kind", 1, "", options);
+
+    const auto path = cache.getOrCreate("key", writing("contents"));
+
+    const auto file = cache.load("file", path);
+    EXPECT(std::string(static_cast<const char*>(file->address()), file->size()) == "contents");
+
+    EXPECT_THROWS_AS(cache.load("unknown", path), CacheError);
+
+    // the magic reached the loader: content in shared memory is not attached as another kind
+    Loader::Options other_options;
+    other_options.magic = 2;
+    const FileCache other(Roots(root), "kind", 1, "", other_options);
+
+    auto shared = cache.load("shared-memory", path);
+    EXPECT_THROWS_AS(other.load("shared-memory", path), CacheError);
+
+    shared.reset();
+    loader::SharedMemory::unload(path);
     DiskCache::remove(root.dirName());
 }
 

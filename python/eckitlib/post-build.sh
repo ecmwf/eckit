@@ -179,23 +179,55 @@ fix_another_wheel_macos() {
     rm -rf "$inspect_dir"
 }
 
+# Regenerate hashes and sizes in the wheel's RECORD for all files present in the
+# unpacked wheel directory (cwd). Must be called after any modification of the
+# wheel contents, otherwise installers/verifiers see hash mismatches.
+regenerate_record() {
+    python3 - <<'PYEOF'
+import base64, glob, hashlib, os, sys
+
+records = glob.glob("*.dist-info/RECORD")
+if len(records) != 1:
+    sys.exit(f"expected exactly one RECORD file, found: {records}")
+record = records[0]
+
+rows = []
+for root, _, files in os.walk("."):
+    for f in files:
+        path = os.path.relpath(os.path.join(root, f), ".")
+        if path == record:
+            continue
+        with open(path, "rb") as fh:
+            data = fh.read()
+        digest = base64.urlsafe_b64encode(hashlib.sha256(data).digest()).rstrip(b"=").decode()
+        rows.append(f"{path.replace(os.sep, '/')},sha256={digest},{len(data)}")
+rows.sort()
+rows.append(f"{record},,")
+with open(record, "w", newline="") as fh:
+    fh.write("\n".join(rows) + "\n")
+PYEOF
+}
+
 # NOTE in case of problems like we had with eccodes, replace with noop here
 if [ "$(uname)" != "Darwin" ] ; then
     rm -rf /tmp/eckit/auditwheel
     auditwheel repair -w /tmp/eckit/auditwheel /tmp/eckit/build/wheel/*whl
     cd /tmp/eckit/auditwheel
     F=$(basename "$(ls ./*.whl)")
-    unzip "$F"
+    unzip -q "$F"
     # shellcheck disable=SC2016
     patchelf --add-rpath '$ORIGIN' eckitlib.libs/*
 
     fix_another_wheel_linux "/tmp/eckit/auditwheel/eckitlib.libs"
 
+    # metadata of the libs was modified above, so RECORD must be refreshed
+    regenerate_record
+
     rm "$F"
-    zip -r "$F" ./*
+    zip -qr "$F" ./*
     rm /tmp/eckit/build/wheel/*
     mv "/tmp/eckit/auditwheel/$F" /tmp/eckit/build/wheel
-    cd -
+    cd - > /dev/null
 fi
 
 # NOTE on macos we delocate with impunity, because the findlibs recursive depload

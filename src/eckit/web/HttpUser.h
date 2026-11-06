@@ -24,6 +24,7 @@ public:
 private:
 
     void serve(eckit::Stream&, std::istream&, std::ostream&) override;
+    void refuse(eckit::Stream&, std::istream&, std::ostream&, const std::string& reason) override;
 };
 
 //-----------------------------------------------------------------------------

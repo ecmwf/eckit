@@ -13,6 +13,8 @@
 
 namespace eckit {
 
+class ConcurrencyLimiter;
+
 //-----------------------------------------------------------------------------
 
 
@@ -22,6 +24,7 @@ public:
     // -- Contructors
 
     JavaServer(int port);
+    JavaServer(int port, ConcurrencyLimiter& limiter, bool preferProcess);
 
     // -- Destructor
 

@@ -48,6 +48,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
         s << int(0);  // No need for password
     }
     else {
+        Log::status() << "Authenticating for " << *a << std::endl;
         s << int(1);  // Ask for password;
 
         std::string user;
@@ -58,6 +59,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
         s >> password;
 
         if (!Password::check(user, password)) {
+            Log::status() << "Authentication failed for " << user << ", " << *a << std::endl;
             s << int(-1);
             return;
         }
@@ -66,7 +68,9 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
         a->user_ = user;
     }
 
+    Log::status() << "Executing " << *a << std::endl;
     a->execute(s, in, out);
+    Log::status() << "Completed " << *a << std::endl;
 }
 
 template <>

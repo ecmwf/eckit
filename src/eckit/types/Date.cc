@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <iomanip>
 
 #include "eckit/eckit.h"
@@ -63,6 +64,11 @@ long Date::parse(const std::string& s) {
     long value = 0;
     int i;
 
+    // The tokenizer drops empty tokens, e.g. a trailing '-'
+    if (result.size() != static_cast<size_t>(std::count(s.begin(), s.end(), '-')) + 1) {
+        throw BadDate(std::string("Invalid date ") + s);
+    }
+
     switch (result.size()) {
         case 1:
             switch (s.length()) {
@@ -117,7 +123,13 @@ long Date::parse(const std::string& s) {
                     long day  = atol(result[1].c_str());
 
                     Date date(year, 1, 1);
+                    long firstYear = date.year();
                     date += day - 1;
+
+                    // The day of year must fall within the year (366 only for leap years)
+                    if (day < 1 || date.year() != firstYear) {
+                        err = true;
+                    }
                     value = date.yyyymmdd();
                 }
             }

@@ -63,12 +63,12 @@ struct Largest final : Policy {
 
 
 template <typename P>
-Policy* make() {
-    return new P;
+std::unique_ptr<Policy> make() {
+    return std::make_unique<P>();
 }
 
 
-const std::map<std::string, Policy* (*)()> POLICIES{
+const std::map<std::string, std::unique_ptr<Policy> (*)()> POLICIES{
     {"lru", &make<LeastRecentlyUsed>},
     {"lfu", &make<LeastFrequentlyUsed>},
     {"fifo", &make<FirstInFirstOut>},
@@ -79,7 +79,7 @@ const std::map<std::string, Policy* (*)()> POLICIES{
 }  // namespace
 
 
-Policy* Policy::build(const std::string& name) {
+std::unique_ptr<Policy> Policy::build(const std::string& name) {
     if (auto it = POLICIES.find(name); it != POLICIES.end()) {
         return it->second();
     }

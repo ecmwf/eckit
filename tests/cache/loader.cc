@@ -18,7 +18,6 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -28,6 +27,7 @@
 #include "eckit/cache/Exceptions.h"
 #include "eckit/cache/LibEcKitCache.h"
 #include "eckit/cache/Loader.h"
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/cache/loader/File.h"
 #include "eckit/cache/loader/MappedAnonymousMemory.h"
 #include "eckit/cache/loader/MappedFile.h"
@@ -122,14 +122,14 @@ CASE("LoaderFactory") {
     for (const auto& name : {"unknown"}) {
         EXPECT_NOT(LoaderFactory::has(name));
         EXPECT_THROWS_AS(LoaderFactory::estimate(name, 1), CacheError);
-        EXPECT_THROWS_AS(std::unique_ptr<Loader>(LoaderFactory::build(name, "any")), CacheError);
+        EXPECT_THROWS_AS(LoaderFactory::build(name, "any"), CacheError);
     }
 
     SECTION("aliases") {
         const auto path = write("aliases", contents(10));
 
         auto is = [&path](const std::string& name, auto* type) {
-            std::unique_ptr<Loader> loader(LoaderFactory::build(name, path));
+            auto loader = LoaderFactory::build(name, path);
             return dynamic_cast<decltype(type)>(loader.get()) != nullptr;
         };
 
@@ -164,7 +164,7 @@ CASE("Loader: content, and footprint as estimated") {
             SECTION(name + " (" + std::to_string(size) + " [byte])") {
                 const auto path = write(name + "-" + std::to_string(size), c);
 
-                std::unique_ptr<Loader> loader(LoaderFactory::build(name, path));
+                auto loader = LoaderFactory::build(name, path);
                 EXPECT(loader->path() == path);
                 EXPECT(same_contents(*loader, c));
 
@@ -199,7 +199,7 @@ CASE("MappedFile, MappedAnonymousMemory: mappings accounted by eckit::MMap") {
         size_t size  = 0;
 
         {
-            std::unique_ptr<Loader> loader(LoaderFactory::build(name, path));
+            auto loader = LoaderFactory::build(name, path);
 
             MMap::info(count, size);
             EXPECT(count == count_before + 1);
@@ -215,8 +215,25 @@ CASE("MappedFile, MappedAnonymousMemory: mappings accounted by eckit::MMap") {
 }
 
 
+CASE("LoaderFactory: what it builds can be shared, so cached in memory") {
+    const auto c    = contents(100);
+    const auto path = write("cached", c);
+
+    MemoryCaches caches;
+    MemoryCache<Loader> cached(caches, MemoryUsage{1000, 0});
+
+    auto make = [&path]() { return LoaderFactory::build("file", path); };
+
+    const auto loader = cached.get("a", LoaderFactory::estimate("file", c.size()), make);
+    EXPECT(same_contents(*loader, c));
+    EXPECT(cached.get("a", LoaderFactory::estimate("file", c.size()), make) == loader);
+
+    remove(path);
+}
+
+
 CASE("Memory: nothing loaded, the value is made by its user") {
-    std::unique_ptr<Loader> loader(LoaderFactory::build("memory", unique_path("no-such-file")));
+    auto loader = LoaderFactory::build("memory", unique_path("no-such-file"));
 
     EXPECT(loader->address() == nullptr);
     EXPECT(loader->size() == 0);
@@ -233,7 +250,7 @@ CASE("Stream: content of an eckit::FileStream, checked as read") {
 
         Stream::write(path, c.data(), c.size());
 
-        std::unique_ptr<Loader> loader(LoaderFactory::build("stream", path));
+        auto loader = LoaderFactory::build("stream", path);
         EXPECT(dynamic_cast<Stream*>(loader.get()) != nullptr);
         EXPECT(same_contents(*loader, c));
         EXPECT(loader->footprint() == LoaderFactory::estimate("stream", size));
@@ -243,7 +260,7 @@ CASE("Stream: content of an eckit::FileStream, checked as read") {
 
     // a file of another kind fails to read, rather than giving wrong content
     const auto raw = write("stream-raw", contents(100));
-    EXPECT_THROWS(std::unique_ptr<Loader>(LoaderFactory::build("stream", raw)));
+    EXPECT_THROWS(LoaderFactory::build("stream", raw));
     remove(raw);
 }
 
@@ -482,8 +499,8 @@ CASE("TempSharedMemory: removed at exit") {
         if (pid == 0) {
             int code = FAILED;
             try {
-                std::unique_ptr<Loader> l(LoaderFactory::build(loader, path));
-                code = LOADED;
+                auto l = LoaderFactory::build(loader, path);
+                code   = LOADED;
             }
             catch (...) {
                 code = FAILED;

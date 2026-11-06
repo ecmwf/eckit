@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -120,7 +121,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Loader* build(const std::string& name, const PathName&, const Loader::Options& = {});
+    static std::unique_ptr<Loader> build(const std::string& name, const PathName&, const Loader::Options& = {});
 
     /// Memory usage of loading a file of the given size [byte]
     static MemoryUsage estimate(const std::string& name, size_t size);
@@ -146,8 +147,8 @@ private:
 
     // -- Methods
 
-    virtual Loader* make(const PathName&, const Loader::Options&) const = 0;
-    virtual MemoryUsage makeEstimate(size_t size) const                 = 0;
+    virtual std::unique_ptr<Loader> make(const PathName&, const Loader::Options&) const = 0;
+    virtual MemoryUsage makeEstimate(size_t size) const                                 = 0;
 
     // -- Class methods
 
@@ -163,7 +164,9 @@ public:
 
 private:
 
-    Loader* make(const PathName& path, const Loader::Options& options) const override { return new T(path, options); }
+    std::unique_ptr<Loader> make(const PathName& path, const Loader::Options& options) const override {
+        return std::make_unique<T>(path, options);
+    }
     MemoryUsage makeEstimate(size_t size) const override { return T::estimate(size); }
 };
 

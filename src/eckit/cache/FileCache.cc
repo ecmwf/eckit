@@ -52,7 +52,7 @@ PathName FileCache::relative(const std::string& key) const {
 }
 
 
-Loader* FileCache::load(const std::string& loader, const PathName& path) const {
+std::unique_ptr<Loader> FileCache::load(const std::string& loader, const PathName& path) const {
     return LoaderFactory::build(loader, path, loader_options_);
 }
 

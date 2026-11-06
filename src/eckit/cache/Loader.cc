@@ -95,7 +95,8 @@ const LoaderFactory& LoaderFactory::get(const std::string& name) {
 }
 
 
-Loader* LoaderFactory::build(const std::string& name, const PathName& path, const Loader::Options& options) {
+std::unique_ptr<Loader> LoaderFactory::build(const std::string& name, const PathName& path,
+                                             const Loader::Options& options) {
     return get(name).make(path, options);
 }
 

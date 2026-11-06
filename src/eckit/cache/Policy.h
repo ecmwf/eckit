@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -60,7 +61,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Policy* build(const std::string& name);
+    static std::unique_ptr<Policy> build(const std::string& name);
 
     static std::vector<std::string> names();
 };

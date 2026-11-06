@@ -24,7 +24,7 @@ const Entry B{{900, 0}, 6, 7, 1};
 
 
 bool before(const std::string& policy, const Entry& a, const Entry& b) {
-    std::unique_ptr<const Policy> p(Policy::build(policy));
+    const auto p = Policy::build(policy);
     EXPECT(p->name() == policy);
     return p->before(a, b);
 }
@@ -43,7 +43,7 @@ CASE("Policy: which value is evicted first") {
     EXPECT(before("largest", C, B));
     EXPECT(before("lfu", C, B));
 
-    EXPECT_THROWS_AS(std::unique_ptr<Policy>(Policy::build("unknown")), CacheError);
+    EXPECT_THROWS_AS(Policy::build("unknown"), CacheError);
 }
 
 

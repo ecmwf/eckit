@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -55,7 +56,7 @@ public:
     std::optional<PathName> find(const std::string& key, const DiskCache::Valid& = {}) const;
 
     /// Load a cache file with the named loader (see LoaderFactory) and this kind's options
-    [[nodiscard]] Loader* load(const std::string& loader, const PathName&) const;
+    std::unique_ptr<Loader> load(const std::string& loader, const PathName&) const;
 
     /// Find a valid file, or else create it, unless a miss is an error (throw_on_miss)
     /// @return its path

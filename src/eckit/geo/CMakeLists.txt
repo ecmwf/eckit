@@ -154,8 +154,7 @@ list(APPEND eckit_geo_srcs
     util.cc
     util.h
     util/arange.cc
-    util/gaussian_latitudes.cc
-    util/gaussian_quadrature_weights.cc
+    util/gaussian_quadrature.cc
     util/hash_vector.cc
     util/linspace.cc
     util/monotonic_crop.cc

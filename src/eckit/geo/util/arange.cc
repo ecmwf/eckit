@@ -3,6 +3,7 @@
 
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <vector>
 
@@ -19,7 +20,11 @@ std::vector<double> arange(double start, double stop, double step) {
         return l;
     }
 
-    const auto num = static_cast<size_t>((stop - start) / step) + 1;
+    // the number of steps, rounded if an integer within rounding errors (e.g. 0.3 / 0.1), otherwise truncated
+    auto steps = (stop - start) / step;
+    steps      = types::is_approximately_equal(steps, std::round(steps)) ? std::round(steps) : std::floor(steps);
+
+    const auto num = static_cast<size_t>(steps) + 1;
 
     std::vector<double> l(num);
     std::generate_n(l.begin(), num,

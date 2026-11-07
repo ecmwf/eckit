@@ -34,11 +34,12 @@
 namespace eckit::geo::test {
 
 
-/// eckit::geo in-memory caches, as a whole (see LibEcKitGeo), as the former eckit::geo::Cache, so tests are unchanged
+/// eckit::geo in-memory caches, as a whole (see LibEcKitGeo), as the former eckit::geo::Cache, so tests are unchanged;
+/// purged entirely, also of the values returned by reference (which LibEcKitGeo::purgeCache keeps, as grids use them)
 struct Cache {
     using bytes_size_t = size_t;
     static bytes_size_t total_footprint() { return LibEcKitGeo::cacheFootprint().total(); }
-    static void total_purge() { LibEcKitGeo::purgeCache(); }
+    static void total_purge() { LibEcKitGeo::memoryCaches().purge(); }
 };
 
 
@@ -164,6 +165,22 @@ CASE("cache layout") {
     const auto path = cache::LatitudeLongitude({1., 2.}, {3., 4.}).to_cached_path();
     EXPECT(path.exists());
     EXPECT(path.dirName() == root / "latlon" / std::to_string(cache::LatitudeLongitude::VERSION));
+}
+
+
+CASE("LatitudeLongitude: errors") {
+    // (of the same size)
+    EXPECT_THROWS_AS(cache::LatitudeLongitude({1., 2.}, {3.}), exception::SpecError);
+
+    cache::LatitudeLongitude ll;
+    EXPECT_THROWS_AS(ll.read("does-not-exist.ek"), exception::GridError);
+
+    // a grid of a cache file that was removed
+    const cache::LatitudeLongitude removed({5., 6.}, {7., 8.});
+    const auto path = removed.to_cached_path();
+    EXPECT(path.exists());
+    path.unlink();
+    EXPECT_THROWS_AS(ll.read(path), exception::GridError);
 }
 
 

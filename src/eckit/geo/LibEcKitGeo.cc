@@ -196,7 +196,10 @@ cache::MemoryCaches& LibEcKitGeo::memoryCaches() {
 
 
 void LibEcKitGeo::purgeCache() {
-    memoryCaches().purge();
+    // not the caches of values returned by reference (e.g. Gaussian latitudes, grid coordinates), which grids and their
+    // iterators use
+    purgeCacheSearch();
+    purgeCacheCrop();
 }
 
 

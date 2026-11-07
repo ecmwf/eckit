@@ -256,6 +256,25 @@ CASE("unstructured_ll: names, of their own") {
 }
 
 
+CASE("unstructured_ll: usable after purging the caches") {
+    cleanup();
+
+    const std::vector<double> lats{10., 20., 30.};
+    const std::vector<double> lons{1., 2., 3.};
+
+    std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats));
+    LibEcKitGeo::purgeCache();
+
+    EXPECT(a->size() == lats.size());
+    EXPECT(a->to_latlons() == std::make_pair(lats, lons));
+
+    std::unique_ptr<const Grid> b(GridFactory::make_from_string("{uid: " + a->uid() + "}"));
+    EXPECT(*a == *b);
+
+    cleanup();
+}
+
+
 CASE("to_unstructured_ll") {
     cleanup();
 

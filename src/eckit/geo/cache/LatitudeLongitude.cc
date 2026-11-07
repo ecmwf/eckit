@@ -106,7 +106,10 @@ Cache& cache() {
 
 LatitudeLongitude::LatitudeLongitude(std::vector<double> lat, std::vector<double> lon) :
     lon_(std::move(lon)), lat_(std::move(lat)) {
-    ASSERT(lat_.size() == lon_.size());
+    if (lat_.size() != lon_.size()) {
+        throw exception::SpecError(
+            "LatitudeLongitude: {latitudes: [...], longitudes: [...]} (of the same size) expected", Here());
+    }
 }
 
 
@@ -129,14 +132,19 @@ void LatitudeLongitude::register_load(const std::string& type, load_type load) {
 
 
 void LatitudeLongitude::read(const PathName& p) {
-    ASSERT_MSG(p.exists(), "LatitudeLongitude: path '" + p + "' not found");
+    if (!p.exists()) {
+        throw exception::GridError("LatitudeLongitude: '" + p + "' not found (e.g. the cache was removed)", Here());
+    }
 
     codec::RecordReader record(p);
     record.read("latitude", lat_);
     record.read("longitude", lon_);
     record.wait();
 
-    ASSERT(lat_.size() == lon_.size());
+    if (lat_.size() != lon_.size()) {
+        throw exception::GridError("LatitudeLongitude: '" + p + "' latitudes and longitudes of different sizes",
+                                   Here());
+    }
 }
 
 

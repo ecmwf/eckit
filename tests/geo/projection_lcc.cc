@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
@@ -149,6 +150,17 @@ CASE("lcc: of the 2.5 km MEPS grids, on a sphere of R = 6371000, and with a sout
     }
 }
 
+
+CASE("lcc: lat_1 and lat_2 in ]-90, 90[") {
+    for (const std::string spec : {
+             "{type: lcc, lat_0: 90, lat_1: 90, lat_2: 90, lon_0: 0}",
+             "{type: lcc, lat_0: 45, lat_1: 45, lat_2: -90, lon_0: 0}",
+             "{type: lcc, lat_0: -90, lat_1: -90, lat_2: -90, lon_0: 0}",
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Projection>(ProjectionFactory::make_from_string(spec)),
+                         exception::ProjectionError);
+    }
+}
 
 }  // namespace eckit::geo::test
 

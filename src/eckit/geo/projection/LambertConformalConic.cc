@@ -27,6 +27,11 @@ LambertConformalConic::LambertConformalConic(const Spec& spec) :
 
 LambertConformalConic::LambertConformalConic(double lat_1, double lat_2, double lon_0, double lat_0, Figure* fig) :
     Projection(fig), lon_0_(lon_0), lat_0_(lat_0), lat_1_(lat_1), lat_2_(lat_2), conformal_(figure().conformal()) {
+    if (!(std::abs(lat_1) < PointLonLat::RIGHT_ANGLE) || !(std::abs(lat_2) < PointLonLat::RIGHT_ANGLE)) {
+        throw exception::ProjectionError("LambertConformalConic: {lat_1: ..., lat_2: ...} in ]-90, 90[ expected",
+                                         Here());
+    }
+
     if (types::is_approximately_equal(lat_1, -lat_2)) {
         throw exception::ProjectionError(
             "LambertConformalConic: cannot have standard parallels on opposite sides of equator", Here());

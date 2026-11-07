@@ -8,6 +8,7 @@
 #include <variant>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
@@ -83,6 +84,13 @@ CASE("merc: as PROJ") {
     }
 }
 
+
+CASE("merc: lat_ts in ]-90, 90[") {
+    for (const std::string spec :
+         {"{type: merc, lat_ts: 90}", "{type: merc, lat_ts: -90}", "{type: merc, lat_ts: 100}"}) {
+        EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string(spec)), exception::ProjectionError);
+    }
+}
 
 }  // namespace eckit::geo::test
 

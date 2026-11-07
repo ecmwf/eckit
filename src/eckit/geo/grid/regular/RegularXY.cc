@@ -38,7 +38,9 @@ RangeXY range_from_spec(const Spec& spec, const std::string& key) {
     std::vector<double> grid;
     if (!spec.get("grid", grid) || grid.size() != 2 || !types::is_strictly_greater(grid[0], 0.) ||
         !types::is_strictly_greater(grid[1], 0.)) {
-        throw exception::SpecError("RegularXY: 'x' and 'y', or 'grid' = ['dx', 'dy'] (positive) expected", Here());
+        throw exception::SpecError(
+            "RegularXY: {x: [start, stop, step], y: [start, stop, step]} or {grid: [dx, dy]} (positive) expected",
+            Here());
     }
 
     const area::BoundingBoxXY bbox(spec);
@@ -100,7 +102,7 @@ RegularXY::RangeXY RegularXY::RangeXY::make_from_spec(const Spec& spec, const st
         return RangeXY{r[0], r[1], r[2]};
     }
 
-    throw exception::SpecError("RegularXY: '" + key + "' = ['start', 'stop', 'step'] expected", Here());
+    throw exception::SpecError("RegularXY: {" + key + ": [start, stop, step]} expected", Here());
 }
 
 

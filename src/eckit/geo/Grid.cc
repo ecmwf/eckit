@@ -547,7 +547,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
 
     if (auto lats = cfg->has("latitudes"), lons = cfg->has("longitudes"); lats || lons) {
         if (lats != lons) {
-            throw exception::SpecError("Grid: both 'latitudes' and 'longitudes' are required", Here());
+            throw exception::SpecError("Grid: {latitudes: [...], longitudes: [...]} expected (both)", Here());
         }
         back->set("type", "unstructured_ll");
     }

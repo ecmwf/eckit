@@ -15,7 +15,7 @@
 #include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -467,7 +467,7 @@ CASE("scan modes") {
 
     SECTION("i+j+") {
         // i increasing (west to east), j increasing (South to North)
-        RegularLL grid({90., 90.}, {}, {}, order::Scan{"i+j+"});
+        RegularLL grid({90., 90.}, {}, {}, order::RegularScan{"i+j+"});
 
         EXPECT(grid.order() == "i+j+");
         EXPECT(grid.size() == 4 * 3);
@@ -488,7 +488,7 @@ CASE("scan modes") {
     }
 
     SECTION("j+i+") {
-        RegularLL grid({1., 1.}, {1, 0, 0, 2}, {}, order::Scan{"j+i+"});
+        RegularLL grid({1., 1.}, {1, 0, 0, 2}, {}, order::RegularScan{"j+i+"});
 
         EXPECT(grid.order() == "j+i+");
         EXPECT(grid.size() == 2 * 3);

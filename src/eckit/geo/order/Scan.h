@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <cstddef>
-
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/util.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::spec {
@@ -19,6 +15,11 @@ class Spec;
 namespace eckit::geo::order {
 
 
+/**
+ * Scanning mode (order) of grid points: along i (x, longitude) then j (y, latitude) or j then
+ * i, each positive or negative, and alternating direction or not (e.g. i+j-, the default: rows north to south, each
+ * west to east). Grids of the supported modes use RegularScan (all modes) or ReducedScan (rows of points)
+ */
 class Scan {
 public:
 
@@ -28,27 +29,11 @@ public:
     using renumber_type = Grid::renumber_type;
     using Spec          = spec::Spec;
 
-    // -- Constructors
-
-    explicit Scan(const order_type& = order_default());
-    explicit Scan(const Spec&);
-
-    Scan(const Scan&) = default;
-    Scan(Scan&&)      = default;
-
-    // -- Operators
-
-    Scan& operator=(const Scan&) = default;
-    Scan& operator=(Scan&&)      = default;
-
     // -- Methods
 
-    void order(const order_type& to) { operator=(Scan{to}); }
-
     const order_type& order() const { return order_; }
-    renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
-    renumber_type reorder(const order_type& to, const pl_type&) const;
 
+    bool is_default() const { return order_ == order_default(); }
     bool is_scan_i_then_j() const;
     bool is_scan_i_positive() const;
     bool is_scan_j_positive() const;
@@ -58,16 +43,30 @@ public:
 
     static const order_type& order_default();
 
+protected:
+
+    // -- Constructors
+
+    /// Scanning mode, of any of the scanning modes (empty for the default)
+    explicit Scan(const order_type&);
+
+    Scan(const Scan&) = default;
+    Scan(Scan&&)      = default;
+
+    // -- Destructor
+
+    ~Scan() = default;
+
+    // -- Operators
+
+    Scan& operator=(const Scan&) = default;
+    Scan& operator=(Scan&&)      = default;
+
 private:
 
     // -- Members
 
     order_type order_;
-
-    // -- Methods
-
-    /// Renumber in the default order (i+j-) of each point, in this order
-    renumber_type canonical(size_t ni, size_t nj) const;
 };
 
 

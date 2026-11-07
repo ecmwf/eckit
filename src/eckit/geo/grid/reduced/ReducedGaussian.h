@@ -12,7 +12,6 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
-#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/util.h"
 
@@ -27,9 +26,9 @@ public:
 
     explicit ReducedGaussian(const Spec&);
     explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             const Projection* = nullptr);
+                             order::ReducedScan = order::ReducedScan(), const Projection* = nullptr);
     explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             const Projection* = nullptr);
+                             order::ReducedScan = order::ReducedScan(), const Projection* = nullptr);
 
     // -- Methods
 
@@ -50,15 +49,8 @@ public:
     size_t nxj(size_t j) const override { return longitude_.at(j)->size(); }
     const Range& lat() const override { return latitude_; };
 
-    const order_type& order() const override { return scan_.order(); }
-    renumber_type reorder(const order_type& to) const override;
-
     [[nodiscard]] const std::vector<double>& latitudes() const override { return latitude_.values(); }
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override { return longitude_.at(j)->values(); }
-
-    // -- Class members
-
-    static const order::Scan& scan_default();
 
 private:
 
@@ -69,7 +61,6 @@ private:
     const range::GaussianLatitude latitude_;
 
     std::vector<std::unique_ptr<Range>> longitude_;
-    order::Scan scan_;
 
     size_t first_ = 0;  ///< first row with points
     size_t last_  = 0;  ///< past the last row with points
@@ -85,6 +76,7 @@ private:
     const std::string& type() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
+    [[nodiscard]] Grid* make_grid_reordered(const order_type&) const override;
 };
 
 

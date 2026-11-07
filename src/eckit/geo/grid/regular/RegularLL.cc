@@ -69,11 +69,12 @@ RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec},
-              ProjectionFactory::build(spec)) {}
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec),
+              order::RegularScan{spec}, ProjectionFactory::build(spec)) {}
 
 
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, const Projection* p) :
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::RegularScan s,
+                     const Projection* p) :
     Regular(s, p),
     x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},

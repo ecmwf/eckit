@@ -79,7 +79,7 @@ CASE("global") {
 
 
 CASE("latitude (checks)") {
-    EXPECT_THROWS(area::BoundingBox(-90, 0, 90, 360));  // fails South<=North
+    EXPECT_THROWS_AS(area::BoundingBox(-90, 0, 90, 360), exception::AreaError);  // fails South<=North
     EXPECT_NO_THROW(area::BoundingBox(90, 0, 90, 360));
     EXPECT_NO_THROW(area::BoundingBox(-90, 0, -90, 360));
 }
@@ -123,11 +123,13 @@ CASE("assignment") {
 
     EXPECT_NOT(a.north() == b.north());
     EXPECT(a != b);
+    EXPECT(a.spec_str() != b.spec_str());  // (the spec is computed, and kept)
 
     b = a;
 
     EXPECT(a.north() == b.north());
     EXPECT(a == b);
+    EXPECT(a.spec_str() == b.spec_str());  // (the spec is of the assigned)
 
     b = {30., b.west(), b.south(), b.east()};
 

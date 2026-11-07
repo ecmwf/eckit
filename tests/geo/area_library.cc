@@ -6,6 +6,8 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
@@ -40,12 +42,98 @@ CASE("area_libraries") {
 
         std::unique_ptr<Area> area(lib->make_area_from_name("Portugal"));
 
+        // mainland and islands (multiple rings), not of another area
+        EXPECT(area->contains(PointLonLat{-8., 40.}));
+        EXPECT(area->contains(PointLonLat{-25.5, 37.8}));
+        EXPECT_NOT(area->contains(PointLonLat{-3.7, 40.4}));
+
+        std::unique_ptr<Area> spain(lib->make_area_from_name("España"));
+        EXPECT(spain->contains(PointLonLat{-3.7, 40.4}));
+        EXPECT_NOT(spain->contains(PointLonLat{-8., 40.}));
+
+        EXPECT_THROWS_AS(std::unique_ptr<Area>(lib->make_area_from_name("Atlantis")), exception::AreaError);
+        EXPECT_THROWS_AS(std::unique_ptr<Area>(lib->make_area(lib->size())), exception::AreaError);
+
         for (double lat = 39.7; lat > 37.; lat -= .05) {
             for (double lon = -31.5; lon <= -23.5; lon += 0.05) {
                 std::cout << (area->contains(PointLonLat{lon, lat}) ? '!' : '.');
             }
             std::cout << std::endl;
         }
+    }
+}
+
+
+CASE("GeoJSON: an area per feature (by index or name), of its polygons") {
+    using area::library::GeoJSON;
+
+    // a feature of a point (no polygons), then of a square, then of two squares (one of [lon, lat, altitude])
+    const std::string json = R"({
+        "type": "FeatureCollection",
+        "features": [
+            {"type": "Feature", "properties": {"name": "point"}, "geometry": {"type": "Point", "coordinates": [50, 50]}},
+            {"type": "Feature", "properties": {"name": "square"},
+             "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}},
+            {"type": "Feature", "properties": {"name": "squares"},
+             "geometry": {"type": "MultiPolygon", "coordinates": [
+                 [[[20, 0], [30, 0], [30, 10], [20, 10], [20, 0]]],
+                 [[[40, 0, 1], [50, 0, 1], [50, 10, 1], [40, 10, 1], [40, 0, 1]]]
+             ]}}
+        ]
+    })";
+
+    std::unique_ptr<GeoJSON> lib(GeoJSON::make_from_json_string(json, "name"));
+    EXPECT(lib->size() == 3);
+
+    for (const auto& [index, name] : std::vector<std::pair<size_t, std::string>>{{1, "square"}, {2, "squares"}}) {
+        std::unique_ptr<const Area> by_index(lib->make_area(index));
+        std::unique_ptr<const Area> by_name(lib->make_area_from_name(name));
+        EXPECT(*by_index == *by_name);
+    }
+
+    std::unique_ptr<const Area> point(lib->make_area_from_name("point"));
+    std::unique_ptr<const Area> square(lib->make_area_from_name("square"));
+    std::unique_ptr<const Area> squares(lib->make_area_from_name("squares"));
+
+    EXPECT_NOT(point->contains(PointLonLat{50., 50.}));
+    EXPECT(square->contains(PointLonLat{5., 5.}));
+    EXPECT_NOT(square->contains(PointLonLat{25., 5.}));
+    EXPECT(squares->contains(PointLonLat{25., 5.}));
+    EXPECT(squares->contains(PointLonLat{45., 5.}));
+    EXPECT_NOT(squares->contains(PointLonLat{35., 5.}));
+
+    EXPECT_THROWS_AS(std::unique_ptr<const Area>(lib->make_area_from_name("circle")), exception::AreaError);
+    EXPECT_THROWS_AS(std::unique_ptr<const Area>(lib->make_area(3)), exception::AreaError);
+
+    // without names: by index only
+    std::unique_ptr<GeoJSON> unnamed(GeoJSON::make_from_json_string(json));
+    EXPECT(unnamed->size() == 3);
+    EXPECT_THROWS_AS(std::unique_ptr<const Area>(unnamed->make_area_from_name("square")), exception::AreaError);
+}
+
+
+CASE("GeoJSON: errors") {
+    using area::library::GeoJSON;
+
+    const std::string polygon = R"({"type": "Polygon", "coordinates": [[[0, 0], [10, 0], [10, 10], [0, 0]]]})";
+    auto feature              = [&polygon](const std::string& properties) {
+        return R"({"type": "Feature", "properties": )" + properties + R"(, "geometry": )" + polygon + "}";
+    };
+
+    for (const auto& json : std::vector<std::string>{
+             // names, of a feature collection
+             polygon,
+             // names, of every feature
+             R"({"type": "FeatureCollection", "features": [)" + feature(R"({"name": "a"})") + ", " +
+                 feature(R"({"other": "b"})") + "]}",
+             // names, unique
+             R"({"type": "FeatureCollection", "features": [)" + feature(R"({"name": "a"})") + ", " +
+                 feature(R"({"name": "a"})") + "]}",
+             // positions, [lon, lat]
+             R"({"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "a"},
+                 "geometry": {"type": "Polygon", "coordinates": [[[0], [10, 0], [10, 10], [0, 0]]]}}]})",
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<GeoJSON>(GeoJSON::make_from_json_string(json, "name")), exception::AreaError);
     }
 }
 

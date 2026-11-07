@@ -43,8 +43,8 @@ bool Polygon::contains(const Point& p) const {
 
 
 double Polygon::area() const {
-    // NOTE this is "signed area", meaning it respects the point ordering
-    return std::accumulate(begin(), end(), 0., [](auto a, const auto& poly) { return a + poly.area(); });
+    // NOTE this is "signed area", meaning it respects the point ordering (e.g. holes clockwise, as in GeoJSON)
+    return std::accumulate(begin(), end(), 0., [](auto a, const auto& poly) { return a + poly.area(true); });
 }
 
 

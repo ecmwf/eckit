@@ -28,6 +28,10 @@ if( eckit_HAVE_ECKIT_SQL )
     add_subdirectory( sql )
 endif()
 
+if( eckit_HAVE_ECKIT_CACHE )
+    add_subdirectory( cache )
+endif()
+
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()

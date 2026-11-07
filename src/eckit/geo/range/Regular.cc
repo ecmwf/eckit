@@ -103,6 +103,14 @@ struct RegularLongitude final : Regular::Implementation {
 
     Regular* make_cropped_range(double crop_a, double crop_b) const override {
         if (periodic()) {
+            // without values within the crop, empty: the crop adjusted to the values, as constructing, is reversed
+            if (const Fraction a{crop_a}, b{crop_b}; a < b) {
+                const auto s = shift(a_, inc_);
+                if (s + adjust(b - s, inc_, false) < s + adjust(a - s, inc_, true)) {
+                    return range::RegularLongitude::make_empty_range(a, b);
+                }
+            }
+
             return new range::RegularLongitude(inc_, crop_a, crop_b, a_);
         }
 

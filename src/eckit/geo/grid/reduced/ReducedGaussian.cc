@@ -5,7 +5,8 @@
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
 #include <algorithm>
-#include <iterator>
+#include <cstddef>
+#include <string>
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -19,12 +20,46 @@
 namespace eckit::geo::grid::reduced {
 
 
+namespace {
+
+
+pl_type spec_pl(const Grid::Spec& spec) {
+    if (pl_type pl; spec.get("pl", pl)) {
+        return pl;
+    }
+
+    // a name N<N> gives pl only if a classical pl is known
+    size_t N = 0;
+    throw exception::SpecError(spec.get("N", N) ? "ReducedGaussian: {pl: [...]} expected, as N=" + std::to_string(N) +
+                                                      " has no known classical pl"
+                                                : "ReducedGaussian: {pl: [...]} expected",
+                               Here());
+}
+
+
+size_t pl_N(const pl_type& pl) {
+    if (pl.empty() || pl.size() % 2 != 0) {
+        throw UserError("ReducedGaussian: {pl: [...]} (of 2N rows) expected, not of " + std::to_string(pl.size()),
+                        Here());
+    }
+
+    if (std::any_of(pl.begin(), pl.end(), [](auto Ni) { return Ni < 0; })) {
+        throw UserError("ReducedGaussian: {pl: [...]} (numbers of points, not negative) expected", Here());
+    }
+
+    return pl.size() / 2;
+}
+
+
+}  // namespace
+
+
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
+    ReducedGaussian(spec_pl(spec), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
 
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
-    Reduced(nullptr, p), N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
+    Reduced(nullptr, p), N_(pl_N(pl)), pl_(pl), latitude_(N_, false) {
     const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
 
@@ -45,15 +80,22 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, con
         periodic = periodic && longitude_.back()->periodic();
     }
 
-    auto ni = std::find_if(longitude_.begin(), longitude_.end(), [](const auto& r) { return r->size() > 0; });
-    auto si = std::find_if(longitude_.rbegin(), longitude_.rend(), [](const auto& r) { return r->size() > 0; });
-    ASSERT(ni != longitude_.end() && si != longitude_.rend());
+    // rows with points, to the poles if the first or last rows have points
+    last_ = pl_.size();
+    while (first_ < last_ && longitude_[first_]->size() == 0) {
+        ++first_;
+    }
+    while (last_ > first_ && longitude_[last_ - 1]->size() == 0) {
+        --last_;
+    }
 
-    boundingBox(new BoundingBox{
-        ni == longitude_.begin() ? PointLonLat::RIGHT_ANGLE : lats[std::distance(longitude_.begin(), ni)], w,
-        si == longitude_.rbegin() ? -PointLonLat::RIGHT_ANGLE
-                                  : lats[pl_.size() - std::distance(longitude_.rbegin(), si) - 1],
-        periodic ? w + PointLonLat::FULL_ANGLE : e});
+    if (first_ == last_) {
+        throw UserError("ReducedGaussian: no points (in the bounding box)", Here());
+    }
+
+    boundingBox(new BoundingBox{first_ == 0 ? PointLonLat::RIGHT_ANGLE : lats[first_], w,
+                                last_ == pl_.size() ? -PointLonLat::RIGHT_ANGLE : lats[last_ - 1],
+                                periodic ? w + PointLonLat::FULL_ANGLE : e});
 }
 
 
@@ -62,12 +104,38 @@ ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, const Projec
 
 
 std::string ReducedGaussian::name() const {
-    return (octahedral() ? "O" : "N") + std::to_string(N_);
+    return (is_reduced_octahedral() ? "O" : "N") + std::to_string(N_);
 }
 
 
-bool ReducedGaussian::octahedral() const {
-    return pl_ == util::reduced_octahedral_pl(N_);
+bool ReducedGaussian::is_reduced_octahedral() const {
+    return matches(util::reduced_octahedral_pl(N_));
+}
+
+
+bool ReducedGaussian::is_reduced_classical() const {
+    return util::reduced_classical_pl_known(N_) && matches(util::reduced_classical_pl(N_));
+}
+
+
+bool ReducedGaussian::matches(const pl_type& reference) const {
+    ASSERT(reference.size() == pl_.size());
+
+    // rows before the first and after the last with points are outside the bounding box, whatever their pl
+    const auto first = static_cast<std::ptrdiff_t>(first_);
+    const auto last  = static_cast<std::ptrdiff_t>(last_);
+    return std::equal(pl_.begin() + first, pl_.begin() + last, reference.begin() + first);
+}
+
+
+Grid::renumber_type ReducedGaussian::reorder(const order_type& to) const {
+    // by the points of each row, as pl is of the rows of the global grid
+    pl_type nx(pl_.size());
+    for (size_t j = 0; j < nx.size(); ++j) {
+        nx[j] = static_cast<pl_type::value_type>(nxj(j));
+    }
+
+    return scan_.reorder(to, nx);
 }
 
 
@@ -76,7 +144,8 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", name());
 
-    if (!octahedral() && !util::reduced_classical_pl_known(N_)) {
+    // the name gives pl, unless pl is neither octahedral nor classical
+    if (!is_reduced_octahedral() && !is_reduced_classical()) {
         custom.set("pl", pl_);
     }
 
@@ -111,6 +180,12 @@ struct ReducedGaussianClassical {
         ASSERT(name.size() > 1 && (name[0] == 'n' || name[0] == 'N'));
 
         auto N = std::stoul(name.substr(1));
+
+        // without a known classical pl, pl is in the spec (see fill_spec)
+        if (!util::reduced_classical_pl_known(N)) {
+            return new spec::Custom({{"type", "reduced_gg"}, {"N", N}});
+        }
+
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
 };

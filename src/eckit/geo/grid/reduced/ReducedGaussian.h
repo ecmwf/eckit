@@ -35,7 +35,12 @@ public:
 
     size_t N() const { return N_; }
     const pl_type& pl() const { return pl_; }
-    bool octahedral() const;
+
+    /// If pl is octahedral over the rows with points, as other rows (e.g. of pl 0) are outside the bounding box
+    bool is_reduced_octahedral() const;
+
+    /// If pl is classical (of an N with a known classical pl) over the rows with points, as is_reduced_octahedral
+    bool is_reduced_classical() const;
 
     // -- Overridden methods
 
@@ -46,7 +51,7 @@ public:
     const Range& lat() const override { return latitude_; };
 
     const order_type& order() const override { return scan_.order(); }
-    renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, pl_); }
+    renumber_type reorder(const order_type& to) const override;
 
     [[nodiscard]] const std::vector<double>& latitudes() const override { return latitude_.values(); }
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override { return longitude_.at(j)->values(); }
@@ -65,6 +70,14 @@ private:
 
     std::vector<std::unique_ptr<Range>> longitude_;
     order::Scan scan_;
+
+    size_t first_ = 0;  ///< first row with points
+    size_t last_  = 0;  ///< past the last row with points
+
+    // -- Methods
+
+    /// If pl matches a reference over the rows with points, so the reference and the bounding box make this grid
+    bool matches(const pl_type& reference) const;
 
     // -- Overridden methods
 

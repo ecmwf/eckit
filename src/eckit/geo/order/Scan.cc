@@ -131,8 +131,9 @@ Scan::renumber_type Scan::canonical(size_t ni, size_t nj) const {
 
 
 Scan::renumber_type Scan::reorder(const order_type& to, const pl_type& pl) const {
+    // rows of a cropped grid can have fewer points, or none
     ASSERT(2 <= pl.size());
-    ASSERT(std::all_of(pl.begin(), pl.end(), [](auto n) { return 2 <= n; }));
+    ASSERT(std::all_of(pl.begin(), pl.end(), [](auto n) { return 0 <= n; }));
 
     if (to == order_) {
         // no reordering

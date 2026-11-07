@@ -119,7 +119,7 @@ void ORCA::fill_spec(spec::Custom& custom) const {
     custom.set("grid", grid);
 
     if (auto _uid = uid();
-        !GridSpecByName::instance().exists(grid) ||
+        !GridSpecByName::has_name(grid) ||
         std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
         custom.set("uid", _uid);
     }

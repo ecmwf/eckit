@@ -39,13 +39,35 @@ struct lock_tag;  // of this file's mutex
 using lock_type = util::lock_type<lock_tag>;
 
 
+/// Uids are case-insensitive (hexadecimal digits), and kept in lowercase
+std::string lowercase(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
+    return str;
+}
+
+
+/// Names are registered as regular expressions (as the grid name patterns), so a name is matched literally
+std::string literal_key(const std::string& name) {
+    static const std::string SPECIAL{R"(\^$.|?*+()[]{})"};
+
+    std::string key;
+    for (auto c : name) {
+        if (SPECIAL.find(c) != std::string::npos) {
+            key += '\\';
+        }
+        key += c;
+    }
+    return key;
+}
+
+
 /// Grid spec registered by uid, with 'type' and 'uid' (the key)
 spec::Custom* spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
     if (!spec.has("type")) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' without 'type'", Here());
     }
 
-    if (std::string _uid; spec.get("uid", _uid) && _uid != uid) {
+    if (std::string _uid; spec.get("uid", _uid) && lowercase(_uid) != uid) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' with uid '" + _uid + "'", Here());
     }
 
@@ -477,7 +499,9 @@ Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
     // NOTE: 'bounding_box' is how a grid catalogue entry spells its own 'area'; loose north/west/south/east keys are
     // not considered, they can describe the first/last grid point instead
     if (std::vector<double> bbox; spec.get("bounding_box", bbox)) {
-        ASSERT(bbox.size() == 4);
+        if (bbox.size() != 4) {
+            throw exception::SpecError("Grid: {bounding_box: [north, west, south, east]} expected", Here());
+        }
         return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
     }
 
@@ -519,6 +543,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     ASSERT(cfg != nullptr);
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
+        uid = lowercase(uid);
         if (!GridSpecByUID::instance().exists(uid)) {
             throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
         }
@@ -600,13 +625,18 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 }
 
 
-void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
-    regist(key, new SpecByName(spec_by_name(key, spec)));
+void GridSpecByName::regist(const key_t& name, const spec::Custom& spec) {
+    regist(literal_key(name), new SpecByName(spec_by_name(name, spec)));
 }
 
 
-void GridSpecByName::replace(const key_t& key, const spec::Custom& spec) {
-    instance().replace(key, new SpecByName(spec_by_name(key, spec)));
+void GridSpecByName::replace(const key_t& name, const spec::Custom& spec) {
+    generator_t::instance().replace(literal_key(name), new SpecByName(spec_by_name(name, spec)));
+}
+
+
+bool GridSpecByName::has_name(const std::string& name) {
+    return instance().exists(literal_key(name));
 }
 
 
@@ -617,12 +647,14 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
-    regist(key, new SpecByUID(spec_by_uid(key, spec)));
+    const auto uid = lowercase(key);
+    regist(uid, new SpecByUID(spec_by_uid(uid, spec)));
 }
 
 
 void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
-    instance().replace(key, new SpecByUID(spec_by_uid(key, spec)));
+    const auto uid = lowercase(key);
+    generator_t::instance().replace(uid, new SpecByUID(spec_by_uid(uid, spec)));
 }
 
 

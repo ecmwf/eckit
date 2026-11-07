@@ -5,6 +5,7 @@
 #include "eckit/geo/area/BoundingBoxXY.h"
 
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -23,15 +24,21 @@ BoundingBoxXY::BoundingBoxXY(const Spec& spec) : BoundingBoxXY(*std::unique_ptr<
 
 BoundingBoxXY::BoundingBoxXY(value_type min_x, value_type min_y, value_type max_x, value_type max_y) :
     array{min_x, min_y, max_x, max_y} {
-    ASSERT(min_x <= max_x);
-    ASSERT(min_y <= max_y);
+    if (!(min_x <= max_x) || !(min_y <= max_y)) {
+        throw exception::AreaError("BoundingBoxXY: [min_x, min_y, max_x, max_y] expected, min <= max", Here());
+    }
 }
 
 
 bool BoundingBoxXY::contains(const Point& p) const {
-    const auto& q = std::get<PointXY>(p);
-    return types::is_approximately_equal(min_x(), q.X()) && types::is_approximately_equal(q.X(), max_x()) &&
-           types::is_approximately_equal(min_y(), q.Y()) && types::is_approximately_equal(q.Y(), max_y());
+    const auto* q = std::get_if<PointXY>(&p);
+    if (q == nullptr) {
+        throw exception::AreaError("BoundingBoxXY: (x, y) points expected", Here());
+    }
+
+    using types::is_approximately_lesser_or_equal;
+    return is_approximately_lesser_or_equal(min_x(), q->X()) && is_approximately_lesser_or_equal(q->X(), max_x()) &&
+           is_approximately_lesser_or_equal(min_y(), q->Y()) && is_approximately_lesser_or_equal(q->Y(), max_y());
 }
 
 
@@ -58,21 +65,11 @@ void BoundingBoxXY::fill_spec(spec::Custom& custom) const {
 
 
 BoundingBoxXY* BoundingBoxXY::make_from_spec(const Spec& spec) {
-    if (std::vector<BoundingBoxXY::value_type> area; spec.get("bounding_box_xy", area)) {
-        ASSERT_MSG(area.size() == 4, "BoundingBoxXY: {bounding_box_xy: [min_x, min_y, max_x, max_y]} expected");
-        return new BoundingBoxXY{area[0], area[1], area[2], area[3]};
+    if (std::vector<value_type> b; spec.get("bounding_box_xy", b) && b.size() == 4) {
+        return new BoundingBoxXY{b[0], b[1], b[2], b[3]};
     }
 
-    if (std::vector<BoundingBoxXY::value_type> area(4); spec.get("min_x", area[0]) && spec.get("min_y", area[1]) &&
-                                                        spec.get("max_x", area[2]) && spec.get("max_y", area[3])) {
-        return new BoundingBoxXY{area[0], area[1], area[2], area[3]};
-    }
-
-    throw exception::SpecError(
-        "BoundingBoxXY: {bounding_box_xy: [min_x, min_y, max_x, max_y]} or {min_x: ..., min_y: ..., max_x: ..., max_y: "
-        "...} "
-        "expected",
-        Here());
+    throw exception::SpecError("BoundingBoxXY: {bounding_box_xy: [min_x, min_y, max_x, max_y]} expected", Here());
 }
 
 

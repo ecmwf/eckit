@@ -152,7 +152,7 @@ public:
     /// Coordinate names of the grid, eg. ("x", "y") or ("longitude", "latitude") (see point_coordinates)
     const std::vector<std::string>& point_coordinates() const;
 
-    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lon, lat)
+    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lat, lon)
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
     /// Coordinates (one vector per coordinate), on their figure, as geocentric cartesian (x, y, z)
@@ -258,10 +258,20 @@ struct GridSpecByName {
     using concrete_generator_t = generator_t::generator_t;
 
     static generator_t& instance();
-    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
-    static void regist(const key_t& key, const spec::Custom&);
-    static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
-    static void replace(const key_t& key, const spec::Custom&);
+
+    /// Register a name pattern (a regular expression, case-insensitive)
+    static void regist(const key_t& pattern, concrete_generator_t* gen) {
+        generator_t::instance().regist(pattern, gen);
+    }
+    static void unregist(const key_t& pattern) { generator_t::instance().unregist(pattern); }
+
+    /// Register a name (matched literally, case-insensitive) with its spec, or replace it; these don't load the shared
+    /// grids (as instance does), since loading them registers by these
+    static void regist(const key_t& name, const spec::Custom&);
+    static void replace(const key_t& name, const spec::Custom&);
+
+    /// If a name is registered (literally, not as matching a pattern)
+    static bool has_name(const std::string& name);
 };
 
 
@@ -272,8 +282,11 @@ struct GridSpecByUID {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
-    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+
+    /// Register a uid (case-insensitive) with its spec, or replace it; these don't load the shared grids (as instance
+    /// does), since loading them registers by these
+    static void regist(const key_t& key, const spec::Custom&);
     static void replace(const key_t& key, const spec::Custom&);
 };
 

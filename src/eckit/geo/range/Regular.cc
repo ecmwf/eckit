@@ -20,10 +20,8 @@ namespace eckit::geo::range {
 namespace {
 
 
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
+struct lock_tag;  // of this file's mutex
+using lock_type = util::lock_type<lock_tag>;
 
 
 }  // namespace

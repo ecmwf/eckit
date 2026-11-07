@@ -5,7 +5,9 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -231,6 +233,23 @@ private:
                                                     {{max.X(), max.Y()}, {max.X(), min.Y()}},
                                                     {{max.X(), min.Y()}, {min.X(), min.Y()}},
                                                     {{min.X(), min.Y()}, {min.X(), max.Y()}}};
+
+    // the centre or corners outside of the projection domain (e.g. a full disk, of corners in space): the extrema are
+    // not on the edges, so the box is global (containing every point)
+    auto in_domain = [&projection](const PointXY& p) {
+        try {
+            const auto q = std::get<PointLonLat>(projection.inv(p));
+            return std::isfinite(q.lon()) && std::isfinite(q.lat());
+        }
+        catch (const exception::ProjectionError&) {
+            return false;
+        }
+    };
+
+    if (!in_domain(centre_xy) ||
+        !std::all_of(std::begin(segments), std::end(segments), [&](const auto& s) { return in_domain(s.first); })) {
+        return std::make_unique<BoundingBox>();
+    }
 
     BoundLonLat bounds(centre_ll, centre_ll);
     for (const auto& [A, dummy] : segments) {

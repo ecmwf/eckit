@@ -25,8 +25,11 @@ EquidistantCylindrical::EquidistantCylindrical(const Spec& spec) :
 
 EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0, Figure* fig) :
     Projection(fig), lat_ts_(types::is_approximately_equal(lat_ts, 0., PointLonLat::EPS) ? 0. : lat_ts), lat_0_(lat_0) {
+    if (!(std::abs(lat_ts_) < PointLonLat::RIGHT_ANGLE)) {
+        throw exception::ProjectionError("EquidistantCylindrical: {lat_ts: ...} in ]-90, 90[ expected", Here());
+    }
+
     auto cos_lat_ts = std::cos(util::DEGREE_TO_RADIAN * lat_ts_);
-    ASSERT(!types::is_approximately_equal(0., cos_lat_ts));
 
     struct General final : Implementation {
         explicit General(double cos_lat_ts, double lat_0) :

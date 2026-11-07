@@ -15,18 +15,43 @@ namespace eckit::geo {
 
 bool points_equal(const Point& p, const Point& q) {
     ASSERT(p.index() == q.index());
-    return std::visit([&](const auto& p, const auto& q) { return points_equal(p, q); }, p, q);
+    return std::visit(
+        [&](const auto& p, const auto& q) {
+            using P = std::decay_t<decltype(p)>;
+            if constexpr (std::is_same_v<P, std::decay_t<decltype(q)>> && !std::is_same_v<P, std::monostate>) {
+                return points_equal(p, q);
+            }
+            return std::is_same_v<P, std::decay_t<decltype(q)>>;  // empty points (or of different types)
+        },
+        p, q);
 }
 
 
 bool points_equal(const Point& p, const Point& q, double eps) {
     ASSERT(p.index() == q.index());
-    return std::visit([&](const auto& p, const auto& q) { return points_equal(p, q, eps); }, p, q);
+    return std::visit(
+        [&](const auto& p, const auto& q) {
+            using P = std::decay_t<decltype(p)>;
+            if constexpr (std::is_same_v<P, std::decay_t<decltype(q)>> && !std::is_same_v<P, std::monostate>) {
+                return points_equal(p, q, eps);
+            }
+            return std::is_same_v<P, std::decay_t<decltype(q)>>;  // empty points (or of different types)
+        },
+        p, q);
 }
 
 
 std::ostream& operator<<(std::ostream& out, const Point& p) {
-    std::visit([&](const auto& p) { out << p; }, p);
+    std::visit(
+        [&](const auto& p) {
+            if constexpr (std::is_same_v<std::decay_t<decltype(p)>, std::monostate>) {
+                out << "{}";
+            }
+            else {
+                out << p;
+            }
+        },
+        p);
     return out;
 }
 

@@ -97,7 +97,13 @@ struct LonLat final : Convert {
         return proj_coord(q.lon(), q.lat(), 0, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.e, c.enu.n, lon_minimum_); }
+    Point to_point(const PJ_COORD& c) const final {
+        // PROJ failing (e.g. outside of the projection domain) gives HUGE_VAL
+        if (!std::isfinite(c.enu.e) || !std::isfinite(c.enu.n)) {
+            throw exception::ProjectionError("PROJ: point outside of the projection domain", Here());
+        }
+        return PointLonLat::make(c.enu.e, c.enu.n, lon_minimum_);
+    }
 
     Point point() const final { return PointLonLat{}; }
     size_t dims() const final { return PointLonLat::DIMS; }
@@ -244,7 +250,7 @@ private:
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    Projection(make_figure(target)), source_(source), target_(target) {
+    Projection(make_figure(target)), source_(source), target_(target), lon_minimum_(lon_minimum) {
     ASSERT(!source_.empty());
     ASSERT(!target_.empty());
 
@@ -373,6 +379,9 @@ void PROJ::fill_spec(spec::Custom& custom) const {
     }
     if (target_ != proj_default()) {
         custom.set("target", target_);
+    }
+    if (lon_minimum_ != 0.) {
+        custom.set("lon_minimum", lon_minimum_);
     }
 }
 

@@ -27,6 +27,29 @@ using search::KDTree;
 using search::KDTreeCache;
 
 
+/// A directory made writable (if it exists), and again when out of scope (even on a failure), so it can be removed
+class Writable {
+public:
+
+    explicit Writable(const PathName& dir) : dir_(dir) { restore(); }
+
+    Writable(const Writable&)            = delete;
+    Writable& operator=(const Writable&) = delete;
+
+    ~Writable() { restore(); }
+
+    void restore() const {
+        if (dir_.exists()) {
+            ::chmod(dir_.localPath(), 0755);
+        }
+    }
+
+private:
+
+    const PathName dir_;
+};
+
+
 // ECKIT_GEO_CACHE_PATH is set by the test environment, as "<read-only>:{ENVVAR?ECKIT_GEO_TEST_CACHE_RW}"
 CASE("cache directories: found in order, written to the first writable") {
     const auto& paths = LibEcKitGeo::cacheRoots().paths();
@@ -43,6 +66,8 @@ CASE("cache directories: found in order, written to the first writable") {
         Log::warning() << "running as the super-user, skipping" << std::endl;
         return;
     }
+
+    const Writable writable(ro);  // (as possibly left by a previous run)
 
     eckit::cache::DiskCache::remove(ro);
     eckit::cache::DiskCache::remove(rw);
@@ -70,7 +95,7 @@ CASE("cache directories: found in order, written to the first writable") {
         }
 
         // as a read-only cache, provisioned
-        ::chmod(ro.localPath(), 0755);
+        writable.restore();
         (ro / relative).dirName().mkdir();
         PathName::rename(rw / relative, ro / relative);
         ::chmod(ro.localPath(), 0555);
@@ -86,7 +111,7 @@ CASE("cache directories: found in order, written to the first writable") {
         EXPECT(path.asString().rfind(rw.asString(), 0) == 0);
     }
 
-    ::chmod(ro.localPath(), 0755);
+    writable.restore();
     eckit::cache::DiskCache::remove(ro);
     eckit::cache::DiskCache::remove(rw);
 }

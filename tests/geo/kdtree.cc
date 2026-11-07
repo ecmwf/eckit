@@ -272,6 +272,9 @@ CASE("test_kdtree_mapped") {
         EXPECT(kd.size() == points.size());
         EXPECT(passTest(kd, ref));
     }
+
+    // not left behind
+    path.unlink();
 }
 
 CASE("test_kdtree_iterate_empty") {

@@ -84,13 +84,13 @@ CASE("PointLonLat antipode") {
 }
 
 
-#if eckit_HAVE_GEO_BITREPRODUCIBLE
 CASE("bit-identical behaviour normalising angles") {
-    auto normalise = [](double a, double minimum) -> double {
-        auto modulo_360 = [](double a) { return a - 360. * std::floor(a / 360.); };
-        auto diff       = a - minimum;
-        return 0. <= diff && diff < 360. ? a : modulo_360(diff) + minimum;
-    };
+    // (eckit_HAVE_GEO_BITREPRODUCIBLE is not a macro, but a constant)
+    if constexpr (!eckit_HAVE_GEO_BITREPRODUCIBLE) {
+        return;
+    }
+
+    auto normalise = [](double a, double minimum) { return PointLonLat::normalise_angle_to_minimum(a, minimum); };
 
     struct test_t {
         double angle;
@@ -190,7 +190,6 @@ CASE("bit-identical behaviour normalising angles") {
         EXPECT(test.ref_norm_angle_p_720 == normalise(test.angle + 720., -180.));
     }
 }
-#endif
 
 
 CASE("PointLonLat normalisation") {

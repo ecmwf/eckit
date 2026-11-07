@@ -262,10 +262,10 @@ CASE("KDTree: the values must be as many as the points") {
 
 
 CASE("KDTreeCache: location") {
-    // ECKIT_GEO_CACHE_PATH is set by the test environment
-    const auto* env = ::getenv("ECKIT_GEO_CACHE_PATH");
-    if (env != nullptr) {
-        EXPECT(LibEcKitGeo::cacheDir() == PathName(env, true).asString());
+    // ECKIT_GEO_CACHE_PATH is set by the test environment, its first path (writable) for writing
+    if (const auto* env = ::getenv("ECKIT_GEO_CACHE_PATH"); env != nullptr) {
+        const std::string paths(env);
+        EXPECT(LibEcKitGeo::cacheDir() == PathName(paths.substr(0, paths.find(':')), true).asString());
     }
 
     const auto uid = unique_uid("location");

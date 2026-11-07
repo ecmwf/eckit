@@ -1,7 +1,18 @@
 # SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 # SPDX-License-Identifier: Apache-2.0
 
+# the cache of each test is written to a directory of its own (tests don't share, or remove, each other's cache files),
+# before the seeded cache (only read, e.g. downloads); the cache settings are the defaults, whatever the environment
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+set(eckit_geo_test_cache_seeds "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
+set(eckit_geo_test_environment
+    "ECKIT_GEO_CACHING=1"
+    "ECKIT_GEO_CACHE_CROP_CAPACITY=${eckit_GEO_CACHE_CROP_CAPACITY}"
+    "ECKIT_GEO_CACHE_CROP_POLICY=lru"
+    "ECKIT_GEO_CACHE_SEARCH_CAPACITY=${eckit_GEO_CACHE_SEARCH_CAPACITY}"
+    "ECKIT_GEO_CACHE_SEARCH_POLICY=lru"
+    "ECKIT_GEO_CACHE_THROW_ON_MISS=0")
 
 function(eckit_geo_add_test _source_we)
     cmake_parse_arguments(_p "" "" "LIBS;ENVIRONMENT" ${ARGN})
@@ -9,7 +20,8 @@ function(eckit_geo_add_test _source_we)
         TARGET      eckit_test_geo_${_source_we}
         SOURCES     ${_source_we}.cc
         LIBS        eckit_geo ${_p_LIBS}
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" "ECKIT_GEO_CACHING=1"
+        ENVIRONMENT ${eckit_geo_test_environment}
+                    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/${_source_we}:${eckit_geo_test_cache_seeds}"
                     "ECKIT_GEO_SEARCH_LOADER=mapped-file" ${_p_ENVIRONMENT}
         ${_p_UNPARSED_ARGUMENTS} )
 endfunction()
@@ -45,6 +57,7 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
+        projection_albers
         projection_laea
         projection_lcc
         projection_ll_to_xyz
@@ -72,7 +85,6 @@ endforeach()
 foreach(_test
         grid_regular_xy_swisslv03
         grid_regular_xy_swisslv95
-        projection_albers
         projection_proj)
     eckit_geo_add_test(${_test} CONDITION eckit_HAVE_PROJ)
 endforeach()
@@ -91,7 +103,8 @@ foreach(_loader ${_loaders})
         TARGET      eckit_test_geo_search_${_loader}
         SOURCES     search.cc
         LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" "ECKIT_GEO_CACHING=1"
+        ENVIRONMENT ${eckit_geo_test_environment}
+                    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_${_loader}:${eckit_geo_test_cache_seeds}"
                     "ECKIT_GEO_SEARCH_LOADER=${_loader}" )
 endforeach()
 

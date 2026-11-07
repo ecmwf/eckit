@@ -401,9 +401,7 @@ CASE("Grid::search") {
 
 
 CASE("Search: compared to brute force") {
-    // points new on every run (and build), so k-d trees are built, not loaded from a previous cache file
-    static const auto run = std::random_device{}();
-
+    // points of fixed seeds (reproducible), their k-d trees built: the cache files are removed (see below)
     const auto queries = random_points_on_unit_sphere(50, 7);
 
     constexpr size_t k   = 7;
@@ -411,7 +409,7 @@ CASE("Search: compared to brute force") {
 
     for (bool fast : {true, false}) {
         SECTION(fast ? "fast build" : "build by insertion") {
-            const auto points = random_points_on_unit_sphere(1000, run + (fast ? 0 : 1));
+            const auto points = random_points_on_unit_sphere(1000, fast ? 11 : 13);
 
             const Search search(points, spec::Custom{{{"search-fast-build", fast}}});
             EXPECT(search.size() == points.size());
@@ -434,7 +432,7 @@ CASE("Search: compared to brute force") {
                 EXPECT(search.search_knn_and_radius(q, k, rad) == (knn.size() < radius.size() ? knn : radius));
             }
 
-            // not left in the cache directory (new on every run)
+            // not left in the cache directory (so built on every run)
             if (const auto* cached = dynamic_cast<const search::KDTreeCache*>(&search.kdtree()); cached != nullptr) {
                 cached->path().unlink(false);
             }

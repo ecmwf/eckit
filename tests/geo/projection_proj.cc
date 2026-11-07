@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,36 @@ namespace eckit::geo::test {
 
 
 using P = std::unique_ptr<const Projection>;
+
+
+/// An environment variable set, restored (or unset, as it was) when out of scope
+class ScopedEnv {
+public:
+
+    ScopedEnv(const char* name, const char* value) : name_(name) {
+        if (const auto* old = ::getenv(name); old != nullptr) {
+            old_ = old;
+        }
+        ::setenv(name, value, 1);
+    }
+
+    ScopedEnv(const ScopedEnv&)            = delete;
+    ScopedEnv& operator=(const ScopedEnv&) = delete;
+
+    ~ScopedEnv() {
+        if (old_) {
+            ::setenv(name_.c_str(), old_->c_str(), 1);
+        }
+        else {
+            ::unsetenv(name_.c_str());
+        }
+    }
+
+private:
+
+    const std::string name_;
+    std::optional<std::string> old_;
+};
 
 
 CASE("projdb") {
@@ -51,12 +82,13 @@ CASE("projdb") {
 
 
     SECTION("unavailable when PROJ_DATA points nowhere") {
-        ::setenv("PROJ_DATA", "/does/not/exist", 1);
-        LibEcKitGeo::projdb_reset();
+        {
+            const ScopedEnv env("PROJ_DATA", "/does/not/exist");
+            LibEcKitGeo::projdb_reset();
 
-        EXPECT(!LibEcKitGeo::projdb_is_available());
+            EXPECT(!LibEcKitGeo::projdb_is_available());
+        }
 
-        ::unsetenv("PROJ_DATA");
         LibEcKitGeo::projdb_reset();
 
         EXPECT(LibEcKitGeo::projdb_is_available());

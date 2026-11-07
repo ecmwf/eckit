@@ -127,7 +127,7 @@ def test_grid_figure():
     figure = grid.figure
 
     assert isinstance(figure, Figure)
-    assert figure.spec_str == figure.spec_str
+    assert figure.spec_str == '{"figure":"earth"}'  # the default figure
     assert figure.spec == loads(figure.spec_str)
     assert figure.a == figure.b  # default figure is spherical
     assert figure.spherical

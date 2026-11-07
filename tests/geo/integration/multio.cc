@@ -27,9 +27,10 @@ namespace eckit::geo::test {
 using Sequence = std::vector<unsigned long>;
 
 
+// (of a fixed seed, so reproducible)
 Sequence make_random_sequence(Sequence::value_type min, Sequence::value_type max, Sequence::size_type N) {
-    static std::mt19937 gen{std::random_device{}()};
-    static std::uniform_int_distribution<Sequence::value_type> dist(min, max);
+    static std::mt19937 gen{42};
+    std::uniform_int_distribution<Sequence::value_type> dist(min, max);  // (of each call's range)
 
     Sequence s(N);
     std::generate(s.begin(), s.end(), [&] { return dist(gen); });
@@ -63,7 +64,7 @@ CASE("MARS grid") {
 
 
     SECTION("regular_ll") {
-        static std::mt19937 gen{std::random_device{}()};
+        static std::mt19937 gen{42};
         static std::uniform_real_distribution<double> dist(0.001, 1.);
 
         EXPECT("regular_ll" == grid_type(std::to_string(dist(gen)) + "/" + std::to_string(dist(gen))));

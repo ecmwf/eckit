@@ -87,7 +87,13 @@ struct RegularLatitude : Regular {
     explicit RegularLatitude(double inc, double a, double b, double ref = 0) :
         RegularLatitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
 
+    [[nodiscard]] static RegularLatitude* make_empty_range(Fraction a, Fraction b);
+
     [[nodiscard]] RegularLatitude* make_cropped_range(double crop_a, double crop_b) const override;
+
+private:
+
+    explicit RegularLatitude(Implementation* impl) : Regular(impl) {}
 };
 
 

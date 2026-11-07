@@ -48,9 +48,7 @@ public:
     const order_type& order() const override { return order_.order(); }
     renumber_type reorder(const order_type& to) const override { return order_.reorder(to, Nside_); }
 
-    [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
-        return new HEALPix(Nside_, order);
-    }
+    [[nodiscard]] Grid* make_grid_reordered(const order_type&) const override;
 
     [[nodiscard]] const std::vector<double>& latitudes() const override;
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;

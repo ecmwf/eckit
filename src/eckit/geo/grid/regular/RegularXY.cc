@@ -129,10 +129,17 @@ RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, const Projection* p, co
     y_(y),
     false_(false_xy),
     projected_(p != nullptr) {
-    ASSERT(!empty());
+    if (empty()) {
+        throw exception::GridError("RegularXY: no points", Here());
+    }
 
     if (projected_ && projection().source_point_coordinates() != geo::point_coordinates<PointXY>()) {
         throw exception::SpecError("RegularXY: 'projection' from (x, y) expected (e.g. with reverse: true)", Here());
+    }
+
+    // without a projection, the points are as given, so a false easting/northing would be in the spec only
+    if (!projected_ && (false_.X() != 0. || false_.Y() != 0.)) {
+        throw exception::SpecError("RegularXY: {false_xy: [x, y], projection: {...}} expected", Here());
     }
 }
 

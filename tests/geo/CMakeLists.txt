@@ -31,6 +31,7 @@ foreach(_test
         grid_regular_ll
         grid_crop
         grid_regular_xy
+        grid_regular_xy_lcc
         grid_reorder
         grid_to_points
         gridspec

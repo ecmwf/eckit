@@ -47,7 +47,7 @@ private:
 
     const pl_type pl_;
 
-    mutable std::vector<std::unique_ptr<range::RegularLongitude>> longitude_;
+    std::vector<std::unique_ptr<range::RegularLongitude>> longitude_;
     std::unique_ptr<range::RegularLatitude> latitude_;
 
     // -- Overridden methods

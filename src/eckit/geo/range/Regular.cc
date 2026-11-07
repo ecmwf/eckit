@@ -5,6 +5,8 @@
 #include "eckit/geo/range/Regular.h"
 
 #include <algorithm>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -51,6 +53,26 @@ size_t N(Fraction inc, Fraction a, Fraction b) {
 }
 
 
+/// The first and last values (multiples of inc from shift) within [lo, hi], if any; values at the bounds (within
+/// PointLonLat::EPS, as Gaussian latitudes crops) are within
+std::optional<std::pair<Fraction, Fraction>> within(Fraction inc, const Fraction& shift, double lo, double hi) {
+    inc = Fraction::abs(inc);
+
+    auto first = shift + adjust(Fraction{lo} - shift, inc, true);
+    auto last  = shift + adjust(Fraction{hi} - shift, inc, false);
+
+    if (types::is_approximately_equal<double>(first - inc, lo, PointLonLat::EPS)) {
+        first = first - inc;
+    }
+
+    if (types::is_approximately_equal<double>(last + inc, hi, PointLonLat::EPS)) {
+        last = last + inc;
+    }
+
+    return first <= last ? std::make_optional(std::make_pair(first, last)) : std::nullopt;
+}
+
+
 struct Plain final : Regular::Implementation {
     using Implementation::Implementation;
     explicit Plain(const Implementation& other) : Implementation(other) {}
@@ -67,15 +89,29 @@ struct RegularLatitude final : Regular::Implementation {
 
     Regular* make_cropped_range(double crop_a, double crop_b) const override {
         std::unique_ptr<Regular> x{Implementation::make_cropped_range(crop_a, crop_b)};
-        return new range::RegularLatitude(x->increment(), x->af(), x->bf(), x->af());
+        return x->size() == 0 ? range::RegularLatitude::make_empty_range(x->af(), x->bf())
+                              : new range::RegularLatitude(x->increment(), x->af(), x->bf(), x->af());
     }
 
+    static RegularLatitude* make_empty(Fraction a, Fraction b) {
+        auto* impl(new RegularLatitude(b - a, a, b, a));
+        ASSERT(impl != nullptr);
+
+        impl->size_ = 0;
+        return impl;
+    }
+
+    // at the pole, or past it by the next value (not at it, which would be a value of its own)
     bool includesNorthPole() const override {
-        return types::is_approximately_greater_or_equal<double>(max() + Fraction::abs(inc_), NORTH_POLE.lat());
+        const double max = this->max();
+        return types::is_approximately_equal(max, NORTH_POLE.lat()) ||
+               types::is_strictly_greater<double>(max + Fraction::abs(inc_), NORTH_POLE.lat());
     }
 
     bool includesSouthPole() const override {
-        return types::is_approximately_lesser_or_equal<double>(min() - Fraction::abs(inc_), SOUTH_POLE.lat());
+        const double min = this->min();
+        return types::is_approximately_equal(min, SOUTH_POLE.lat()) ||
+               types::is_strictly_greater<double>(SOUTH_POLE.lat(), min - Fraction::abs(inc_));
     }
 };
 
@@ -83,7 +119,7 @@ struct RegularLatitude final : Regular::Implementation {
 struct RegularLongitude final : Regular::Implementation {
     RegularLongitude(Fraction inc, Fraction a, Fraction b, Fraction ref) : Implementation(inc, a, b, ref) {
         // (a single value has no increment, so isn't periodic)
-        if (Fraction::abs(b_ - a_ + inc_) >= PERIOD) {
+        if (size_ > 1 && Fraction::abs(b_ - a_ + inc_) >= PERIOD) {
             const auto inc  = Fraction::abs(inc_);
             const auto span = adjust(PERIOD, inc, true) - inc;
 
@@ -101,21 +137,23 @@ struct RegularLongitude final : Regular::Implementation {
 
     Regular* make_cropped_range(double crop_a, double crop_b) const override {
         if (periodic()) {
-            // without values within the crop, empty: the crop adjusted to the values, as constructing, is reversed
-            if (const Fraction a{crop_a}, b{crop_b}; a < b) {
-                const auto s = shift(a_, inc_);
-                if (s + adjust(b - s, inc_, false) < s + adjust(a - s, inc_, true)) {
-                    return range::RegularLongitude::make_empty_range(a, b);
-                }
+            if (!types::is_approximately_equal(crop_a, crop_b)) {
+                return new range::RegularLongitude(inc_, crop_a, crop_b, a_);
             }
 
-            return new range::RegularLongitude(inc_, crop_a, crop_b, a_);
+            // a single value (of any period), if one of the values
+            const auto value = PointLonLat::normalise_angle_to_minimum(crop_a, min());
+            if (auto w = within(inc_, shift_, value, value)) {
+                return new range::RegularLongitude(Fraction{0}, w->first, w->first, w->first);
+            }
+
+            return range::RegularLongitude::make_empty_range(crop_a, crop_b);
         }
 
         std::unique_ptr<Regular> x{Implementation::make_cropped_range(crop_a, crop_b)};
 
-        return size_ == 0 ? range::RegularLongitude::make_empty_range(x->af(), x->bf())
-                          : new range::RegularLongitude(x->increment(), x->af(), x->bf(), x->af());
+        return x->size() == 0 ? range::RegularLongitude::make_empty_range(x->af(), x->bf())
+                              : new range::RegularLongitude(x->increment(), x->af(), x->bf(), x->af());
     }
 
     static RegularLongitude* make_empty(Fraction a, Fraction b) {
@@ -142,22 +180,27 @@ const Fraction RegularLongitude::PERIOD{360, 1};
 Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref) : inc_(inc), a_(a), b_(b) {
     if (types::is_approximately_equal<double>(inc_, 0.) ||
         types::is_approximately_lesser_or_equal<double>((b_ - a_) * inc_, 0.)) {
-        // no increment, or b not in its direction: a, as given
-        b_ = a_;
+        // no increment, or b not in its direction (e.g. a = b): a single value, as given (e.g. a grid of a single
+        // point, row or column)
+        b_    = a_;
+        size_ = 1;
     }
     else {
-        // the values, multiples of inc from the reference, within [a, b]
+        // the values, multiples of inc from the reference, within [a, b] (none if between values)
         shift_ = detail::shift(ref, inc_);
-        a_     = shift_ + detail::adjust(a_ - shift_, inc_, true);
-        b_     = shift_ + detail::adjust(b_ - shift_, inc_, false);
-        ASSERT(a_ == b_ || (a < b) == (a_ < b_));
+
+        const auto first = shift_ + detail::adjust(a_ - shift_, inc_, true);
+        const auto last  = shift_ + detail::adjust(b_ - shift_, inc_, false);
+
+        if ((last - first) * inc_ >= 0) {
+            a_    = first;
+            b_    = last;
+            size_ = detail::N(inc_, a_, b_);
+        }
     }
 
-    size_ = detail::N(inc_, a_, b_);
-    ASSERT(size_ > 0);
-
-    // a single value has no increment (eg. a grid of a single point, row or column)
-    if (size_ == 1) {
+    // a single value (or none) has no increment
+    if (size_ <= 1) {
         inc_   = {};
         shift_ = {};
     }
@@ -165,19 +208,35 @@ Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fr
 
 
 Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_b) const {
-    // a single value (without increment), as is
-    if (size_ == 1) {
-        return new detail::Cropped(new detail::Plain{*this});
+    // a single value (without increment), as is if within the crop
+    if (size_ <= 1) {
+        const double value = a_;
+
+        auto* single = new detail::Plain{*this};
+        if (size_ == 1 && !(types::is_approximately_lesser_or_equal(std::min(crop_a, crop_b), value) &&
+                            types::is_approximately_lesser_or_equal(value, std::max(crop_a, crop_b)))) {
+            single->size_ = 0;
+        }
+        return new detail::Cropped(single);
     }
 
     const bool up = a_ <= b_;
-    ASSERT(up ? crop_a <= crop_b : crop_a > crop_b);
+    ASSERT(up ? crop_a <= crop_b : crop_a >= crop_b);
 
-    detail::Plain other(inc_, Fraction{crop_a}, Fraction{crop_b}, a_);
-    const auto _min = std::max(min(), other.min());
-    const auto _max = std::min(max(), other.max());
+    // the values within the crop (of these values, possibly none), in the same direction
+    const auto lo = std::max<double>(min(), std::min(crop_a, crop_b));
+    const auto hi = std::min<double>(max(), std::max(crop_a, crop_b));
 
-    return new detail::Cropped(new detail::Plain{inc_, up ? _min : _max, up ? _max : _min, a_});
+    if (auto w = detail::within(inc_, shift_, lo, hi)) {
+        const auto [first, last] = *w;
+        return new detail::Cropped(new detail::Plain{inc_, up ? first : last, up ? last : first, a_});
+    }
+
+    auto* none  = new detail::Plain{*this};
+    none->a_    = up ? Fraction{lo} : Fraction{hi};
+    none->b_    = up ? Fraction{hi} : Fraction{lo};
+    none->size_ = 0;
+    return new detail::Cropped(none);
 }
 
 
@@ -220,8 +279,14 @@ Regular::Regular(Implementation* impl) : impl_(impl) {
 
 RegularLatitude::RegularLatitude(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
     Regular(new detail::RegularLatitude(inc, _a, _b, ref)) {
-    ASSERT(types::is_approximately_equal(a(), b()) ? size() == 1 : size() > 1);
-    ASSERT(SOUTH_POLE.lat() <= min() && min() <= max() && max() <= NORTH_POLE.lat());
+    if (size() > 0 && !(SOUTH_POLE.lat() <= min() && min() <= max() && max() <= NORTH_POLE.lat())) {
+        throw exception::RangeError("RegularLatitude: latitudes in [-90, 90] expected", Here());
+    }
+}
+
+
+RegularLatitude* RegularLatitude::make_empty_range(Fraction a, Fraction b) {
+    return new RegularLatitude(detail::RegularLatitude::make_empty(a, b));
 }
 
 
@@ -233,9 +298,7 @@ RegularLatitude* RegularLatitude::make_cropped_range(double crop_a, double crop_
 
 
 RegularLongitude::RegularLongitude(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
-    Regular(new detail::RegularLongitude(inc, _a, _b, ref)) {
-    ASSERT(types::is_approximately_equal(a(), b()) ? size() == 1 : size() > 1);
-}
+    Regular(new detail::RegularLongitude(inc, _a, _b, ref)) {}
 
 
 RegularLongitude* RegularLongitude::make_empty_range(Fraction a, Fraction b) {

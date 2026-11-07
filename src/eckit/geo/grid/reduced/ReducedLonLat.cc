@@ -29,11 +29,13 @@ range::RegularLongitude* make_lon_range(size_t Ni, const area::BoundingBox& bbox
         return range::RegularLongitude::make_empty_range(west, east);
     }
 
-    ASSERT(2 <= Ni);
-    ASSERT(west < east);
+    // intervals between the row points (periodic, also between the last and the first), a single point at west
+    const auto intervals = bbox.periodic() ? Ni : Ni - 1;
+    if (intervals == 0) {
+        return new range::RegularLongitude(0., west, west, west);
+    }
 
-    return new range::RegularLongitude((east - west) / static_cast<double>(bbox.periodic() ? Ni : Ni - 1), west, east,
-                                       west);
+    return new range::RegularLongitude((east - west) / static_cast<double>(intervals), west, east, west);
 }
 
 
@@ -41,8 +43,10 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
     const auto north = bbox.north();
     const auto south = bbox.south();
 
-    ASSERT(2 <= Nj);
-    ASSERT(south < north);
+    if (Nj < 2 || !(south < north)) {
+        throw exception::SpecError("ReducedLonLat: {pl: [...]} of two rows or more, and south < north, expected",
+                                   Here());
+    }
 
     return new range::RegularLatitude((south - north) / static_cast<double>(Nj - 1), north, south, south);
 }
@@ -58,13 +62,16 @@ ReducedLonLat::ReducedLonLat(const Spec& spec) :
 
 ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan, const Projection* p) :
     Reduced(std::move(scan), p), pl_(pl), longitude_(pl.size()) {
-    if (pl_.empty()) {
-        throw exception::GridError("ReducedLonLat: {pl: [...]} (not empty) expected", Here());
+    if (pl_.empty() || std::any_of(pl_.begin(), pl_.end(), [](auto Ni) { return Ni < 0; })) {
+        throw exception::SpecError("ReducedLonLat: {pl: [...]} (numbers of points, not negative) expected", Here());
     }
 
+    // periodic, if the row of most points spans the full angle
     auto pl_periodic = [&]() {
-        auto max_pl = *std::max_element(pl.begin(), pl.end());
-        ASSERT(max_pl >= 2);
+        const auto max_pl = *std::max_element(pl.begin(), pl.end());
+        if (max_pl < 2) {
+            return false;
+        }
 
         auto inc = PointLonLat::FULL_ANGLE / static_cast<double>(max_pl - 1);
         return range::RegularLongitude(inc, bbox.west(), bbox.east(), bbox.west()).periodic();
@@ -76,6 +83,11 @@ ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::
 
     latitude_.reset(make_lat_range(pl.size(), bbox));
     ASSERT(latitude_);
+
+    for (size_t j = 0; j < pl_.size(); ++j) {
+        longitude_[j].reset(make_lon_range(into_unsigned(pl_[j]), boundingBox()));
+        ASSERT(longitude_[j]);
+    }
 }
 
 
@@ -85,12 +97,7 @@ size_t ReducedLonLat::size() const {
 
 
 size_t ReducedLonLat::nxj(size_t j) const {
-    if (!longitude_.at(j)) {
-        longitude_[j].reset(make_lon_range(into_unsigned(pl_.at(j)), boundingBox()));
-        ASSERT(longitude_[j]);
-    }
-
-    return longitude_[j]->size();
+    return longitude_.at(j)->size();
 }
 
 
@@ -101,7 +108,6 @@ const std::vector<double>& ReducedLonLat::latitudes() const {
 
 const std::vector<double>& ReducedLonLat::longitudes(size_t j) const {
     if (nxj(j) > 0) {
-        ASSERT(longitude_[j]);
         return longitude_[j]->values();
     }
 

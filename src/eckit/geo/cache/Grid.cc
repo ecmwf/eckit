@@ -70,7 +70,10 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
 
             if (key == "grid_uids") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
-                    ASSERT(m.size() == 1);
+                    if (m.size() != 1) {
+                        throw exception::SpecError(
+                            "Grid: '" + path.asString() + "' {grid_uids: [{uid: spec}, ...]} expected", Here());
+                    }
                     std::unique_ptr<const geo::Grid::Spec> spec(spec::Custom::make_from_value(m.begin()->second));
                     grid_uids.emplace(m.begin()->first.as<std::string>(), spec->str());
                 }
@@ -79,7 +82,10 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
 
             if (key == "grid_names") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
-                    ASSERT(m.size() == 1);
+                    if (m.size() != 1) {
+                        throw exception::SpecError(
+                            "Grid: '" + path.asString() + "' {grid_names: [{name: spec}, ...]} expected", Here());
+                    }
                     std::unique_ptr<const geo::Grid::Spec> spec(spec::Custom::make_from_value(m.begin()->second));
                     grid_names.emplace(m.begin()->first.as<std::string>(), spec->str());
                 }
@@ -105,7 +111,7 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
         return;
     }
 
-    Log::debug<LibEcKitGeo>() << "eckit::geo::cache::Grid::regist(uid='" + uid + "'"
+    Log::debug<LibEcKitGeo>() << "eckit::geo::cache::Grid::save(uid='" + uid + "'"
                               << (name.empty() ? "" : ", name='" + name + "'") << ")" << std::endl;
 
     const auto tmp = PathName::unique(path);
@@ -122,11 +128,23 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     std::ofstream fs(tmp.asString());
     ASSERT(fs);
 
-    auto write_section = [&fs](const std::string& name, const section_t& section) {
+    // keys quoted (names can have any characters), values as JSON (as YAML)
+    auto quoted = [](const std::string& str) {
+        std::string q{'"'};
+        for (auto c : str) {
+            if (c == '"' || c == '\\') {
+                q += '\\';
+            }
+            q += c;
+        }
+        return q + '"';
+    };
+
+    auto write_section = [&fs, &quoted](const std::string& name, const section_t& section) {
         if (!section.empty()) {
             fs << '\n' << name << ':' << '\n';
             for (const auto& [key, value] : section) {
-                fs << "  - " << key << ": " << value << '\n';
+                fs << "  - " << quoted(key) << ": " << value << '\n';
             }
         }
     };

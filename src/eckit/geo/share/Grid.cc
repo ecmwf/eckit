@@ -51,18 +51,24 @@ void Grid::load(const PathName& path) {
 
             if (key == "grid_uids") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
-                    ASSERT(m.size() == 1);
+                    if (m.size() != 1) {
+                        throw exception::SpecError(
+                            "Grid: '" + path.asString() + "' {grid_uids: [{uid: spec}, ...]} expected", Here());
+                    }
                     const std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(m.begin()->second));
-                    GridSpecByUID::regist(m.begin()->first.as<std::string>(), *spec);
+                    GridSpecByUID::replace(m.begin()->first.as<std::string>(), *spec);
                 }
                 continue;
             }
 
             if (key == "grid_names") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
-                    ASSERT(m.size() == 1);
+                    if (m.size() != 1) {
+                        throw exception::SpecError(
+                            "Grid: '" + path.asString() + "' {grid_names: [{name: spec}, ...]} expected", Here());
+                    }
                     const std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(m.begin()->second));
-                    GridSpecByName::regist(m.begin()->first.as<std::string>(), *spec);
+                    GridSpecByName::replace(m.begin()->first.as<std::string>(), *spec);
                 }
                 continue;
             }

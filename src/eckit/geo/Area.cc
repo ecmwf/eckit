@@ -24,10 +24,8 @@ namespace eckit::geo {
 namespace {
 
 
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
+struct lock_tag;  // of this file's mutex
+using lock_type = util::lock_type<lock_tag>;
 
 
 std::map<std::string, std::unique_ptr<Area::Spec>>& libraries() {
@@ -40,6 +38,8 @@ std::map<std::string, std::unique_ptr<Area::Spec>>& libraries() {
 
 
 const Area::Spec& Area::spec() const {
+    lock_type lock;
+
     if (!spec_) {
         spec_ = std::make_shared<spec::Custom>();
 

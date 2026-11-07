@@ -77,7 +77,9 @@ private:
     // -- Members
 
     order::ReducedScan scan_;
+
     mutable std::vector<size_t> nxacc_;
+    mutable util::once_flag nxacc_once_;
 
     mutable renumber_type canonical_;  ///< index in the default order of each point, if not in the default order
     mutable util::once_flag canonical_once_;

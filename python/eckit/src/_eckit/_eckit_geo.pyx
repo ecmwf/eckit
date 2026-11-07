@@ -96,8 +96,8 @@ def cache() -> CacheInfo:
 
 
 def cache_purge() -> None:
-    """Release the in-process caches (cache files are kept); searches and crops in
-    use stay valid"""
+    """Release the in-process caches of searches and crops (cache files are kept);
+    those in use stay valid, and values grids use (e.g. Gaussian latitudes) are kept"""
     eckit_geo.LibEcKitGeo.purgeCache()
 
 

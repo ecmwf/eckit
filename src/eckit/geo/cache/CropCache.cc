@@ -5,6 +5,7 @@
 #include "eckit/geo/cache/CropCache.h"
 
 #include <algorithm>
+#include <exception>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -71,16 +72,16 @@ std::shared_ptr<const Crop> CropCache::get(const Grid& grid, const Area& area) {
             return crop;
         }
 
-        // a cache file is valid if it reads (a corrupt one is recreated), and read once
+        // a cache file is valid if it reads as indices of the grid (a corrupt one is recreated), and read once
         bool read  = false;
-        auto valid = [&crop, &read](const PathName& p) {
+        auto valid = [&crop, &read, size = grid.size()](const PathName& p) {
             try {
                 crop->read(p);
-                return read = true;
             }
-            catch (const Exception&) {
+            catch (const std::exception&) {
                 return false;
             }
+            return read = std::all_of(crop->indices.begin(), crop->indices.end(), [size](auto i) { return i < size; });
         };
 
         if (file_cache().find(key, valid)) {
@@ -114,8 +115,8 @@ Crop::renumber_type CropCache::calculate(const Grid& grid, const Area& area) {
     // rows (of constant latitude) are ordered from the bounding box west, or east for reduced grids scanning i
     // negatively, as the cropped grid
     const auto* bbox      = dynamic_cast<const area::BoundingBox*>(&area);
-    const bool rows       = bbox != nullptr && grid.projection().is_default();
     const auto* reduced   = dynamic_cast<const grid::Reduced*>(&grid);
+    const bool rows       = bbox != nullptr && grid.projection().is_default();
     const bool i_negative = reduced != nullptr && !reduced->scan().is_scan_i_positive();
 
     struct Contained {

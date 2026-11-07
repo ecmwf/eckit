@@ -91,8 +91,8 @@ bool has_longitudes(const Grid& grid) {
     return is_any_of<regular::RegularLL, regular::RegularGaussian>(grid);
 }
 
-// Copied, not borrowed: `Range::values()` may return a reference into the
-// process-global memory cache, which `LibEcKitGeo::purgeCache()` frees.
+// Copied, not borrowed: `Range::values()` may return a reference into a
+// process-global memory cache, owned by eckit::geo.
 rust::Vec<double> values(const Range& range) {
     return RustVec::copy<double>(range.values());
 }

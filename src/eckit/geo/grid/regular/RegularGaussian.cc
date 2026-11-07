@@ -67,7 +67,9 @@ RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::R
     ni_(ni == 0 ? 4 * N_ : ni),
     x_(make_x(ni_, bbox, s.is_scan_i_positive())),
     y_(make_y(N_, bbox, s.is_scan_j_positive())) {
-    ASSERT(!empty());
+    if (empty()) {
+        throw exception::GridError("RegularGaussian: no points (in the area)", Here());
+    }
 }
 
 

@@ -137,6 +137,17 @@ HEALPix::HEALPix(const Spec& spec) :
 HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projection* p) :
     Reduced(bbox, p), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
     ASSERT(y_);
+
+    // the nested order is of Nside a power of 2 (checked by its renumbering)
+    if (order_.order() == order::HEALPix::NESTED) {
+        const order::HEALPix::Renumber renumber(Nside_);
+    }
+}
+
+
+Grid* HEALPix::make_grid_reordered(const order_type& to) const {
+    return new HEALPix(Nside_, to, new BoundingBox(boundingBox()),
+                       projection().is_default() ? nullptr : ProjectionFactory::build(projection().spec()));
 }
 
 

@@ -879,6 +879,40 @@ CASE("first and last points") {
 }
 
 
+CASE("spec round trip, near the poles") {
+    // a pole is included if a value, or within an increment (not if at an increment, where a value would be)
+    for (const std::string spec : {
+             "{grid: [1, 1], area: [89, 0, 0, 10]}",
+             "{grid: [1, 1], area: [0, 0, -89, 10]}",
+             "{grid: [1, 1], area: [90, 0, 0, 10]}",
+             "{grid: [0.5, 0.5], area: [89.5, 0, -89.5, 10]}",
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+
+        EXPECT(*same == *grid);
+        EXPECT(same->spec_str() == grid->spec_str());
+        EXPECT(same->size() == grid->size());
+        EXPECT(points_equal(same->first_point(), grid->first_point()));
+        EXPECT(points_equal(same->last_point(), grid->last_point()));
+    }
+
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: [1, 1], area: [89, 0, 0, 10]}"));
+    EXPECT(grid->boundingBox().north() == 89.);
+    EXPECT(grid->spec_str() == R"({"area":[89,0,0,10],"grid":[1,1]})");
+}
+
+
+CASE("no points (in the area)") {
+    // of a reference not of the area (by default, its south-west corner, so of a point)
+    for (const std::string spec : {
+             "{grid: [1, 1], area: [10.8, 0, 10.2, 10], reference: [0, 0]}",
+             "{grid: [1, 1], area: [10, 0.2, 0, 0.8], reference: [0, 0]}",
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::GridError);
+    }
+}
+
 }  // namespace eckit::geo::test
 
 

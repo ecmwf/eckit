@@ -30,8 +30,8 @@ public:
     [[nodiscard]] const std::vector<double>& values() const override;
 
     size_t size() const override { return values_.size(); }
-    double a() const override { return values_.front(); }
-    double b() const override { return values_.back(); }
+    double a() const override { return values_.empty() ? 0. : values_.front(); }
+    double b() const override { return values_.empty() ? 0. : values_.back(); }
 
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;

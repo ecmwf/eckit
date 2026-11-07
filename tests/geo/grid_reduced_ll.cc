@@ -288,6 +288,27 @@ CASE("order: scanning i and j, positively or negatively") {
 }
 
 
+CASE("wrong spec") {
+    for (const std::string spec : {
+             "{type: reduced_ll, pl: [2, -1, 2]}",                     // negative number of points
+             "{type: reduced_ll, pl: [4]}",                            // a single row
+             "{type: reduced_ll, pl: [4, 4], area: [10, 0, 10, 10]}",  // south = north
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::SpecError);
+    }
+
+    // south > north
+    EXPECT_THROWS_AS(std::unique_ptr<const Grid>(
+                         GridFactory::make_from_string("{type: reduced_ll, pl: [4, 4], area: [0, 0, 10, 10]}")),
+                     exception::AreaError);
+
+    // a row of a single point (at west), or of none
+    std::unique_ptr<const Grid> grid(
+        GridFactory::make_from_string("{type: reduced_ll, pl: [1, 0, 2], area: [10, 0, 0, 10]}"));
+    EXPECT(grid->size() == 3);
+    EXPECT(points_equal(grid->first_point(), PointLonLat{0., 10.}));
+}
+
 }  // namespace eckit::geo::test
 
 

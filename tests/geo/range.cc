@@ -462,18 +462,99 @@ CASE("range::RegularLatitude, a single value") {
     for (const auto& [range, value] : std::vector<std::pair<range::RegularLatitude, double>>{
              {range::RegularLatitude(0.5, 45., 45.), 45.},
              {range::RegularLatitude(0., 45., 45.), 45.},
-             {range::RegularLatitude(0.5, 45., 44.), 45.},   // b not in the direction of the increment
-             {range::RegularLatitude(1., 44.8, 45.7), 45.},  // a single multiple of the increment
+             {range::RegularLatitude(0.5, 45., 44.), 45.},         // b not in the direction of the increment
+             {range::RegularLatitude(1., 44.8, 45.7), 45.},        // a single multiple of the increment
+             {range::RegularLatitude(1., 45.3, 45.3), 45.3},       // as given (not a multiple of the increment)
+             {range::RegularLatitude(1., 45.3, 45.3, 0.3), 45.3},  // a multiple of the increment, from the reference
          }) {
         EXPECT(range.size() == 1);
         EXPECT(range.increment() == 0.);
         EXPECT_APPROX(range.values().front(), value);
 
-        // cropped, as is
-        std::unique_ptr<const range::Regular> cropped(range.make_cropped_range(40., 50.));
-        EXPECT(cropped->size() == 1);
-        EXPECT(cropped->increment() == 0.);
-        EXPECT_APPROX(cropped->values().front(), value);
+        // cropped (in either direction): as is if within the crop, otherwise empty
+        for (const auto& [crop_a, crop_b, size] : std::vector<std::tuple<double, double, size_t>>{
+                 {40., 50., 1},
+                 {50., 40., 1},
+                 {value, value, 1},
+                 {45.8, 50., 0},
+                 {40., 44.7, 0},
+             }) {
+            std::unique_ptr<const range::Regular> cropped(range.make_cropped_range(crop_a, crop_b));
+            EXPECT(cropped->size() == size);
+            EXPECT(cropped->increment() == 0.);
+            if (size == 1) {
+                EXPECT_APPROX(cropped->values().front(), value);
+            }
+        }
+    }
+}
+
+
+CASE("range::RegularLatitude, no values") {
+    // no multiple of the increment (from the reference) within [a, b]
+    const range::RegularLatitude none(1., 45.2, 45.7);
+    EXPECT(none.size() == 0);
+    EXPECT(none.values().empty());
+
+    std::unique_ptr<const range::Regular> cropped(none.make_cropped_range(-90., 90.));
+    EXPECT(cropped->size() == 0);
+}
+
+
+CASE("range::RegularLatitude, range::RegularLongitude: crops of their values (or none)") {
+    const range::RegularLatitude lat(1., -90., 90.);
+    const range::RegularLongitude lon(1., 0., 360.);
+    EXPECT(lon.periodic());
+
+    // between values: none
+    for (const auto& [a, b] : std::vector<std::pair<double, double>>{{10.2, 10.8}, {-10.8, -10.2}, {10.5, 10.5}}) {
+        std::unique_ptr<const range::Regular> cropped_lat(lat.make_cropped_range(a, b));
+        EXPECT(cropped_lat->size() == 0);
+
+        std::unique_ptr<const range::Regular> cropped_lon(lon.make_cropped_range(a, b));
+        EXPECT(cropped_lon->size() == 0);
+        EXPECT_NOT(cropped_lon->periodic());
+    }
+
+    // at a value (approximately), of any period for the longitudes: that value
+    for (const auto& [a, value] :
+         std::vector<std::pair<double, double>>{{10., 10.}, {10. + 1e-12, 10.}, {-80., -80.}}) {
+        std::unique_ptr<const range::Regular> cropped_lat(lat.make_cropped_range(a, a));
+        EXPECT(cropped_lat->size() == 1);
+        EXPECT_APPROX(cropped_lat->values().front(), value);
+    }
+
+    for (const auto& [a, value] :
+         std::vector<std::pair<double, double>>{{10., 10.}, {370., 10.}, {-350. + 1e-12, 10.}}) {
+        std::unique_ptr<const range::Regular> cropped_lon(lon.make_cropped_range(a, a));
+        EXPECT(cropped_lon->size() == 1);
+        EXPECT_APPROX(cropped_lon->values().front(), value);
+    }
+
+    // within (approximately), the values at the bounds
+    std::unique_ptr<const range::Regular> cropped(lat.make_cropped_range(10. - 1e-12, 20. + 1e-12));
+    EXPECT(cropped->size() == 11);
+    EXPECT_APPROX(cropped->a(), 10.);
+    EXPECT_APPROX(cropped->b(), 20.);
+
+    // latitudes are in [-90, 90]
+    EXPECT_THROWS_AS(range::RegularLatitude(1., -91., 0.), exception::RangeError);
+    EXPECT_THROWS_AS(range::RegularLatitude(1., 0., 91.), exception::RangeError);
+}
+
+
+CASE("range::RegularLatitude, poles") {
+    // at the pole, or past it (by less than an increment); not short of it by an increment, or more
+    for (const auto& [range, north, south] : std::vector<std::tuple<range::RegularLatitude, bool, bool>>{
+             {range::RegularLatitude(1., -90., 90.), true, true},
+             {range::RegularLatitude(1., -89.5, 89.5, 0.5), true, true},
+             {range::RegularLatitude(1., 0., 89.), false, false},
+             {range::RegularLatitude(1., -89., 0.), false, false},
+             {range::RegularLatitude(-1., 89., 0.), false, false},
+             {range::RegularLatitude(-1., 90., 0.), true, false},
+         }) {
+        EXPECT(range.includesNorthPole() == north);
+        EXPECT(range.includesSouthPole() == south);
     }
 }
 

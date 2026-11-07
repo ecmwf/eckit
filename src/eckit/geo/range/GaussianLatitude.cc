@@ -4,28 +4,16 @@
 
 #include "eckit/geo/range/GaussianLatitude.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/util.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::range {
-
-
-namespace {
-
-
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-}  // namespace
 
 
 inline bool is_equal(double a, double b) {
@@ -59,8 +47,12 @@ bool GaussianLatitude::includesSouthPole() const {
 GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double crop_b) const {
     auto v = values();
 
-    if (is_equal(a(), b())) {
-        ASSERT(is_equal(crop_a, crop_b));
+    if (v.size() <= 1) {
+        // a single value (or none), as is if within the crop
+        const auto [lo, hi] = std::minmax(crop_a, crop_b);
+        if (!v.empty() && (is_less(v.front(), lo) || is_less(hi, v.front()))) {
+            v.clear();
+        }
     }
     else if (a() < b()) {
         ASSERT(crop_a <= crop_b);
@@ -84,9 +76,7 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
 
 
 const std::vector<double>& GaussianLatitude::values() const {
-    lock_type lock;
-
-    return values_.empty() ? util::gaussian_latitudes(N_, a() < b()) : values_;
+    return values_;
 }
 
 

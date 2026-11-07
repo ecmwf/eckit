@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <regex>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/grid/regular/RegularXY.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -61,10 +63,11 @@ CASE("RegularXY: x and y") {
     }
 
     SECTION("false easting/northing") {
-        std::unique_ptr<const Grid> with_false(
-            GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false_xy: [10, 20]}"));
-        EXPECT(with_false->spec_str() == R"({"false_xy":[10,20],"x":[0,2,1],"y":[3,0,-1]})");
-        EXPECT(points_equal(with_false->first_point(), PointXY{0., 3.}));
+        // of projected points only (otherwise as given)
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false_xy: [10, 20]}")),
+                         exception::SpecError);
+        EXPECT_THROWS_AS(G(new grid::regular::RegularXY({0, 2, 1}, {3, 0, -1}, nullptr, {10, 20})),
+                         exception::SpecError);
 
         std::unique_ptr<const Grid> without_false(
             GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false_xy: [0, 0]}"));
@@ -316,8 +319,9 @@ CASE("RegularXY: as GRIB") {
 
             EXPECT(check(test.projection + ", reverse: true") == test.spec_str);
 
-            // without projection, the grid points are on the plane
-            std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + test.xy + "}"));
+            // without projection (and its false easting/northing), the grid points are on the plane
+            const auto xy = std::regex_replace(test.xy, std::regex(R"(, false_xy: \[[^\]]*\])"), "");
+            std::unique_ptr<const Grid> plane(GridFactory::make_from_string("{" + xy + "}"));
             EXPECT(points_equal(plane->first_point(), PointXY{0., 0.}));
 
             // from its own spec, the same grid

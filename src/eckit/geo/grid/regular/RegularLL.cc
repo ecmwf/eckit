@@ -80,14 +80,20 @@ RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, o
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},
     y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(), s.is_scan_j_positive() ? bbox.south() : bbox.north(),
        s.is_scan_j_positive() ? bbox.north() : bbox.south(), ref.lat()} {
-    ASSERT(!empty());
+    if (empty()) {
+        throw exception::GridError("RegularLL: no points (in the area)", Here());
+    }
 }
 
 
 Grid::Spec* RegularLL::spec(const std::string& name) {
+    // case-insensitive, as grid names (e.g. 1E-1/1E-1)
+    static const std::regex REGEX(REGULAR_LL_PATTERN, std::regex_constants::icase);
+
     std::smatch match;
-    std::regex_match(name, match, std::regex(REGULAR_LL_PATTERN));
-    ASSERT(match.size() == 9);
+    if (!std::regex_match(name, match, REGEX) || match.size() != 9) {
+        throw exception::SpecError("RegularLL: {grid: dlon/dlat} expected, not '" + name + "'", Here());
+    }
 
     return new spec::Custom(
         {{"type", "regular_ll"}, {"grid", std::vector<double>{std::stod(match[1].str()), std::stod(match[5].str())}}});

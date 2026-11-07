@@ -105,8 +105,10 @@ HEALPix::Renumber::Renumber(size_t Nside) :
     Npix_(static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside))),
     Ncap_((Nside_ * (Nside_ - 1)) << 1),
     k_(static_cast<int>(std::log2(Nside_))) {
-    ASSERT_MSG(is_power_of_2(Nside_), "Nside must be a power of 2");
-    ASSERT(0 <= k_);
+    // (int arithmetic, see Nside_)
+    if (!is_power_of_2(Nside_) || Nside > (1U << 13)) {
+        throw exception::OrderError("HEALPix: nested order of Nside a power of 2, up to 2^13, expected", Here());
+    }
 }
 
 
@@ -199,7 +201,7 @@ size_t HEALPix::Renumber::nest_to_ring(size_t index) const {
     }
 
     if (ring < 3 * Nside_) {
-        // South polar cap
+        // Equatorial belt
         int Nring = 4 * Nside_;
         int r0    = Ncap_ + (ring - Nside_) * Nring;  // index of first ring pixel (ring numbering)
         int shift = (ring - Nside_) & 1;
@@ -207,7 +209,7 @@ size_t HEALPix::Renumber::nest_to_ring(size_t index) const {
         return r0 + to_ring_local(f, i, j, Nring, shift);
     }
 
-    // Equatorial belt
+    // South polar cap
     int N     = 4 * Nside_ - ring;
     int Nring = 4 * N;
     int r0    = Npix_ - 2 * N * (N + 1);  // index of first ring pixel (ring numbering)
@@ -217,7 +219,9 @@ size_t HEALPix::Renumber::nest_to_ring(size_t index) const {
 
 
 HEALPix::renumber_type HEALPix::reorder(const order_type& to, size_t Nside) const {
-    ASSERT(to == NESTED || to == RING);
+    if (to != NESTED && to != RING) {
+        throw exception::OrderError("HEALPix: supported ordering: ring, nested", Here());
+    }
 
     auto size = static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside));
     renumber_type ren(size);

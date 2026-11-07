@@ -3,6 +3,7 @@
 
 #include <iomanip>
 #include <string>
+#include <string_view>
 
 #include "eckit/log/JSON.h"
 #include "eckit/log/Seconds.h"
@@ -83,10 +84,10 @@ void JSON::sep() {
     }
 }
 
-static std::ostream& encode(std::ostream& s, const char* p) {
+static std::ostream& encode(std::ostream& s, std::string_view str) {
     s << '"';
-    while (*p) {
-        switch (*p) {
+    for (const char c : str) {
+        switch (c) {
 
             case '\\':
                 s << "\\\\";
@@ -117,10 +118,9 @@ static std::ostream& encode(std::ostream& s, const char* p) {
                 break;
 
             default:
-                s << *p;
+                s << c;
                 break;
         }
-        p++;
     }
 
     s << '"';
@@ -268,6 +268,13 @@ JSON& JSON::operator<<(const std::string& s) {
 }
 
 JSON& JSON::operator<<(const char* s) {
+    null_ = false;
+    sep();
+    encode(out_, s);
+    return *this;
+}
+
+JSON& JSON::operator<<(std::string_view s) {
     null_ = false;
     sep();
     encode(out_, s);

@@ -161,19 +161,19 @@ size_t Regular::index(size_t i, size_t j) const {
 }
 
 
-const order::Scan& Regular::scan_default() {
-    static const order::Scan SCAN;
+const order::RegularScan& Regular::scan_default() {
+    static const order::RegularScan SCAN;
     return SCAN;
 }
 
 
-Regular::Regular(order::Scan s, const Projection* proj) : Grid(nullptr, proj), scan_(s) {}
+Regular::Regular(order::RegularScan s, const Projection* proj) : Grid(nullptr, proj), scan_(s) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
-    if (scan_.order() != order::Scan::order_default()) {
+    if (scan_.order() != order::RegularScan::order_default()) {
         custom.set("order", scan_.order());
     }
 }
@@ -182,7 +182,7 @@ void Regular::scan(const order_type& to) {
     scan_.order(to);
 }
 
-void Regular::scan(order::Scan s) {
+void Regular::scan(order::RegularScan s) {
     scan_ = s;
 }
 

@@ -11,7 +11,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/BoundingBoxXY.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -38,7 +38,7 @@ RangeXY range_from_spec(const Spec& spec, const std::string& key) {
     }
 
     const area::BoundingBoxXY bbox(spec);
-    const order::Scan scan(spec);
+    const order::RegularScan scan(spec);
 
     const auto [min, max, step, positive] =
         key == "x" ? std::tuple{bbox.min_x(), bbox.max_x(), grid[0], scan.is_scan_i_positive()}
@@ -85,7 +85,7 @@ RegularXY::RegularXY(const Spec& spec) :
               spec.has("projection") ? ProjectionFactory::build(spec) : nullptr, false_from_spec(spec)) {
     // the order is as the directions of x and y, and can scan j first
     if (spec.has("order")) {
-        order::Scan s(spec);
+        order::RegularScan s(spec);
         if (s.is_scan_i_positive() != scan().is_scan_i_positive() ||
             s.is_scan_j_positive() != scan().is_scan_j_positive()) {
             throw exception::SpecError("RegularXY: 'order' and the directions of 'x' and 'y' differ", Here());
@@ -96,8 +96,9 @@ RegularXY::RegularXY(const Spec& spec) :
 
 
 RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, const Projection* p, const PointXY& false_xy) :
-    Regular(order::Scan("i" + std::string(x.b() < x.a() ? "-" : "+") + "j" + std::string(y.b() < y.a() ? "-" : "+")),
-            p),
+    Regular(
+        order::RegularScan("i" + std::string(x.b() < x.a() ? "-" : "+") + "j" + std::string(y.b() < y.a() ? "-" : "+")),
+        p),
     x_(x),
     y_(y),
     false_(false_xy),
@@ -145,7 +146,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
         projection().fill_grid_spec(custom);
     }
 
-    if (scan().order() != order::Scan::order_default()) {
+    if (scan().order() != order::RegularScan::order_default()) {
         custom.set("order", scan().order());
     }
 }

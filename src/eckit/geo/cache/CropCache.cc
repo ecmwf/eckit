@@ -17,6 +17,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/grid/Reduced.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -110,9 +111,12 @@ std::shared_ptr<const Crop> CropCache::get(const Grid& grid, const Area& area) {
 
 
 Crop::renumber_type CropCache::calculate(const Grid& grid, const Area& area) {
-    // rows (of constant latitude) are ordered from the bounding box west, as the cropped grid
-    const auto* bbox = dynamic_cast<const area::BoundingBox*>(&area);
-    const bool rows  = bbox != nullptr && grid.projection().is_default();
+    // rows (of constant latitude) are ordered from the bounding box west, or east for reduced grids scanning i
+    // negatively, as the cropped grid
+    const auto* bbox      = dynamic_cast<const area::BoundingBox*>(&area);
+    const bool rows       = bbox != nullptr && grid.projection().is_default();
+    const auto* reduced   = dynamic_cast<const grid::Reduced*>(&grid);
+    const bool i_negative = reduced != nullptr && !reduced->scan().is_scan_i_positive();
 
     struct Contained {
         double lat;
@@ -139,7 +143,9 @@ Crop::renumber_type CropCache::calculate(const Grid& grid, const Area& area) {
     if (rows) {
         for (auto row = contained.begin(); row != contained.end();) {
             auto end = std::find_if(row, contained.end(), [lat = row->lat](const auto& c) { return c.lat != lat; });
-            std::stable_sort(row, end, [](const auto& a, const auto& b) { return a.lon < b.lon; });
+            std::stable_sort(row, end, [i_negative](const auto& a, const auto& b) {
+                return i_negative ? b.lon < a.lon : a.lon < b.lon;
+            });
             row = end;
         }
     }

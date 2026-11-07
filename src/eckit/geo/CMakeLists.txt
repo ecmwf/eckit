@@ -32,8 +32,6 @@ list(APPEND eckit_geo_srcs
     Range.h
     Search.cc
     Search.h
-    Shape.cc
-    Shape.h
     Trace.cc
     Trace.h
     area/BoundingBox.cc

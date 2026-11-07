@@ -4,7 +4,6 @@
 
 #include "eckit/cache/Policy.h"
 
-#include <tuple>
 #include <utility>
 
 #include "eckit/cache/Exceptions.h"
@@ -22,7 +21,7 @@ constexpr bool least_recently_used(const Policy::Entry& a, const Policy::Entry& 
 
 
 constexpr bool least_frequently_used(const Policy::Entry& a, const Policy::Entry& b) noexcept {
-    return std::tie(a.uses, a.last_use) < std::tie(b.uses, b.last_use);
+    return a.uses < b.uses || (a.uses == b.uses && least_recently_used(a, b));
 }
 
 
@@ -32,10 +31,9 @@ constexpr bool first_in_first_out(const Policy::Entry& a, const Policy::Entry& b
 
 
 constexpr bool largest(const Policy::Entry& a, const Policy::Entry& b) noexcept {
-    // Largest first (then least recently used)
-    const auto x = a.footprint.total();
-    const auto y = b.footprint.total();
-    return x > y || (x == y && a.last_use < b.last_use);
+    const auto af = a.footprint.total();
+    const auto bf = b.footprint.total();
+    return af > bf || (af == bf && least_recently_used(a, b));
 }
 
 

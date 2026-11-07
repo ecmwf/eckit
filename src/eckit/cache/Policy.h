@@ -16,7 +16,8 @@ namespace eckit::cache {
 
 
 /**
- * Which cached values a MemoryCache evicts first, of those not in use, by name: lru (default), lfu, fifo, largest
+ * Which cached values a MemoryCache evicts first, of those not in use, by name: lru (default), lfu, fifo, largest,
+ * largest-per-use, mru, used-once
  */
 class Policy {
 public:

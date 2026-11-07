@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -24,7 +25,11 @@ Mercator::Mercator(double lon_0, double lat_ts, Figure* fig) :
     lon_0_(lon_0),
     lat_ts_(lat_ts),
     conformal_(figure().conformal()),
-    k_(figure().a() * conformal_.m(lat_ts * util::DEGREE_TO_RADIAN)) {}
+    k_(figure().a() * conformal_.m(lat_ts * util::DEGREE_TO_RADIAN)) {
+    if (!(std::abs(lat_ts_) < PointLonLat::RIGHT_ANGLE)) {
+        throw exception::ProjectionError("Mercator: {lat_ts: ...} in ]-90, 90[ expected", Here());
+    }
+}
 
 
 Mercator::Mercator(const Spec& spec) :

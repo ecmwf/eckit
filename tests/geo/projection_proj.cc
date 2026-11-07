@@ -339,6 +339,25 @@ CASE("projection: proj vectors") {
 
         const auto lonlat = ll->fwd(v{190., -10.}, v{0., 0.});
         EXPECT(approx(lonlat[0], v{-170., -10.}, eps_ll));
+
+        // in the spec, so the same projection by its spec
+        EXPECT(ll->spec().get_double("lon_minimum") == -180.);
+
+        P same(ProjectionFactory::build(ll->spec()));
+        EXPECT(*same == *ll);
+        EXPECT(approx(same->fwd(v{190.}, v{0.})[0], v{-170.}, eps_ll));
+    }
+
+
+    SECTION("outside of the projection domain: an error, or NaN as vectors") {
+        P ortho(ProjectionFactory::build(spec::Custom{{{"type", "proj"}, {"target", "+proj=ortho +R=6371229"}}}));
+
+        // beyond the visible disk
+        EXPECT_THROWS_AS((void)ortho->inv(PointXY{1e7, 1e7}), exception::ProjectionError);
+
+        const auto ll = ortho->inv(v{0., 1e7}, v{0., 1e7});
+        EXPECT(approx(v{ll[0][0], ll[1][0]}, v{0., 0.}, eps_ll));
+        EXPECT(std::isnan(ll[0][1]) && std::isnan(ll[1][1]));
     }
 }
 

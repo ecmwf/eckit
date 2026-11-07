@@ -32,12 +32,16 @@ Rotation::Rotation(const Spec& spec) :
     Rotation(
         [&spec]() -> PointLonLat {
             if (std::vector<double> p; spec.get("south_pole", p)) {
-                ASSERT_MSG(p.size() == 2, "Rotation: {south_pole: [lon, lat]} expected");
+                if (p.size() != 2) {
+                    throw exception::SpecError("Rotation: {south_pole: [lon, lat]} expected", Here());
+                }
                 return {p[0], p[1]};
             }
 
             if (std::vector<double> p; spec.get("rotation", p)) {
-                ASSERT_MSG(p.size() == 2, "Rotation: {rotation: [lat, lon]} expected");
+                if (p.size() != 2) {
+                    throw exception::SpecError("Rotation: {rotation: [lat, lon]} expected", Here());
+                }
                 return {p[1], p[0]};
             }
 

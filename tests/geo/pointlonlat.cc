@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cmath>
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -312,6 +314,17 @@ CASE("PointLonLat pole") {
     }
 }
 
+
+CASE("PointLonLat normalise angles, not finite") {
+    // as is (e.g. NaN of a failed projection), rather than a number
+    constexpr auto inf = std::numeric_limits<double>::infinity();
+    constexpr auto nan = std::numeric_limits<double>::quiet_NaN();
+
+    EXPECT(std::isnan(PointLonLat::normalise_angle_to_minimum(nan, -180.)));
+    EXPECT(std::isnan(PointLonLat::normalise_angle_to_maximum(nan, 180.)));
+    EXPECT(PointLonLat::normalise_angle_to_minimum(inf, 0.) == inf);
+    EXPECT(PointLonLat::normalise_angle_to_maximum(-inf, 360.) == -inf);
+}
 
 }  // namespace eckit::geo::test
 

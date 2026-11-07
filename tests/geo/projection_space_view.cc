@@ -10,6 +10,7 @@
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -92,6 +93,21 @@ CASE("space_view: compared to PROJ geos") {
     }
 }
 
+
+CASE("space_view: bounding box, of the full disk or of part of it") {
+    P sv(ProjectionFactory::make_from_string(SPECS[0]));
+
+    // the full disk, its corners in space: global
+    constexpr double R = 5.6e6;
+    auto disk          = area::BoundingBox::make_from_projection(PointXY{-R, -R}, PointXY{R, R}, *sv);
+    EXPECT(disk->global());
+
+    // part of the disk: around the sub-satellite point
+    auto part = area::BoundingBox::make_from_projection(PointXY{-1e6, -1e6}, PointXY{1e6, 1e6}, *sv);
+    EXPECT_NOT(part->global());
+    EXPECT(part->contains(PointLonLat{0., 0.}));
+    EXPECT_NOT(part->contains(PointLonLat{60., 0.}));
+}
 
 }  // namespace eckit::geo::test
 

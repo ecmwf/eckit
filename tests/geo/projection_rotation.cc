@@ -589,6 +589,17 @@ CASE("rotation: vectors") {
 }
 
 
+CASE("rotation: spec of two values") {
+    for (const std::string spec : {
+             "{type: rotation, south_pole: [1]}",
+             "{type: rotation, south_pole: [1, 2, 3]}",
+             "{type: rotation, rotation: [1]}",
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Projection>(ProjectionFactory::make_from_string(spec)),
+                         exception::SpecError);
+    }
+}
+
 }  // namespace eckit::geo::test
 
 

@@ -158,7 +158,14 @@ std::vector<std::vector<double>> project_points(const std::vector<double>& v1, c
                         out[k][i] = r.data()[k];
                     }
                 }
+                catch (const eckit::NotImplemented&) {
+                    throw;
+                }
+                catch (const eckit::AssertionFailed&) {
+                    throw;
+                }
                 catch (const eckit::Exception&) {
+                    // a point outside of the projection domain
                     for (auto& o : out) {
                         o[i] = std::numeric_limits<double>::quiet_NaN();
                     }

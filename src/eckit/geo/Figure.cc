@@ -174,32 +174,45 @@ double Figure::Authalic::q(double sinphi) const {
 
 
 double Figure::Authalic::phi(double q) const {
-    // Latitude of q, Snyder (3-16), as PROJ pj_authlat
+    // Latitude of q (as PROJ pj_authlat), from the authalic latitude: its series (Snyder 3-18) refined by Newton's
+    // method (Snyder 3-16), but at the poles, where the series is exact enough and the iteration is ill-conditioned
 
-    auto phi = std::asin(std::max(-1., std::min(1., q / 2.)));
+    // beyond the poles (with some rounding), outside of the projection's domain
+    if (!(std::abs(q) <= qp_ * (1. + 1e-12))) {
+        throw exception::ProjectionError("Authalic: latitude outside of the projection domain", Here());
+    }
+
+    const auto beta = std::asin(std::max(-1., std::min(1., q / qp_)));
     if (types::is_approximately_equal(e_, 0.)) {
-        return phi;
+        return beta;
     }
 
-    if (std::abs(std::abs(q) - qp_) < 1e-12) {
-        return std::copysign(M_PI_2, q);
-    }
+    const auto e2 = e_ * e_;
+    const auto e4 = e2 * e2;
+    const auto e6 = e4 * e2;
 
-    constexpr int max_iter = 15;
-    constexpr double eps   = 1e-12;
+    auto phi = beta + (e2 / 3. + 31. * e4 / 180. + 517. * e6 / 5040.) * std::sin(2. * beta) +
+               (23. * e4 / 360. + 251. * e6 / 3780.) * std::sin(4. * beta) + (761. * e6 / 45360.) * std::sin(6. * beta);
 
+    constexpr int max_iter = 10;
     for (int i = 0; i < max_iter; ++i) {
+        const auto c = std::cos(phi);
+        if (c < 1e-10) {
+            break;
+        }
+
         const auto s    = std::sin(phi);
         const auto es   = e_ * s;
-        const auto dphi = (1. - es * es) * (1. - es * es) / (2. * std::cos(phi)) *
-                          (q / (1. - e_ * e_) - s / (1. - es * es) + std::log((1. - es) / (1. + es)) / (2. * e_));
+        const auto dphi = (1. - es * es) * (1. - es * es) / (2. * c) *
+                          (q / (1. - e2) - s / (1. - es * es) + std::log((1. - es) / (1. + es)) / (2. * e_));
+
         phi += dphi;
-        if (std::abs(dphi) < eps) {
-            return phi;
+        if (std::abs(dphi) < 1e-14) {
+            break;
         }
     }
 
-    throw exception::ProjectionError("Authalic: latitude calculation failed to converge", Here());
+    return phi;
 }
 
 

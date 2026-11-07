@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <variant>
@@ -70,6 +71,19 @@ CASE("point_coordinates") {
     EXPECT_THROWS_AS(point_coordinates(std::variant_size_v<Point>), BadValue);
 }
 
+
+CASE("empty points") {
+    const Point empty;
+    EXPECT(std::holds_alternative<std::monostate>(empty));
+
+    EXPECT(points_equal(empty, Point{}));
+    EXPECT(points_equal(empty, Point{}, 1.));
+    EXPECT_THROWS_AS(points_equal(empty, Point{PointXY{1., 2.}}), AssertionFailed);
+
+    std::ostringstream out;
+    out << empty;
+    EXPECT(out.str() == "{}");
+}
 
 }  // namespace eckit::geo::test
 

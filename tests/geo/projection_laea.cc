@@ -92,6 +92,27 @@ CASE("laea: as PROJ") {
 }
 
 
+CASE("laea: near the poles, on an ellipsoid") {
+    // latitudes (of the authalic latitude) of points near the pole [m]; as PROJ, of an accuracy limited by the formula
+    // near the poles (about 0.1 %, at 1 m)
+    for (const std::string spec :
+         {"{type: laea, lat_0: 90, figure: wgs84}", "{type: laea, lat_0: -90, figure: wgs84}"}) {
+        P laea(ProjectionFactory::make_from_string(spec));
+        const auto north = spec.find("lat_0: 90") != std::string::npos;
+
+        EXPECT(points_equal(laea->inv(PointXY{0., 0.}), north ? NORTH_POLE : SOUTH_POLE, TOLERANCE));
+
+        auto previous = north ? NORTH_POLE.lat() : SOUTH_POLE.lat();
+        for (const double d : {1., 10., 100., 1000., 1e4}) {
+            const auto p = std::get<PointLonLat>(laea->inv(PointXY{d, 0.}));
+            EXPECT(north ? (89.9 < p.lat() && p.lat() < previous) : (previous < p.lat() && p.lat() < -89.9));
+            EXPECT(points_equal(laea->fwd(p), PointXY{d, 0.}, 2e-3 * d));
+            previous = p.lat();
+        }
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

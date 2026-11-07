@@ -5,6 +5,7 @@
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -51,11 +52,12 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
 
 
 ReducedLonLat::ReducedLonLat(const Spec& spec) :
-    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
+    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, order::ReducedScan{spec},
+                  ProjectionFactory::build(spec)) {}
 
 
-ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
-    Reduced(nullptr, p), pl_(pl), longitude_(pl.size()) {
+ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan, const Projection* p) :
+    Reduced(std::move(scan), p), pl_(pl), longitude_(pl.size()) {
     if (pl_.empty()) {
         throw exception::GridError("ReducedLonLat: 'pl' must not be empty", Here());
     }
@@ -113,16 +115,18 @@ void ReducedLonLat::fill_spec(spec::Custom& custom) const {
 
     custom.set("type", type());
     custom.set("pl", pl_);
-
-    if (order() != order::Scan::order_default()) {
-        custom.set("order", order());
-    }
 }
 
 
 const std::string& ReducedLonLat::type() const {
     static const std::string type{"reduced_ll"};
     return type;
+}
+
+
+Grid* ReducedLonLat::make_grid_reordered(const order_type& to) const {
+    return new ReducedLonLat(pl_, boundingBox(), order::ReducedScan{to},
+                             projection().is_default() ? nullptr : ProjectionFactory::build(projection().spec()));
 }
 
 

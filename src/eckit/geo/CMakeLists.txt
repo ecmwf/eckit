@@ -100,6 +100,10 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/ICON.h
     order/HEALPix.cc
     order/HEALPix.h
+    order/ReducedScan.cc
+    order/ReducedScan.h
+    order/RegularScan.cc
+    order/RegularScan.h
     order/Scan.cc
     order/Scan.h
     polygon/Polygon.cc

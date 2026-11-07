@@ -9,7 +9,7 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 
 
 namespace eckit::geo::grid {
@@ -37,13 +37,13 @@ public:
 
     // -- Class methods
 
-    static const order::Scan& scan_default();
+    static const order::RegularScan& scan_default();
 
 protected:
 
     // -- Constructors
 
-    explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
+    explicit Regular(order::RegularScan scan = scan_default(), const Projection* = nullptr);
 
     // -- Overridden methods
 
@@ -62,8 +62,8 @@ protected:
     [[nodiscard]] virtual Regular* make_regular_cropped(const BoundingBox&) const { return nullptr; }
 
     void scan(const order_type& to);
-    void scan(order::Scan);
-    const order::Scan& scan() const { return scan_; }
+    void scan(order::RegularScan);
+    const order::RegularScan& scan() const { return scan_; }
 
 private:
 
@@ -73,7 +73,7 @@ private:
 
     // -- Members
 
-    order::Scan scan_;
+    order::RegularScan scan_;
 
     // -- Methods
 

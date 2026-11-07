@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -381,6 +382,117 @@ CASE("errors") {
 
     // pl required for a name N<N> without a known classical pl
     EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("{grid: N4}")), exception::SpecError);
+}
+
+
+// points in the default order of the reference, renumbered to the grid order
+bool same_points_renumbered(const Grid& grid, const Grid& reference, const Grid::renumber_type& ren) {
+    if (grid.size() != reference.size() || ren.size() != reference.size()) {
+        return false;
+    }
+
+    const auto points = grid.to_points();
+    const auto ref    = reference.to_points();
+    for (size_t k = 0; k < ref.size(); ++k) {
+        if (!points_equal(points.at(ren[k]), ref[k])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+CASE("order: scanning i and j, positively or negatively") {
+    // scanning rows north to south (j-) or south to north (j+), each west to east (i+) or east to west (i-)
+    std::unique_ptr<const Grid> reference(GridFactory::make_from_string("{grid: N32}"));
+
+    const auto& lats = util::gaussian_latitudes(32, false);
+    const auto& pl   = util::reduced_classical_pl(32);
+
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "N32"}, {"order", order}})));
+
+        EXPECT(grid->order() == order);
+        EXPECT(grid->size() == reference->size());
+
+        // the first point: of the northern or southern row, west or east
+        const bool j_positive = order.find("j+") != std::string::npos;
+        const bool i_negative = order.find("i-") != std::string::npos;
+        const auto n          = static_cast<double>(j_positive ? pl.back() : pl.front());
+        EXPECT(points_equal(grid->first_point(),
+                            PointLonLat{i_negative ? 360. - 360. / n : 0., j_positive ? lats.back() : lats.front()}));
+
+        // the same points as in the default order, renumbered; by index as iterating
+        EXPECT(same_points_renumbered(*grid, *reference, reference->reorder(order)));
+
+        const auto points = grid->to_points();
+        bool by_index     = true;
+        for (size_t k = 0; k < points.size(); ++k) {
+            by_index = by_index && points_equal(grid->point(k), points[k]);
+        }
+        EXPECT(by_index);
+
+        // rows of points are consecutive: all 2N latitudes, each once
+        size_t rows = 0;
+        for (size_t k = 0; k < points.size(); ++k) {
+            const auto lat = std::get<PointLonLat>(points[k]).lat();
+            rows += k == 0 || lat != std::get<PointLonLat>(points[k - 1]).lat() ? 1 : 0;
+        }
+        EXPECT(rows == 64);
+
+        // the spec has the order (if not the default), and rebuilds the grid
+        EXPECT(grid->spec_str() ==
+               (order == "i+j-" ? std::string{R"({"grid":"N32"})"} : R"({"grid":"N32","order":")" + order + R"("})"));
+        EXPECT(*rebuilt(*grid) == *grid);
+
+        // reordered to the default order
+        std::unique_ptr<const Grid> reordered(grid->make_grid_reordered("i+j-"));
+        EXPECT(*reordered == *reference);
+        EXPECT(same_points_renumbered(*reference, *grid, grid->reorder("i+j-")));
+    }
+
+    // as rows have different numbers of points, not scanning j then i, nor alternating direction
+    for (const std::string order : {"j+i+", "j-i-", "i+-j-", "i-+j+"}) {
+        EXPECT_THROWS_AS(
+            std::unique_ptr<const Grid>(GridFactory::build(spec::Custom({{"grid", "N32"}, {"order", order}}))),
+            exception::OrderError);
+    }
+}
+
+
+CASE("order: cropped, also from pl without points outside the area") {
+    const std::vector<double> area{40, -25, -40, 55};
+    const area::BoundingBox bbox(area[0], area[1], area[2], area[3]);
+
+    std::unique_ptr<const Grid> reference(GridFactory::build(spec::Custom({{"grid", "O32"}, {"area", area}})));
+
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "O32"}, {"order", order}})));
+
+        // cropped grid in the same order, of the points of the crop (the grid points of these indices)
+        std::unique_ptr<const Grid> cropped(grid->make_grid_cropped(bbox));
+        EXPECT(cropped->order() == order);
+        EXPECT(same_points_renumbered(*cropped, *reference, reference->reorder(order)));
+
+        const auto indices = grid->crop(bbox);
+        const auto points  = grid->to_points();
+        const auto cpoints = cropped->to_points();
+        EXPECT(indices.size() == cpoints.size());
+
+        bool same = indices.size() == cpoints.size();
+        for (size_t k = 0; same && k < indices.size(); ++k) {
+            same = points_equal(cpoints[k], points.at(indices[k]));
+        }
+        EXPECT(same);
+
+        // by pl without points outside the area, and area
+        const auto pl = pl_within(util::reduced_octahedral_pl(32), area[0], area[2]);
+        std::unique_ptr<const Grid> from_pl(
+            GridFactory::build(spec::Custom({{"pl", pl}, {"area", area}, {"order", order}})));
+
+        EXPECT(from_pl->spec_str() == cropped->spec_str());
+        EXPECT(same_points_renumbered(*from_pl, *reference, reference->reorder(order)));
+    }
 }
 
 

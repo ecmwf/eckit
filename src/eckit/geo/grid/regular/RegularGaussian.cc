@@ -53,15 +53,15 @@ range::GaussianLatitude make_y(size_t N, const area::BoundingBox& bbox, bool pos
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni", 0), BoundingBox(spec), order::Scan{spec},
+    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni", 0), BoundingBox(spec), order::RegularScan{spec},
                     ProjectionFactory::build(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, const Projection* p) :
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::RegularScan s, const Projection* p) :
     RegularGaussian(N, 0, bbox, s, p) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::Scan s, const Projection* p) :
+RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::RegularScan s, const Projection* p) :
     Regular(s, p),
     N_(check_N(N)),
     ni_(ni == 0 ? 4 * N_ : ni),

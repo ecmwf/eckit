@@ -10,7 +10,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/order/HEALPix.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/ReducedScan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -19,7 +20,7 @@ namespace eckit::geo::test {
 
 
 CASE("order=scan") {
-    using order::Scan;
+    using order::RegularScan;
 
     static const std::map<std::string, long> modes{
         {"i+j+", 64},    //
@@ -41,7 +42,7 @@ CASE("order=scan") {
     };
 
     for (const auto& [order, scanningMode] : modes) {
-        const Scan scan(order);
+        const RegularScan scan(order);
         EXPECT(scan.is_scan_i_then_j() == (order.front() == 'i'));
         EXPECT(scan.is_scan_i_positive() == (order.find("i+") != std::string::npos));
         EXPECT(scan.is_scan_j_positive() == (order.find("j+") != std::string::npos));
@@ -65,18 +66,18 @@ CASE("order=scan") {
     }
 
     // the empty order is the default
-    EXPECT(Scan{""}.order() == Scan::order_default());
-    EXPECT(Scan{""}.order() == "i+j-");
+    EXPECT(RegularScan{""}.order() == RegularScan::order_default());
+    EXPECT(RegularScan{""}.order() == "i+j-");
 }
 
 
 CASE("order=scan, reorder") {
-    using order::Scan;
+    using order::RegularScan;
     constexpr size_t ni = 3;
     constexpr size_t nj = 2;
 
     // points, by their index in the default order (i+j-)
-    for (const auto& [order, points] : std::map<std::string, Scan::renumber_type>{
+    for (const auto& [order, points] : std::map<std::string, RegularScan::renumber_type>{
              {"i+j-", {0, 1, 2, 3, 4, 5}},
              {"i+j+", {3, 4, 5, 0, 1, 2}},
              {"i-j-", {2, 1, 0, 5, 4, 3}},
@@ -88,7 +89,7 @@ CASE("order=scan, reorder") {
              {"i+-j-", {0, 1, 2, 5, 4, 3}},
              {"j-+i+", {0, 3, 4, 1, 2, 5}},
          }) {
-        EXPECT(Scan{order}.reorder(Scan::order_default(), ni, nj) == points);
+        EXPECT(RegularScan{order}.reorder(RegularScan::order_default(), ni, nj) == points);
     }
 
     const std::vector<std::string> orders{"i+j+", "i+j-", "i-j+", "i-j-", "i-+j+", "i-+j-", "i+-j+", "i+-j-",
@@ -96,8 +97,8 @@ CASE("order=scan, reorder") {
 
     for (const auto& a : orders) {
         for (const auto& b : orders) {
-            const auto ab = Scan{a}.reorder(b, ni, nj);
-            const auto ba = Scan{b}.reorder(a, ni, nj);
+            const auto ab = RegularScan{a}.reorder(b, ni, nj);
+            const auto ba = RegularScan{b}.reorder(a, ni, nj);
 
             for (size_t k = 0; k < ab.size(); ++k) {
                 EXPECT(ba[ab[k]] == k);
@@ -138,6 +139,53 @@ CASE("healpix") {
 
             EXPECT_NO_THROW(HEALPix{});
             EXPECT_NO_THROW(HEALPix{HEALPix::order_default()});
+        }
+    }
+}
+
+
+CASE("order=reduced scan") {
+    using order::ReducedScan;
+
+    EXPECT(ReducedScan{}.order() == ReducedScan::order_default());
+    EXPECT(ReducedScan{""}.order() == "i+j-");
+
+    // rows of points: consecutive along rows, rows not alternating direction
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        EXPECT_NO_THROW(ReducedScan{order});
+    }
+
+    for (const std::string order : {"j+i+", "j-i-", "i+-j-", "i-+j+", "j+-i+", "ring", "x"}) {
+        EXPECT_THROWS_AS(ReducedScan{order}, exception::OrderError);
+    }
+
+    // rows of 2, 0, 3 and 1 points (rows in the default order, north to south): index in the default order of each
+    // point
+    const pl_type pl{2, 0, 3, 1};
+
+    const std::map<std::string, ReducedScan::renumber_type> expected{
+        {"i+j-", {0, 1, 2, 3, 4, 5}},
+        {"i+j+", {5, 2, 3, 4, 0, 1}},
+        {"i-j-", {1, 0, 4, 3, 2, 5}},
+        {"i-j+", {5, 4, 3, 2, 1, 0}},
+    };
+
+    for (const auto& [order, canonical] : expected) {
+        const ReducedScan scan(order);
+
+        EXPECT(scan.canonical(pl) == canonical);
+        EXPECT(scan.reorder(ReducedScan::order_default(), pl) == canonical);
+    }
+
+    // reordering, and back
+    for (const auto& [a, _a] : expected) {
+        for (const auto& [b, _b] : expected) {
+            const auto ab = ReducedScan{a}.reorder(b, pl);
+            const auto ba = ReducedScan{b}.reorder(a, pl);
+
+            for (size_t k = 0; k < ab.size(); ++k) {
+                EXPECT(ba[ab[k]] == k);
+            }
         }
     }
 }

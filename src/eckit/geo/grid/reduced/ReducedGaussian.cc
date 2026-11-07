@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <string>
+#include <utility>
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -55,11 +56,12 @@ size_t pl_N(const pl_type& pl) {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec_pl(spec), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
+    ReducedGaussian(spec_pl(spec), BoundingBox{spec}, order::ReducedScan{spec}, ProjectionFactory::build(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
-    Reduced(nullptr, p), N_(pl_N(pl)), pl_(pl), latitude_(N_, false) {
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan,
+                                 const Projection* p) :
+    Reduced(std::move(scan), p), N_(pl_N(pl)), pl_(pl), latitude_(N_, false) {
     const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
 
@@ -99,8 +101,8 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, con
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, const Projection* p) :
-    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, p) {}
+ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, order::ReducedScan scan, const Projection* p) :
+    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, std::move(scan), p) {}
 
 
 std::string ReducedGaussian::name() const {
@@ -128,17 +130,6 @@ bool ReducedGaussian::matches(const pl_type& reference) const {
 }
 
 
-Grid::renumber_type ReducedGaussian::reorder(const order_type& to) const {
-    // by the points of each row, as pl is of the rows of the global grid
-    pl_type nx(pl_.size());
-    for (size_t j = 0; j < nx.size(); ++j) {
-        nx[j] = static_cast<pl_type::value_type>(nxj(j));
-    }
-
-    return scan_.reorder(to, nx);
-}
-
-
 void ReducedGaussian::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
@@ -147,10 +138,6 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
     // the name gives pl, unless pl is neither octahedral nor classical
     if (!is_reduced_octahedral() && !is_reduced_classical()) {
         custom.set("pl", pl_);
-    }
-
-    if (order() != order::Scan::order_default()) {
-        custom.set("order", order());
     }
 }
 
@@ -168,10 +155,17 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
     }
 
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new ReducedGaussian(pl_, BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()});
+        return new ReducedGaussian(pl_, BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()},
+                                   scan());
     }
 
     throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());
+}
+
+
+Grid* ReducedGaussian::make_grid_reordered(const order_type& to) const {
+    return new ReducedGaussian(pl_, boundingBox(), order::ReducedScan{to},
+                               projection().is_default() ? nullptr : ProjectionFactory::build(projection().spec()));
 }
 
 

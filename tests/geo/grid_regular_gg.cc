@@ -13,7 +13,7 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -195,7 +195,7 @@ CASE("scan modes") {
 
     SECTION("i+j+") {
         // Scan: i increasing, j increasing (south to north)
-        RegularGaussian grid(1, {}, order::Scan{"i+j+"});
+        RegularGaussian grid(1, {}, order::RegularScan{"i+j+"});
 
         EXPECT(grid.order() == "i+j+");
 

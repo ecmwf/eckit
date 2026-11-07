@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <string>
+
 
 namespace eckit::geo {
 
@@ -28,6 +30,14 @@ enum Arrangement {
     ORCA_V,
     ORCA_W,
 };
+
+
+/// The arrangement of a grid type by its letter (case-insensitive), e.g. ORCA_T of ("ORCA", "T")
+Arrangement arrangement_from_string(const std::string& grid, const std::string& letter);
+
+
+/// The letter of an arrangement, e.g. "T" of ORCA_T
+const std::string& arrangement_to_string(Arrangement);
 
 
 }  // namespace eckit::geo

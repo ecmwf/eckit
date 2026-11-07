@@ -61,9 +61,6 @@ public:
 
     [[nodiscard]] static Spec* spec_from_uid(const std::string& name);
 
-    [[nodiscard]] static Arrangement arrangement_from_string(const std::string&);
-    [[nodiscard]] static std::string arrangement_to_string(Arrangement);
-
 private:
 
     // -- Methods

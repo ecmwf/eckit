@@ -34,21 +34,6 @@ namespace eckit::geo::grid::unstructured {
 namespace {
 
 
-Arrangement arrangement_from_string(const std::string& str) {
-    return str == "C"   ? Arrangement::FESOM_C
-           : str == "N" ? Arrangement::FESOM_N
-                        : throw SeriousBug("FESOM: unsupported arrangement '" + str + "'");
-}
-
-
-std::string arrangement_to_string(Arrangement a) {
-    return a == Arrangement::FESOM_C ? "C"
-           : a == Arrangement::FESOM_N
-               ? "N"
-               : throw SeriousBug("FESOM: unsupported arrangement '" + std::to_string(a) + "'", Here());
-}
-
-
 // Mesh of triangles: nodes (lat, lon) and cells (0-based node indices, 3 per cell)
 struct Mesh {
     explicit Mesh(const Grid::Spec& spec) {
@@ -107,7 +92,7 @@ struct Mesh {
 
 cache::LatitudeLongitude load(const Grid::Spec& spec) {
     Mesh mesh(spec);
-    return arrangement_from_string(spec.get_string("arrangement")) == Arrangement::FESOM_C
+    return arrangement_from_string("FESOM", spec.get_string("arrangement")) == Arrangement::FESOM_C
                ? mesh.centres()
                : cache::LatitudeLongitude{std::move(mesh.lat), std::move(mesh.lon)};
 }
@@ -118,7 +103,7 @@ cache::LatitudeLongitude load(const Grid::Spec& spec) {
 
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
-                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
+                 arrangement_to_string(arrangement_from_string("FESOM", spec.get_string("arrangement"))),
                  bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
@@ -144,7 +129,7 @@ std::vector<size_t> FESOM::shape() const {
 
 
 Grid::uid_type FESOM::calculate_uid() const {
-    if (arrangement_from_string(arrangement()) == Arrangement::FESOM_N) {
+    if (arrangement_from_string("FESOM", arrangement()) == Arrangement::FESOM_N) {
         return Unstructured::calculate_uid();
     }
 

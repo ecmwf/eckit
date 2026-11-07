@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cmath>
+#include <cstddef>
+
 #include "eckit/geo/util.h"
 #include "eckit/maths/FloatingPointExceptions.h"
 #include "eckit/testing/Test.h"
@@ -49,6 +52,30 @@ CASE("gaussian_quadrature_weights") {
     EXPECT(quad_2.size() == 2 * 80);
     EXPECT_APPROX(quad_2.front(), 0.000144);
     EXPECT_APPROX(quad_2.front(), quad_2.back());
+}
+
+
+CASE("gaussian quadrature: latitudes and weights") {
+    for (size_t N : {1, 2, 3, 16, 48, 640, 1280}) {
+        const auto& lats    = geo::util::gaussian_latitudes(N, false);
+        const auto& weights = geo::util::gaussian_quadrature_weights(N);
+
+        EXPECT(lats.size() == 2 * N);
+        EXPECT(weights.size() == 2 * N);
+
+        // decreasing latitudes, positive weights, both symmetric; the weights add up to 1
+        double sum = 0.;
+        for (size_t i = 0; i < 2 * N; ++i) {
+            EXPECT(lats[i] == -lats[2 * N - 1 - i]);
+            EXPECT(weights[i] == weights[2 * N - 1 - i]);
+            EXPECT(0. < weights[i]);
+            EXPECT(i == 0 || lats[i] < lats[i - 1]);
+            sum += weights[i];
+        }
+
+        EXPECT(std::abs(sum - 1.) < 1e-12);
+        EXPECT(0. < lats.back() + 90. && lats.front() < 90.);
+    }
 }
 
 

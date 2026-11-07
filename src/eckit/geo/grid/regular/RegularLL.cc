@@ -167,13 +167,7 @@ Grid::BoundingBox* RegularLL::calculate_bbox_xy() const {
 struct ArakawaC : RegularLL {
     explicit ArakawaC(const Spec& spec) :
         RegularLL(*std::unique_ptr<Spec>([](const Spec& spec) {
-            auto a = [](const std::string& str) {
-                return str == "T" || str == "t"   ? Arrangement::ARAKAWA_C_T
-                       : str == "U" || str == "u" ? Arrangement::ARAKAWA_C_U
-                       : str == "V" || str == "v"
-                           ? Arrangement::ARAKAWA_C_V
-                           : throw exception::GridError("ArakawaC: unsupported arrangement '" + str + "'", Here());
-            }(spec.get_string("arrangement", "T"));
+            auto a = arrangement_from_string("ArakawaC", spec.get_string("arrangement", "T"));
 
             auto N = spec.get_unsigned("n");
             if (N == 0) {

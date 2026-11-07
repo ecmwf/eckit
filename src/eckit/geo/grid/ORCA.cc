@@ -25,7 +25,7 @@ namespace eckit::geo::grid {
 ORCA::ORCA(const Spec& spec) :
     Grid(bounding_box_from_spec(spec), ProjectionFactory::build(spec)),
     name_(spec.get_string("name")),
-    arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
+    arrangement_(arrangement_from_string("ORCA", spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));
 }
 
@@ -88,27 +88,6 @@ Grid::renumber_type ORCA::reorder(const order_type& to) const {
 
 Grid::Spec* ORCA::spec_from_uid(const uid_type& uid) {
     return GridSpecByUID::instance().get_spec(uid);
-}
-
-
-Arrangement ORCA::arrangement_from_string(const std::string& str) {
-    return str == "F"   ? Arrangement::ORCA_F
-           : str == "T" ? Arrangement::ORCA_T
-           : str == "U" ? Arrangement::ORCA_U
-           : str == "V" ? Arrangement::ORCA_V
-           : str == "W" ? Arrangement::ORCA_W
-                        : throw SeriousBug("ORCA: unsupported arrangement '" + str + "'");
-}
-
-
-std::string ORCA::arrangement_to_string(Arrangement a) {
-    return a == Arrangement::ORCA_F   ? "F"
-           : a == Arrangement::ORCA_T ? "T"
-           : a == Arrangement::ORCA_U ? "U"
-           : a == Arrangement::ORCA_V ? "V"
-           : a == Arrangement::ORCA_W
-               ? "W"
-               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
 }
 
 

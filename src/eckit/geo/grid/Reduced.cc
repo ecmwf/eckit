@@ -85,17 +85,14 @@ const Grid::renumber_type& Reduced::canonical() const {
 
 
 const std::vector<size_t>& Reduced::nxacc() const {
-    if (nxacc_.empty()) {
+    util::call_once(nxacc_once_, [this]() {
         nxacc_.resize(1 + ny());
         nxacc_.front() = 0;
 
-        size_t j = 0;
-        for (auto a = nxacc_.begin(), b = a + 1; b != nxacc_.end(); ++j, ++a, ++b) {
-            *b = *a + nxj(j);
+        for (size_t j = 0; j < ny(); ++j) {
+            nxacc_[j + 1] = nxacc_[j] + nxj(j);
         }
-
-        ASSERT(nxacc_.back() == size());
-    }
+    });
 
     return nxacc_;
 }

@@ -112,7 +112,8 @@ Polygon* Polygon::make_from_spec(const Area::Spec& spec) {
         std::vector<double> longitudes;
         if (!spec.get("latitudes", latitudes) || !spec.get("longitudes", longitudes) ||
             latitudes.size() != longitudes.size()) {
-            throw exception::AreaError("Polygon: 'latitudes' and 'longitudes' expected, of the same size", Here());
+            throw exception::AreaError("Polygon: {latitudes: [...], longitudes: [...]} (of the same size) expected",
+                                       Here());
         }
 
         grids.emplace_back(new grid::Unstructured(longitudes, latitudes));
@@ -127,7 +128,8 @@ Polygon* Polygon::make_from_spec(const Area::Spec& spec) {
         }
     }
     else {
-        throw exception::AreaError("Polygon: 'latitudes' and 'longitudes', or 'uid' (one or more) expected", Here());
+        throw exception::AreaError(
+            "Polygon: {latitudes: [...], longitudes: [...]} or {uid: ...} (one or more) expected", Here());
     }
 
     container_type rings;

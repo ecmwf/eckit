@@ -97,7 +97,7 @@ PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::strin
         return {v[0], v[1]};
     }
 
-    throw exception::SpecError("PointLonLat::make_from_spec: '" + name + "' expected [lon, lat] values", Here());
+    throw exception::SpecError("PointLonLat: {" + name + ": [lon, lat]} expected", Here());
 }
 
 

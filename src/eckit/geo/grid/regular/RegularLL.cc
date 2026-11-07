@@ -30,7 +30,7 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {
     if (dlon < 0 || dlat < 0) {
-        throw exception::GridError("'grid' = ['dlon', 'dlat'] must be positive", Here());
+        throw exception::GridError("RegularLL: {grid: [dlon, dlat]} (positive) expected", Here());
     }
 }
 
@@ -50,7 +50,7 @@ RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
         return {grid[0], grid[1]};
     }
 
-    throw exception::GridError("'grid' = ['dlon', 'dlat'] expected", Here());
+    throw exception::GridError("RegularLL: {grid: [dlon, dlat]} expected", Here());
 }
 
 
@@ -177,10 +177,8 @@ struct ArakawaC : RegularLL {
             auto grid_factor = spec.get_double_vector("grid_factor", {1., 1.});
             if (grid_factor.size() != 2 || types::is_approximately_lesser_or_equal(grid_factor[0], 0.) ||
                 types::is_approximately_lesser_or_equal(grid_factor[1], 0.)) {
-                throw exception::GridError(
-                    "ArakawaC: 'grid_factor' = ['dlon-factor', 'dlat-factor'] must be a vector of two positive "
-                    "real numbers",
-                    Here());
+                throw exception::GridError("ArakawaC: {grid_factor: [dlon_factor, dlat_factor]} (positive) expected",
+                                           Here());
             }
 
             auto dlon = grid_factor[0] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);

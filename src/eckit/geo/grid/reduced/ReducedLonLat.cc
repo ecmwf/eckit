@@ -59,7 +59,7 @@ ReducedLonLat::ReducedLonLat(const Spec& spec) :
 ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan, const Projection* p) :
     Reduced(std::move(scan), p), pl_(pl), longitude_(pl.size()) {
     if (pl_.empty()) {
-        throw exception::GridError("ReducedLonLat: 'pl' must not be empty", Here());
+        throw exception::GridError("ReducedLonLat: {pl: [...]} (not empty) expected", Here());
     }
 
     auto pl_periodic = [&]() {

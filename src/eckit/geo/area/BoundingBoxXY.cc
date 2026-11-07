@@ -59,7 +59,7 @@ void BoundingBoxXY::fill_spec(spec::Custom& custom) const {
 
 BoundingBoxXY* BoundingBoxXY::make_from_spec(const Spec& spec) {
     if (std::vector<BoundingBoxXY::value_type> area; spec.get("bounding_box_xy", area)) {
-        ASSERT_MSG(area.size() == 4, "BoundingBox: 'bounding_box_xy' expected list of size 4");
+        ASSERT_MSG(area.size() == 4, "BoundingBoxXY: {bounding_box_xy: [min_x, min_y, max_x, max_y]} expected");
         return new BoundingBoxXY{area[0], area[1], area[2], area[3]};
     }
 
@@ -68,8 +68,11 @@ BoundingBoxXY* BoundingBoxXY::make_from_spec(const Spec& spec) {
         return new BoundingBoxXY{area[0], area[1], area[2], area[3]};
     }
 
-    throw exception::SpecError("BoundingBoxXY: cannot build, expecting bounding_box_xy: [min_x, min_y, max_x, max_y]",
-                               Here());
+    throw exception::SpecError(
+        "BoundingBoxXY: {bounding_box_xy: [min_x, min_y, max_x, max_y]} or {min_x: ..., min_y: ..., max_x: ..., max_y: "
+        "...} "
+        "expected",
+        Here());
 }
 
 

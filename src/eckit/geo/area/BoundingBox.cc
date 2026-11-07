@@ -365,8 +365,8 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
     }
 
     if (spec.has("area")) {
-        throw exception::SpecError("BoundingBox: 'area' expected [north,west,south,east] or 'north/west/south/east'",
-                                   Here());
+        throw exception::SpecError(
+            "BoundingBox: {area: [north, west, south, east]} or {area: north/west/south/east} expected", Here());
     }
 
     spec.get("north", n);

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <sstream>
+#include <string>
+#include <string_view>
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
@@ -166,6 +168,18 @@ CASE("INDENT_DICT | INDENT_LIST, indent=4") {
            "        5\n"
            "    ]\n"
            "}");
+}
+
+CASE("strings: std::string, const char* and std::string_view, escaped alike") {
+    std::stringstream s;
+    JSON json(s);
+
+    const std::string str = "a\"b";
+    json.startList() << str << "c\nd" << std::string_view{"e\tf"} << std::string_view{"ghi", 2};
+    json.endList();
+
+    // a view isn't null-terminated, so only its characters are written
+    EXPECT(s.str() == R"(["a\"b","c\nd","e\tf","gh"])");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

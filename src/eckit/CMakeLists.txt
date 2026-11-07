@@ -1020,6 +1020,10 @@ add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
 
+if( eckit_HAVE_ECKIT_CACHE )
+    add_subdirectory( cache )
+endif()
+
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()

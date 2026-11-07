@@ -52,7 +52,7 @@ SPDX-License-Identifier = "Apache-2.0"
 # their own headers and are unaffected by this entry.
 [[annotations]]
 path = ["tests/parser/cfg.1.yaml", "tests/parser/string.yaml", "tests/parser/unicode.yaml",
-        "tests/geo/**.ek", "tests/geo/test.zip"]
+        "tests/geo/**.ek", "tests/geo/test.zip", "tests/cache/test.zip"]
 precedence = "closest"
 SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
 SPDX-License-Identifier = "Apache-2.0"

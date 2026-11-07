@@ -5,14 +5,14 @@ grid_names:
           type: regular_xy
           x: [0, 4995000, 5000]
           y: [0, -4745000, -5000]
-          false: [1818500.021, -2287499.955]
+          false_xy: [1818500.021, -2287499.955]
           projection: {type: laea, lat_0: 52, lon_0: 10, figure: grs80, reverse: true}
 
     - SMUFF-OPERA-2km:
           type: regular_xy
           x: [0, 3798000, 2000]
           y: [0, -4398000, -2000]
-          false: [1949000, -2101000]
+          false_xy: [1949000, -2101000]
           projection: {type: laea, lat_0: 55, lon_0: 10, figure: wgs84, reverse: true}
 
     - swisslv95:

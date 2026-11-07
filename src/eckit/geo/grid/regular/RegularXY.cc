@@ -48,15 +48,17 @@ RangeXY range_from_spec(const Spec& spec, const std::string& key) {
 }
 
 
+/// False easting and northing, as false_xy: [x, y]
 PointXY false_from_spec(const Spec& spec) {
-    if (std::vector<double> f; spec.get("false", f)) {
-        if (f.size() != 2) {
-            throw exception::SpecError("RegularXY: 'false' = ['x', 'y'] expected", Here());
-        }
+    if (!spec.has("false_xy")) {
+        return {};
+    }
+
+    if (std::vector<double> f; spec.get("false_xy", f) && f.size() == 2) {
         return {f[0], f[1]};
     }
 
-    return {spec.get_double("false_x", 0.), spec.get_double("false_y", 0.)};
+    throw exception::SpecError("RegularXY: 'false_xy' = ['x', 'y'] expected", Here());
 }
 
 
@@ -139,7 +141,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
     custom.set("y", range_spec(y_));
 
     if (false_.X() != 0. || false_.Y() != 0.) {
-        custom.set("false", std::vector<double>{false_.X(), false_.Y()});
+        custom.set("false_xy", std::vector<double>{false_.X(), false_.Y()});
     }
 
     if (projected_) {

@@ -301,7 +301,7 @@ CASE("crop: projected grids (rotation, lcc)") {
 
     for (const auto& test : std::vector<test_t>{
              {"{grid: [1, 1], rotation: [-40, 10]}", 10., -10., -10., 10.},
-             {"{x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055], "
+             {"{x: [0, 120000, 2500], y: [0, 170000, 2500], false_xy: [60000.021, 85000.055], "
               "projection: {type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true}}",
               52., 4.5, 51.5, 5.5},
          }) {
@@ -339,7 +339,7 @@ CASE("crop: as the grid type, or unstructured (exchangeable by uid)") {
 
     const std::string bbox = BBOXES.front();
     const std::string lcc =
-        "{x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055], "
+        "{x: [0, 120000, 2500], y: [0, 170000, 2500], false_xy: [60000.021, 85000.055], "
         "projection: {type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true}}";
 
     for (const auto& test : std::vector<test_t>{

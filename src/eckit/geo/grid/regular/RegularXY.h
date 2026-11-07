@@ -17,8 +17,8 @@ namespace eckit::geo::grid::regular {
 
 /**
  * @brief Regular grid on a plane, of (x, y) points, as they are or projected (projection on top)
- * @details Spec: x and y as [start, stop, step] (stop included), optionally false: [x, y] (false easting/northing) and
- * projection (from (x, y), applied to the points less the false easting/northing).
+ * @details Spec: x and y as [start, stop, step] (stop included), optionally false_xy: [x, y] (false easting/northing)
+ * and projection (from (x, y), applied to the points less the false easting/northing).
  */
 class RegularXY : public Regular {
 public:

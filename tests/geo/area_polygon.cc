@@ -7,6 +7,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
@@ -526,6 +527,25 @@ CASE("Polygon") {
     }
 }
 
+
+CASE("area::Polygon: rings, area and containment") {
+    using geo::polygon::Polygon;
+
+    // rings alternately including/excluding (e.g. a hole), their areas signed by orientation (as in GeoJSON)
+    const Polygon outer{{0., 0.}, {4., 0.}, {4., 4.}, {0., 4.}};  // counter-clockwise
+    const Polygon hole{{1., 1.}, {1., 2.}, {2., 2.}, {2., 1.}};   // clockwise
+
+    const area::Polygon a(area::Polygon::container_type{outer});
+    const area::Polygon b(area::Polygon::container_type{outer, hole});
+
+    EXPECT(types::is_approximately_equal(a.area(), 16.));
+    EXPECT(types::is_approximately_equal(b.area(), 15.));
+
+    EXPECT(a.contains(PointLonLat{1.5, 1.5}));
+    EXPECT_NOT(b.contains(PointLonLat{1.5, 1.5}));
+    EXPECT(b.contains(PointLonLat{3., 3.}));
+    EXPECT_NOT(b.contains(PointLonLat{5., 5.}));
+}
 
 }  // namespace eckit::geo::test
 

@@ -490,7 +490,9 @@ BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e)
                     : is_approx_ge(e - w, PointLonLat::FULL_ANGLE) ? w + PointLonLat::FULL_ANGLE
                                                                    : a;
 
-    ASSERT(south() <= north());
+    if (!(south() <= north())) {
+        throw exception::AreaError("BoundingBox: [north, west, south, east] expected, south <= north", Here());
+    }
     ASSERT(west() <= east());
 }
 

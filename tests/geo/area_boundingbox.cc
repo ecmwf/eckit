@@ -11,6 +11,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/area/BoundingBoxXY.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -213,6 +214,43 @@ CASE("intersects") {
     EXPECT(crop.intersects(grid));
     EXPECT(grid.west() == -180.);
     EXPECT(grid.east() == 180.);
+}
+
+
+CASE("BoundingBoxXY") {
+    const area::BoundingBoxXY box(0, 0, 2, 1);
+
+    // inside, including the edges, and outside
+    for (const auto& p : {PointXY{1, 0.5}, PointXY{0, 0}, PointXY{2, 1}, PointXY{0, 1}}) {
+        EXPECT(box.contains(p));
+    }
+
+    for (const auto& p : {PointXY{-1, 0.5}, PointXY{3, 0.5}, PointXY{1, -1}, PointXY{1, 2}}) {
+        EXPECT_NOT(box.contains(p));
+    }
+
+    EXPECT(box.contains(area::BoundingBoxXY(0.5, 0.5, 1, 1)));
+    EXPECT_NOT(box.contains(area::BoundingBoxXY(0.5, 0.5, 3, 1)));
+
+    // of (x, y) points, not (lon, lat)
+    EXPECT_THROWS_AS(box.contains(PointLonLat{1, 0.5}), exception::AreaError);
+
+    // min <= max
+    EXPECT_THROWS_AS(area::BoundingBoxXY(2, 0, 0, 1), exception::AreaError);
+
+    // from a spec, as the four values
+    using A = std::unique_ptr<const Area>;
+
+    A from_spec(AreaFactory::make_from_string("{type: bounding_box_xy, bounding_box_xy: [0, 0, 2, 1]}"));
+    EXPECT(from_spec->spec_str() == R"({"bounding_box_xy":[0,0,2,1],"type":"bounding_box_xy"})");
+
+    for (const std::string spec : {"{type: bounding_box_xy, bounding_box_xy: [0, 0, 2]}",
+                                   "{type: bounding_box_xy, min_x: 0, min_y: 0, max_x: 2, max_y: 1}"}) {
+        EXPECT_THROWS_AS(A(AreaFactory::make_from_string(spec)), exception::SpecError);
+    }
+
+    EXPECT_THROWS_AS(A(AreaFactory::make_from_string("{type: bounding_box_xy, bounding_box_xy: [2, 0, 0, 1]}")),
+                     exception::AreaError);
 }
 
 

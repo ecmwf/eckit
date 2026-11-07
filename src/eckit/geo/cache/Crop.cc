@@ -9,6 +9,7 @@
 #include "eckit/cache/FileCache.h"
 #include "eckit/cache/loader/Stream.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/cache/CropCache.h"
 
 
@@ -22,6 +23,10 @@ eckit::cache::MemoryUsage Crop::footprint() const {
 
 void Crop::read(const PathName& path) {
     std::unique_ptr<eckit::cache::Loader> loader(CropCache::file_cache().load("stream", path));
+
+    if (loader->size() % sizeof(renumber_type::value_type) != 0) {
+        throw exception::GridError("Crop: '" + path.asString() + "' not of indices", Here());
+    }
 
     const auto* begin = static_cast<const renumber_type::value_type*>(loader->address());
     indices.assign(begin, begin + loader->size() / sizeof(renumber_type::value_type));

@@ -3,6 +3,7 @@
 
 
 #include <algorithm>
+#include <fstream>
 #include <memory>
 #include <set>
 #include <string>
@@ -365,6 +366,9 @@ CASE("crop: as the grid type, or unstructured (exchangeable by uid)") {
 
         G by_uid(GridFactory::make_from_string("{uid: " + unstructured->uid() + "}"));
         EXPECT(same_points(*by_uid, *grid, indices));
+
+        // cropped again, as a grid of no particular order (all its points in the area)
+        EXPECT(unstructured->crop(*area).size() == unstructured->size());
     }
 
     // nothing to crop (between the grid points)
@@ -404,6 +408,18 @@ CASE("crop: cache") {
 
         cache.clear();
         EXPECT(grid->crop(*bbox) == a);
+
+        // corrupt files (not of indices, or not of this grid's) are not loaded, but recomputed (and replaced)
+        for (const auto& corrupt : {std::string("corrupt"), std::string(3 * sizeof(size_t), '\xff')}) {
+            for (const auto& f : files) {
+                if (f.extension() == ".crop") {
+                    std::ofstream(f.asString(), std::ios::binary | std::ios::trunc) << corrupt;
+                }
+            }
+
+            cache.clear();
+            EXPECT(grid->crop(*bbox) == a);
+        }
     }
 
     cache.clear();

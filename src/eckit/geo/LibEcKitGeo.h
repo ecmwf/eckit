@@ -90,8 +90,8 @@ public:
     static std::string cropCachePolicy();
 
     /**
-     * Release in-process caches, all or by kind (cache files are kept); searches and crops in use stay valid, but
-     * purgeCache invalidates values returned by reference (e.g. Gaussian latitudes)
+     * Release the in-process caches of searches and crops, both or by kind (cache files are kept); those in use stay
+     * valid. Values returned by reference (e.g. Gaussian latitudes, grid coordinates) are kept, as grids use them.
      */
     static void purgeCache();
     static void purgeCacheSearch();

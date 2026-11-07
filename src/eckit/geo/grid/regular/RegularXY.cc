@@ -4,11 +4,15 @@
 
 #include "eckit/geo/grid/regular/RegularXY.h"
 
+#include <memory>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/BoundingBoxXY.h"
 #include "eckit/geo/order/RegularScan.h"
@@ -48,17 +52,35 @@ RangeXY range_from_spec(const Spec& spec, const std::string& key) {
 }
 
 
-/// False easting and northing, as false_xy: [x, y]
+/// False easting and northing: false_xy: [x, y] (by default [0, 0], e.g. of a projection with its own), or so the
+/// false origin (x, y) = (0, 0) is at false_lonlat: [lon, lat], by the projection
 PointXY false_from_spec(const Spec& spec) {
-    if (!spec.has("false_xy")) {
+    const auto xy = spec.has("false_xy");
+    const auto ll = spec.has("false_lonlat");
+
+    if (!xy && !ll) {
         return {};
     }
 
-    if (std::vector<double> f; spec.get("false_xy", f) && f.size() == 2) {
-        return {f[0], f[1]};
+    if (xy && !ll) {
+        if (std::vector<double> f; spec.get("false_xy", f) && f.size() == 2) {
+            return {f[0], f[1]};
+        }
+    }
+    else if (!xy && spec.has("projection")) {
+        const std::unique_ptr<const Projection> projection(ProjectionFactory::build(spec));
+        if (projection->source_point_coordinates() != geo::point_coordinates<PointXY>() ||
+            projection->target_point_coordinates() != geo::point_coordinates<PointLonLat>()) {
+            throw exception::SpecError(
+                "RegularXY: 'projection' from (x, y) to (lon, lat) expected (e.g. with reverse: true)", Here());
+        }
+
+        // the false origin less the false easting/northing is the projected false_lonlat
+        return -std::get<PointXY>(projection->inv(PointLonLat::make_from_spec(spec, "false_lonlat")));
     }
 
-    throw exception::SpecError("RegularXY: 'false_xy' = ['x', 'y'] expected", Here());
+    throw exception::SpecError(
+        "RegularXY: {false_xy: [x, y]} or {false_lonlat: [lon, lat], projection: {...}} expected", Here());
 }
 
 

@@ -70,6 +70,43 @@ CASE("RegularXY: x and y") {
             GridFactory::make_from_string("{x: [0, 2, 1], y: [3, 0, -1], false_xy: [0, 0]}"));
         EXPECT(without_false->spec_str() == grid->spec_str());
     }
+
+    SECTION("false easting/northing of the false origin (lon, lat)") {
+        const std::string projection{
+            "projection: {type: lcc, lat_0: 63.3, lat_1: 63.3, lon_0: 15, figure: {R: 6371000}, reverse: true}"};
+        const PointLonLat origin{1.60491, 51.633816};
+
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(
+            "{x: [0, 5000, 2500], y: [0, 5000, 2500], false_lonlat: [1.60491, 51.633816], " + projection + "}"));
+        EXPECT(points_equal(grid->first_point(), origin));
+
+        // as the false easting/northing, of the projected false origin
+        EXPECT(grid->spec_str().find(R"("false_xy":)") != std::string::npos);
+        EXPECT(grid->spec_str().find("false_lonlat") == std::string::npos);
+        std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(grid->spec_str()));
+        EXPECT(*from_spec == *grid);
+
+        // the false origin, whatever the x and y starts (here the point i = 1, j = 1, of 4 by 4 points)
+        std::unique_ptr<const Grid> around(GridFactory::make_from_string(
+            "{x: [-2500, 5000, 2500], y: [-2500, 5000, 2500], false_lonlat: [1.60491, 51.633816], " + projection +
+            "}"));
+        EXPECT(points_equal(around->point(5), origin));
+        EXPECT(points_equal(around->last_point(), grid->last_point()));
+
+        // either, of [x, y] or [lon, lat], and with a projection from (x, y)
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 2, 1], false_xy: [1, 1], false_lonlat: "
+                                                         "[1, 51], " +
+                                                         projection + "}")),
+                         exception::SpecError);
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 2, 1], false_xy: [1, 1, 1]}")),
+                         exception::SpecError);
+        EXPECT_THROWS_AS(G(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 2, 1], false_lonlat: [1, 51]}")),
+                         exception::SpecError);
+        EXPECT_THROWS_AS(
+            G(GridFactory::make_from_string(
+                "{x: [0, 2, 1], y: [0, 2, 1], false_lonlat: [1, 51], projection: {type: lcc, lat_1: 63.3}}")),
+            exception::SpecError);
+    }
 }
 
 

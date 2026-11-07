@@ -5,6 +5,8 @@
 #include "eckit/geo/area/library/GeoJSON.h"
 
 #include <ostream>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/Polygon.h"
@@ -22,7 +24,9 @@ namespace {
 
 
 ValueList list(const Value& j) {
-    ASSERT(j.isList());
+    if (!j.isList()) {
+        throw exception::AreaError("GeoJSON: list expected", Here());
+    }
     return j.as<ValueList>();
 }
 
@@ -34,11 +38,12 @@ polygon::Polygon polygon(const Value& j) {
     p.reserve(c.size());
 
     for (auto& l : c) {
-        auto lonlat = list(l);
-
-        ASSERT(lonlat.size() == 2);
-        ASSERT(lonlat[0].isDouble() || lonlat[0].isNumber());
-        ASSERT(lonlat[1].isDouble() || lonlat[1].isNumber());
+        // a position is [lon, lat], with an optional altitude (ignored)
+        auto lonlat  = list(l);
+        auto numeric = [](const Value& v) { return v.isDouble() || v.isNumber(); };
+        if (lonlat.size() < 2 || !numeric(lonlat[0]) || !numeric(lonlat[1])) {
+            throw exception::AreaError("GeoJSON: positions [lon, lat] expected", Here());
+        }
         p.emplace_back(lonlat[0].as<double>(), lonlat[1].as<double>());
     }
 
@@ -101,17 +106,40 @@ GeoJSON::GeoJSON(const PathName& file, const std::string& name) : GeoJSON(JSONPa
 
 
 GeoJSON::GeoJSON(const Value& json, const std::string& file, const std::string& name) : file_(file), name_(name) {
-    build_polygons(json, polygons_);
+    const auto features = json.isMap() && json["features"].isList();
+
+    // of a feature collection, an area per feature (none for other geometries), so the areas index as the features
+    if (features) {
+        for (const auto& feature : json["features"].as<ValueList>()) {
+            auto& area = polygons_.emplace_back();
+            if (feature.isMap()) {
+                std::vector<Polygons> found;
+                build_polygons(feature["geometry"], found);
+                for (auto& polygons : found) {
+                    area.insert(area.end(), polygons.begin(), polygons.end());
+                }
+            }
+        }
+    }
+    else {
+        build_polygons(json, polygons_);
+    }
 
     if (!name_.empty()) {
-        ASSERT(json.isMap() && json["features"].isList());
+        if (!features) {
+            throw exception::AreaError("GeoJSON: {features: [...]} expected, for areas by name", Here());
+        }
 
-        int _index = 0;
+        int index = 0;
         for (const auto& feature : json["features"].as<ValueList>()) {
-            ASSERT(feature.isMap() && feature["properties"].isMap() && feature["properties"][name].isString());
+            if (!(feature.isMap() && feature["properties"].isMap() && feature["properties"][name].isString())) {
+                throw exception::AreaError("GeoJSON: features with a property '" + name + "' expected", Here());
+            }
 
-            auto _name = feature["properties"][name].as<std::string>();
-            ASSERT(to_index.emplace(_name, _index++).second);
+            const auto area = feature["properties"][name].as<std::string>();
+            if (!to_index.emplace(area, index++).second) {
+                throw exception::AreaError("GeoJSON: area '" + area + "' named more than once", Here());
+            }
         }
     }
 }
@@ -132,14 +160,22 @@ GeoJSON* GeoJSON::make_from_json_string(const std::string& json, const std::stri
 
 
 Area* GeoJSON::make_area(size_t index) const {
+    if (index >= polygons_.size()) {
+        throw exception::AreaError("GeoJSON: area index " + std::to_string(index) + " beyond its " +
+                                       std::to_string(polygons_.size()) + " areas",
+                                   Here());
+    }
     return new area::Polygon(polygons_[index]);
 }
 
 
 Area* GeoJSON::make_area_from_name(const std::string& name) const {
-    ASSERT(!name_.empty() && !name.empty());
+    auto it = name_.empty() ? to_index.end() : to_index.find(name);
+    if (it == to_index.end()) {
+        throw exception::AreaError("GeoJSON: unknown area '" + name + "'", Here());
+    }
 
-    return make_area(to_index.at(name));
+    return make_area(static_cast<size_t>(it->second));
 }
 
 

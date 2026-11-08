@@ -17,6 +17,7 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
@@ -148,7 +149,8 @@ Grid::uid_type FESOM::calculate_uid() const {
 
 
 Grid::Spec* FESOM::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get_spec(str) : GridSpecByName::instance().get_spec(str, str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(util::to_lower(str))
+                       : GridSpecByName::instance().get_spec(str, str);
 }
 
 

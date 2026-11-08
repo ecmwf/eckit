@@ -4,8 +4,6 @@
 
 #include "eckit/geo/PointLonLatR.h"
 
-#include <cmath>
-
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 

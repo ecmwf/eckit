@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -65,6 +66,14 @@ std::pair<difference_type, difference_type> monotonic_crop(const std::vector<dou
 
 /// Values in reverse order
 std::vector<double> reverse(const std::vector<double>&);
+
+
+/// String in lowercase
+std::string to_lower(const std::string&);
+
+
+/// String in uppercase
+std::string to_upper(const std::string&);
 
 
 /// If the reduced classical Gaussian pl of Gaussian number N is tabulated

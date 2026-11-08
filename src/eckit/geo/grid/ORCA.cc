@@ -10,6 +10,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 
@@ -97,10 +98,11 @@ void ORCA::fill_spec(spec::Custom& custom) const {
     auto grid = name_ + "_" + arrangement_to_string(arrangement_);
     custom.set("grid", grid);
 
-    if (auto _uid = uid();
-        !GridSpecByName::has_name(grid) ||
-        std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
-        custom.set("uid", _uid);
+    // the uid, unless the name gives it
+    if (std::unique_ptr<const Spec> named(
+            GridSpecByName::has_name(grid) ? GridSpecByName::instance().match_spec(grid, grid) : nullptr);
+        !named || util::to_lower(named->get_string("uid")) != uid()) {
+        custom.set("uid", uid());
     }
 }
 

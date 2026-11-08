@@ -3,7 +3,6 @@
 
 
 #include <algorithm>
-#include <cctype>
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
@@ -18,6 +17,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -202,8 +202,7 @@ CASE("unstructured_ll: names, as given (not as patterns), and uids (in any case)
     // uids are hexadecimal, in any case
     std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats));
 
-    auto upper = a->uid();
-    std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) { return std::toupper(c); });
+    const auto upper = util::to_upper(a->uid());
     EXPECT(upper != a->uid());
 
     for (const auto& key : {"uid", "grid"}) {

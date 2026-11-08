@@ -5,8 +5,6 @@
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
 #include <algorithm>
-#include <cstddef>
-#include <string>
 #include <utility>
 
 #include "eckit/geo/Area.h"

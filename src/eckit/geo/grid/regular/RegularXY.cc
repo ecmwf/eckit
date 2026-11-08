@@ -12,7 +12,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/BoundingBoxXY.h"
 #include "eckit/geo/order/RegularScan.h"

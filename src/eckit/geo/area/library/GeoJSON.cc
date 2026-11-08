@@ -5,8 +5,6 @@
 #include "eckit/geo/area/library/GeoJSON.h"
 
 #include <ostream>
-#include <string>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/Polygon.h"

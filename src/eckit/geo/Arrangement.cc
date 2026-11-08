@@ -5,10 +5,10 @@
 #include "eckit/geo/Arrangement.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iterator>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo {
@@ -37,8 +37,7 @@ const Entry TABLE[]{
 
 
 Arrangement arrangement_from_string(const std::string& grid, const std::string& letter) {
-    std::string upper(letter);
-    std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) { return std::toupper(c); });
+    const auto upper = util::to_upper(letter);
 
     std::string expected;
     for (const auto& entry : TABLE) {

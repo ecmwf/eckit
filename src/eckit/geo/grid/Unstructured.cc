@@ -12,6 +12,7 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
@@ -45,9 +46,10 @@ Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vec
     Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name, BoundingBox* bbox, const Projection* p) :
+Unstructured::Unstructured(const uid_type& _uid, const std::string& name, BoundingBox* bbox, const Projection* p) :
     Grid(bbox, p) {
-    ASSERT(is_uid(uid));
+    ASSERT(is_uid(_uid));
+    const auto uid = util::to_lower(_uid);
     reset_uid(uid);
     name_ = name;
 
@@ -137,10 +139,11 @@ void Unstructured::fill_spec(spec::Custom& custom) const {
         auto grid = name_ + (name_.empty() || arrangement_.empty() ? "" : "_" + arrangement_);
         custom.set("grid", grid);
 
-        if (auto _uid = uid();
-            !GridSpecByName::has_name(grid) ||
-            std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
-            custom.set("uid", _uid);
+        // the uid, unless the name gives it
+        if (std::unique_ptr<const Spec> named(
+                GridSpecByName::has_name(grid) ? GridSpecByName::instance().match_spec(grid, grid) : nullptr);
+            !named || util::to_lower(named->get_string("uid")) != uid()) {
+            custom.set("uid", uid());
         }
         return;
     }

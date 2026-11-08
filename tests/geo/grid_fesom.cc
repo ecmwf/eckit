@@ -10,6 +10,7 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/unstructured/FESOM.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
@@ -49,6 +50,14 @@ CASE("spec") {
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid1 == *grid3);
     EXPECT(*grid1 == grid4);
+
+    // uids in any case
+    grid::unstructured::FESOM upper(util::to_upper(UID_N));
+    EXPECT(upper.uid() == UID_N);
+    EXPECT(*grid1 == upper);
+
+    std::unique_ptr<spec::Spec> upper_spec(grid::unstructured::FESOM::spec(util::to_upper(UID_N)));
+    EXPECT(upper_spec->get_string("uid") == UID_N);
 }
 
 

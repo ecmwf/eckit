@@ -8,6 +8,7 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/unstructured/ICON.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
@@ -44,6 +45,14 @@ CASE("spec") {
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid1 == *grid3);
     EXPECT(*grid1 == grid4);
+
+    // uids in any case
+    grid::unstructured::ICON upper(util::to_upper(UID));
+    EXPECT(upper.uid() == UID);
+    EXPECT(*grid1 == upper);
+
+    std::unique_ptr<spec::Spec> upper_spec(grid::unstructured::ICON::spec(util::to_upper(UID)));
+    EXPECT(upper_spec->get_string("uid") == UID);
 }
 
 

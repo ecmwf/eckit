@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"

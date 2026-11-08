@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <memory>
 #include <numeric>
-#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"

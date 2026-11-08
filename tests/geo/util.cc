@@ -157,6 +157,15 @@ CASE("eckit::geo::util::monotonic_crop") {
 }
 
 
+CASE("eckit::geo::util::to_lower, to_upper") {
+    EXPECT(util::to_lower("").empty());
+    EXPECT(util::to_upper("").empty());
+
+    EXPECT(util::to_lower("D5BDE4f5 aBc-1_Z.") == "d5bde4f5 abc-1_z.");
+    EXPECT(util::to_upper("d5bde4F5 AbC-1_z.") == "D5BDE4F5 ABC-1_Z.");
+}
+
+
 }  // namespace eckit::geo::test
 
 

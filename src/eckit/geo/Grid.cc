@@ -39,13 +39,6 @@ struct lock_tag;  // of this file's mutex
 using lock_type = util::lock_type<lock_tag>;
 
 
-/// Uids are case-insensitive (hexadecimal digits), and kept in lowercase
-std::string lowercase(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
-    return str;
-}
-
-
 /// Names are registered as regular expressions (as the grid name patterns), so a name is matched literally
 std::string literal_key(const std::string& name) {
     static const std::string SPECIAL{R"(\^$.|?*+()[]{})"};
@@ -67,7 +60,7 @@ spec::Custom* spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' without 'type'", Here());
     }
 
-    if (std::string _uid; spec.get("uid", _uid) && lowercase(_uid) != uid) {
+    if (std::string _uid; spec.get("uid", _uid) && util::to_lower(_uid) != uid) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' with uid '" + _uid + "'", Here());
     }
 
@@ -248,8 +241,7 @@ Grid::uid_type Grid::uid() const {
 
 
 Grid::uid_type Grid::calculate_uid() const {
-    auto id = MD5{spec_str()}.digest();
-    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
+    auto id = util::to_lower(MD5{spec_str()}.digest());
 
     ASSERT(is_uid(id));
     return id;
@@ -258,9 +250,9 @@ Grid::uid_type Grid::calculate_uid() const {
 
 void Grid::reset_uid(uid_type id) {
     ASSERT(is_uid(id) || id.empty());
-    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
 
-    uid_ = id;
+    // uids are case-insensitive (hexadecimal digits), and kept in lowercase
+    uid_ = util::to_lower(id);
 }
 
 
@@ -543,7 +535,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     ASSERT(cfg != nullptr);
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
-        uid = lowercase(uid);
+        uid = util::to_lower(uid);
         if (!GridSpecByUID::instance().exists(uid)) {
             throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
         }
@@ -647,13 +639,13 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
-    const auto uid = lowercase(key);
+    const auto uid = util::to_lower(key);
     regist(uid, new SpecByUID(spec_by_uid(uid, spec)));
 }
 
 
 void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
-    const auto uid = lowercase(key);
+    const auto uid = util::to_lower(key);
     generator_t::instance().replace(uid, new SpecByUID(spec_by_uid(uid, spec)));
 }
 

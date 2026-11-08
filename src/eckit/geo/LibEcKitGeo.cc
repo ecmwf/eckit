@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <regex>
 #include <sstream>
-#include <vector>
 
 #include "eckit/cache/DiskCache.h"
 #include "eckit/cache/LibEcKitCache.h"

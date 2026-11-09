@@ -24,7 +24,7 @@ namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Seconds a refused client has to send its request, before the refusal gives up on it
+/// microseconds a refused client has to send its request, before the refusal gives up on it
 static constexpr int refusalReadTimeoutUSec = 100;
 
 //----------------------------------------------------------------------------------------------------------------------

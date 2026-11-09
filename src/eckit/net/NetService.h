@@ -4,9 +4,9 @@
 /// @author Baudouin Raoult
 /// @date   Jun 96
 
-#ifndef eckit_NetService_h
-#define eckit_NetService_h
+#pragma once
 
+#include <cstring>
 #include <functional>
 #include <optional>
 
@@ -65,5 +65,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

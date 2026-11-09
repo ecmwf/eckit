@@ -29,9 +29,18 @@ private:
 
     virtual void serve(Stream&, std::istream&, std::ostream&) = 0;
 
+    /// Called instead of serve() when the connection cannot be served (e.g. the server is busy).
+    /// Override to report the reason to the client in a protocol-specific way. The default only logs.
+    virtual void refuse(Stream&, std::istream&, std::ostream&, const std::string& reason);
+
     void run() override;
 
+    void reject(const std::string& reason);
+
+    friend class NetService;
     friend class NetServiceProcessControler;
+    friend class NetServiceWorker;
+    friend class NetServiceChildWaiter;
 };
 
 

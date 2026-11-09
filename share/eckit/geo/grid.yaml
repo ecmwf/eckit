@@ -32,11 +32,11 @@ grid_names:
           x: [0, 2120000, 2500]
           y: [0, 2420000, 2500]
           false_lonlat: [1.60491, 51.633816]
-          projection: {type: lcc, lat_0: 63.3, lat_1: 63.3, lon_0: 15, figure: {R: 6371000}, reverse: true}
+          projection: {type: lcc, lat_0: 63.3, lat_1: 63.3, lon_0: 15, reverse: true}
 
     - meps-fmi:
           type: regular_xy
           x: [0, 2370000, 2500]
           y: [0, 2670000, 2500]
           false_lonlat: [0.278281, 50.319618]
-          projection: {type: lcc, lat_0: 63.3, lat_1: 63.3, lon_0: 15, figure: {R: 6371000}, reverse: true}
+          projection: {type: lcc, lat_0: 63.3, lat_1: 63.3, lon_0: 15, reverse: true}

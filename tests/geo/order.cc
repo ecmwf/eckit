@@ -134,6 +134,12 @@ CASE("healpix") {
 
         EXPECT_THROWS_AS(HEALPix("?"), exception::OrderError);
 
+        // nested: Nside a power of 2, up to 2^13 (checked before any int arithmetic)
+        for (size_t Nside : {size_t{0}, size_t{3}, size_t{1} << 14, size_t{1} << 40}) {
+            EXPECT_THROWS_AS(HEALPix::Renumber{Nside}, exception::OrderError);
+        }
+        EXPECT_NO_THROW(HEALPix::Renumber{size_t{1} << 13});
+
         for (size_t Nside : {1, 2, 3}) {
             const auto size = 12 * Nside * Nside;
 

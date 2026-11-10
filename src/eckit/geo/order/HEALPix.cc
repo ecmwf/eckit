@@ -4,7 +4,6 @@
 
 #include "eckit/geo/order/HEALPix.h"
 
-#include <bitset>
 #include <cmath>
 #include <cstdint>
 #include <numeric>
@@ -76,8 +75,11 @@ inline int div_03(int a, int b) {
 }
 
 
-inline bool is_power_of_2(int n) {
-    return std::bitset<sizeof(int) * 8>(n).count() == 1;
+int valid_nested_nside(size_t Nside) {
+    if (Nside == 0 || Nside > (1U << 13) || (Nside & (Nside - 1)) != 0) {
+        throw exception::OrderError("HEALPix: nested order of Nside a power of 2, up to 2^13, expected", Here());
+    }
+    return static_cast<int>(Nside);
 }
 
 
@@ -101,15 +103,10 @@ HEALPix::HEALPix(const Spec& spec) : HEALPix(spec.get_string("order", order_defa
 
 
 HEALPix::Renumber::Renumber(size_t Nside) :
-    Nside_(static_cast<int>(Nside)),
+    Nside_(valid_nested_nside(Nside)),
     Npix_(static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside))),
     Ncap_((Nside_ * (Nside_ - 1)) << 1),
-    k_(static_cast<int>(std::log2(Nside_))) {
-    // (int arithmetic, see Nside_)
-    if (!is_power_of_2(Nside_) || Nside > (1U << 13)) {
-        throw exception::OrderError("HEALPix: nested order of Nside a power of 2, up to 2^13, expected", Here());
-    }
-}
+    k_(static_cast<int>(std::log2(Nside_))) {}
 
 
 size_t HEALPix::Renumber::ring_to_nest(size_t index) const {

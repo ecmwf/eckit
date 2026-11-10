@@ -32,10 +32,6 @@ static double since(Clock::time_point start) {
     return std::chrono::duration<double>(Clock::now() - start).count();
 }
 
-static int testPort(int offset) {
-    return 20000 + (::getpid() % 2000) * 10 + offset;
-}
-
 // Reads a number of seconds, replies with its pid, sleeps, then replies "done".
 // When refused, replies -1 instead of a pid.
 
@@ -76,10 +72,14 @@ private:
     bool preferToRunAsProcess() const override { return process_; }
 };
 
-static void startService(int port, ConcurrencyLimiter& limiter, bool process) {
-    ThreadControler t(new SleepService(port, limiter, process));
+// Listens on a free port chosen by the kernel. A fixed port may already be in use (e.g. as the ephemeral port of
+// some other connection), especially when tests run in parallel.
+static int startService(ConcurrencyLimiter& limiter, bool process) {
+    auto* service = new SleepService(0, limiter, process);
+    int port      = service->port();  // Binds and listens, so clients can connect before the service accepts
+    ThreadControler t(service);
     t.start();
-    ::usleep(200000);
+    return port;
 }
 
 struct Result {
@@ -126,12 +126,12 @@ static void waitUntilIdle(const ConcurrencyLimiter& limiter) {
     }
 }
 
-static void checkLimits(int port, bool process) {
+static void checkLimits(bool process) {
     // The service is never stopped, so the limiter must outlive the test
     static ConcurrencyLimiter threadLimiter("thread", 2);
     static ConcurrencyLimiter processLimiter("process", 2);
     ConcurrencyLimiter& limiter = process ? processLimiter : threadLimiter;
-    startService(port, limiter, process);
+    int port                    = startService(limiter, process);
 
     // Two are served concurrently, the third is refused immediately
     std::vector<Result> r = parallelRequests(port, {2, 2, 2});
@@ -166,17 +166,16 @@ static void checkLimits(int port, bool process) {
 }
 
 CASE("NetService limits concurrent connections served in threads") {
-    checkLimits(testPort(0), false);
+    checkLimits(false);
 }
 
 CASE("NetService limits concurrent connections served in processes") {
-    checkLimits(testPort(1), true);
+    checkLimits(true);
 }
 
 CASE("The slot of a killed child process is released") {
-    int port = testPort(2);
     static ConcurrencyLimiter limiter("kill", 1);
-    startService(port, limiter, true);
+    int port = startService(limiter, true);
 
     TCPClient client;
     TCPSocket& socket = client.connect("localhost", port);

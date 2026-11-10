@@ -70,7 +70,7 @@ void Search::build(const std::string& uid, size_t size, const Spec& spec, const 
     kdtree       = geo::search::KDTreeFactory::build(LibEcKitGeo::searchCacheLoader(), uid, size);
 
     Trace trace("Search: build or load " + uid);
-    if (!kdtree->build(fill, spec.get_bool("search-fast-build", true))) {
+    if (!kdtree->build(fill, spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild()))) {
         Log::debug() << "Search: loaded " << *kdtree << std::endl;
     }
 }

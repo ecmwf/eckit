@@ -31,7 +31,8 @@ namespace eckit::geo {
  *
  * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius, knn_or_same_radius), search-k,
  * search-radius, search-tolerance (metres, default 1).
- * Spec, of the k-d tree: search-fast-build; its loader is of the library (LibEcKitGeo::searchCacheLoader).
+ * Spec, of the k-d tree: search-fast-build (default LibEcKitGeo::searchFastBuild); its loader is of the library
+ * (LibEcKitGeo::searchCacheLoader).
  */
 class Search {
 public:

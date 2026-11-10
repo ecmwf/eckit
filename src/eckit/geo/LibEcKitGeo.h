@@ -69,6 +69,10 @@ public:
     /// k-d tree loader (eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER, default mapped-file)
     static std::string searchCacheLoader();
 
+    /// k-d tree fast build, if not in the search spec (eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD,
+    /// default true)
+    static bool searchFastBuild();
+
     /**
      * If shared memory uses huge pages (where reserved), and if its size is rounded up to the huge page size
      * (eckit-geo-shared-memory-[round-]hugepages, default false)

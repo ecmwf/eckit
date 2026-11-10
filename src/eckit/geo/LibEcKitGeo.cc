@@ -34,9 +34,11 @@ static std::vector<PathName> paths(const std::string& rsrc, const std::string& r
     auto vs = StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default));
     std::vector<PathName> ps(vs.begin(), vs.end());
 
-    // as cached, if found
-    for (const auto& root : LibEcKitGeo::cacheRoots().paths()) {
-        ps.emplace_back(root / path_in_cache);
+    // as cached, if found, in the reverse order of the cache roots: later files replace earlier definitions, so the
+    // first root has precedence (as it is searched first)
+    const auto& roots = LibEcKitGeo::cacheRoots().paths();
+    for (auto root = roots.rbegin(); root != roots.rend(); ++root) {
+        ps.emplace_back(*root / path_in_cache);
     }
 
     return ps;

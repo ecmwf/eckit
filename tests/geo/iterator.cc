@@ -158,13 +158,17 @@ CASE("iterator: of different grids") {
 
 
 CASE("iterator: a reduced grid with rows without points") {
-    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O32, area: [60, -10, 30, 40]}"));
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        std::unique_ptr<const Grid> grid(
+            GridFactory::make_from_string("{grid: O32, area: [60, -10, 30, 40], order: " + order + "}"));
+        EXPECT(grid->order() == order);
 
-    size_t i = 0;
-    for (const auto& point : *grid) {
-        EXPECT(points_equal(point, grid->point(i++)));
+        size_t i = 0;
+        for (const auto& point : *grid) {
+            EXPECT(points_equal(point, grid->point(i++)));
+        }
+        EXPECT(i == grid->size());
     }
-    EXPECT(i == grid->size());
 }
 
 

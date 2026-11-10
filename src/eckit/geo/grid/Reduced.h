@@ -83,12 +83,10 @@ private:
     mutable std::vector<size_t> nxacc_;
     mutable util::once_flag nxacc_once_;
 
-    mutable renumber_type canonical_;  ///< index in the default order of each point, if not in the default order
-    mutable util::once_flag canonical_once_;
-
     // -- Methods
 
-    const renumber_type& canonical() const;
+    /// Index in the default order, and its row j (a guess on input)
+    size_t canonical(size_t index, size_t& j) const;
 };
 
 

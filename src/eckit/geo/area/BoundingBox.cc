@@ -209,10 +209,7 @@ private:
 
     // 0. setup
 
-    // use central longitude as absolute reference (keep points within +-180 longitude range)
     const PointXY centre_xy{(min.X() + max.X()) / 2., (min.Y() + max.Y()) / 2.};
-    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> PointXY
-    const auto centre_lon = centre_ll.lon();
 
     const std::string derivative_type = "central";
     const double h_ll                 = precision_ll;
@@ -250,6 +247,10 @@ private:
         !std::all_of(std::begin(segments), std::end(segments), [&](const auto& s) { return in_domain(s.first); })) {
         return std::make_unique<BoundingBox>();
     }
+
+    // use central longitude as absolute reference (keep points within +-180 longitude range)
+    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> PointXY
+    const auto centre_lon = centre_ll.lon();
 
     BoundLonLat bounds(centre_ll, centre_ll);
     for (const auto& [A, dummy] : segments) {

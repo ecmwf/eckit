@@ -627,7 +627,6 @@ jobs:
     - validate
     - resolve
     - atlas
-    - metkit
     uses: ecmwf/mir/.github/workflows/cross-repo-trigger.yml@develop
     with:
       from-repo: ${{ github.repository }}

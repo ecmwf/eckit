@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ecbuild_add_test( TARGET  eckit_test_net_netservice_limiter
-                  ENABLED OFF
                   SOURCES test_netservice_limiter.cc
                   LIBS    eckit
 )

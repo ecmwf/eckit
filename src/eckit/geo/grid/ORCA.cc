@@ -4,7 +4,6 @@
 
 #include "eckit/geo/grid/ORCA.h"
 
-#include <memory>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
@@ -24,7 +23,7 @@ namespace eckit::geo::grid {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Grid(bounding_box_from_spec(spec), ProjectionFactory::build(spec)),
+    Grid(bounding_box_from_spec(spec), projection_from_spec(spec)),
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string("ORCA", spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));
@@ -67,7 +66,7 @@ Point ORCA::point(size_t index) const {
 }
 
 
-Grid::Iterator::State* ORCA::make_state() const {
+std::unique_ptr<Grid::Iterator::State> ORCA::make_state() const {
     return record().make_state();
 }
 

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -34,7 +35,8 @@ public:
     // -- Constructors
 
     explicit RegularXY(const Spec&);
-    RegularXY(const RangeXY& x, const RangeXY& y, const Projection* = nullptr, const PointXY& false_xy = {});
+    RegularXY(const RangeXY& x, const RangeXY& y, std::unique_ptr<const Projection> = nullptr,
+              const PointXY& false_xy = {});
 
     // -- Overridden methods
 
@@ -46,6 +48,11 @@ public:
     const Range& y() const override { return y_; }
 
 private:
+
+    // -- Constructors
+
+    RegularXY(const RangeXY& x, const RangeXY& y, bool projected, std::unique_ptr<const Projection>&&,
+              const PointXY& false_xy);
 
     // -- Members
 

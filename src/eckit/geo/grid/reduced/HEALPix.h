@@ -25,8 +25,8 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), BoundingBox* = nullptr,
-                     const Projection* = nullptr);
+    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), std::unique_ptr<BoundingBox> = nullptr,
+                     std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
@@ -78,7 +78,7 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-    [[nodiscard]] Iterator::State* make_state() const override;
+    std::unique_ptr<Iterator::State> make_state() const override;
     const std::string& type() const override;
 };
 

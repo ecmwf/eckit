@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Range.h"
 #include "eckit/types/Fraction.h"
@@ -21,6 +22,8 @@ public:
 
     struct Implementation {
         Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref);
+
+        Implementation(const Implementation& other, Fraction a, Fraction b, size_t size);
 
         Implementation(const Implementation&) = default;
         Implementation(Implementation&&)      = default;
@@ -72,7 +75,7 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(Implementation*);
+    explicit Regular(std::unique_ptr<Implementation>);
 
 private:
 
@@ -93,7 +96,7 @@ struct RegularLatitude : Regular {
 
 private:
 
-    explicit RegularLatitude(Implementation* impl) : Regular(impl) {}
+    explicit RegularLatitude(std::unique_ptr<Implementation> impl) : Regular(std::move(impl)) {}
 };
 
 
@@ -111,7 +114,7 @@ struct RegularLongitude : Regular {
 
 private:
 
-    explicit RegularLongitude(Implementation* impl) : Regular(impl) {}
+    explicit RegularLongitude(std::unique_ptr<Implementation> impl) : Regular(std::move(impl)) {}
 };
 
 

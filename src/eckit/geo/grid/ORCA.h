@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -69,7 +70,7 @@ private:
 
     // -- Overridden methods
 
-    [[nodiscard]] Iterator::State* make_state() const override;
+    std::unique_ptr<Iterator::State> make_state() const override;
 
     // -- Members
 

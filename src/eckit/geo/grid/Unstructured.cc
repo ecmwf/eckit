@@ -4,7 +4,6 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
-#include <memory>
 #include <utility>
 
 #include "eckit/cache/FileCache.h"
@@ -38,7 +37,7 @@ Unstructured::Unstructured(const Spec& spec) :
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
                  spec.get_string("name", spec.get_string("cache_as", "")), bounding_box_from_spec(spec),
-                 ProjectionFactory::build(spec)) {}
+                 projection_from_spec(spec)) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
@@ -46,8 +45,9 @@ Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vec
     Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
 
 
-Unstructured::Unstructured(const uid_type& _uid, const std::string& name, BoundingBox* bbox, const Projection* p) :
-    Grid(bbox, p) {
+Unstructured::Unstructured(const uid_type& _uid, const std::string& name, std::unique_ptr<BoundingBox> bbox,
+                           std::unique_ptr<const Projection> p) :
+    Grid(std::move(bbox), std::move(p)) {
     ASSERT(is_uid(_uid));
     const auto uid = util::to_lower(_uid);
     reset_uid(uid);
@@ -82,8 +82,8 @@ Unstructured::Unstructured(const uid_type& _uid, const std::string& name, Boundi
 
 
 Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement,
-                           BoundingBox* bbox, const Projection* p) :
-    Grid(bbox, p), name_(name), arrangement_(arrangement) {
+                           std::unique_ptr<BoundingBox> bbox, std::unique_ptr<const Projection> p) :
+    Grid(std::move(bbox), std::move(p)), name_(name), arrangement_(arrangement) {
     reset_uid(uid);
 }
 
@@ -98,7 +98,7 @@ Point Unstructured::point(size_t index) const {
 }
 
 
-Grid::Iterator::State* Unstructured::make_state() const {
+std::unique_ptr<Grid::Iterator::State> Unstructured::make_state() const {
     return record().make_state();
 }
 

@@ -7,6 +7,7 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <utility>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Area.h"
@@ -45,7 +46,7 @@ void Area::load(const PathName& path) {
     ASSERT(custom != nullptr);
 
     struct SpecByNameGenerator final : AreaSpecByName::generator_t {
-        explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
+        explicit SpecByNameGenerator(std::unique_ptr<spec::Custom> spec) : spec_(std::move(spec)) { ASSERT(spec_); }
         geo::Area::Spec* spec(AreaSpecByName::generator_t::arg1_t) const override {
             return new spec::Custom(spec_->container());
         }
@@ -88,7 +89,8 @@ void Area::load(const PathName& path) {
                     ASSERT(named.size() == 1);
                     AreaSpecByName::instance().regist(
                         named.begin()->first.as<std::string>(),
-                        new SpecByNameGenerator(spec::Custom::make_from_value(named.begin()->second)));
+                        std::make_unique<SpecByNameGenerator>(
+                            std::unique_ptr<spec::Custom>(spec::Custom::make_from_value(named.begin()->second))));
                 }
                 continue;
             }

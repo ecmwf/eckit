@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -59,7 +60,7 @@ public:
     Point point(size_t index) const { return PointLonLat{lon_.at(index), lat_.at(index)}; }
 
     /// Iterating over these coordinates, rather than getting them by uid on each point
-    [[nodiscard]] geo::Grid::Iterator::State* make_state() const;
+    std::unique_ptr<geo::Grid::Iterator::State> make_state() const;
 
 private:
 

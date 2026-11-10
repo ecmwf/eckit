@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "eckit/geo/Grid.h"
@@ -43,12 +44,12 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(order::RegularScan scan = scan_default(), const Projection* = nullptr);
+    explicit Regular(order::RegularScan scan = scan_default(), std::unique_ptr<const Projection> = nullptr);
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-    [[nodiscard]] Iterator::State* make_state() const override;
+    std::unique_ptr<Iterator::State> make_state() const override;
 
     // -- Methods
 

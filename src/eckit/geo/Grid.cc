@@ -55,7 +55,7 @@ std::string literal_key(const std::string& name) {
 
 
 /// Grid spec registered by uid, with 'type' and 'uid' (the key)
-spec::Custom* spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
+std::unique_ptr<spec::Custom> spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
     if (!spec.has("type")) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' without 'type'", Here());
     }
@@ -64,24 +64,24 @@ spec::Custom* spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' with uid '" + _uid + "'", Here());
     }
 
-    auto* custom = new spec::Custom(spec.container());
+    auto custom = std::make_unique<spec::Custom>(spec.container());
     custom->set("uid", uid);
     return custom;
 }
 
 
 /// Grid spec registered by name, with 'type'
-spec::Custom* spec_by_name(const std::string& name, const spec::Custom& spec) {
+std::unique_ptr<spec::Custom> spec_by_name(const std::string& name, const spec::Custom& spec) {
     if (!spec.has("type")) {
         throw exception::SpecError("Grid: spec registered by name '" + name + "' without 'type'", Here());
     }
 
-    return new spec::Custom(spec.container());
+    return std::make_unique<spec::Custom>(spec.container());
 }
 
 
 struct SpecByUID final : GridSpecByUID::concrete_generator_t {
-    explicit SpecByUID(spec::Custom* spec) : spec_(spec) {}
+    explicit SpecByUID(std::unique_ptr<const spec::Custom> spec) : spec_(std::move(spec)) {}
     spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
     bool match(const spec::Custom& other) const override { return other == *spec_; }
 
@@ -92,7 +92,7 @@ private:
 
 
 struct SpecByName final : GridSpecByName::concrete_generator_t {
-    explicit SpecByName(spec::Custom* spec) : spec_(spec) {}
+    explicit SpecByName(std::unique_ptr<const spec::Custom> spec) : spec_(std::move(spec)) {}
     spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
     bool match(const spec::Custom& other) const override { return other == *spec_; }
 
@@ -131,7 +131,7 @@ Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
         grid_  = other.grid_;
         index_ = other.index_;
         size_  = other.size_;
-        state_.reset(other.state_ ? other.state_->clone() : nullptr);
+        state_ = other.state_ ? other.state_->clone() : nullptr;
     }
     return *this;
 }
@@ -148,8 +148,10 @@ bool Grid::Iterator::operator+=(difference_type d) {
 }
 
 
-Grid::Grid(BoundingBox* bbox, const Projection* proj) :
-    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()), once_(new Once) {}
+Grid::Grid(std::unique_ptr<BoundingBox> bbox, std::unique_ptr<const Projection> proj) :
+    bbox_(std::move(bbox)),
+    projection_(proj ? std::move(proj) : std::unique_ptr<const Projection>(ProjectionFactory::make_default())),
+    once_(new Once) {}
 
 
 Grid::~Grid() = default;
@@ -487,17 +489,27 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
-Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
+std::unique_ptr<Grid::BoundingBox> Grid::bounding_box_from_spec(const Spec& spec) {
     // NOTE: 'bounding_box' is how a grid catalogue entry spells its own 'area'; loose north/west/south/east keys are
     // not considered, they can describe the first/last grid point instead
     if (std::vector<double> bbox; spec.get("bounding_box", bbox)) {
         if (bbox.size() != 4) {
             throw exception::SpecError("Grid: {bounding_box: [north, west, south, east]} expected", Here());
         }
-        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
+        return std::make_unique<BoundingBox>(bbox[0], bbox[1], bbox[2], bbox[3]);
     }
 
-    return spec.has("area") ? BoundingBox::make_from_spec(spec).release() : nullptr;
+    return spec.has("area") ? BoundingBox::make_from_spec(spec) : nullptr;
+}
+
+
+std::unique_ptr<const Projection> Grid::projection_from_spec(const Spec& spec) {
+    return std::unique_ptr<const Projection>(ProjectionFactory::build(spec));
+}
+
+
+std::unique_ptr<const Projection> Grid::projection_copy() const {
+    return projection().is_default() ? nullptr : projection_from_spec(projection().spec());
 }
 
 
@@ -531,8 +543,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     lock_type lock;
     share::Grid::instance();  // ensure load of supporting files
 
-    auto* cfg = new spec::Layered(spec);
-    ASSERT(cfg != nullptr);
+    auto cfg = std::make_unique<spec::Layered>(spec);
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
         uid = util::to_lower(uid);
@@ -595,7 +606,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
         }
     }
 
-    return cfg;
+    return cfg.release();
 }
 
 
@@ -618,12 +629,12 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 
 
 void GridSpecByName::regist(const key_t& name, const spec::Custom& spec) {
-    regist(literal_key(name), new SpecByName(spec_by_name(name, spec)));
+    regist(literal_key(name), std::make_unique<SpecByName>(spec_by_name(name, spec)));
 }
 
 
 void GridSpecByName::replace(const key_t& name, const spec::Custom& spec) {
-    generator_t::instance().replace(literal_key(name), new SpecByName(spec_by_name(name, spec)));
+    generator_t::instance().replace(literal_key(name), std::make_unique<SpecByName>(spec_by_name(name, spec)));
 }
 
 
@@ -640,13 +651,13 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
     const auto uid = util::to_lower(key);
-    regist(uid, new SpecByUID(spec_by_uid(uid, spec)));
+    regist(uid, std::make_unique<SpecByUID>(spec_by_uid(uid, spec)));
 }
 
 
 void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
     const auto uid = util::to_lower(key);
-    generator_t::instance().replace(uid, new SpecByUID(spec_by_uid(uid, spec)));
+    generator_t::instance().replace(uid, std::make_unique<SpecByUID>(spec_by_uid(uid, spec)));
 }
 
 

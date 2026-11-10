@@ -75,12 +75,11 @@ std::optional<std::pair<Fraction, Fraction>> within(Fraction inc, const Fraction
 
 struct Plain final : Regular::Implementation {
     using Implementation::Implementation;
-    explicit Plain(const Implementation& other) : Implementation(other) {}
 };
 
 
 struct Cropped final : Regular {
-    explicit Cropped(Implementation* impl) : Regular(impl) {}
+    explicit Cropped(std::unique_ptr<Implementation> impl) : Regular(std::move(impl)) {}
 };
 
 
@@ -93,12 +92,9 @@ struct RegularLatitude final : Regular::Implementation {
                               : new range::RegularLatitude(x->increment(), x->af(), x->bf(), x->af());
     }
 
-    static RegularLatitude* make_empty(Fraction a, Fraction b) {
-        auto* impl(new RegularLatitude(b - a, a, b, a));
-        ASSERT(impl != nullptr);
-
-        impl->size_ = 0;
-        return impl;
+    static std::unique_ptr<RegularLatitude> make_empty(Fraction a, Fraction b) {
+        const RegularLatitude range(b - a, a, b, a);
+        return std::make_unique<RegularLatitude>(range, range.a_, range.b_, 0);
     }
 
     // at the pole, or past it by the next value (not at it, which would be a value of its own)
@@ -117,6 +113,9 @@ struct RegularLatitude final : Regular::Implementation {
 
 
 struct RegularLongitude final : Regular::Implementation {
+    RegularLongitude(const RegularLongitude& other, Fraction a, Fraction b, size_t size) :
+        Implementation(other, a, b, size), periodic_(other.periodic_) {}
+
     RegularLongitude(Fraction inc, Fraction a, Fraction b, Fraction ref) : Implementation(inc, a, b, ref) {
         // (a single value has no increment, so isn't periodic)
         if (size_ > 1 && Fraction::abs(b_ - a_ + inc_) >= PERIOD) {
@@ -156,12 +155,9 @@ struct RegularLongitude final : Regular::Implementation {
                               : new range::RegularLongitude(x->increment(), x->af(), x->bf(), x->af());
     }
 
-    static RegularLongitude* make_empty(Fraction a, Fraction b) {
-        auto* impl(new RegularLongitude(b - a, a, b, a));
-        ASSERT(impl != nullptr);
-
-        impl->size_ = 0;
-        return impl;
+    static std::unique_ptr<RegularLongitude> make_empty(Fraction a, Fraction b) {
+        const RegularLongitude range(b - a, a, b, a);
+        return std::make_unique<RegularLongitude>(range, range.a_, range.b_, 0);
     }
 
     bool periodic() const override { return periodic_; }
@@ -207,17 +203,21 @@ Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fr
 }
 
 
+Regular::Implementation::Implementation(const Implementation& other, Fraction a, Fraction b, size_t size) :
+    Implementation(other) {
+    a_    = a;
+    b_    = b;
+    size_ = size;
+}
+
+
 Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_b) const {
     // a single value (without increment), as is if within the crop
     if (size_ <= 1) {
         const double value = a_;
-
-        auto* single = new detail::Plain{*this};
-        if (size_ == 1 && !(types::is_approximately_lesser_or_equal(std::min(crop_a, crop_b), value) &&
-                            types::is_approximately_lesser_or_equal(value, std::max(crop_a, crop_b)))) {
-            single->size_ = 0;
-        }
-        return new detail::Cropped(single);
+        const bool outside = size_ == 1 && !(types::is_approximately_lesser_or_equal(std::min(crop_a, crop_b), value) &&
+                                             types::is_approximately_lesser_or_equal(value, std::max(crop_a, crop_b)));
+        return new detail::Cropped(std::make_unique<detail::Plain>(*this, a_, b_, outside ? 0 : size_));
     }
 
     const bool up = a_ <= b_;
@@ -229,14 +229,11 @@ Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_
 
     if (auto w = detail::within(inc_, shift_, lo, hi)) {
         const auto [first, last] = *w;
-        return new detail::Cropped(new detail::Plain{inc_, up ? first : last, up ? last : first, a_});
+        return new detail::Cropped(std::make_unique<detail::Plain>(inc_, up ? first : last, up ? last : first, a_));
     }
 
-    auto* none  = new detail::Plain{*this};
-    none->a_    = up ? Fraction{lo} : Fraction{hi};
-    none->b_    = up ? Fraction{hi} : Fraction{lo};
-    none->size_ = 0;
-    return new detail::Cropped(none);
+    return new detail::Cropped(
+        std::make_unique<detail::Plain>(*this, up ? Fraction{lo} : Fraction{hi}, up ? Fraction{hi} : Fraction{lo}, 0));
 }
 
 
@@ -272,13 +269,13 @@ const std::vector<double>& Regular::values() const {
 }
 
 
-Regular::Regular(Implementation* impl) : impl_(impl) {
+Regular::Regular(std::unique_ptr<Implementation> impl) : impl_(std::move(impl)) {
     ASSERT(impl_);
 }
 
 
 RegularLatitude::RegularLatitude(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
-    Regular(new detail::RegularLatitude(inc, _a, _b, ref)) {
+    Regular(std::make_unique<detail::RegularLatitude>(inc, _a, _b, ref)) {
     if (size() > 0 && !(SOUTH_POLE.lat() <= min() && min() <= max() && max() <= NORTH_POLE.lat())) {
         throw exception::RangeError("RegularLatitude: latitudes in [-90, 90] expected", Here());
     }
@@ -298,7 +295,7 @@ RegularLatitude* RegularLatitude::make_cropped_range(double crop_a, double crop_
 
 
 RegularLongitude::RegularLongitude(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
-    Regular(new detail::RegularLongitude(inc, _a, _b, ref)) {}
+    Regular(std::make_unique<detail::RegularLongitude>(inc, _a, _b, ref)) {}
 
 
 RegularLongitude* RegularLongitude::make_empty_range(Fraction a, Fraction b) {

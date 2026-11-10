@@ -258,6 +258,9 @@ def test_grid_search_spec():
     with pytest.raises(RuntimeError):
         grid.search(search="knn")  # k is required
 
+    with pytest.raises(ValueError):
+        grid.search(loader="memory")  # of the library
+
 
 def test_grid_search_footprint():
     grid = Grid(grid=[30, 30])

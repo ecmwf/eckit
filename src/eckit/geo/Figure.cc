@@ -80,11 +80,9 @@ double Figure::area(const area::BoundingBox& bbox) const {
 
 
 spec::Custom* Figure::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
-
+    auto custom = std::make_unique<spec::Custom>();
     fill_spec(*custom);
-    return custom;
+    return custom.release();
 }
 
 

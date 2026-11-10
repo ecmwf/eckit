@@ -139,11 +139,12 @@ struct Derivate {
     void operator=(const Derivate&) = delete;
     void operator=(Derivate&&)      = delete;
 
-    [[nodiscard]] static Derivate* make(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
-                                        double refLongitude = 0.) {
+    static std::unique_ptr<const Derivate> make(const std::string& type, const Projection& p, PointXY A, PointXY B,
+                                                double h, double refLongitude = 0.) {
+        // a segment shorter than h: a derivative of constant sign, so no extremum is searched
         struct Degenerate final : Derivate {
             using Derivate::Derivate;
-            PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
+            PointLonLat d(PointXY) const override { return {1., 1.}; }
         };
 
         struct Forwards final : Derivate {
@@ -166,19 +167,19 @@ struct Derivate {
         ASSERT(0. < h);
 
         if (A.distance2(B) < h * h) {
-            return new Degenerate(p, A, B, h, refLongitude);
+            return std::make_unique<Degenerate>(p, A, B, h, refLongitude);
         }
 
         if (type == "forwards") {
-            return new Forwards(p, A, B, h, refLongitude);
+            return std::make_unique<Forwards>(p, A, B, h, refLongitude);
         }
 
         if (type == "backwards") {
-            return new Backwards(p, A, B, h, refLongitude);
+            return std::make_unique<Backwards>(p, A, B, h, refLongitude);
         }
 
         if (type == "central") {
-            return new Central(p, A, B, h, refLongitude);
+            return std::make_unique<Central>(p, A, B, h, refLongitude);
         }
 
         throw BadValue("Derivate: unknown type '" + type + "', choices are: forwards, backwards, central", Here());
@@ -272,8 +273,7 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.includesNorthPole() || !bounds.includesSouthPole()) {
-            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
-            ASSERT(derivate);
+            const auto derivate = Derivate::make(derivative_type, projection, A, B, h, centre_lon);
 
             double dAdy = derivate->d(A).lat();
             double dBdy = derivate->d(B).lat();
@@ -308,8 +308,7 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.crossesDateLine()) {
-            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
-            ASSERT(derivate);
+            const auto derivate = Derivate::make(derivative_type, projection, A, B, h, centre_lon);
 
             double dAdx = derivate->d(A).lon();
             double dBdx = derivate->d(B).lon();

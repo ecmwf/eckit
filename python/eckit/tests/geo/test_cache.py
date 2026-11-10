@@ -3,11 +3,12 @@
 
 
 import os
+import subprocess
+import sys
 
 from eckit.geo import Grid
 from eckit.geo import cache
 from eckit.geo import cache_purge
-from eckit.geo import cache_rmdir
 
 
 def is_usage(usage) -> bool:
@@ -80,19 +81,33 @@ def test_cache_report_follows_use():
 
 def test_cache_purge():
     grid = Grid(grid="O32")
-    grid.to_latlons()  # cached (e.g. Gaussian latitudes)
+    latlons = grid.to_latlons()  # cached (e.g. Gaussian latitudes)
+    search = grid.search()
+    nearest = search.search_nn((10, 20))
     assert cache()["memory"]["footprint"]["process"] > 0
 
     cache_purge()
     assert cache()["memory"]["search"]["size"] == 0
     assert cache()["memory"]["crop"]["size"] == 0
 
+    # in use, still valid
+    assert grid.to_latlons() == latlons
+    assert search.search_nn((10, 20)) == nearest
 
-def test_cache_rmdir():
-    Grid(grid=[30, 30]).search()
-    root = cache()["disk"]["control"]["paths"]["writable"][0]
-    assert os.path.isdir(root)
 
-    cache_rmdir()
-    assert not os.path.exists(root)
-    assert cache()["disk"]["search"]["size"] == 0
+def test_cache_rmdir(tmp_path):
+    # in a process of its own, not to remove the cache of the other tests
+    code = """
+import os
+from eckit.geo import Grid, cache, cache_rmdir
+
+Grid(grid=[30, 30]).search()
+root = cache()["disk"]["control"]["paths"]["writable"][0]
+assert os.path.isdir(root)
+
+cache_rmdir()
+assert not os.path.exists(root)
+assert cache()["disk"]["search"]["size"] == 0
+"""
+    env = dict(os.environ, ECKIT_GEO_CACHE_PATH=str(tmp_path / "cache"))
+    subprocess.run([sys.executable, "-c", code], env=env, check=True)

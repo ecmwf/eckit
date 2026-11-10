@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # the cache of each test is written to a directory of its own (tests don't share, or remove, each other's cache files),
-# before the seeded cache (only read, e.g. downloads); the cache settings are the defaults, whatever the environment
+# before the seeded cache (only read, e.g. downloads), and removed after the tests; the cache settings are the
+# defaults, whatever the environment, but k-d trees are in memory, unless testing the loaders or the cache files
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
 set(eckit_geo_test_cache_seeds "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
@@ -12,7 +13,8 @@ set(eckit_geo_test_environment
     "ECKIT_GEO_CACHE_CROP_POLICY=lru"
     "ECKIT_GEO_CACHE_SEARCH_CAPACITY=${eckit_GEO_CACHE_SEARCH_CAPACITY}"
     "ECKIT_GEO_CACHE_SEARCH_POLICY=lru"
-    "ECKIT_GEO_CACHE_THROW_ON_MISS=0")
+    "ECKIT_GEO_CACHE_THROW_ON_MISS=0"
+    "ECKIT_GEO_SEARCH_LOADER=memory")
 
 function(eckit_geo_add_test _source_we)
     cmake_parse_arguments(_p "" "" "LIBS;ENVIRONMENT" ${ARGN})
@@ -22,14 +24,17 @@ function(eckit_geo_add_test _source_we)
         LIBS        eckit_geo ${_p_LIBS}
         ENVIRONMENT ${eckit_geo_test_environment}
                     "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/${_source_we}:${eckit_geo_test_cache_seeds}"
-                    "ECKIT_GEO_SEARCH_LOADER=mapped-file" ${_p_ENVIRONMENT}
+                    ${_p_ENVIRONMENT}
         ${_p_UNPARSED_ARGUMENTS} )
+
+    if(TEST eckit_test_geo_${_source_we})
+        set_tests_properties(eckit_test_geo_${_source_we} PROPERTIES FIXTURES_REQUIRED eckit_geo_cache)
+    endif()
 endfunction()
 
 foreach(_test
         area_boundingbox
         area_polygon
-        cache
         figure
         figure_earth
         figure_sun
@@ -68,7 +73,6 @@ foreach(_test
         projection_space_view
         projection_stere
         range
-        search_kdtree
         sh
         util)
     eckit_geo_add_test(${_test})
@@ -91,6 +95,12 @@ endforeach()
 
 eckit_geo_add_test(area_library WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
+foreach(_test
+        cache
+        search_kdtree)
+    eckit_geo_add_test(${_test} ENVIRONMENT "ECKIT_GEO_SEARCH_LOADER=mapped-file")
+endforeach()
+
 # searches, by each k-d tree loader (of the library, LibEcKitGeo::searchCacheLoader); shared memory not on macOS, where
 # the default limits (shmmax 4 MiB) are below the test grids k-d trees
 set(_loaders memory mapped-file file mapped-anonymous-memory)
@@ -106,6 +116,10 @@ foreach(_loader ${_loaders})
         ENVIRONMENT ${eckit_geo_test_environment}
                     "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_${_loader}:${eckit_geo_test_cache_seeds}"
                     "ECKIT_GEO_SEARCH_LOADER=${_loader}" )
+
+    if(TEST eckit_test_geo_search_${_loader})
+        set_tests_properties(eckit_test_geo_search_${_loader} PROPERTIES FIXTURES_REQUIRED eckit_geo_cache)
+    endif()
 endforeach()
 
 # cache directories: read-only, then writable (given by an environment variable, as an expansion)
@@ -116,6 +130,12 @@ eckit_geo_add_test(cache_roots ENVIRONMENT
 # read-only cache (not caching): cache files are only found, and computed in memory otherwise
 eckit_geo_add_test(cache_readonly ENVIRONMENT
     "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_readonly"
-    "ECKIT_GEO_CACHING=0")
+    "ECKIT_GEO_CACHING=0"
+    "ECKIT_GEO_SEARCH_LOADER=mapped-file")
 
 add_subdirectory(integration)
+
+add_test(NAME eckit_test_geo_cache_cleanup
+         COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/cache" "${CMAKE_CURRENT_BINARY_DIR}/cache_roots"
+                 "${CMAKE_CURRENT_BINARY_DIR}/cache_readonly" "${CMAKE_CURRENT_BINARY_DIR}/integration/cache")
+set_tests_properties(eckit_test_geo_cache_cleanup PROPERTIES FIXTURES_CLEANUP eckit_geo_cache)

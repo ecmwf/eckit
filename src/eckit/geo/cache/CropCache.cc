@@ -65,12 +65,6 @@ std::shared_ptr<const Crop> CropCache::get(const Grid& grid, const Area& area) {
     return MemoryCache::get(key, estimate, [&]() {
         auto crop = std::make_shared<Crop>();
 
-        // not caching: computed in memory
-        if (!LibEcKitGeo::caching()) {
-            crop->indices = calculate(grid, area);
-            return crop;
-        }
-
         // a cache file is valid if it reads as indices of the grid (a corrupt one is recreated), and read once
         bool read  = false;
         auto valid = [&crop, &read, size = grid.size()](const PathName& p) {

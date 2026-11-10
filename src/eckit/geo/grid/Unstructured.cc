@@ -56,8 +56,9 @@ Unstructured::Unstructured(const uid_type& _uid, const std::string& name, std::u
     spec::Custom::container_type custom_map{{"type", type()}, {"uid", uid}};
 
     // the coordinates file lets other processes use the grid by uid; with nowhere to write, only if found (else memory)
-    if (!LibEcKitGeo::cacheWritablePaths().empty() || cache::LatitudeLongitude::file_cache().find(uid)) {
-        custom_map["cached_path"] = record().to_cached_path();
+    if (const auto path =
+            LibEcKitGeo::cacheWritablePaths().empty() ? record().find_cached_path() : record().to_cached_path()) {
+        custom_map["cached_path"] = *path;
     }
     if (!name.empty()) {
         custom_map["name"] = name;

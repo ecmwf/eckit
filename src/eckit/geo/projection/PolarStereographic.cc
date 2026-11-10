@@ -22,14 +22,16 @@ static const ProjectionRegisterType<PolarStereographic> PROJECTION_2("polar_ster
 PolarStereographic::PolarStereographic(double lat_0, double lat_ts, double lon_0, Figure* fig) :
     Projection(fig),
     lat_0_(lat_0),
-    // in the hemisphere of the pole whatever its sign (as PROJ strings), and so in the spec and PROJ string, as PROJ
-    // CRS (polar stereographic variant B) take its sign as of the pole
-    lat_ts_(lat_0 < 0. ? -std::abs(lat_ts) : std::abs(lat_ts)),
+    lat_ts_(lat_ts),
     lon_0_(lon_0),
     sign_(lat_0 < 0. ? -1. : 1.),
     conformal_(figure().conformal()) {
     if (!types::is_approximately_equal(lat_0, sign_ * PointLonLat::RIGHT_ANGLE)) {
         throw exception::ProjectionError("PolarStereographic: lat_0 = 90 or -90 expected (polar)", Here());
+    }
+
+    if (sign_ * lat_ts < 0.) {
+        throw exception::ProjectionError("PolarStereographic: lat_ts in the hemisphere of the pole expected", Here());
     }
 
     const auto e     = figure().eccentricity();

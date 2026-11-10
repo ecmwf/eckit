@@ -41,6 +41,8 @@ CASE("stretch: spec, reverse (by the inverse factor)") {
 
     EXPECT_THROWS_AS(projection::Stretch(0.), exception::ProjectionError);
     EXPECT_THROWS_AS(projection::Stretch(-1.), exception::ProjectionError);
+    EXPECT_THROWS_AS(std::unique_ptr<const Projection>(ProjectionFactory::make_from_string("{type: stretch}")),
+                     exception::SpecError);
 }
 
 
@@ -57,7 +59,14 @@ CASE("stretch: Cartesian points, as (lon, lat)") {
         // as Point (variant)
         EXPECT(points_equal(std::get<PointXYZ>(stretch.fwd(Point{xyz})), q));
         EXPECT(points_equal(std::get<PointLonLat>(stretch.fwd(Point{p})), stretch.fwd(p)));
+
+        // of any radius
+        constexpr double R = 6371229.;
+        EXPECT(points_equal(stretch.fwd(xyz * R), q * R, 1e-3));
+        EXPECT(points_equal(stretch.inv(q * R), xyz * R, 1e-3));
     }
+
+    EXPECT(points_equal(stretch.fwd(PointXYZ{}), PointXYZ{}));
 }
 
 

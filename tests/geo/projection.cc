@@ -290,11 +290,12 @@ bool all_nan(const v& a) {
 
 
 /// lonlat to xy (identity), failing for negative longitudes
-struct Failing final : Projection {
+template <typename E>
+struct FailingT final : Projection {
     Point fwd(const Point& p) const override {
         const auto& q = std::get<PointLonLat>(p);
         if (q.lon() < 0.) {
-            throw BadValue("Failing: negative longitude", Here());
+            throw E("Failing: negative longitude", Here());
         }
         return PointXY{q.lon(), q.lat()};
     }
@@ -309,6 +310,9 @@ struct Failing final : Projection {
         return type;
     }
 };
+
+
+using Failing = FailingT<exception::ProjectionError>;
 
 
 /// identity, but declaring lonlat to xy (so not honouring its point types)
@@ -473,11 +477,19 @@ CASE("projection: vectors") {
     }
 
 
+    SECTION("other failures are errors") {
+        const FailingT<BadValue> projection_failing;
+        const Projection& failing = projection_failing;
+
+        EXPECT_THROWS_AS(failing.fwd(v{10., -10.}, v{20., 20.}), BadValue);
+    }
+
+
     SECTION("projection not honouring its point types") {
         const Dishonest projection_dishonest;  // declares lonlat to xy, returns its input
         const Projection& dishonest = projection_dishonest;
 
-        // not an eckit::Exception (so not NaN): a broken projection is a programming error, not a failing point
+        // a broken projection is a programming error, not a failing point
         EXPECT_THROWS_AS(fwd(dishonest, v{1., 2.}), std::bad_variant_access);
         EXPECT_THROWS_AS(inv(dishonest, v{1., 2.}), std::bad_variant_access);
     }

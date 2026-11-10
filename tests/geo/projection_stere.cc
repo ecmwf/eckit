@@ -28,8 +28,6 @@ const std::vector<std::string> SPECS{
     "{type: stere, lat_0: -90}",
     "{type: stere, lat_0: 90, lon_0: -45, figure: wgs84}",
     "{type: stere, lat_0: -90, lat_ts: -71, lon_0: 0, figure: wgs84}",
-    "{type: stere, lat_0: 90, lat_ts: -60, lon_0: 280}",               // lat_ts of either sign (as PROJ strings)
-    "{type: stere, lat_0: -90, lat_ts: 71, lon_0: 0, figure: wgs84}",  // lat_ts of either sign (as PROJ strings)
 };
 
 
@@ -61,11 +59,6 @@ CASE("stere: spec, proj_str") {
               "+proj=stere +lat_0=-90 +R=6371229"},
              {SPECS[2], R"({"figure":"wgs84","lat_0":90,"lon_0":-45,"type":"stere"})",
               "+proj=stere +lat_0=90 +lon_0=-45 +ellps=WGS84"},
-             // lat_ts in the hemisphere of the pole
-             {SPECS[4], R"({"lat_0":90,"lat_ts":60,"lon_0":280,"type":"stere"})",
-              "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=280 +R=6371229"},
-             {"{type: stere, lat_0: -90, lat_ts: 90}", R"({"lat_0":-90,"type":"stere"})",
-              "+proj=stere +lat_0=-90 +R=6371229"},
          }) {
         P projection(ProjectionFactory::make_from_string(test.spec));
         EXPECT(projection->spec_str() == test.spec_str);
@@ -77,8 +70,11 @@ CASE("stere: spec, proj_str") {
 }
 
 
-CASE("stere: polar only") {
-    EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{type: stere, lat_0: 45}")), exception::ProjectionError);
+CASE("stere: polar only, lat_ts in the hemisphere of the pole") {
+    for (const std::string spec : {"{type: stere, lat_0: 45}", "{type: stere, lat_0: 90, lat_ts: -60}",
+                                   "{type: stere, lat_0: -90, lat_ts: 71}", "{type: stere, lat_0: -90, lat_ts: 90}"}) {
+        EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string(spec)), exception::ProjectionError);
+    }
 }
 
 
@@ -113,20 +109,6 @@ CASE("stere: as PROJ") {
     }
 }
 
-
-CASE("stere: lat_ts of either sign, the same projection (as PROJ strings)") {
-    for (const auto& [a, b] : std::vector<std::pair<std::string, std::string>>{
-             {SPECS[0], SPECS[4]},
-             {SPECS[3], SPECS[5]},
-         }) {
-        P stere_a(ProjectionFactory::make_from_string(a));
-        P stere_b(ProjectionFactory::make_from_string(b));
-
-        for (const auto& p : points(a)) {
-            EXPECT(points_equal(stere_a->fwd(p), stere_b->fwd(p), TOLERANCE));
-        }
-    }
-}
 
 }  // namespace eckit::geo::test
 

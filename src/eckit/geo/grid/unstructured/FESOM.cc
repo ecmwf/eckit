@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "eckit/cache/Download.h"
@@ -105,7 +106,7 @@ cache::LatitudeLongitude load(const Grid::Spec& spec) {
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
                  arrangement_to_string(arrangement_from_string("FESOM", spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+                 bounding_box_from_spec(spec), projection_from_spec(spec)) {}
 
 
 FESOM::FESOM(const uid_type& uid) :

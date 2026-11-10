@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -25,10 +26,11 @@ public:
 
     explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N, BoundingBox = {}, order::RegularScan = scan_default(),
-                             const Projection* = nullptr);
+                             std::unique_ptr<const Projection> = nullptr);
 
     /// Of ni longitudes (global, 4N if 0)
-    RegularGaussian(size_t N, size_t ni, BoundingBox, order::RegularScan = scan_default(), const Projection* = nullptr);
+    RegularGaussian(size_t N, size_t ni, BoundingBox, order::RegularScan = scan_default(),
+                    std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 

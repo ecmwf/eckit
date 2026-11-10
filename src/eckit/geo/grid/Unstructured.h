@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -59,10 +60,10 @@ protected:
 
     // -- Constructors
 
-    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr,
-                          const Projection* = nullptr);
+    explicit Unstructured(const uid_type&, const std::string& name = "", std::unique_ptr<BoundingBox> = nullptr,
+                          std::unique_ptr<const Projection> = nullptr);
     explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
-                          BoundingBox* = nullptr, const Projection* = nullptr);
+                          std::unique_ptr<BoundingBox> = nullptr, std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
@@ -70,7 +71,7 @@ protected:
 
     // -- Overridden methods
 
-    [[nodiscard]] Iterator::State* make_state() const override;
+    std::unique_ptr<Iterator::State> make_state() const override;
 
 private:
 

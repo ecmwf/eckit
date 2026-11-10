@@ -58,9 +58,9 @@ public:
 
         /// What a grid remembers between points, besides the index (e.g. the current row)
         struct State {
-            virtual ~State()                           = default;
-            virtual Point point(size_t index)          = 0;
-            [[nodiscard]] virtual State* clone() const = 0;
+            virtual ~State()                             = default;
+            virtual Point point(size_t index)            = 0;
+            virtual std::unique_ptr<State> clone() const = 0;
         };
 
         using iterator_category = std::input_iterator_tag;
@@ -210,21 +210,25 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(BoundingBox* = nullptr, const Projection* = nullptr);
+    explicit Grid(std::unique_ptr<BoundingBox> = nullptr, std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
 
     /// What iterating over this grid remembers between points, if anything
-    [[nodiscard]] virtual Iterator::State* make_state() const { return nullptr; }
+    virtual std::unique_ptr<Iterator::State> make_state() const { return nullptr; }
 
     void reset_uid(uid_type = {});
 
     void projection(const Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
-    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
+    static std::unique_ptr<BoundingBox> bounding_box_from_spec(const Spec&);
+    static std::unique_ptr<const Projection> projection_from_spec(const Spec&);
+
+    /// The projection, for a grid made from this one (none if the default)
+    std::unique_ptr<const Projection> projection_copy() const;
 
 private:
 
@@ -260,8 +264,8 @@ struct GridSpecByName {
     static generator_t& instance();
 
     /// Register a name pattern (a regular expression, case-insensitive)
-    static void regist(const key_t& pattern, concrete_generator_t* gen) {
-        generator_t::instance().regist(pattern, gen);
+    static void regist(const key_t& pattern, std::unique_ptr<concrete_generator_t> gen) {
+        generator_t::instance().regist(pattern, std::move(gen));
     }
     static void unregist(const key_t& pattern) { generator_t::instance().unregist(pattern); }
 
@@ -281,7 +285,9 @@ struct GridSpecByUID {
     using concrete_generator_t = generator_t::generator_t;
 
     static generator_t& instance();
-    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, std::unique_ptr<concrete_generator_t> gen) {
+        generator_t::instance().regist(key, std::move(gen));
+    }
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
 
     /// Register a uid (case-insensitive) with its spec, or replace it; these don't load the shared grids (as instance
@@ -296,13 +302,15 @@ using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
 
 template <typename T>
-using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
+struct GridRegisterUID {
+    explicit GridRegisterUID(const std::string& uid) { spec::ConcreteSpecGeneratorT0<T>::regist(uid); }
+};
 
 
 template <typename T>
 struct GridRegisterName {
     explicit GridRegisterName(const std::string& name_or_pattern) {
-        new spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+        spec::ConcreteSpecGeneratorT1<T, const std::string&>::regist(name_or_pattern);
     }
 };
 

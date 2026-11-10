@@ -67,7 +67,7 @@ struct Search::Shared {
 
 void Search::build(const std::string& uid, size_t size, const Spec& spec, const KDTree::Fill& fill) {
     auto& kdtree = shared_->kdtree;
-    kdtree.reset(geo::search::KDTreeFactory::build(LibEcKitGeo::searchCacheLoader(), uid, size));
+    kdtree       = geo::search::KDTreeFactory::build(LibEcKitGeo::searchCacheLoader(), uid, size);
 
     Trace trace("Search: build or load " + uid);
     if (!kdtree->build(fill, spec.get_bool("search-fast-build", true))) {

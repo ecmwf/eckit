@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "eckit/geo/Grid.h"
@@ -50,7 +51,7 @@ protected:
 
     using Grid::Grid;
 
-    explicit Reduced(order::ReducedScan, const Projection* = nullptr);
+    explicit Reduced(order::ReducedScan, std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
@@ -65,7 +66,7 @@ protected:
 
     // -- Overridden methods
 
-    [[nodiscard]] Iterator::State* make_state() const override;
+    std::unique_ptr<Iterator::State> make_state() const override;
     void fill_spec(spec::Custom&) const override;
 
 private:

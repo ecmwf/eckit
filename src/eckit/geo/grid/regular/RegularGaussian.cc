@@ -4,7 +4,7 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
-#include <memory>
+#include <utility>
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -54,15 +54,17 @@ range::GaussianLatitude make_y(size_t N, const area::BoundingBox& bbox, bool pos
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
     RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni", 0), BoundingBox(spec), order::RegularScan{spec},
-                    ProjectionFactory::build(spec)) {}
+                    projection_from_spec(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::RegularScan s, const Projection* p) :
-    RegularGaussian(N, 0, bbox, s, p) {}
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::RegularScan s,
+                                 std::unique_ptr<const Projection> p) :
+    RegularGaussian(N, 0, bbox, s, std::move(p)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::RegularScan s, const Projection* p) :
-    Regular(s, p),
+RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::RegularScan s,
+                                 std::unique_ptr<const Projection> p) :
+    Regular(s, std::move(p)),
     N_(check_N(N)),
     ni_(ni == 0 ? 4 * N_ : ni),
     x_(make_x(ni_, bbox, s.is_scan_i_positive())),

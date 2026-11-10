@@ -35,7 +35,7 @@ struct Reduced::State final : Iterator::State {
         return projection_.from_grid_xy(longitudes_.at(c - nxacc_[j_]), latitudes_.at(j_));
     }
 
-    [[nodiscard]] Iterator::State* clone() const override { return new State(*this); }
+    std::unique_ptr<Iterator::State> clone() const override { return std::make_unique<State>(*this); }
 
     const Reduced& grid_;
     const Projection& projection_;
@@ -47,7 +47,8 @@ struct Reduced::State final : Iterator::State {
 };
 
 
-Reduced::Reduced(order::ReducedScan scan, const Projection* p) : Grid(nullptr, p), scan_(std::move(scan)) {}
+Reduced::Reduced(order::ReducedScan scan, std::unique_ptr<const Projection> p) :
+    Grid(nullptr, std::move(p)), scan_(std::move(scan)) {}
 
 
 Point Reduced::point(size_t index) const {
@@ -55,8 +56,8 @@ Point Reduced::point(size_t index) const {
 }
 
 
-Grid::Iterator::State* Reduced::make_state() const {
-    return new State(*this);
+std::unique_ptr<Grid::Iterator::State> Reduced::make_state() const {
+    return std::make_unique<State>(*this);
 }
 
 

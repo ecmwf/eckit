@@ -6,7 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <memory>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
@@ -83,7 +83,7 @@ struct Regular::State final : Iterator::State {
         return i_then_j_ ? grid_.point_xy(a_.at(k), b_.at(j)) : grid_.point_xy(b_.at(j), a_.at(k));
     }
 
-    [[nodiscard]] Iterator::State* clone() const override { return new State(*this); }
+    std::unique_ptr<Iterator::State> clone() const override { return std::make_unique<State>(*this); }
 
     const Regular& grid_;
     const bool i_then_j_;
@@ -98,8 +98,8 @@ Point Regular::point(size_t index) const {
 }
 
 
-Grid::Iterator::State* Regular::make_state() const {
-    return new State(*this);
+std::unique_ptr<Grid::Iterator::State> Regular::make_state() const {
+    return std::make_unique<State>(*this);
 }
 
 
@@ -167,7 +167,8 @@ const order::RegularScan& Regular::scan_default() {
 }
 
 
-Regular::Regular(order::RegularScan s, const Projection* proj) : Grid(nullptr, proj), scan_(s) {}
+Regular::Regular(order::RegularScan s, std::unique_ptr<const Projection> proj) :
+    Grid(nullptr, std::move(proj)), scan_(s) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {

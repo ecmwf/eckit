@@ -131,11 +131,12 @@ static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default()),
-            bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+            bounding_box_from_spec(spec), projection_from_spec(spec)) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projection* p) :
-    Reduced(bbox, p), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
+HEALPix::HEALPix(size_t Nside, order_type order, std::unique_ptr<BoundingBox> bbox,
+                 std::unique_ptr<const Projection> p) :
+    Reduced(std::move(bbox), std::move(p)), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
     ASSERT(y_);
 
     // the nested order is of Nside a power of 2 (checked by its renumbering)
@@ -146,8 +147,7 @@ HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projec
 
 
 Grid* HEALPix::make_grid_reordered(const order_type& to) const {
-    return new HEALPix(Nside_, to, new BoundingBox(boundingBox()),
-                       projection().is_default() ? nullptr : ProjectionFactory::build(projection().spec()));
+    return new HEALPix(Nside_, to, std::make_unique<BoundingBox>(boundingBox()), projection_copy());
 }
 
 
@@ -167,7 +167,7 @@ struct HEALPix::Nested final : Iterator::State {
                                         latitudes_.at(j));
     }
 
-    [[nodiscard]] Iterator::State* clone() const override { return new Nested(*this); }
+    std::unique_ptr<Iterator::State> clone() const override { return std::make_unique<Nested>(*this); }
 
     const HEALPix& grid_;
     const Projection& projection_;
@@ -182,8 +182,11 @@ Point HEALPix::point(size_t index) const {
 }
 
 
-Grid::Iterator::State* HEALPix::make_state() const {
-    return order_.order() == order::HEALPix::RING ? Reduced::make_state() : new Nested(*this);
+std::unique_ptr<Grid::Iterator::State> HEALPix::make_state() const {
+    if (order_.order() == order::HEALPix::RING) {
+        return Reduced::make_state();
+    }
+    return std::make_unique<Nested>(*this);
 }
 
 

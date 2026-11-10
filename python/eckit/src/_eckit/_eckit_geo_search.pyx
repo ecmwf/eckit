@@ -45,6 +45,11 @@ cdef class Search:
         from eckit.geo._eckit_geo import _spec_str
 
         self._handle = NULL
+        if "loader" in spec:
+            raise ValueError(
+                "Search: the k-d tree loader is of the library (ECKIT_GEO_SEARCH_LOADER)"
+            )
+
         spec = {_KEYS.get(k, k.replace("_", "-")): v for k, v in spec.items()}
         self._handle = eckit_geo_search.search_get(dereference(ptr), _spec_str(spec))
 

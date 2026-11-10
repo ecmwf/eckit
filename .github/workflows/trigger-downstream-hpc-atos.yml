@@ -627,6 +627,7 @@ jobs:
     - validate
     - resolve
     - atlas
+    - eccodes
     uses: ecmwf/mir/.github/workflows/cross-repo-trigger-hpc-atos.yml@develop
     with:
       from-repo: ${{ github.repository }}

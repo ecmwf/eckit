@@ -38,12 +38,12 @@ pl_type spec_pl(const Grid::Spec& spec) {
 
 size_t pl_N(const pl_type& pl) {
     if (pl.empty() || pl.size() % 2 != 0) {
-        throw UserError("ReducedGaussian: {pl: [...]} (of 2N rows) expected, not of " + std::to_string(pl.size()),
-                        Here());
+        throw exception::SpecError(
+            "ReducedGaussian: {pl: [...]} (of 2N rows) expected, not of " + std::to_string(pl.size()), Here());
     }
 
     if (std::any_of(pl.begin(), pl.end(), [](auto Ni) { return Ni < 0; })) {
-        throw UserError("ReducedGaussian: {pl: [...]} (numbers of points, not negative) expected", Here());
+        throw exception::SpecError("ReducedGaussian: {pl: [...]} (numbers of points, not negative) expected", Here());
     }
 
     return pl.size() / 2;
@@ -90,7 +90,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, ord
     }
 
     if (first_ == last_) {
-        throw UserError("ReducedGaussian: no points (in the bounding box)", Here());
+        throw exception::GridError("ReducedGaussian: no points (in the bounding box)", Here());
     }
 
     boundingBox(new BoundingBox{first_ == 0 ? PointLonLat::RIGHT_ANGLE : lats[first_], w,
@@ -158,7 +158,7 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
                                    scan());
     }
 
-    throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());
+    throw exception::GridError("ReducedGaussian: cannot crop grid (empty intersection)", Here());
 }
 
 

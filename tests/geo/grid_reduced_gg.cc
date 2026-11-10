@@ -371,14 +371,14 @@ CASE("pl of N without a known classical pl: spec with pl, rebuilt") {
 
 CASE("errors") {
     // pl of 2N rows, of numbers of points
-    EXPECT_THROWS_AS((ReducedGaussian{pl_type{}}), UserError);
-    EXPECT_THROWS_AS((ReducedGaussian{pl_type{20, 24, 20}}), UserError);
-    EXPECT_THROWS_AS((ReducedGaussian{pl_type{20, -24, 24, 20}}), UserError);
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{}}), exception::SpecError);
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{20, 24, 20}}), exception::SpecError);
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{20, -24, 24, 20}}), exception::SpecError);
 
     // no points (in the bounding box)
-    EXPECT_THROWS_AS((ReducedGaussian{pl_type{0, 0, 0, 0}}), UserError);
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{0, 0, 0, 0}}), exception::GridError);
     EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("{grid: O2, area: [90, 1, -90, 2]}")),
-                     UserError);
+                     exception::GridError);
 
     // pl required for a name N<N> without a known classical pl
     EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("{grid: N4}")), exception::SpecError);

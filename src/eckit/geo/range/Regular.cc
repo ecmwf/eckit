@@ -269,6 +269,17 @@ const std::vector<double>& Regular::values() const {
 }
 
 
+double Regular::value(size_t i) const {
+    // as util::linspace
+    const auto n = size();
+    if (n < 2 || n <= i || types::is_approximately_equal(a(), b())) {
+        return values().at(i);
+    }
+
+    return i + 1 == n ? b() : a() + static_cast<double>(i) * ((b() - a()) / static_cast<double>(n - 1));
+}
+
+
 Regular::Regular(std::unique_ptr<Implementation> impl) : impl_(std::move(impl)) {
     ASSERT(impl_);
 }

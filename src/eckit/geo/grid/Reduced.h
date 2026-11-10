@@ -29,6 +29,7 @@ public:
 
     /// Longitudes of a row (rows in the default order), west to east whatever the order of the points
     virtual const std::vector<double>& longitudes(size_t) const = 0;
+    virtual double longitude(size_t j, size_t i) const { return longitudes(j).at(i); }
 
     const order::ReducedScan& scan() const { return scan_; }
 

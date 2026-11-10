@@ -28,11 +28,11 @@ struct Reduced::State final : Iterator::State {
         // the point as in the default order
         const auto c = canonical_ == nullptr ? index : canonical_->at(index);
 
-        if (longitudes_.empty() || !(nxacc_[j_] <= c && c < nxacc_[j_ + 1])) {
-            longitudes_ = grid_.longitudes(j_ = grid_.row(c));
+        if (longitudes_ == nullptr || !(nxacc_[j_] <= c && c < nxacc_[j_ + 1])) {
+            longitudes_ = &grid_.longitudes(j_ = grid_.row(c));
         }
 
-        return projection_.from_grid_xy(longitudes_.at(c - nxacc_[j_]), latitudes_.at(j_));
+        return projection_.from_grid_xy(longitudes_->at(c - nxacc_[j_]), latitudes_.at(j_));
     }
 
     std::unique_ptr<Iterator::State> clone() const override { return std::make_unique<State>(*this); }
@@ -42,8 +42,8 @@ struct Reduced::State final : Iterator::State {
     const renumber_type* canonical_;
     const std::vector<size_t>& nxacc_;
     const std::vector<double>& latitudes_;
-    size_t j_ = 0;
-    std::vector<double> longitudes_;
+    size_t j_                              = 0;
+    const std::vector<double>* longitudes_ = nullptr;
 };
 
 
@@ -52,7 +52,9 @@ Reduced::Reduced(order::ReducedScan scan, std::unique_ptr<const Projection> p) :
 
 
 Point Reduced::point(size_t index) const {
-    return State(*this).point(index);
+    const auto c = scan_.is_default() ? index : canonical().at(index);
+    const auto j = row(c);
+    return projection().from_grid_xy(longitude(j, c - nxacc()[j]), latitudes().at(j));
 }
 
 

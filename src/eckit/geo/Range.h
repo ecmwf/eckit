@@ -39,6 +39,7 @@ public:
 
     [[nodiscard]] virtual Range* make_cropped_range(double crop_a, double crop_b) const = 0;
     [[nodiscard]] virtual const std::vector<double>& values() const                     = 0;
+    virtual double value(size_t i) const { return values().at(i); }
 
     virtual size_t size() const = 0;
     virtual double a() const    = 0;

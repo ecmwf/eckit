@@ -116,7 +116,7 @@ struct Grid::Once {
 
 
 Grid::Iterator::Iterator(const Grid& grid, bool end) :
-    grid_(&grid), index_(end ? grid.size() : 0), size_(grid.size()), state_(end ? nullptr : grid.make_state()) {}
+    grid_(&grid), index_(end ? grid.size() : 0), size_(grid.size()) {}
 
 
 Grid::Iterator::Iterator(const Iterator& other) :
@@ -137,14 +137,33 @@ Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
 }
 
 
-bool Grid::Iterator::operator+=(difference_type d) {
-    if (const auto i = static_cast<difference_type>(index_) + d; 0 <= i && i < static_cast<difference_type>(size_)) {
-        index_ = static_cast<size_t>(i);
-        return true;
+Grid::Iterator& Grid::Iterator::operator+=(difference_type d) {
+    const auto i = static_cast<difference_type>(index_) + d;
+    index_       = 0 <= i && i < static_cast<difference_type>(size_) ? static_cast<size_t>(i) : size_;
+    return *this;
+}
+
+
+Grid::Iterator Grid::Iterator::operator++(int) {
+    auto old = *this;
+    operator++();
+    return old;
+}
+
+
+Grid::Iterator Grid::Iterator::operator--(int) {
+    auto old = *this;
+    operator--();
+    return old;
+}
+
+
+Grid::Iterator::reference Grid::Iterator::operator*() const {
+    if (!state_) {
+        state_ = grid_->make_state();
     }
 
-    index_ = size_;  // invalid, the end
-    return false;
+    return state_ ? state_->point(index_) : grid_->point(index_);
 }
 
 

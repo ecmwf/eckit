@@ -66,8 +66,8 @@ public:
         using iterator_category = std::input_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = Point;
-        using pointer           = value_type*;
-        using reference         = value_type&;
+        using pointer           = void;
+        using reference         = value_type;
 
         explicit Iterator(const Grid&, bool end = false);
 
@@ -79,16 +79,20 @@ public:
         Iterator& operator=(const Iterator&);
         Iterator& operator=(Iterator&&) noexcept = default;
 
-        bool operator==(const Iterator& other) const { return index_ == other.index_; }
-        bool operator!=(const Iterator& other) const { return index_ != other.index_; }
+        bool operator==(const Iterator& other) const { return grid_ == other.grid_ && index_ == other.index_; }
+        bool operator!=(const Iterator& other) const { return !operator==(other); }
 
-        bool operator++() { return operator+=(1); }
-        bool operator--() { return operator+=(-1); }
-        bool operator+=(difference_type);
-        bool operator-=(difference_type d) { return operator+=(-d); }
+        Iterator& operator+=(difference_type);
+        Iterator& operator-=(difference_type d) { return operator+=(-d); }
+
+        Iterator& operator++() { return operator+=(1); }
+        Iterator& operator--() { return operator+=(-1); }
+
+        Iterator operator++(int);
+        Iterator operator--(int);
 
         explicit operator bool() const { return index_ < size_; }
-        Point operator*() const { return state_ ? state_->point(index_) : grid_->point(index_); }
+        reference operator*() const;
 
         size_t index() const { return index_; }
 
@@ -97,7 +101,7 @@ public:
         const Grid* grid_;
         size_t index_;
         size_t size_;
-        std::unique_ptr<State> state_;
+        mutable std::unique_ptr<State> state_;
     };
 
     // -- Constructors

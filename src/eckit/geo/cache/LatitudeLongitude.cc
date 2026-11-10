@@ -165,7 +165,27 @@ void LatitudeLongitude::write(const PathName& p) const {
 
 PathName LatitudeLongitude::to_cached_path() const {
     const auto uid = grid::Unstructured::uid_from_latlons(latitude(), longitude());
-    return file_cache().getOrCreate(uid, [this](const PathName& tmp) { write(tmp); });
+    return file_cache().getOrCreate(uid, [this](const PathName& tmp) { write(tmp); }, valid());
+}
+
+
+std::optional<PathName> LatitudeLongitude::find_cached_path() const {
+    return file_cache().find(grid::Unstructured::uid_from_latlons(latitude(), longitude()), valid());
+}
+
+
+eckit::cache::DiskCache::Valid LatitudeLongitude::valid() const {
+    return [this](const PathName& p) {
+        lock_type lock;
+        try {
+            LatitudeLongitude cached;
+            cached.read(p);
+            return cached.lat_ == lat_ && cached.lon_ == lon_;
+        }
+        catch (const std::exception&) {
+            return false;
+        }
+    };
 }
 
 

@@ -6,9 +6,11 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "eckit/cache/DiskCache.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/RecordCache.h"
@@ -48,6 +50,7 @@ public:
     void write(const PathName&) const;
 
     PathName to_cached_path() const;
+    std::optional<PathName> find_cached_path() const;
 
     /// Cache files of coordinates (latlon/VERSION/<uid>.ek), written locally for grids defined by their points
     static const eckit::cache::FileCache& file_cache();
@@ -66,6 +69,9 @@ private:
 
     std::vector<double> lon_;
     std::vector<double> lat_;
+
+    /// A cache file is valid if it reads as these coordinates
+    eckit::cache::DiskCache::Valid valid() const;
 };
 
 

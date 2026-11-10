@@ -59,6 +59,9 @@ public:
     /// @return if created
     static bool create(const PathName&, const Write&, const Valid& = {});
 
+    /// Write a file, replacing it if it exists (e.g. updated from its contents, read while writing)
+    static void write(const PathName&, const Write&);
+
     /// Remove a file or directory (recursively), if it exists
     static void remove(const PathName&);
 
@@ -77,6 +80,9 @@ private:
     static void share(const PathName&);
 
     static void replace(const PathName& tmp, const PathName&);
+
+    /// Write a file (with the lock held), as a temporary renamed into place
+    static void write_locked(const PathName&, const Write&);
 };
 
 

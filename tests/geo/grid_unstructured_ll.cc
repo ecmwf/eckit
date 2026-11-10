@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <thread>
@@ -250,6 +251,32 @@ CASE("unstructured_ll: names, of their own") {
     std::unique_ptr<const Grid> e(GridFactory::build(spec::Custom{{"grid", name}}));
     EXPECT(d->uid() == a->uid());
     EXPECT(e->uid() == a->uid());
+
+    cleanup();
+}
+
+
+CASE("unstructured_ll: a corrupt grids cache file is rewritten") {
+    if (!LibEcKitGeo::caching()) {
+        return;
+    }
+
+    cleanup();
+
+    const auto path = LibEcKitGeo::cacheGrid();
+    path.dirName().mkdir();
+    {
+        std::ofstream corrupt(path.asString());
+        corrupt << "grid_uids: [not a spec\n";
+    }
+
+    const std::vector<double> lats{10., 11., 12.};
+    const std::vector<double> lons{20., 21., 22.};
+    std::unique_ptr<const Grid> grid(new grid::Unstructured(lons, lats, "corrupt-cache-rewritten"));
+
+    const ValueList names = YAMLParser::decodeFile(path)["grid_names"];
+    EXPECT(std::any_of(names.begin(), names.end(),
+                       [](const Value& name) { return ValueMap(name).count(Value("corrupt-cache-rewritten")) == 1; }));
 
     cleanup();
 }

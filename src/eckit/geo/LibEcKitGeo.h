@@ -34,9 +34,7 @@ public:
     static std::vector<PathName> shareGrid();
     static std::vector<PathName> shareProjection();
 
-    static PathName cacheArea();
     static PathName cacheGrid();
-    static PathName cacheProjection();
 
     // -- Caching
     //
@@ -68,7 +66,7 @@ public:
      */
     static bool cacheThrowOnMiss();
 
-    /// k-d tree loader (eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER, default mapped-file), memory if not caching
+    /// k-d tree loader (eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER, default mapped-file)
     static std::string searchCacheLoader();
 
     /**
@@ -110,11 +108,9 @@ public:
     /// As cacheInfo, into a JSON (e.g. a section of the cache report of a library using eckit::geo)
     static void cacheInfo(JSON&);
 
-    /// Remove the cache directory for writing (none: nothing to remove), or parts of it (none: throws, see cacheDir)
+    /// Remove the cache directory for writing, or its grid.yaml (none: nothing to remove)
     static void removeCacheDir();
-    static void removeCacheArea();
     static void removeCacheGrid();
-    static void removeCacheProjection();
 
     static std::string url(const std::string& url_path);
     static std::string url(const std::string& url_path, const std::string& url_prefix);

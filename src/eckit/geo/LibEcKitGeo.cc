@@ -74,21 +74,8 @@ std::vector<PathName> LibEcKitGeo::shareProjection() {
 }
 
 
-PathName LibEcKitGeo::cacheArea() {
-    static const auto p = PathName(cacheDir()) / "area.yaml";
-    return p;
-}
-
-
 PathName LibEcKitGeo::cacheGrid() {
-    static const auto p = PathName(cacheDir()) / "grid.yaml";
-    return p;
-}
-
-
-PathName LibEcKitGeo::cacheProjection() {
-    static const auto p = PathName(cacheDir()) / "projection.yaml";
-    return p;
+    return PathName(cacheDir()) / "grid.yaml";
 }
 
 
@@ -130,10 +117,8 @@ std::string LibEcKitGeo::cacheDir() {
 
 
 std::string LibEcKitGeo::searchCacheLoader() {
-    // not caching: memory (nothing written)
-    static const std::string loader{caching() ? std::string{LibResource<std::string, LibEcKitGeo>(
-                                                    "eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-file")}
-                                              : std::string{"memory"}};
+    static const std::string loader{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-file")};
     return loader;
 }
 
@@ -324,25 +309,16 @@ void LibEcKitGeo::cacheInfo(JSON& j) {
 
 
 void LibEcKitGeo::removeCacheDir() {
-    // nothing written, if nowhere to write
     if (!cacheWritablePaths().empty()) {
         cache::DiskCache::remove(cacheDir());
     }
 }
 
 
-void LibEcKitGeo::removeCacheArea() {
-    cache::DiskCache::remove(cacheArea());
-}
-
-
 void LibEcKitGeo::removeCacheGrid() {
-    cache::DiskCache::remove(cacheGrid());
-}
-
-
-void LibEcKitGeo::removeCacheProjection() {
-    cache::DiskCache::remove(cacheProjection());
+    if (!cacheWritablePaths().empty()) {
+        cache::DiskCache::remove(cacheGrid());
+    }
 }
 
 

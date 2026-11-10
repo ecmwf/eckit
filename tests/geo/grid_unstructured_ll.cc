@@ -256,6 +256,33 @@ CASE("unstructured_ll: names, of their own") {
 }
 
 
+CASE("unstructured_ll: names in any case, as given") {
+    cleanup();
+
+    const std::vector<double> lats{40., 41., 42.};
+    const std::vector<double> lons{50., 51., 52.};
+
+    std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats, "Custom-Case"));
+    EXPECT(GridSpecByName::has_name("custom-case"));
+
+    for (const std::string name : {"Custom-Case", "custom-case", "CUSTOM-CASE"}) {
+        std::unique_ptr<const Grid> b(GridFactory::build(spec::Custom{{"grid", name}}));
+        EXPECT(*b == *a);
+        EXPECT(b->name() == "Custom-Case");
+    }
+
+    // another grid of the same name (in any case) replaces it (with a warning), rather than both matching
+    std::unique_ptr<const Grid> c(new grid::Unstructured(lats, lons, "custom-case"));
+    for (const std::string name : {"Custom-Case", "custom-case"}) {
+        std::unique_ptr<const Grid> d(GridFactory::build(spec::Custom{{"grid", name}}));
+        EXPECT(*d == *c);
+        EXPECT(d->name() == "custom-case");
+    }
+
+    cleanup();
+}
+
+
 CASE("unstructured_ll: a corrupt grids cache file is rewritten") {
     if (!LibEcKitGeo::caching()) {
         return;

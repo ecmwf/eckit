@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <algorithm>
 #include <cstddef>
+#include <iterator>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -106,6 +109,51 @@ CASE("iterator: moving around") {
         EXPECT_NOT(--before);
         EXPECT(before == grid->end());
     }
+}
+
+
+CASE("iterator: standard algorithms") {
+    using traits = std::iterator_traits<Grid::Iterator>;
+    static_assert(std::is_same_v<traits::iterator_category, std::input_iterator_tag>);
+    static_assert(std::is_same_v<traits::reference, decltype(*std::declval<Grid::Iterator>())>);
+
+    for (const std::string spec : {"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}", "{grid: O8}",
+                                   "{grid: O8, order: i-j+}", "{grid: H4}", "{grid: H4n}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        const auto points = grid->to_points();
+        const auto equal  = [](const Point& p, const Point& q) { return points_equal(p, q); };
+
+        EXPECT(static_cast<size_t>(std::distance(grid->begin(), grid->end())) == points.size());
+
+        const std::vector<Point> copied(grid->begin(), grid->end());
+        EXPECT(std::equal(copied.begin(), copied.end(), points.begin(), points.end(), equal));
+
+        auto it  = grid->begin();
+        auto old = it++;
+        EXPECT(old == grid->begin());
+        EXPECT(it.index() == 1);
+        EXPECT(points_equal(*old, points[0]));
+        EXPECT(points_equal(*it--, points[1]));
+        EXPECT(it == grid->begin());
+
+        std::vector<Point> reversed;
+        for (auto at = grid->end(); --at;) {
+            reversed.push_back(*at);
+        }
+        EXPECT(std::equal(reversed.rbegin(), reversed.rend(), points.begin(), points.end(), equal));
+    }
+}
+
+
+CASE("iterator: of different grids") {
+    std::unique_ptr<const Grid> a(GridFactory::make_from_string("{grid: [30, 30]}"));
+    std::unique_ptr<const Grid> b(GridFactory::make_from_string("{grid: [30, 30], order: i+j+}"));
+    EXPECT(a->size() == b->size());
+
+    EXPECT(a->begin() == a->begin());
+    EXPECT(a->end() == a->end());
+    EXPECT(a->begin() != b->begin());
+    EXPECT(a->end() != b->end());
 }
 
 

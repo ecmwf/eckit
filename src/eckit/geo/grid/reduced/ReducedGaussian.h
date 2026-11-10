@@ -51,6 +51,7 @@ public:
 
     [[nodiscard]] const std::vector<double>& latitudes() const override { return latitude_.values(); }
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override { return longitude_.at(j)->values(); }
+    double longitude(size_t j, size_t i) const override { return longitude_.at(j)->value(i); }
 
 private:
 

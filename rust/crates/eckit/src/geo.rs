@@ -718,21 +718,19 @@ impl SpecGet for Vec<String> {
 /// Total size of eckit geo's process-global memory caches, in bytes.
 ///
 /// Searches and crops are evicted beyond their capacities (resources
-/// `eckit-geo-cache-search-capacity`, `eckit-geo-cache-crop-capacity`); the
-/// other caches grow as distinct grids are built (Gaussian latitudes, `HEALPix`
-/// tables, downloaded grid data) and are never evicted, so a long-running
-/// process should watch this and call [`cache_purge`].
+/// `eckit-geo-cache-search-capacity`, `eckit-geo-cache-crop-capacity`), and
+/// released by [`cache_purge`]. The other caches (Gaussian latitudes, `HEALPix`
+/// tables, grid coordinates) are counted too, but kept, as grids use them.
 #[must_use]
 pub fn cache_footprint() -> usize {
     eckit_sys::geo::GridWrapper::cache_footprint()
 }
 
-/// Drop every entry from eckit geo's process-global memory caches.
+/// Release the cached searches and crops; those in use stay valid.
 ///
-/// Live grids keep working, they recompute on next use. However eckit's
-/// own iterators hold references into these caches while they run, so do not
-/// purge while another thread is inside [`Grid::fill_latlons`],
-/// [`Grid::to_latlons`] or any other grid call.
-pub fn cache_purge() {
-    eckit_sys::geo::GridWrapper::cache_purge();
+/// # Errors
+///
+/// If the caches cannot be set up (e.g. an unknown eviction policy).
+pub fn cache_purge() -> Result<()> {
+    eckit_sys::geo::GridWrapper::cache_purge().map_err(eckit_sys::Error::from)
 }

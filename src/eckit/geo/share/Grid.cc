@@ -4,6 +4,7 @@
 
 #include "eckit/geo/share/Grid.h"
 
+#include <algorithm>
 #include <ostream>
 #include <string>
 
@@ -30,10 +31,25 @@ const Grid& Grid::instance() {
 Grid::Grid(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
     ASSERT(spec_);
 
+    // a cached grid.yaml, unlike an installed one, can be invalid (rewritten when caching)
+    const auto& roots = LibEcKitGeo::cacheRoots().paths();
+    auto cached       = [&roots](const PathName& path) {
+        return std::any_of(roots.begin(), roots.end(),
+                                 [&path](const auto& root) { return path == root / "grid.yaml"; });
+    };
+
     for (const auto& path : paths) {
         if (path.exists()) {
             Log::debug<LibEcKitGeo>() << "eckit::geo::share::Grid::load('" << path.realName() << "')" << std::endl;
-            load(path);
+            try {
+                load(path);
+            }
+            catch (const eckit::Exception& e) {
+                if (!cached(path)) {
+                    throw;
+                }
+                Log::warning() << "Grid: '" << path << "' invalid, ignored (" << e.what() << ")" << std::endl;
+            }
         }
     }
 }

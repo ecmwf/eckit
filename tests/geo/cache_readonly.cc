@@ -76,9 +76,6 @@ void read_only(const PathName& root, bool yes) {
 CASE("read-only cache: cache files only found, otherwise computed in memory, and nothing written") {
     EXPECT_NOT(LibEcKitGeo::caching());
 
-    // not caching: searches in memory
-    EXPECT(LibEcKitGeo::searchCacheLoader() == "memory");
-
     const auto& paths = LibEcKitGeo::cacheRoots().paths();
     EXPECT(paths.size() == 1);
 
@@ -93,19 +90,31 @@ CASE("read-only cache: cache files only found, otherwise computed in memory, and
     EXPECT(LibEcKitGeo::cacheWritablePaths().empty());
     EXPECT_THROWS(LibEcKitGeo::cacheDir());
 
-    // provisioned, then read-only
-    const std::string uid = "test-cache-readonly";
-    {
+    // provisioned (k-d trees of points and of a grid), then read-only
+    auto provision = [&root](const std::string& uid, const std::vector<PointXYZ>& points) {
         const auto path = root / geo::cache::SearchCache::file_cache().relative(uid);
         path.dirName().mkdir();
 
         std::vector<KDTreeMapped<search::Traits>::Value> values;
-        for (size_t i = 0; i < POINTS.size(); ++i) {
-            values.emplace_back(POINTS[i], i);
+        for (size_t i = 0; i < points.size(); ++i) {
+            values.emplace_back(points[i], i);
         }
 
         AutoUmask umask(0);
-        KDTreeMapped<search::Traits>(path, POINTS.size(), 0).build(values);
+        KDTreeMapped<search::Traits>(path, points.size(), 0).build(values);
+    };
+
+    const std::string uid = "test-cache-readonly";
+    provision(uid, POINTS);
+
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O16}"));
+    {
+        const auto xyz = grid->to_xyz();
+        std::vector<PointXYZ> points;
+        for (size_t i = 0; i < xyz[0].size(); ++i) {
+            points.emplace_back(xyz[0][i], xyz[1][i], xyz[2][i]);
+        }
+        provision(Search::uid(*grid), points);
     }
 
     read_only(root, true);
@@ -121,13 +130,18 @@ CASE("read-only cache: cache files only found, otherwise computed in memory, and
         EXPECT(provisioned->nearest_neighbour(POINTS[1]).index == 1);
     }
 
-    SECTION("search: of a grid") {
-        std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O16}"));
+    SECTION("search: of a grid, provisioned") {
+        EXPECT(dynamic_cast<const KDTreeCache*>(&grid->search().kdtree()) != nullptr);
         EXPECT(grid->search().search_nn(grid->last_point()).index == grid->size() - 1);
     }
 
+    SECTION("search: of points, in memory") {
+        const Search search(std::vector<PointXYZ>{{1., 0., 0.}, {0., 1., 0.}});
+        EXPECT(dynamic_cast<const search::KDTreeMemory*>(&search.kdtree()) != nullptr);
+        EXPECT(search.search_nn(PointXYZ{0., 1., 0.}).index == 1);
+    }
+
     SECTION("crop: computed") {
-        std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O16}"));
         std::unique_ptr<const Area> area(AreaFactory::make_from_string("{area: [60, 0, 30, 30]}"));
 
         EXPECT_NOT(grid->crop(*area).empty());

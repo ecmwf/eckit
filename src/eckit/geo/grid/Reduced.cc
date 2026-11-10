@@ -18,18 +18,14 @@ namespace eckit::geo::grid {
 /// The current row and its longitudes (rows in the default order)
 struct Reduced::State final : Iterator::State {
     explicit State(const Reduced& grid) :
-        grid_(grid),
-        projection_(grid.projection()),
-        canonical_(grid.scan_.is_default() ? nullptr : &grid.canonical()),
-        nxacc_(grid.nxacc()),
-        latitudes_(grid.latitudes()) {}
+        grid_(grid), projection_(grid.projection()), nxacc_(grid.nxacc()), latitudes_(grid.latitudes()) {}
 
     Point point(size_t index) override {
-        // the point as in the default order
-        const auto c = canonical_ == nullptr ? index : canonical_->at(index);
+        const auto previous = j_;
+        const auto c        = grid_.canonical(index, j_);
 
-        if (longitudes_ == nullptr || !(nxacc_[j_] <= c && c < nxacc_[j_ + 1])) {
-            longitudes_ = &grid_.longitudes(j_ = grid_.row(c));
+        if (longitudes_ == nullptr || previous != j_) {
+            longitudes_ = &grid_.longitudes(j_);
         }
 
         return projection_.from_grid_xy(longitudes_->at(c - nxacc_[j_]), latitudes_.at(j_));
@@ -39,7 +35,6 @@ struct Reduced::State final : Iterator::State {
 
     const Reduced& grid_;
     const Projection& projection_;
-    const renumber_type* canonical_;
     const std::vector<size_t>& nxacc_;
     const std::vector<double>& latitudes_;
     size_t j_                              = 0;
@@ -52,8 +47,8 @@ Reduced::Reduced(order::ReducedScan scan, std::unique_ptr<const Projection> p) :
 
 
 Point Reduced::point(size_t index) const {
-    const auto c = scan_.is_default() ? index : canonical().at(index);
-    const auto j = row(c);
+    size_t j     = 0;
+    const auto c = canonical(index, j);
     return projection().from_grid_xy(longitude(j, c - nxacc()[j]), latitudes().at(j));
 }
 
@@ -81,9 +76,20 @@ pl_type Reduced::points_per_row() const {
 }
 
 
-const Grid::renumber_type& Reduced::canonical() const {
-    util::call_once(canonical_once_, [this]() { canonical_ = scan_.canonical(points_per_row()); });
-    return canonical_;
+size_t Reduced::canonical(size_t index, size_t& j) const {
+    const auto& acc = nxacc();
+    ASSERT(index < acc.back());
+
+    // j+ reverses all the points, so rows are reversed for i+j+ and i-j-
+    const auto j_positive = scan_.is_scan_j_positive();
+    const auto c          = j_positive ? acc.back() - 1 - index : index;
+
+    if (j + 1 >= acc.size() || c < acc[j] || acc[j + 1] <= c) {
+        j = row(c);
+    }
+
+    const auto row_reversed = scan_.is_scan_i_positive() == j_positive;
+    return row_reversed ? acc[j] + acc[j + 1] - 1 - c : c;
 }
 
 

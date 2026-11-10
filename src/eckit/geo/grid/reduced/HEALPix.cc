@@ -136,7 +136,6 @@ HEALPix::HEALPix(const Spec& spec) :
 HEALPix::HEALPix(size_t Nside, order_type order, std::unique_ptr<BoundingBox> bbox,
                  std::unique_ptr<const Projection> p) :
     Reduced(std::move(bbox), std::move(p)), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
-    ASSERT(y_);
 
     // the nested order is of Nside a power of 2 (checked by its renumbering)
     if (order_.order() == order::HEALPix::NESTED) {

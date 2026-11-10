@@ -455,9 +455,7 @@ Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
     lock_type lock;
     share::Projection::instance();
 
-    auto* cfg = new spec::Layered(spec);
-    ASSERT(cfg != nullptr);
-
+    auto cfg = std::make_unique<spec::Layered>(spec);
 
     // hardcoded, interpreted options (contributing to projectionspec)
 
@@ -470,7 +468,7 @@ Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
         cfg->push_back(new spec::Custom{{"type", "rotation"}, {"rotation", rotation}});
     }
 
-    return cfg;
+    return cfg.release();
 }
 
 

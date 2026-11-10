@@ -29,8 +29,6 @@ const Grid& Grid::instance() {
 
 
 Grid::Grid(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
-    ASSERT(spec_);
-
     // a cached grid.yaml, unlike an installed one, can be invalid (rewritten when caching)
     const auto& roots = LibEcKitGeo::cacheRoots().paths();
     auto cached       = [&roots](const PathName& path) {

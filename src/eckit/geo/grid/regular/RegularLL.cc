@@ -6,8 +6,8 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <memory>
 #include <regex>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Area.h"
@@ -70,12 +70,12 @@ RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
 
 RegularLL::RegularLL(const Spec& spec) :
     RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec),
-              order::RegularScan{spec}, ProjectionFactory::build(spec)) {}
+              order::RegularScan{spec}, projection_from_spec(spec)) {}
 
 
 RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::RegularScan s,
-                     const Projection* p) :
-    Regular(s, p),
+                     std::unique_ptr<const Projection> p) :
+    Regular(s, std::move(p)),
     x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},
     y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(), s.is_scan_j_positive() ? bbox.south() : bbox.north(),

@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <functional>
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -149,7 +150,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static KDTree* build(const std::string& loader, const std::string& uid, size_t size);
+    static std::unique_ptr<KDTree> build(const std::string& loader, const std::string& uid, size_t size);
 
     /// Memory usage of a k-d tree of size points, once built or loaded
     static KDTree::MemoryUsage estimate(const std::string& loader, size_t size);

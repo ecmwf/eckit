@@ -56,12 +56,13 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
 
 
 ReducedLonLat::ReducedLonLat(const Spec& spec) :
-    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, order::ReducedScan{spec},
-                  ProjectionFactory::build(spec)) {}
+    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, order::ReducedScan{spec}, projection_from_spec(spec)) {
+}
 
 
-ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan, const Projection* p) :
-    Reduced(std::move(scan), p), pl_(pl), longitude_(pl.size()) {
+ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan,
+                             std::unique_ptr<const Projection> p) :
+    Reduced(std::move(scan), std::move(p)), pl_(pl), longitude_(pl.size()) {
     if (pl_.empty() || std::any_of(pl_.begin(), pl_.end(), [](auto Ni) { return Ni < 0; })) {
         throw exception::SpecError("ReducedLonLat: {pl: [...]} (numbers of points, not negative) expected", Here());
     }
@@ -131,8 +132,7 @@ const std::string& ReducedLonLat::type() const {
 
 
 Grid* ReducedLonLat::make_grid_reordered(const order_type& to) const {
-    return new ReducedLonLat(pl_, boundingBox(), order::ReducedScan{to},
-                             projection().is_default() ? nullptr : ProjectionFactory::build(projection().spec()));
+    return new ReducedLonLat(pl_, boundingBox(), order::ReducedScan{to}, projection_copy());
 }
 
 

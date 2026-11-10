@@ -54,12 +54,12 @@ size_t pl_N(const pl_type& pl) {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec_pl(spec), BoundingBox{spec}, order::ReducedScan{spec}, ProjectionFactory::build(spec)) {}
+    ReducedGaussian(spec_pl(spec), BoundingBox{spec}, order::ReducedScan{spec}, projection_from_spec(spec)) {}
 
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan,
-                                 const Projection* p) :
-    Reduced(std::move(scan), p), N_(pl_N(pl)), pl_(pl), latitude_(N_, false) {
+                                 std::unique_ptr<const Projection> p) :
+    Reduced(std::move(scan), std::move(p)), N_(pl_N(pl)), pl_(pl), latitude_(N_, false) {
     const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
 
@@ -99,8 +99,9 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, ord
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, order::ReducedScan scan, const Projection* p) :
-    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, std::move(scan), p) {}
+ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, order::ReducedScan scan,
+                                 std::unique_ptr<const Projection> p) :
+    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, std::move(scan), std::move(p)) {}
 
 
 std::string ReducedGaussian::name() const {
@@ -162,8 +163,7 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
 
 
 Grid* ReducedGaussian::make_grid_reordered(const order_type& to) const {
-    return new ReducedGaussian(pl_, boundingBox(), order::ReducedScan{to},
-                               projection().is_default() ? nullptr : ProjectionFactory::build(projection().spec()));
+    return new ReducedGaussian(pl_, boundingBox(), order::ReducedScan{to}, projection_copy());
 }
 
 

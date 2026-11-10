@@ -21,7 +21,7 @@ namespace eckit::geo::grid::unstructured {
 ICON::ICON(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
                  arrangement_to_string(arrangement_from_string("ICON", spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+                 bounding_box_from_spec(spec), projection_from_spec(spec)) {}
 
 
 ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}

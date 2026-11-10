@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <memory>
 #include <numeric>
 #include <ostream>
 #include <sstream>
@@ -115,24 +114,24 @@ std::vector<size_t> KDTree::query_order(const std::vector<Point>& points) {
 }
 
 
-KDTree* KDTreeFactory::build(const std::string& loader, const std::string& uid, size_t size) {
+std::unique_ptr<KDTree> KDTreeFactory::build(const std::string& loader, const std::string& uid, size_t size) {
     // in memory, a k-d tree has its own layout (nodes allocated separately)
     if (loader == "memory") {
-        return new KDTreeMemory(size);
+        return std::make_unique<KDTreeMemory>(size);
     }
 
     if (!has(loader)) {
         unknown(loader);
     }
 
-    std::unique_ptr<KDTreeCache> cached(new KDTreeCache(loader, uid, size));
+    auto cached = std::make_unique<KDTreeCache>(loader, uid, size);
 
     // with nowhere to write, use a cache file only if found, else build in memory (unless a miss is an error)
     if (LibEcKitGeo::cacheWritablePaths().empty() && !LibEcKitGeo::cacheThrowOnMiss() && !cached->found()) {
-        return new KDTreeMemory(size);
+        return std::make_unique<KDTreeMemory>(size);
     }
 
-    return cached.release();
+    return cached;
 }
 
 

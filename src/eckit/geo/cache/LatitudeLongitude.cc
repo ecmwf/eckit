@@ -5,7 +5,6 @@
 #include "eckit/geo/cache/LatitudeLongitude.h"
 
 #include <map>
-#include <memory>
 #include <utility>
 
 #include "eckit/cache/Download.h"
@@ -30,7 +29,7 @@ struct State final : geo::Grid::Iterator::State {
 
     Point point(size_t index) override { return record_.point(index); }
 
-    [[nodiscard]] geo::Grid::Iterator::State* clone() const override { return new State(*this); }
+    std::unique_ptr<geo::Grid::Iterator::State> clone() const override { return std::make_unique<State>(*this); }
 
     const LatitudeLongitude& record_;
 };
@@ -39,8 +38,8 @@ struct State final : geo::Grid::Iterator::State {
 }  // namespace
 
 
-geo::Grid::Iterator::State* LatitudeLongitude::make_state() const {
-    return new State(*this);
+std::unique_ptr<geo::Grid::Iterator::State> LatitudeLongitude::make_state() const {
+    return std::make_unique<State>(*this);
 }
 
 

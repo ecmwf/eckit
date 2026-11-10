@@ -5,6 +5,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -42,7 +43,7 @@ public:
 
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::RegularScan = scan_default(),
-                       const Projection* = nullptr);
+                       std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 

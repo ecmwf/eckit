@@ -4,8 +4,8 @@
 
 #include "eckit/geo/grid/regular/RegularXY.h"
 
-#include <memory>
 #include <tuple>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -107,7 +107,7 @@ RegularXY::RangeXY RegularXY::RangeXY::make_from_spec(const Spec& spec, const st
 
 RegularXY::RegularXY(const Spec& spec) :
     RegularXY(range_from_spec(spec, "x"), range_from_spec(spec, "y"),
-              spec.has("projection") ? ProjectionFactory::build(spec) : nullptr, false_from_spec(spec)) {
+              spec.has("projection") ? projection_from_spec(spec) : nullptr, false_from_spec(spec)) {
     // the order is as the directions of x and y, and can scan j first
     if (spec.has("order")) {
         order::RegularScan s(spec);
@@ -120,14 +120,19 @@ RegularXY::RegularXY(const Spec& spec) :
 }
 
 
-RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, const Projection* p, const PointXY& false_xy) :
+RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, std::unique_ptr<const Projection> p, const PointXY& false_xy) :
+    RegularXY(x, y, p != nullptr, std::move(p), false_xy) {}
+
+
+RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, bool projected, std::unique_ptr<const Projection>&& p,
+                     const PointXY& false_xy) :
     Regular(
         order::RegularScan("i" + std::string(x.b() < x.a() ? "-" : "+") + "j" + std::string(y.b() < y.a() ? "-" : "+")),
-        p),
+        std::move(p)),
     x_(x),
     y_(y),
     false_(false_xy),
-    projected_(p != nullptr) {
+    projected_(projected) {
     if (empty()) {
         throw exception::GridError("RegularXY: no points", Here());
     }

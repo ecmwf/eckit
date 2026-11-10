@@ -26,9 +26,9 @@ public:
 
     explicit ReducedGaussian(const Spec&);
     explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             order::ReducedScan = order::ReducedScan(), const Projection* = nullptr);
+                             order::ReducedScan = order::ReducedScan(), std::unique_ptr<const Projection> = nullptr);
     explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             order::ReducedScan = order::ReducedScan(), const Projection* = nullptr);
+                             order::ReducedScan = order::ReducedScan(), std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 

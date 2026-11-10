@@ -51,6 +51,7 @@ public:
     // -- Overridden methods
 
     [[nodiscard]] const std::vector<double>& values() const override;
+    double value(size_t i) const override;
 
     [[nodiscard]] Regular* make_cropped_range(double crop_a, double crop_b) const override {
         return impl_->make_cropped_range(crop_a, crop_b);

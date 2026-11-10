@@ -103,8 +103,7 @@ public:
         return j_ < Nside_ ? 4 * (j_ + 1) : j_ < 3 * Nside_ ? 4 * Nside_ : 4 * (4 * Nside_ - 1 - j_);
     }
 
-    /// Longitude of the i-th point, without the values of the whole row
-    double value(size_t i) const {
+    double value(size_t i) const override {
         const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(size());
         const auto start = j_ < Nside_ || 3 * Nside_ - 1 < j_ || static_cast<bool>((j_ + Nside_) % 2) ? step / 2. : 0.;
         return start + static_cast<double>(i) * step;
@@ -236,6 +235,11 @@ const std::vector<double>& HEALPix::latitudes() const {
 
 const std::vector<double>& HEALPix::longitudes(size_t j) const {
     return range::HEALPixLongitude{Nside_, j}.values();
+}
+
+
+double HEALPix::longitude(size_t j, size_t i) const {
+    return range::HEALPixLongitude{Nside_, j}.value(i);
 }
 
 

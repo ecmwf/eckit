@@ -52,6 +52,7 @@ public:
 
     [[nodiscard]] const std::vector<double>& latitudes() const override;
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
+    double longitude(size_t j, size_t i) const override;
 
     // -- Class members
 

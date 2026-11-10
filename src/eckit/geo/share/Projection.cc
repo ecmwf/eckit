@@ -29,8 +29,6 @@ const Projection& Projection::instance() {
 
 
 Projection::Projection(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
-    ASSERT(spec_);
-
     for (const auto& path : paths) {
         if (path.exists()) {
             Log::debug<LibEcKitGeo>() << "eckit::geo::share::Projection::load('" << path.realName() << "')"

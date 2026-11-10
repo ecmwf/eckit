@@ -30,8 +30,6 @@ const Area& Area::instance() {
 
 
 Area::Area(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
-    ASSERT(spec_);
-
     for (const auto& path : paths) {
         if (path.exists()) {
             Log::debug<LibEcKitGeo>() << "eckit::geo::share::Area::load('" << path.realName() << "')" << std::endl;

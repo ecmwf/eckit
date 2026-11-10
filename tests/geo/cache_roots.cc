@@ -58,6 +58,12 @@ CASE("cache directories: found in order, written to the first writable") {
     const PathName ro(paths.front());
     const PathName rw(paths.back());
 
+    // grid definitions as installed, then cached (later files replace earlier ones, so the first root has precedence)
+    const auto share = LibEcKitGeo::shareGrid();
+    EXPECT(share.size() >= 2);
+    EXPECT(share[share.size() - 2] == rw / "grid.yaml");
+    EXPECT(share.back() == ro / "grid.yaml");
+
     const auto* env = ::getenv("ECKIT_GEO_TEST_CACHE_RW");
     EXPECT(env != nullptr && rw == PathName(env));
 

@@ -390,6 +390,9 @@ CASE("projection: proj vectors") {
         const auto ll = ortho->inv(v{0., 1e7}, v{0., 1e7});
         EXPECT(approx(v{ll[0][0], ll[1][0]}, v{0., 0.}, eps_ll));
         EXPECT(std::isnan(ll[0][1]) && std::isnan(ll[1][1]));
+
+        // a box of its centre beyond the visible disk: global, not an error
+        EXPECT(area::BoundingBox::make_from_projection(PointXY{5e6, 5e6}, PointXY{2e7, 2e7}, *ortho)->global());
     }
 }
 

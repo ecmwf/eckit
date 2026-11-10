@@ -21,14 +21,18 @@ std::vector<double> arange(double start, double stop, double step) {
     }
 
     // the number of steps, rounded if an integer within rounding errors (e.g. 0.3 / 0.1), otherwise truncated
-    auto steps = (stop - start) / step;
-    steps      = types::is_approximately_equal(steps, std::round(steps)) ? std::round(steps) : std::floor(steps);
+    const auto steps   = (stop - start) / step;
+    const auto to_stop = types::is_approximately_equal(steps, std::round(steps));
 
-    const auto num = static_cast<size_t>(steps) + 1;
+    const auto num = static_cast<size_t>(to_stop ? std::round(steps) : std::floor(steps)) + 1;
 
     std::vector<double> l(num);
     std::generate_n(l.begin(), num,
                     [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+
+    if (to_stop) {
+        l.back() = stop;  // no rounding past the end (e.g. a pole)
+    }
 
     return l;
 }

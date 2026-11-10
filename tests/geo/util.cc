@@ -66,6 +66,11 @@ CASE("eckit::geo::util::arange") {
     EXPECT(util::arange(0, 1, 0.1).size() == 11);
     EXPECT(util::arange(0, 0.7, 0.1).size() == 8);
 
+    // ending exactly at stop, if reached
+    EXPECT(util::arange(0, 0.3, 0.1).back() == 0.3);
+    EXPECT(util::arange(-89.8, 90, 0.1).back() == 90.);
+    EXPECT(util::arange(1, 0, -0.1).back() == 0.);
+
     // decreasing, or only start (step 0, or away from stop)
     EXPECT(is_approximately_equal_vector(util::arange(1, 0, -0.25), v{1, 0.75, 0.5, 0.25, 0}, EPS));
     EXPECT(util::arange(1, 2, 0) == v{1});

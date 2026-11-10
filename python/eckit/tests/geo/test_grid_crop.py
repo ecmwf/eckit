@@ -63,7 +63,7 @@ def test_polygons():
             dict(
                 x=[0, 120000, 2500],
                 y=[0, 170000, 2500],
-                false=[60000.021, 85000.055],
+                false_xy=[60000.021, 85000.055],
                 projection=dict(type="lcc", lat_0=51.967, lat_1=51.967, lon_0=4.9, reverse=True),
             ),
             BoundingBox(52, 4.5, 51.5, 5.5),
@@ -90,7 +90,7 @@ def test_projected_grid_crop(spec, area):
 LCC = dict(
     x=[0, 120000, 2500],
     y=[0, 170000, 2500],
-    false=[60000.021, 85000.055],
+    false_xy=[60000.021, 85000.055],
     projection=dict(type="lcc", lat_0=51.967, lat_1=51.967, lon_0=4.9, reverse=True),
 )
 

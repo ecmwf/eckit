@@ -150,8 +150,7 @@ Grid::uid_type FESOM::calculate_uid() const {
 
 
 Grid::Spec* FESOM::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get_spec(util::to_lower(str))
-                       : GridSpecByName::instance().get_spec(str, str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(util::to_lower(str)) : GridSpecByName::spec(str);
 }
 
 

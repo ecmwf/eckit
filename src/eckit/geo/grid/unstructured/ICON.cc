@@ -45,8 +45,7 @@ std::vector<size_t> ICON::shape() const {
 
 
 Grid::Spec* ICON::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get_spec(util::to_lower(str))
-                       : GridSpecByName::instance().get_spec(str, str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(util::to_lower(str)) : GridSpecByName::spec(str);
 }
 
 

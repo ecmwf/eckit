@@ -39,12 +39,13 @@ struct lock_tag;  // of this file's mutex
 using lock_type = util::lock_type<lock_tag>;
 
 
-/// Names are registered as regular expressions (as the grid name patterns), so a name is matched literally
-std::string literal_key(const std::string& name) {
+/// Names are registered as regular expressions (as the grid name patterns), so a name is matched literally (in lower
+/// case, as matched in any case)
+std::string name_key(const std::string& name) {
     static const std::string SPECIAL{R"(\^$.|?*+()[]{})"};
 
     std::string key;
-    for (auto c : name) {
+    for (auto c : util::to_lower(name)) {
         if (SPECIAL.find(c) != std::string::npos) {
             key += '\\';
         }
@@ -648,17 +649,31 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 
 
 void GridSpecByName::regist(const key_t& name, const spec::Custom& spec) {
-    regist(literal_key(name), std::make_unique<SpecByName>(spec_by_name(name, spec)));
+    regist(name_key(name), std::make_unique<SpecByName>(spec_by_name(name, spec)));
 }
 
 
 void GridSpecByName::replace(const key_t& name, const spec::Custom& spec) {
-    generator_t::instance().replace(literal_key(name), std::make_unique<SpecByName>(spec_by_name(name, spec)));
+    auto& generator = generator_t::instance();
+    const auto key  = name_key(name);
+
+    if (generator.exists(key)) {
+        if (std::unique_ptr<const spec::Spec> other(generator.get_spec(key, name)); other->str() != spec.str()) {
+            Log::warning() << "Grid: name '" << name << "' replaces another grid" << std::endl;
+        }
+    }
+
+    generator.replace(key, std::make_unique<SpecByName>(spec_by_name(name, spec)));
 }
 
 
 bool GridSpecByName::has_name(const std::string& name) {
-    return instance().exists(literal_key(name));
+    return instance().exists(name_key(name));
+}
+
+
+spec::Spec* GridSpecByName::spec(const std::string& name) {
+    return instance().get_spec(name_key(name), name);
 }
 
 

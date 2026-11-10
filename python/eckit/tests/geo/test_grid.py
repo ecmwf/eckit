@@ -27,6 +27,24 @@ def test_grid_shape(spec, shape):
     assert shape == grid.shape
 
 
+@pytest.mark.parametrize(
+    "spec, name",
+    [
+        (dict(grid=[10, 10]), ""),
+        (dict(pl=[20, 24, 24, 20]), "O2"),
+        (dict(grid="n32"), "N32"),
+        (dict(grid="o8"), "O8"),
+        (dict(grid="h2"), "H2"),
+        (dict(grid="h2n"), "H2"),
+        (dict(grid="t20"), "T20"),
+    ],
+)
+def test_grid_name_arrangement(spec, name):
+    grid = Grid(spec)
+    assert grid.name == name
+    assert grid.arrangement == ""
+
+
 def test_grid_unstructured_ll():
     grid = Grid(latitudes=[1, 2, 3], longitudes=[4, 5, 6])
 

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <memory>
-#include <numeric>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -42,8 +41,14 @@ bool Polygon::contains(const Point& p) const {
 
 
 double Polygon::area() const {
-    // NOTE this is "signed area", meaning it respects the point ordering (e.g. holes clockwise, as in GeoJSON)
-    return std::accumulate(begin(), end(), 0., [](auto a, const auto& poly) { return a + poly.area(true); });
+    // rings alternately include/exclude (see contains), so are signed by their nesting, whatever their orientation
+    double a = 0.;
+    for (const auto& ring : *this) {
+        const auto depth = std::count_if(
+            begin(), end(), [&ring](const auto& other) { return &other != &ring && other.contains(ring.front()); });
+        a += (depth % 2 == 0 ? 1. : -1.) * ring.area();
+    }
+    return a;
 }
 
 

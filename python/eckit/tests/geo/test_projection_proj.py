@@ -252,7 +252,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 120000, 2500],
                 y=[0, 170000, 2500],
-                false=[60000.021, 85000.055],
+                false_xy=[60000.021, 85000.055],
                 order="i+j+",
                 projection=dict(type="lcc", lat_0=51.967, lat_1=51.967, lon_0=4.9, reverse=True),
             ),
@@ -264,7 +264,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 1440000, 8000],
                 y=[0, -1104000, -8000],
-                false=[720000.044, -552000.009],
+                false_xy=[720000.044, -552000.009],
                 projection=dict(type="lcc", lat_0=5.12, lat_1=5.12, lon_0=308.65, reverse=True),
             ),
             "+proj=lcc +lat_0=5.12 +lat_1=5.12 +lon_0=308.65 +R=6371229",
@@ -275,7 +275,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 2475000, 45000],
                 y=[0, 1935000, 45000],
-                false=[10569854.248, -1607827.789],
+                false_xy=[10569854.248, -1607827.789],
                 order="i+j+",
                 projection=dict(type="merc", lat_ts=14, reverse=True),
             ),
@@ -287,7 +287,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 1910000, 2500],
                 y=[0, 1422500, 2500],
-                false=[1122822.896, 5597229.258],
+                false_xy=[1122822.896, 5597229.258],
                 order="i+j+",
                 projection=dict(type="stere", lat_0=90, lat_ts=60, lon_0=280, reverse=True),
             ),
@@ -299,7 +299,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 4995000, 5000],
                 y=[0, -4745000, -5000],
-                false=[1818500.021, -2287499.955],
+                false_xy=[1818500.021, -2287499.955],
                 projection=dict(type="laea", lat_0=52, lon_0=10, figure="grs80", reverse=True),
             ),
             "+proj=laea +lat_0=52 +lon_0=10 +ellps=GRS80",

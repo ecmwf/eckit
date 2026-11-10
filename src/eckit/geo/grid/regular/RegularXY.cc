@@ -56,6 +56,12 @@ RangeXY range_from_spec(const Spec& spec, const std::string& key) {
 /// False easting and northing: false_xy: [x, y] (by default [0, 0], e.g. of a projection with its own), or so the
 /// false origin (x, y) = (0, 0) is at false_lonlat: [lon, lat], by the projection
 PointXY false_from_spec(const Spec& spec) {
+    for (const std::string key : {"false", "false_x", "false_y"}) {
+        if (spec.has(key)) {
+            throw exception::SpecError("RegularXY: {false_xy: [x, y]} expected (not '" + key + "')", Here());
+        }
+    }
+
     const auto xy = spec.has("false_xy");
     const auto ll = spec.has("false_lonlat");
 

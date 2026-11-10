@@ -169,9 +169,7 @@ fn search_cache_accounts_for_loaded_searches() {
     search_cache_clear().expect("clear");
     let before = search_cache_statistics().expect("statistics");
 
-    let search = grid
-        .search()
-        .expect("search");
+    let search = grid.search().expect("search");
     let footprint = search.footprint().expect("footprint");
     assert!(footprint.process + footprint.shared > 0);
 
@@ -182,9 +180,7 @@ fn search_cache_accounts_for_loaded_searches() {
     assert!(after.usage.process >= footprint.process && after.usage.shared >= footprint.shared);
 
     // a second search of the same configuration is a hit
-    let again = grid
-        .search()
-        .expect("search");
+    let again = grid.search().expect("search");
     assert!(search_cache_statistics().expect("statistics").hits > after.hits);
     assert_eq!(again.footprint().expect("footprint"), footprint);
 }

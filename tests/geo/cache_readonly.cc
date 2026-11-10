@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstdint>
+#include <filesystem>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,6 +18,7 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Search.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/search/KDTree.h"
@@ -45,8 +49,31 @@ KDTree::Fill fill() {
 }
 
 
+std::map<std::string, std::uintmax_t> listing(const PathName& root) {
+    std::map<std::string, std::uintmax_t> files;
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(root.asString())) {
+        files[entry.path().string()] = entry.is_regular_file() ? entry.file_size() : 0;
+    }
+    return files;
+}
+
+
+void read_only(const PathName& root, bool yes) {
+    using std::filesystem::perms;
+    const auto p = perms::owner_read | perms::owner_exec | perms::group_read | perms::group_exec | perms::others_read |
+                   perms::others_exec | (yes ? perms::none : perms::owner_write);
+
+    std::filesystem::permissions(root.asString(), p);
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(root.asString())) {
+        if (entry.is_directory()) {
+            std::filesystem::permissions(entry.path(), p);
+        }
+    }
+}
+
+
 // ECKIT_GEO_CACHE_PATH and ECKIT_GEO_CACHING=0 are set by the test environment
-CASE("read-only cache: cache files only found, otherwise computed in memory") {
+CASE("read-only cache: cache files only found, otherwise computed in memory, and nothing written") {
     EXPECT_NOT(LibEcKitGeo::caching());
 
     // not caching: searches in memory
@@ -56,6 +83,9 @@ CASE("read-only cache: cache files only found, otherwise computed in memory") {
     EXPECT(paths.size() == 1);
 
     const auto& root = paths.front();
+    if (root.exists()) {
+        read_only(root, false);
+    }
     eckit::cache::DiskCache::remove(root);
     root.mkdir();
 
@@ -63,25 +93,27 @@ CASE("read-only cache: cache files only found, otherwise computed in memory") {
     EXPECT(LibEcKitGeo::cacheWritablePaths().empty());
     EXPECT_THROWS(LibEcKitGeo::cacheDir());
 
-    SECTION("k-d tree: built in memory, unless provisioned") {
-        const std::string uid = "test-cache-readonly";
+    // provisioned, then read-only
+    const std::string uid = "test-cache-readonly";
+    {
+        const auto path = root / geo::cache::SearchCache::file_cache().relative(uid);
+        path.dirName().mkdir();
 
-        std::unique_ptr<KDTree> missing(KDTreeFactory::build("mmap", uid, POINTS.size()));
-        EXPECT(dynamic_cast<search::KDTreeMemory*>(missing.get()) != nullptr);
-
-        // provisioned, as built elsewhere (the cache file layout)
-        {
-            const auto path = root / geo::cache::SearchCache::file_cache().relative(uid);
-            path.dirName().mkdir();
-
-            std::vector<KDTreeMapped<search::Traits>::Value> values;
-            for (size_t i = 0; i < POINTS.size(); ++i) {
-                values.emplace_back(POINTS[i], i);
-            }
-
-            AutoUmask umask(0);
-            KDTreeMapped<search::Traits>(path, POINTS.size(), 0).build(values);
+        std::vector<KDTreeMapped<search::Traits>::Value> values;
+        for (size_t i = 0; i < POINTS.size(); ++i) {
+            values.emplace_back(POINTS[i], i);
         }
+
+        AutoUmask umask(0);
+        KDTreeMapped<search::Traits>(path, POINTS.size(), 0).build(values);
+    }
+
+    read_only(root, true);
+    const auto files = listing(root);
+
+    SECTION("k-d tree: built in memory, unless provisioned") {
+        std::unique_ptr<KDTree> missing(KDTreeFactory::build("mmap", uid + "-missing", POINTS.size()));
+        EXPECT(dynamic_cast<search::KDTreeMemory*>(missing.get()) != nullptr);
 
         std::unique_ptr<KDTree> provisioned(KDTreeFactory::build("mmap", uid, POINTS.size()));
         EXPECT(dynamic_cast<KDTreeCache*>(provisioned.get()) != nullptr);
@@ -89,11 +121,19 @@ CASE("read-only cache: cache files only found, otherwise computed in memory") {
         EXPECT(provisioned->nearest_neighbour(POINTS[1]).index == 1);
     }
 
+    SECTION("search: of a grid") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O16}"));
+        EXPECT(grid->search().search_nn(grid->last_point()).index == grid->size() - 1);
+    }
+
     SECTION("crop: computed") {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: O16}"));
         std::unique_ptr<const Area> area(AreaFactory::make_from_string("{area: [60, 0, 30, 30]}"));
 
         EXPECT_NOT(grid->crop(*area).empty());
+
+        std::unique_ptr<const Grid> cropped(grid->make_grid_cropped(*area));
+        EXPECT(cropped->size() == grid->crop(*area).size());
     }
 
     SECTION("coordinates: in memory only") {
@@ -108,6 +148,9 @@ CASE("read-only cache: cache files only found, otherwise computed in memory") {
                          eckit::cache::CacheError);
     }
 
+    EXPECT(listing(root) == files);
+
+    read_only(root, false);
     eckit::cache::DiskCache::remove(root);
 }
 

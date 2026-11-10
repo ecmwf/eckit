@@ -267,6 +267,10 @@ CASE("rotation: Cartesian points") {
             const auto xyz = figure::UnitSphere::_convertSphericalToCartesian(p);
             EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(rotation.fwd(xyz)), rotation.fwd(p)));
             EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(rotation.inv(xyz)), rotation.inv(p)));
+
+            // as Point (variant)
+            EXPECT(points_equal(std::get<PointXYZ>(rotation.fwd(Point{xyz})), rotation.fwd(xyz)));
+            EXPECT(points_equal(std::get<PointXYZ>(rotation.inv(Point{xyz})), rotation.inv(xyz)));
         }
     }
 }

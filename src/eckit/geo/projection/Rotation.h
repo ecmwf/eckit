@@ -40,7 +40,6 @@ public:
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
     inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
 
-    /// Rotation of Cartesian points (on the unit sphere)
     inline PointXYZ fwd(const PointXYZ& p) const { return fwd_matrix_ * p; }
     inline PointXYZ inv(const PointXYZ& q) const { return inv_matrix_ * q; }
 
@@ -50,8 +49,8 @@ public:
 
     bool identity() const override { return !rotated_; }
 
-    inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
-    inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
+    Point fwd(const Point&) const override;
+    Point inv(const Point&) const override;
 
 protected:
 

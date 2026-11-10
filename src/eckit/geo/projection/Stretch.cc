@@ -27,7 +27,21 @@ Stretch::Stretch(double c, bool reverse) :
     S_(2. * c_ / (1. + c_ * c_)) {}
 
 
-Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("factor"), spec.get_bool("reverse", false)) {}
+namespace {
+
+
+double factor_from_spec(const Projection::Spec& spec) {
+    if (double c = 0.; spec.get("factor", c)) {
+        return c;
+    }
+    throw exception::SpecError("Stretch: {factor: c} (c > 0) expected", Here());
+}
+
+
+}  // namespace
+
+
+Stretch::Stretch(const Spec& spec) : Stretch(factor_from_spec(spec), spec.get_bool("reverse", false)) {}
 
 
 const std::string& Stretch::type() const {
@@ -71,10 +85,15 @@ PointLonLat Stretch::stretch(const PointLonLat& p, double C, double S) {
 
 
 PointXYZ Stretch::stretch(const PointXYZ& p, double C, double S) {
-    // sin(lat) = z, and cos(lat') = S cos(lat) / (1 + C z) scales x and y
-    const auto d = 1. + C * p.Z();
+    const auto r = std::sqrt(dot(p, p));
+    if (r == 0.) {
+        return p;
+    }
+
+    // sin(lat) = z / r, and cos(lat') = S cos(lat) / (1 + C sin(lat)) scales x and y
+    const auto d = 1. + C * p.Z() / r;
     const auto f = S / d;
-    return {f * p.X(), f * p.Y(), (C + p.Z()) / d};
+    return {f * p.X(), f * p.Y(), (C * r + p.Z()) / d};
 }
 
 

@@ -113,15 +113,17 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
     return result;
 }
 
+// std::toupper/tolower of a negative char (a non-ASCII byte, where char is signed) is undefined, so as unsigned char
+
 std::string StringTools::upper(const std::string& v) {
     std::string r = v;
-    std::transform(r.begin(), r.end(), r.begin(), static_cast<int (*)(int)>(toupper));
+    std::transform(r.begin(), r.end(), r.begin(), [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
     return r;
 }
 
 std::string StringTools::lower(const std::string& v) {
     std::string r = v;
-    std::transform(r.begin(), r.end(), r.begin(), static_cast<int (*)(int)>(tolower));
+    std::transform(r.begin(), r.end(), r.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     return r;
 }
 

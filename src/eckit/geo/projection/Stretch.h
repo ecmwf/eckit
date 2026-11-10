@@ -19,7 +19,7 @@ namespace eckit::geo::projection {
  * @details Conformal, keeping longitudes and the poles, it refines the resolution around the North Pole by 1 / c
  * (F. Schmidt, 1977, "Variable fine mesh in spectral global models"); with a rotation placing that pole, it stretches
  * variable resolution grids (e.g. LFRic's stretch_mesh, see factor_from_equatorial_latitude). fwd stretches, inv
- * reverses (as the inverse factor); points are (lon, lat) or Cartesian (on the unit sphere).
+ * reverses (as the inverse factor); points are (lon, lat) or Cartesian.
  */
 class Stretch : public Projection {
 public:

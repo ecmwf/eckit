@@ -190,6 +190,18 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
 }
 
 
+Point Rotation::fwd(const Point& p) const {
+    return std::holds_alternative<PointXYZ>(p) ? Point{fwd(std::get<PointXYZ>(p))}
+                                               : Point{fwd(std::get<PointLonLat>(p))};
+}
+
+
+Point Rotation::inv(const Point& q) const {
+    return std::holds_alternative<PointXYZ>(q) ? Point{inv(std::get<PointXYZ>(q))}
+                                               : Point{inv(std::get<PointLonLat>(q))};
+}
+
+
 const std::string& Rotation::type() const {
     static const std::string type{"rotation"};
     return type;

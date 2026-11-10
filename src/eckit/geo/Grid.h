@@ -273,13 +273,16 @@ struct GridSpecByName {
     }
     static void unregist(const key_t& pattern) { generator_t::instance().unregist(pattern); }
 
-    /// Register a name (matched literally, case-insensitive) with its spec, or replace it; these don't load the shared
-    /// grids (as instance does), since loading them registers by these
+    /// Register a name (matched literally, case-insensitive) with its spec, or replace it (warning if of another
+    /// grid); these don't load the shared grids (as instance does), since loading them registers by these
     static void regist(const key_t& name, const spec::Custom&);
     static void replace(const key_t& name, const spec::Custom&);
 
     /// If a name is registered (literally, not as matching a pattern)
     static bool has_name(const std::string& name);
+
+    /// Spec of a registered name (literally, not as matching a pattern)
+    [[nodiscard]] static spec::Spec* spec(const std::string& name);
 };
 
 

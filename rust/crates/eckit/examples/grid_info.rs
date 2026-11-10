@@ -260,7 +260,7 @@ fn caches(grid: Grid) {
     );
     field("footprint", &human_bytes(cache_footprint()));
     drop(grid);
-    cache_purge();
+    show("purge", cache_purge().map(|()| "done"));
     field("after purge", &human_bytes(cache_footprint()));
 }
 

@@ -375,9 +375,9 @@ mod ffi {
         #[must_use]
         fn cache_footprint() -> usize;
 
-        /// Purge eckit geo's in-memory caches.
+        /// Release the cached searches and crops; those in use stay valid.
         #[Self = "GridWrapper"]
-        fn cache_purge();
+        fn cache_purge() -> Result<()>;
     }
 }
 

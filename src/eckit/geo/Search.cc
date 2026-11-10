@@ -15,6 +15,7 @@
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -316,7 +317,7 @@ Search::Neighbours Search::search_knn_or_same_radius(const Point& p, size_t k, d
     check_radius(tolerance);
 
     auto knn = search_knn(p, k);
-    if (knn.empty() || knn.back().distance - knn.front().distance > tolerance) {
+    if (knn.empty() || !types::is_approximately_equal(knn.back().distance, knn.front().distance, tolerance)) {
         return knn;
     }
 

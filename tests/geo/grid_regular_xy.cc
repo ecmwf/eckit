@@ -109,6 +109,13 @@ CASE("RegularXY: x and y") {
             G(GridFactory::make_from_string(
                 "{x: [0, 2, 1], y: [0, 2, 1], false_lonlat: [1, 51], projection: {type: lcc, lat_1: 63.3}}")),
             exception::SpecError);
+
+        // the keys before false_xy
+        for (const std::string key : {"false: [1, 1]", "false_x: 1", "false_y: 1"}) {
+            EXPECT_THROWS_AS(
+                G(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 2, 1], " + key + ", " + projection + "}")),
+                exception::SpecError);
+        }
     }
 }
 

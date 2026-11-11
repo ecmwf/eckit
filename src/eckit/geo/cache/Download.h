@@ -5,13 +5,25 @@
 #pragma once
 
 // Deprecated, moved to eckit::cache (for existing users, e.g. mir)
+#include <string>
+
 #include "eckit/cache/Download.h"
 
 
 namespace eckit::geo::cache {
 
 
-using Download [[deprecated("use eckit::cache::Download")]] = eckit::cache::Download;
+class Download {
+public:
+
+    [[deprecated("use eckit::cache::Download")]] explicit Download(const PathName& root);
+
+    [[deprecated("use eckit::cache::Download::toCachedPath")]] PathName to_cached_path(const std::string& url) const;
+
+private:
+
+    eckit::cache::Download download_;
+};
 
 
 }  // namespace eckit::geo::cache

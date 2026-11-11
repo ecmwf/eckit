@@ -96,6 +96,8 @@ public:
 
         size_t index() const { return index_; }
 
+        [[deprecated("Grid::Iterator is a value (use '.')")]] const Iterator* operator->() const;
+
     private:
 
         const Grid* grid_;
@@ -103,6 +105,8 @@ public:
         size_t size_;
         mutable std::unique_ptr<State> state_;
     };
+
+    using iterator [[deprecated("use Grid::Iterator")]] = Iterator;
 
     // -- Constructors
 

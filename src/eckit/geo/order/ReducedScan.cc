@@ -15,7 +15,7 @@
 namespace eckit::geo::order {
 
 
-ReducedScan::ReducedScan(const order_type& order) : Scan(order) {
+ReducedScan::ReducedScan(const order_type& order) : Scan(order, mode_t{}) {
     if (!is_scan_i_then_j() || is_scan_alternating()) {
         throw exception::OrderError(
             "ReducedScan: invalid order '" + this->order() + "', choices are: i+j-, i+j+, i-j-, i-j+", Here());

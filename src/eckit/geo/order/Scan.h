@@ -43,12 +43,12 @@ public:
 
     static const order_type& order_default();
 
-protected:
+    // -- Deprecated (see deprecated.cc)
+
+    [[deprecated("use RegularScan or ReducedScan")]] explicit Scan(const order_type&);
+    [[deprecated("use RegularScan::reorder")]] renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
 
     // -- Constructors
-
-    /// Scanning mode, of any of the scanning modes (empty for the default)
-    explicit Scan(const order_type&);
 
     Scan(const Scan&) = default;
     Scan(Scan&&)      = default;
@@ -61,6 +61,17 @@ protected:
 
     Scan& operator=(const Scan&) = default;
     Scan& operator=(Scan&&)      = default;
+
+protected:
+
+    // -- Types
+
+    struct mode_t {};
+
+    // -- Constructors
+
+    /// Scanning mode, of any of the scanning modes (empty for the default)
+    Scan(const order_type&, mode_t);
 
 private:
 

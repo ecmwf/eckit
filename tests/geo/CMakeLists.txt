@@ -35,6 +35,7 @@ endfunction()
 foreach(_test
         area_boundingbox
         area_polygon
+        deprecated
         figure
         figure_earth
         figure_sun

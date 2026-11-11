@@ -22,6 +22,7 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo {
@@ -45,7 +46,7 @@ std::string name_key(const std::string& name) {
     static const std::string SPECIAL{R"(\^$.|?*+()[]{})"};
 
     std::string key;
-    for (auto c : util::to_lower(name)) {
+    for (auto c : StringTools::lower(name)) {
         if (SPECIAL.find(c) != std::string::npos) {
             key += '\\';
         }
@@ -61,7 +62,7 @@ std::unique_ptr<spec::Custom> spec_by_uid(const Grid::uid_type& uid, const spec:
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' without 'type'", Here());
     }
 
-    if (std::string _uid; spec.get("uid", _uid) && util::to_lower(_uid) != uid) {
+    if (std::string _uid; spec.get("uid", _uid) && StringTools::lower(_uid) != uid) {
         throw exception::SpecError("Grid: spec registered by uid '" + uid + "' with uid '" + _uid + "'", Here());
     }
 
@@ -263,7 +264,7 @@ Grid::uid_type Grid::uid() const {
 
 
 Grid::uid_type Grid::calculate_uid() const {
-    auto id = util::to_lower(MD5{spec_str()}.digest());
+    auto id = StringTools::lower(MD5{spec_str()}.digest());
 
     ASSERT(is_uid(id));
     return id;
@@ -274,7 +275,7 @@ void Grid::reset_uid(uid_type id) {
     ASSERT(is_uid(id) || id.empty());
 
     // uids are case-insensitive (hexadecimal digits), and kept in lowercase
-    uid_ = util::to_lower(id);
+    uid_ = StringTools::lower(id);
 }
 
 
@@ -566,7 +567,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     auto cfg = std::make_unique<spec::Layered>(spec);
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
-        uid = util::to_lower(uid);
+        uid = StringTools::lower(uid);
         if (!GridSpecByUID::instance().exists(uid)) {
             throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
         }
@@ -684,13 +685,13 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
-    const auto uid = util::to_lower(key);
+    const auto uid = StringTools::lower(key);
     regist(uid, std::make_unique<SpecByUID>(spec_by_uid(uid, spec)));
 }
 
 
 void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
-    const auto uid = util::to_lower(key);
+    const auto uid = StringTools::lower(key);
     generator_t::instance().replace(uid, std::make_unique<SpecByUID>(spec_by_uid(uid, spec)));
 }
 

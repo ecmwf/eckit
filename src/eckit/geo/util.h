@@ -68,14 +68,6 @@ std::pair<difference_type, difference_type> monotonic_crop(const std::vector<dou
 std::vector<double> reverse(const std::vector<double>&);
 
 
-/// String in lowercase
-std::string to_lower(const std::string&);
-
-
-/// String in uppercase
-std::string to_upper(const std::string&);
-
-
 /// If the reduced classical Gaussian pl of Gaussian number N is tabulated
 bool reduced_classical_pl_known(size_t N);
 

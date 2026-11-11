@@ -12,6 +12,7 @@
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::util {
@@ -100,7 +101,7 @@ void ORCA::fill_spec(spec::Custom& custom) const {
     // the uid, unless the name gives it
     if (std::unique_ptr<const Spec> named(
             GridSpecByName::has_name(grid) ? GridSpecByName::instance().match_spec(grid, grid) : nullptr);
-        !named || util::to_lower(named->get_string("uid")) != uid()) {
+        !named || StringTools::lower(named->get_string("uid")) != uid()) {
         custom.set("uid", uid());
     }
 }

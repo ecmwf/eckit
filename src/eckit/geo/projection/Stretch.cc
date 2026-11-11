@@ -9,6 +9,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -86,7 +87,7 @@ PointLonLat Stretch::stretch(const PointLonLat& p, double C, double S) {
 
 PointXYZ Stretch::stretch(const PointXYZ& p, double C, double S) {
     const auto r = std::sqrt(dot(p, p));
-    if (r == 0.) {
+    if (types::is_approximately_equal(r, 0.)) {
         return p;
     }
 

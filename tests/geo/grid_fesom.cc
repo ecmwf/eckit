@@ -10,11 +10,11 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/unstructured/FESOM.h"
-#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::test {
@@ -52,11 +52,11 @@ CASE("spec") {
     EXPECT(*grid1 == grid4);
 
     // uids in any case
-    grid::unstructured::FESOM upper(util::to_upper(UID_N));
+    grid::unstructured::FESOM upper(StringTools::upper(UID_N));
     EXPECT(upper.uid() == UID_N);
     EXPECT(*grid1 == upper);
 
-    std::unique_ptr<spec::Spec> upper_spec(grid::unstructured::FESOM::spec(util::to_upper(UID_N)));
+    std::unique_ptr<spec::Spec> upper_spec(grid::unstructured::FESOM::spec(StringTools::upper(UID_N)));
     EXPECT(upper_spec->get_string("uid") == UID_N);
 }
 

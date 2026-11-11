@@ -40,7 +40,7 @@ namespace {
 struct Mesh {
     explicit Mesh(const Grid::Spec& spec) {
         // download internally controls concurrent reads/writes
-        static const eckit::cache::Download download(LibEcKitGeo::cacheRoots() / "download");
+        static const eckit::cache::Download download(LibEcKitGeo::cacheRoots("download"));
 
         auto path = download.toCachedPath(LibEcKitGeo::url(spec.get_string("url")), "", ".ek");
         ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");

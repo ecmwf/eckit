@@ -48,7 +48,7 @@ PathName path_shp(const PathName& file) {
                             Here());
         }
 
-        static eckit::cache::Unzip unzip(LibEcKitGeo::cacheRoots() / "shapefile");
+        static eckit::cache::Unzip unzip(LibEcKitGeo::cacheRoots("shapefile"));
 
         auto dir = unzip.toCachedPath(file);
 
@@ -83,7 +83,7 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 
 
 PathName download(const std::string& url) {
-    static const eckit::cache::Download download(LibEcKitGeo::cacheRoots() / "download");
+    static const eckit::cache::Download download(LibEcKitGeo::cacheRoots("download"));
 
     const auto u = LibEcKitGeo::url(url);
     return download.toCachedPath(u, eckit::cache::Download::url_file_basename(u, false),

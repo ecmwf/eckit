@@ -42,16 +42,19 @@ public:
 
     /**
      * If cache files are written (eckit-geo-caching;$ECKIT_GEO_CACHING, default from CMake feature GEO_CACHING);
-     * otherwise existing cache files are still found, and misses are computed in-process (searches in memory, see
-     * searchCacheLoader) or fail (downloads)
+     * otherwise cache files are only found, in any of the cache paths, and misses are computed in-process (searches in
+     * memory, crops, grid coordinates) or fail (downloads)
      */
     static bool caching();
 
     /**
      * Cache paths (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH, "path1:path2:...", see eckit::cache::Roots), read once:
-     * searched in order, written to the first writable
+     * searched in order, written to the first writable (if caching; a read-only path is of a provisioned cache)
      */
     static const cache::Roots& cacheRoots();
+
+    /// Cache paths of a kind (a subdirectory, e.g. downloads), not writable if throwing on a cache miss
+    static cache::Roots cacheRoots(const std::string& kind);
 
     /// Cache paths existing (searched) and writable (none if not caching), as they are when called
     static std::vector<PathName> cacheReadablePaths();
@@ -61,8 +64,9 @@ public:
     static std::string cacheDir();
 
     /**
-     * If a missing cache file is an error rather than computed, for provisioned caches
-     * (eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS, default LibEcKitCache::throwOnMiss)
+     * If a missing cache file is an error rather than computed or downloaded (searches, crops, downloads, not grid
+     * coordinates), for provisioned caches (eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS, default
+     * LibEcKitCache::throwOnMiss)
      */
     static bool cacheThrowOnMiss();
 

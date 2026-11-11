@@ -82,7 +82,7 @@ struct Loader final : Cache::Loader {
         }
 
         if (spec->has("url")) {
-            static const eckit::cache::Download download(LibEcKitGeo::cacheRoots() / "download");
+            static const eckit::cache::Download download(LibEcKitGeo::cacheRoots("download"));
             record.read(download.toCachedPath(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }

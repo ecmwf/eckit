@@ -128,15 +128,27 @@ eckit_geo_add_test(cache_roots ENVIRONMENT
     "ECKIT_GEO_TEST_CACHE_RW=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/rw"
     "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/ro:{ENVVAR?ECKIT_GEO_TEST_CACHE_RW}")
 
-# read-only cache (not caching): cache files are only found, and computed in memory otherwise
+# a read-only (provisioned) cache: cache files are only found, and computed in memory otherwise
 eckit_geo_add_test(cache_readonly ENVIRONMENT
     "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_readonly"
+    "ECKIT_GEO_SEARCH_LOADER=mapped-file")
+
+# not caching: cache files found (also in writable paths), but never written
+eckit_geo_add_test(cache_no_write ENVIRONMENT
     "ECKIT_GEO_CACHING=0"
+    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_no_write"
+    "ECKIT_GEO_SEARCH_LOADER=mapped-file")
+
+# throwing on cache miss: provisioned cache files found, a miss is an error
+eckit_geo_add_test(cache_throw_on_miss ENVIRONMENT
+    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_throw_on_miss"
+    "ECKIT_GEO_CACHE_THROW_ON_MISS=1"
     "ECKIT_GEO_SEARCH_LOADER=mapped-file")
 
 add_subdirectory(integration)
 
 add_test(NAME eckit_test_geo_cache_cleanup
          COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_CURRENT_BINARY_DIR}/cache" "${CMAKE_CURRENT_BINARY_DIR}/cache_roots"
-                 "${CMAKE_CURRENT_BINARY_DIR}/cache_readonly" "${CMAKE_CURRENT_BINARY_DIR}/integration/cache")
+                 "${CMAKE_CURRENT_BINARY_DIR}/cache_readonly" "${CMAKE_CURRENT_BINARY_DIR}/cache_no_write"
+                 "${CMAKE_CURRENT_BINARY_DIR}/cache_throw_on_miss" "${CMAKE_CURRENT_BINARY_DIR}/integration/cache")
 set_tests_properties(eckit_test_geo_cache_cleanup PROPERTIES FIXTURES_CLEANUP eckit_geo_cache)

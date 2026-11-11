@@ -10,9 +10,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -45,7 +45,7 @@ std::vector<size_t> ICON::shape() const {
 
 
 Grid::Spec* ICON::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get_spec(util::to_lower(str)) : GridSpecByName::spec(str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(StringTools::lower(str)) : GridSpecByName::spec(str);
 }
 
 

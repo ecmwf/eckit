@@ -8,7 +8,7 @@
 #include <iterator>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/util.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo {
@@ -37,7 +37,7 @@ const Entry TABLE[]{
 
 
 Arrangement arrangement_from_string(const std::string& grid, const std::string& letter) {
-    const auto upper = util::to_upper(letter);
+    const auto upper = StringTools::upper(letter);
 
     std::string expected;
     for (const auto& entry : TABLE) {

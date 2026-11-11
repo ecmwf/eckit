@@ -15,6 +15,7 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::util {
@@ -49,7 +50,7 @@ Unstructured::Unstructured(const uid_type& _uid, const std::string& name, std::u
                            std::unique_ptr<const Projection> p) :
     Grid(std::move(bbox), std::move(p)) {
     ASSERT(is_uid(_uid));
-    const auto uid = util::to_lower(_uid);
+    const auto uid = StringTools::lower(_uid);
     reset_uid(uid);
     name_ = name;
 
@@ -143,7 +144,7 @@ void Unstructured::fill_spec(spec::Custom& custom) const {
         // the uid, unless the name gives it
         if (std::unique_ptr<const Spec> named(
                 GridSpecByName::has_name(grid) ? GridSpecByName::instance().match_spec(grid, grid) : nullptr);
-            !named || util::to_lower(named->get_string("uid")) != uid()) {
+            !named || StringTools::lower(named->get_string("uid")) != uid()) {
             custom.set("uid", uid());
         }
         return;

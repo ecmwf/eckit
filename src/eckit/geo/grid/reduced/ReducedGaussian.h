@@ -41,6 +41,8 @@ public:
     /// If pl is classical (of an N with a known classical pl) over the rows with points, as is_reduced_octahedral
     bool is_reduced_classical() const;
 
+    [[deprecated("use is_reduced_octahedral")]] bool octahedral() const;
+
     // -- Overridden methods
 
     std::string name() const override;

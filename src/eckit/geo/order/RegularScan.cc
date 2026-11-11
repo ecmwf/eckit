@@ -13,7 +13,7 @@
 namespace eckit::geo::order {
 
 
-RegularScan::RegularScan(const order_type& order) : Scan(order) {}
+RegularScan::RegularScan(const order_type& order) : Scan(order, mode_t{}) {}
 
 
 RegularScan::RegularScan(const Spec& spec) : RegularScan(spec.get_string("order", order_default())) {}

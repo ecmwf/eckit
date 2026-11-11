@@ -38,7 +38,7 @@ using section_t = std::map<std::string, std::string>;
 
 
 /// Sections of grid.yaml (as share::Grid::load), empty if it doesn't exist or is invalid (so it is rewritten)
-std::pair<section_t, section_t> read(const PathName& path) {
+std::pair<section_t, section_t> read(const PathName& path, bool warn = true) {
     if (!path.exists()) {
         return {};
     }
@@ -71,7 +71,9 @@ std::pair<section_t, section_t> read(const PathName& path) {
         return {uids, names};
     }
     catch (const eckit::Exception& e) {
-        Log::warning() << "Grid: '" << path << "' invalid, rewritten (" << e.what() << ")" << std::endl;
+        if (warn) {
+            Log::warning() << "Grid: '" << path << "' invalid, rewritten (" << e.what() << ")" << std::endl;
+        }
         return {};
     }
 }
@@ -125,7 +127,8 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     lock_type lock;
 
     // nowhere to write (not caching, or a read-only cache)
-    if (LibEcKitGeo::cacheWritablePaths().empty()) {
+    const auto writable = LibEcKitGeo::cacheWritablePaths();
+    if (writable.empty()) {
         return;
     }
 
@@ -140,10 +143,11 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
         return it != section.end() && it->second == spec_str;
     };
 
-    const auto path = LibEcKitGeo::cacheGrid();
-    eckit::cache::Roots::create_directory(path.dirName());
+    eckit::cache::Roots::create_directory(writable.front());
+    const auto path = writable.front() / "grid.yaml";
 
-    if (auto [uids, names] = read(path); has(uids, uid) && (name.empty() || has(names, name))) {
+    // (an invalid file is reported once, when rewritten)
+    if (auto [uids, names] = read(path, false); has(uids, uid) && (name.empty() || has(names, name))) {
         return;
     }
 

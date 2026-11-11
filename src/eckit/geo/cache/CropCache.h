@@ -49,6 +49,9 @@ public:
     /// Cache files of crops (crop/VERSION/<key>.crop)
     static const eckit::cache::FileCache& file_cache();
 
+    /// Key of the crop of a grid by an area (its cache file, see file_cache)
+    static std::string key(const Grid&, const Area&);
+
     /// Grid points contained in the area, by index, as the grid; cropping unprojected grids by a bounding box, points
     /// are as the cropped grid (rows are from the bounding box west)
     static Crop::renumber_type calculate(const Grid&, const Area&);

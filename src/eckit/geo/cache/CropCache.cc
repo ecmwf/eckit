@@ -52,12 +52,16 @@ CropCache::CropCache() :
     MemoryCache(LibEcKitGeo::memoryCaches(), LibEcKitGeo::cropCacheCapacity(), LibEcKitGeo::cropCachePolicy()) {}
 
 
-std::shared_ptr<const Crop> CropCache::get(const Grid& grid, const Area& area) {
+std::string CropCache::key(const Grid& grid, const Area& area) {
     MD5 md5;
     md5.add(grid.uid());
     md5.add(area.spec_str());
+    return md5.digest();
+}
 
-    const auto key = md5.digest();
+
+std::shared_ptr<const Crop> CropCache::get(const Grid& grid, const Area& area) {
+    const auto key = CropCache::key(grid, area);
 
     // at most every point (estimate)
     const eckit::cache::MemoryUsage estimate{grid.size() * sizeof(Crop::renumber_type::value_type), 0};

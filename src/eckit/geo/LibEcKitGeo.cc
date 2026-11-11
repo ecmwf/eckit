@@ -96,6 +96,12 @@ const cache::Roots& LibEcKitGeo::cacheRoots() {
 }
 
 
+cache::Roots LibEcKitGeo::cacheRoots(const std::string& kind) {
+    auto roots = cacheRoots() / kind;
+    return cacheThrowOnMiss() ? cache::Roots{roots.paths(), false} : roots;
+}
+
+
 std::vector<PathName> LibEcKitGeo::cacheReadablePaths() {
     return cacheRoots().readablePaths();
 }
@@ -318,15 +324,15 @@ void LibEcKitGeo::cacheInfo(JSON& j) {
 
 
 void LibEcKitGeo::removeCacheDir() {
-    if (!cacheWritablePaths().empty()) {
-        cache::DiskCache::remove(cacheDir());
+    if (const auto writable = cacheWritablePaths(); !writable.empty()) {
+        cache::DiskCache::remove(writable.front());
     }
 }
 
 
 void LibEcKitGeo::removeCacheGrid() {
-    if (!cacheWritablePaths().empty()) {
-        cache::DiskCache::remove(cacheGrid());
+    if (const auto writable = cacheWritablePaths(); !writable.empty()) {
+        cache::DiskCache::remove(writable.front() / "grid.yaml");
     }
 }
 

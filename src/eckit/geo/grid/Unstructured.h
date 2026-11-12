@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,14 +14,9 @@
 #include "eckit/geo/Projection.h"
 
 
-namespace eckit::geo {
-namespace cache {
+namespace eckit::geo::cache {
 class LatitudeLongitude;
 }
-namespace iterator {
-class Unstructured;
-}
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
@@ -44,14 +40,12 @@ public:
 
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
+    [[nodiscard]] Point point(size_t index) const override;
 
     std::vector<size_t> shape() const override;
 
     BoundingBox* calculate_bbox() const override;
 
-    [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     uid_type calculate_uid() const override;
@@ -66,14 +60,18 @@ protected:
 
     // -- Constructors
 
-    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr,
-                          const Projection* = nullptr);
+    explicit Unstructured(const uid_type&, const std::string& name = "", std::unique_ptr<BoundingBox> = nullptr,
+                          std::unique_ptr<const Projection> = nullptr);
     explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
-                          BoundingBox* = nullptr, const Projection* = nullptr);
+                          std::unique_ptr<BoundingBox> = nullptr, std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
     [[nodiscard]] const cache::LatitudeLongitude& record() const;
+
+    // -- Overridden methods
+
+    std::unique_ptr<Iterator::State> make_state() const override;
 
 private:
 
@@ -85,10 +83,6 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-
-    // -- Friends
-
-    friend class geo::iterator::Unstructured;
 };
 
 

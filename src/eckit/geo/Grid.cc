@@ -22,6 +22,7 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo {
@@ -35,14 +36,54 @@ constexpr size_t DIGEST_LENGTH = 32;
 static_assert(DIGEST_LENGTH == MD5_DIGEST_LENGTH * 2, "MD5 digest length mismatch");
 
 
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
+struct lock_tag;  // of this file's mutex
+using lock_type = util::lock_type<lock_tag>;
+
+
+/// Names are registered as regular expressions (as the grid name patterns), so a name is matched literally (in lower
+/// case, as matched in any case)
+std::string name_key(const std::string& name) {
+    static const std::string SPECIAL{R"(\^$.|?*+()[]{})"};
+
+    std::string key;
+    for (auto c : StringTools::lower(name)) {
+        if (SPECIAL.find(c) != std::string::npos) {
+            key += '\\';
+        }
+        key += c;
+    }
+    return key;
+}
+
+
+/// Grid spec registered by uid, with 'type' and 'uid' (the key)
+std::unique_ptr<spec::Custom> spec_by_uid(const Grid::uid_type& uid, const spec::Custom& spec) {
+    if (!spec.has("type")) {
+        throw exception::SpecError("Grid: spec registered by uid '" + uid + "' without 'type'", Here());
+    }
+
+    if (std::string _uid; spec.get("uid", _uid) && StringTools::lower(_uid) != uid) {
+        throw exception::SpecError("Grid: spec registered by uid '" + uid + "' with uid '" + _uid + "'", Here());
+    }
+
+    auto custom = std::make_unique<spec::Custom>(spec.container());
+    custom->set("uid", uid);
+    return custom;
+}
+
+
+/// Grid spec registered by name, with 'type'
+std::unique_ptr<spec::Custom> spec_by_name(const std::string& name, const spec::Custom& spec) {
+    if (!spec.has("type")) {
+        throw exception::SpecError("Grid: spec registered by name '" + name + "' without 'type'", Here());
+    }
+
+    return std::make_unique<spec::Custom>(spec.container());
+}
 
 
 struct SpecByUID final : GridSpecByUID::concrete_generator_t {
-    explicit SpecByUID(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    explicit SpecByUID(std::unique_ptr<const spec::Custom> spec) : spec_(std::move(spec)) {}
     spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
     bool match(const spec::Custom& other) const override { return other == *spec_; }
 
@@ -53,7 +94,7 @@ private:
 
 
 struct SpecByName final : GridSpecByName::concrete_generator_t {
-    explicit SpecByName(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    explicit SpecByName(std::unique_ptr<const spec::Custom> spec) : spec_(std::move(spec)) {}
     spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
     bool match(const spec::Custom& other) const override { return other == *spec_; }
 
@@ -76,8 +117,62 @@ struct Grid::Once {
 };
 
 
-Grid::Grid(BoundingBox* bbox, const Projection* proj) :
-    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()), once_(new Once) {}
+Grid::Iterator::Iterator(const Grid& grid, bool end) :
+    grid_(&grid), index_(end ? grid.size() : 0), size_(grid.size()) {}
+
+
+Grid::Iterator::Iterator(const Iterator& other) :
+    grid_(other.grid_),
+    index_(other.index_),
+    size_(other.size_),
+    state_(other.state_ ? other.state_->clone() : nullptr) {}
+
+
+Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
+    if (this != &other) {
+        grid_  = other.grid_;
+        index_ = other.index_;
+        size_  = other.size_;
+        state_ = other.state_ ? other.state_->clone() : nullptr;
+    }
+    return *this;
+}
+
+
+Grid::Iterator& Grid::Iterator::operator+=(difference_type d) {
+    const auto i = static_cast<difference_type>(index_) + d;
+    index_       = 0 <= i && i < static_cast<difference_type>(size_) ? static_cast<size_t>(i) : size_;
+    return *this;
+}
+
+
+Grid::Iterator Grid::Iterator::operator++(int) {
+    auto old = *this;
+    operator++();
+    return old;
+}
+
+
+Grid::Iterator Grid::Iterator::operator--(int) {
+    auto old = *this;
+    operator--();
+    return old;
+}
+
+
+Grid::Iterator::reference Grid::Iterator::operator*() const {
+    if (!state_) {
+        state_ = grid_->make_state();
+    }
+
+    return state_ ? state_->point(index_) : grid_->point(index_);
+}
+
+
+Grid::Grid(std::unique_ptr<BoundingBox> bbox, std::unique_ptr<const Projection> proj) :
+    bbox_(std::move(bbox)),
+    projection_(proj ? std::move(proj) : std::unique_ptr<const Projection>(ProjectionFactory::make_default())),
+    once_(new Once) {}
 
 
 Grid::~Grid() = default;
@@ -158,7 +253,9 @@ Grid::uid_type Grid::uid() const {
 
         lock_type lock;
         if (!GridSpecByUID::instance().exists(uid_)) {
-            GridSpecByUID::regist(uid_, custom_spec());
+            spec::Custom custom(custom_spec().container());
+            custom.set("type", type());
+            GridSpecByUID::regist(uid_, custom);
         }
     });
 
@@ -167,8 +264,7 @@ Grid::uid_type Grid::uid() const {
 
 
 Grid::uid_type Grid::calculate_uid() const {
-    auto id = MD5{spec_str()}.digest();
-    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
+    auto id = StringTools::lower(MD5{spec_str()}.digest());
 
     ASSERT(is_uid(id));
     return id;
@@ -177,26 +273,33 @@ Grid::uid_type Grid::calculate_uid() const {
 
 void Grid::reset_uid(uid_type id) {
     ASSERT(is_uid(id) || id.empty());
-    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
 
-    uid_ = id;
+    // uids are case-insensitive (hexadecimal digits), and kept in lowercase
+    uid_ = StringTools::lower(id);
 }
 
 
 Point Grid::first_point() const {
     ASSERT(!empty());
-    return *cbegin();
+    return point(0);
 }
 
 
 Point Grid::last_point() const {
     ASSERT(!empty());
-    return to_points().back();
+    return point(size() - 1);
 }
 
 
 std::vector<Point> Grid::to_points() const {
-    return {cbegin(), cend()};
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (const auto& p : *this) {
+        points.emplace_back(p);
+    }
+
+    return points;
 }
 
 
@@ -407,15 +510,27 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
-Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
+std::unique_ptr<Grid::BoundingBox> Grid::bounding_box_from_spec(const Spec& spec) {
     // NOTE: 'bounding_box' is how a grid catalogue entry spells its own 'area'; loose north/west/south/east keys are
     // not considered, they can describe the first/last grid point instead
     if (std::vector<double> bbox; spec.get("bounding_box", bbox)) {
-        ASSERT(bbox.size() == 4);
-        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
+        if (bbox.size() != 4) {
+            throw exception::SpecError("Grid: {bounding_box: [north, west, south, east]} expected", Here());
+        }
+        return std::make_unique<BoundingBox>(bbox[0], bbox[1], bbox[2], bbox[3]);
     }
 
-    return spec.has("area") ? BoundingBox::make_from_spec(spec).release() : nullptr;
+    return spec.has("area") ? BoundingBox::make_from_spec(spec) : nullptr;
+}
+
+
+std::unique_ptr<const Projection> Grid::projection_from_spec(const Spec& spec) {
+    return std::unique_ptr<const Projection>(ProjectionFactory::build(spec));
+}
+
+
+std::unique_ptr<const Projection> Grid::projection_copy() const {
+    return projection().is_default() ? nullptr : projection_from_spec(projection().spec());
 }
 
 
@@ -449,10 +564,10 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     lock_type lock;
     share::Grid::instance();  // ensure load of supporting files
 
-    auto* cfg = new spec::Layered(spec);
-    ASSERT(cfg != nullptr);
+    auto cfg = std::make_unique<spec::Layered>(spec);
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
+        uid = StringTools::lower(uid);
         if (!GridSpecByUID::instance().exists(uid)) {
             throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
         }
@@ -479,7 +594,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
 
     if (auto lats = cfg->has("latitudes"), lons = cfg->has("longitudes"); lats || lons) {
         if (lats != lons) {
-            throw exception::SpecError("Grid: both 'latitudes' and 'longitudes' are required", Here());
+            throw exception::SpecError("Grid: {latitudes: [...], longitudes: [...]} expected (both)", Here());
         }
         back->set("type", "unstructured_ll");
     }
@@ -512,7 +627,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
         }
     }
 
-    return cfg;
+    return cfg.release();
 }
 
 
@@ -534,13 +649,32 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 }
 
 
-void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
-    regist(key, new SpecByName(spec));
+void GridSpecByName::regist(const key_t& name, const spec::Custom& spec) {
+    regist(name_key(name), std::make_unique<SpecByName>(spec_by_name(name, spec)));
 }
 
 
-void GridSpecByName::replace(const key_t& key, const spec::Custom& spec) {
-    instance().replace(key, new SpecByName(spec));
+void GridSpecByName::replace(const key_t& name, const spec::Custom& spec) {
+    auto& generator = generator_t::instance();
+    const auto key  = name_key(name);
+
+    if (generator.exists(key)) {
+        if (std::unique_ptr<const spec::Spec> other(generator.get_spec(key, name)); other->str() != spec.str()) {
+            Log::warning() << "Grid: name '" << name << "' replaces another grid" << std::endl;
+        }
+    }
+
+    generator.replace(key, std::make_unique<SpecByName>(spec_by_name(name, spec)));
+}
+
+
+bool GridSpecByName::has_name(const std::string& name) {
+    return instance().exists(name_key(name));
+}
+
+
+spec::Spec* GridSpecByName::spec(const std::string& name) {
+    return instance().get_spec(name_key(name), name);
 }
 
 
@@ -551,12 +685,14 @@ GridSpecByUID::generator_t& GridSpecByUID::instance() {
 
 
 void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
-    regist(key, new SpecByUID(spec));
+    const auto uid = StringTools::lower(key);
+    regist(uid, std::make_unique<SpecByUID>(spec_by_uid(uid, spec)));
 }
 
 
 void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
-    instance().replace(key, new SpecByUID(spec));
+    const auto uid = StringTools::lower(key);
+    generator_t::instance().replace(uid, std::make_unique<SpecByUID>(spec_by_uid(uid, spec)));
 }
 
 

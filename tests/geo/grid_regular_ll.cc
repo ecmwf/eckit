@@ -12,9 +12,10 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -92,9 +93,11 @@ CASE("rotated") {
     }
 
 
-    SECTION("first and last points (rotated frame)") {
-        EXPECT(points_equal(grid->first_point(), PointLonLat{-10., 10.}));
-        EXPECT(points_equal(grid->last_point(), PointLonLat{10., -10.}));
+    SECTION("x and y (rotated frame)") {
+        const auto& x = grid->x().values();
+        const auto& y = grid->y().values();
+        EXPECT(points_equal(PointLonLat{x.front(), y.front()}, PointLonLat{-10., 10.}));
+        EXPECT(points_equal(PointLonLat{x.back(), y.back()}, PointLonLat{10., -10.}));
     }
 
 
@@ -464,7 +467,7 @@ CASE("scan modes") {
 
     SECTION("i+j+") {
         // i increasing (west to east), j increasing (South to North)
-        RegularLL grid({90., 90.}, {}, {}, order::Scan{"i+j+"});
+        RegularLL grid({90., 90.}, {}, {}, order::RegularScan{"i+j+"});
 
         EXPECT(grid.order() == "i+j+");
         EXPECT(grid.size() == 4 * 3);
@@ -485,7 +488,7 @@ CASE("scan modes") {
     }
 
     SECTION("j+i+") {
-        RegularLL grid({1., 1.}, {1, 0, 0, 2}, {}, order::Scan{"j+i+"});
+        RegularLL grid({1., 1.}, {1, 0, 0, 2}, {}, order::RegularScan{"j+i+"});
 
         EXPECT(grid.order() == "j+i+");
         EXPECT(grid.size() == 2 * 3);
@@ -862,6 +865,53 @@ CASE("RegularLL: rotated, projection as PROJ") {
     }
 }
 
+
+CASE("first and last points") {
+    for (const std::string spec : {"{grid: [5, 5]}", "{grid: [5, 5], rotation: [-40, -20]}",
+                                   "{grid: [5, 5], order: i+-j-}", "{grid: [5, 5], order: j-i+}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
+CASE("spec round trip, near the poles") {
+    // a pole is included if a value, or within an increment (not if at an increment, where a value would be)
+    for (const std::string spec : {
+             "{grid: [1, 1], area: [89, 0, 0, 10]}",
+             "{grid: [1, 1], area: [0, 0, -89, 10]}",
+             "{grid: [1, 1], area: [90, 0, 0, 10]}",
+             "{grid: [0.5, 0.5], area: [89.5, 0, -89.5, 10]}",
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+
+        EXPECT(*same == *grid);
+        EXPECT(same->spec_str() == grid->spec_str());
+        EXPECT(same->size() == grid->size());
+        EXPECT(points_equal(same->first_point(), grid->first_point()));
+        EXPECT(points_equal(same->last_point(), grid->last_point()));
+    }
+
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: [1, 1], area: [89, 0, 0, 10]}"));
+    EXPECT(grid->boundingBox().north() == 89.);
+    EXPECT(grid->spec_str() == R"({"area":[89,0,0,10],"grid":[1,1]})");
+}
+
+
+CASE("no points (in the area)") {
+    // of a reference not of the area (by default, its south-west corner, so of a point)
+    for (const std::string spec : {
+             "{grid: [1, 1], area: [10.8, 0, 10.2, 10], reference: [0, 0]}",
+             "{grid: [1, 1], area: [10, 0.2, 0, 0.8], reference: [0, 0]}",
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::GridError);
+    }
+}
 
 }  // namespace eckit::geo::test
 

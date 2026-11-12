@@ -13,7 +13,7 @@
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/order/HEALPix.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
@@ -301,12 +301,12 @@ CASE("order") {
 
     for (const auto& test : {
              test_t{{{"type", "regular_ll"}, {"grid", std::vector<double>{90, 90}}},
-                    order::Scan::order_default(),
+                    order::RegularScan::order_default(),
                     "i+j+",
                     R"({"grid":[90,90]})",
                     R"({"grid":[90,90],"order":"i+j+"})"},
              test_t{{{"type", "regular_gg"}, {"N", 2}},
-                    order::Scan::order_default(),
+                    order::RegularScan::order_default(),
                     "i+j+",
                     R"({"grid":"F2"})",
                     R"({"grid":"F2","order":"i+j+"})"},

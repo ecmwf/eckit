@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
@@ -52,43 +52,61 @@ public:
     using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
-    struct Iterator final : std::unique_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+    /// Position in a grid, by index (the end is the grid size)
+    class Iterator final {
+    public:
 
-        Iterator(const Iterator& other) : unique_ptr(other->clone()) {}
+        /// What a grid remembers between points, besides the index (e.g. the current row)
+        struct State {
+            virtual ~State()                             = default;
+            virtual Point point(size_t index)            = 0;
+            virtual std::unique_ptr<State> clone() const = 0;
+        };
+
+        using iterator_category = std::input_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = Point;
+        using pointer           = void;
+        using reference         = value_type;
+
+        explicit Iterator(const Grid&, bool end = false);
+
+        Iterator(const Iterator&);
         Iterator(Iterator&&) noexcept = default;
 
-        Iterator& operator=(const Iterator& other) {
-            if (this != &other) {
-                reset(other->clone());
-            }
-            return *this;
-        }
+        ~Iterator() = default;
 
+        Iterator& operator=(const Iterator&);
         Iterator& operator=(Iterator&&) noexcept = default;
 
-        using iterator_category = element_type::iterator_category;
-        using difference_type   = element_type::difference_type;
-        using value_type        = element_type::value_type;
-        using pointer           = element_type::pointer;
-        using reference         = element_type::reference;
+        bool operator==(const Iterator& other) const { return grid_ == other.grid_ && index_ == other.index_; }
+        bool operator!=(const Iterator& other) const { return !operator==(other); }
 
-        bool operator==(const Iterator& other) const { return get()->operator==(*(other.get())); }
-        bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
+        Iterator& operator+=(difference_type);
+        Iterator& operator-=(difference_type d) { return operator+=(-d); }
 
-        bool operator++() { return get()->operator++(); }
-        bool operator+=(difference_type d) { return get()->operator+=(d); }
+        Iterator& operator++() { return operator+=(1); }
+        Iterator& operator--() { return operator+=(-1); }
 
-        bool operator--() { return get()->operator--(); }
-        bool operator-=(difference_type d) { return get()->operator-=(d); }
+        Iterator operator++(int);
+        Iterator operator--(int);
 
-        explicit operator bool() const { return get()->operator bool(); }
-        Point operator*() const { return get()->operator*(); }
+        explicit operator bool() const { return index_ < size_; }
+        reference operator*() const;
 
-        size_t index() const { return get()->index(); }
+        size_t index() const { return index_; }
+
+        [[deprecated("Grid::Iterator is a value (use '.')")]] const Iterator* operator->() const;
+
+    private:
+
+        const Grid* grid_;
+        size_t index_;
+        size_t size_;
+        mutable std::unique_ptr<State> state_;
     };
 
-    using iterator = Iterator;
+    using iterator [[deprecated("use Grid::Iterator")]] = Iterator;
 
     // -- Constructors
 
@@ -106,11 +124,14 @@ public:
 
     // -- Methods
 
-    iterator begin() const { return cbegin(); }
-    iterator end() const { return cend(); }
+    Iterator begin() const { return cbegin(); }
+    Iterator end() const { return cend(); }
 
-    virtual iterator cbegin() const = 0;
-    virtual iterator cend() const   = 0;
+    Iterator cbegin() const { return Iterator{*this}; }
+    Iterator cend() const { return Iterator{*this, true}; }
+
+    /// Point by index, in the grid order; iterating is faster over many points
+    [[nodiscard]] virtual Point point(size_t index) const = 0;
 
     [[nodiscard]] const Spec& spec() const { return custom_spec(); }
     [[nodiscard]] std::string spec_str() const { return spec().str(); }
@@ -132,14 +153,14 @@ public:
     uid_type uid() const;
     [[nodiscard]] virtual uid_type calculate_uid() const;
 
-    [[nodiscard]] virtual Point first_point() const;
-    [[nodiscard]] virtual Point last_point() const;
+    [[nodiscard]] Point first_point() const;
+    [[nodiscard]] Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
 
     /// Coordinate names of the grid, eg. ("x", "y") or ("longitude", "latitude") (see point_coordinates)
     const std::vector<std::string>& point_coordinates() const;
 
-    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lon, lat)
+    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lat, lon)
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
     /// Coordinates (one vector per coordinate), on their figure, as geocentric cartesian (x, y, z)
@@ -197,18 +218,25 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(BoundingBox* = nullptr, const Projection* = nullptr);
+    explicit Grid(std::unique_ptr<BoundingBox> = nullptr, std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
+
+    /// What iterating over this grid remembers between points, if anything
+    virtual std::unique_ptr<Iterator::State> make_state() const { return nullptr; }
 
     void reset_uid(uid_type = {});
 
     void projection(const Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
-    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
+    static std::unique_ptr<BoundingBox> bounding_box_from_spec(const Spec&);
+    static std::unique_ptr<const Projection> projection_from_spec(const Spec&);
+
+    /// The projection, for a grid made from this one (none if the default)
+    std::unique_ptr<const Projection> projection_copy() const;
 
 private:
 
@@ -242,10 +270,23 @@ struct GridSpecByName {
     using concrete_generator_t = generator_t::generator_t;
 
     static generator_t& instance();
-    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
-    static void regist(const key_t& key, const spec::Custom&);
-    static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
-    static void replace(const key_t& key, const spec::Custom&);
+
+    /// Register a name pattern (a regular expression, case-insensitive)
+    static void regist(const key_t& pattern, std::unique_ptr<concrete_generator_t> gen) {
+        generator_t::instance().regist(pattern, std::move(gen));
+    }
+    static void unregist(const key_t& pattern) { generator_t::instance().unregist(pattern); }
+
+    /// Register a name (matched literally, case-insensitive) with its spec, or replace it (warning if of another
+    /// grid); these don't load the shared grids (as instance does), since loading them registers by these
+    static void regist(const key_t& name, const spec::Custom&);
+    static void replace(const key_t& name, const spec::Custom&);
+
+    /// If a name is registered (literally, not as matching a pattern)
+    static bool has_name(const std::string& name);
+
+    /// Spec of a registered name (literally, not as matching a pattern)
+    [[nodiscard]] static spec::Spec* spec(const std::string& name);
 };
 
 
@@ -255,9 +296,14 @@ struct GridSpecByUID {
     using concrete_generator_t = generator_t::generator_t;
 
     static generator_t& instance();
-    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
-    static void regist(const key_t& key, const spec::Custom&);
+    static void regist(const key_t& key, std::unique_ptr<concrete_generator_t> gen) {
+        generator_t::instance().regist(key, std::move(gen));
+    }
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+
+    /// Register a uid (case-insensitive) with its spec, or replace it; these don't load the shared grids (as instance
+    /// does), since loading them registers by these
+    static void regist(const key_t& key, const spec::Custom&);
     static void replace(const key_t& key, const spec::Custom&);
 };
 
@@ -267,13 +313,15 @@ using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
 
 template <typename T>
-using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
+struct GridRegisterUID {
+    explicit GridRegisterUID(const std::string& uid) { spec::ConcreteSpecGeneratorT0<T>::regist(uid); }
+};
 
 
 template <typename T>
 struct GridRegisterName {
     explicit GridRegisterName(const std::string& name_or_pattern) {
-        new spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+        spec::ConcreteSpecGeneratorT1<T, const std::string&>::regist(name_or_pattern);
     }
 };
 

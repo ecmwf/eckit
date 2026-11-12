@@ -4,7 +4,7 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
-#include <memory>
+#include <utility>
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -53,21 +53,25 @@ range::GaussianLatitude make_y(size_t N, const area::BoundingBox& bbox, bool pos
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni", 0), BoundingBox(spec), order::Scan{spec},
-                    ProjectionFactory::build(spec)) {}
+    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni", 0), BoundingBox(spec), order::RegularScan{spec},
+                    projection_from_spec(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, const Projection* p) :
-    RegularGaussian(N, 0, bbox, s, p) {}
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::RegularScan s,
+                                 std::unique_ptr<const Projection> p) :
+    RegularGaussian(N, 0, bbox, s, std::move(p)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::Scan s, const Projection* p) :
-    Regular(s, p),
+RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::RegularScan s,
+                                 std::unique_ptr<const Projection> p) :
+    Regular(s, std::move(p)),
     N_(check_N(N)),
     ni_(ni == 0 ? 4 * N_ : ni),
     x_(make_x(ni_, bbox, s.is_scan_i_positive())),
     y_(make_y(N_, bbox, s.is_scan_j_positive())) {
-    ASSERT(!empty());
+    if (empty()) {
+        throw exception::GridError("RegularGaussian: no points (in the area)", Here());
+    }
 }
 
 
@@ -93,18 +97,6 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 const std::string& RegularGaussian::type() const {
     static const std::string type{"regular_gg"};
     return type;
-}
-
-
-Point RegularGaussian::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};
-}
-
-
-Point RegularGaussian::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().back(), y().values().back()};
 }
 
 

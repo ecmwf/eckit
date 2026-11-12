@@ -10,7 +10,6 @@ import pytest
 from eckit.geo import Grid
 from eckit.geo import Projection
 from eckit.geo._eckit_geo import projdb_is_available
-from eckit.geo._eckit_geo import projdb_reset
 from eckit.geo._eckit_geo import projdb_set_search_paths
 
 # Only meaningful when eckit was compiled with PROJ *and* a usable proj.db is
@@ -54,7 +53,10 @@ def _restore_proj_context():
 
     from eckit._utils import configure_projdb
 
-    # A fresh context and the bundled fallback if this build relies on it
+    # Recreate the context (drops any test database path, re-resolves the
+    # defaults from the now-restored environment), then re-apply the bundled
+    # fallback if this build relies on it.
+    projdb_set_search_paths("", [])
     configure_projdb()
 
 
@@ -65,26 +67,13 @@ def test_projdb_bad_search_paths():
 
 def test_projdb_bad_env():
     os.environ["PROJ_DATA"] = BAD_DIR
-    projdb_reset()
+    projdb_set_search_paths("", [])
     assert not projdb_is_available()
-
-
-def test_projdb_reset():
-    from eckit._utils import configure_projdb
-
-    available = projdb_is_available()
-
-    projdb_set_search_paths(BAD_DB, [BAD_DIR])
-    assert not projdb_is_available()
-
-    # as on import: a fresh context, and the bundled fallback if needed
-    configure_projdb()
-    assert projdb_is_available() == available
 
 
 @pytest.mark.skipif(db_path() is None, reason="no bundled proj.db")
 def test_projdb_fallback():
-    projdb_reset()
+    projdb_set_search_paths("", [])
     if projdb_is_available():
         pytest.skip("proj.db resolved without the bundled fallback")
 
@@ -249,7 +238,7 @@ def test_projection_proj_str_rotation():
     assert rotation.proj_str == "+proj=ob_tran +lon_0=10 +o_lat_p=40 +o_lon_p=25 +o_proj=longlat +R=6371229"
 
 
-@pytest.mark.parametrize("spec", [dict(type="space_view", h=35785831.0), dict(type="stretch", stretching_factor=2.0)])
+@pytest.mark.parametrize("spec", [dict(type="space_view", h=35785831.0), dict(type="stretch", factor=2.0)])
 def test_projection_proj_str_not_available(spec):
     with pytest.raises(RuntimeError):
         Projection(spec).proj_str
@@ -263,7 +252,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 120000, 2500],
                 y=[0, 170000, 2500],
-                false=[60000.021, 85000.055],
+                false_xy=[60000.021, 85000.055],
                 order="i+j+",
                 projection=dict(type="lcc", lat_0=51.967, lat_1=51.967, lon_0=4.9, reverse=True),
             ),
@@ -275,7 +264,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 1440000, 8000],
                 y=[0, -1104000, -8000],
-                false=[720000.044, -552000.009],
+                false_xy=[720000.044, -552000.009],
                 projection=dict(type="lcc", lat_0=5.12, lat_1=5.12, lon_0=308.65, reverse=True),
             ),
             "+proj=lcc +lat_0=5.12 +lat_1=5.12 +lon_0=308.65 +R=6371229",
@@ -286,7 +275,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 2475000, 45000],
                 y=[0, 1935000, 45000],
-                false=[10569854.248, -1607827.789],
+                false_xy=[10569854.248, -1607827.789],
                 order="i+j+",
                 projection=dict(type="merc", lat_ts=14, reverse=True),
             ),
@@ -298,7 +287,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 1910000, 2500],
                 y=[0, 1422500, 2500],
-                false=[1122822.896, 5597229.258],
+                false_xy=[1122822.896, 5597229.258],
                 order="i+j+",
                 projection=dict(type="stere", lat_0=90, lat_ts=60, lon_0=280, reverse=True),
             ),
@@ -310,7 +299,7 @@ def test_projection_proj_str_not_available(spec):
             dict(
                 x=[0, 4995000, 5000],
                 y=[0, -4745000, -5000],
-                false=[1818500.021, -2287499.955],
+                false_xy=[1818500.021, -2287499.955],
                 projection=dict(type="laea", lat_0=52, lon_0=10, figure="grs80", reverse=True),
             ),
             "+proj=laea +lat_0=52 +lon_0=10 +ellps=GRS80",

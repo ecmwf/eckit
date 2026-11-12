@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -21,6 +22,10 @@ CASE("points (global)") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec));
 
     EXPECT(grid->size() == 88);
+
+    // gridspec (type is explicit, not to be taken as reduced_gg by its pl) builds the same grid
+    EXPECT(grid->spec_str() == R"({"pl":[20,24,24,20],"type":"reduced_ll"})");
+    EXPECT(*grid == *std::unique_ptr<const Grid>(GridFactory::make_from_string(grid->spec_str())));
 
     const std::vector<PointLonLat> ref{
         {0., 90.},    {18., 90.},   {36., 90.},   {54., 90.},   {72., 90.},    //
@@ -233,6 +238,76 @@ CASE("points (contains zeros)") {
     EXPECT(points_equal(points[321], PointLonLat{2.1176470588, 80.28}));
 }
 
+
+CASE("first and last points") {
+    for (const std::string spec :
+         {"{type: reduced_ll, pl: [20, 24, 24, 20]}", "{type: reduced_ll, pl: [0, 10, 0], area: [10, 0, -10, 40]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
+CASE("order: scanning i and j, positively or negatively") {
+    const spec::Custom spec{{"type", "reduced_ll"}, {"pl", std::vector<long>{20, 24, 24, 20}}};
+    std::unique_ptr<const Grid> reference(GridFactory::build(spec));
+
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        spec::Custom ordered(spec.container());
+        ordered.set("order", order);
+
+        std::unique_ptr<const Grid> grid(GridFactory::build(ordered));
+        EXPECT(grid->order() == order);
+
+        // the first point: of the northern or southern row (20 points), west or east
+        const bool j_positive = order.find("j+") != std::string::npos;
+        const bool i_negative = order.find("i-") != std::string::npos;
+        EXPECT(points_equal(grid->first_point(), PointLonLat{i_negative ? 342. : 0., j_positive ? -90. : 90.}));
+
+        // the same points as in the default order, renumbered
+        const auto ren    = reference->reorder(order);
+        const auto points = grid->to_points();
+        const auto ref    = reference->to_points();
+        EXPECT(points.size() == ref.size());
+
+        bool same = points.size() == ref.size();
+        for (size_t k = 0; same && k < ref.size(); ++k) {
+            same = points_equal(points.at(ren[k]), ref[k]);
+        }
+        EXPECT(same);
+
+        // the spec has the order (if not the default), and rebuilds the grid
+        EXPECT(*std::unique_ptr<const Grid>(GridFactory::make_from_string(grid->spec_str())) == *grid);
+        EXPECT((grid->spec_str().find(R"("order":)") != std::string::npos) == (order != "i+j-"));
+        EXPECT(*std::unique_ptr<const Grid>(grid->make_grid_reordered("i+j-")) == *reference);
+    }
+}
+
+
+CASE("wrong spec") {
+    for (const std::string spec : {
+             "{type: reduced_ll, pl: [2, -1, 2]}",                     // negative number of points
+             "{type: reduced_ll, pl: [4]}",                            // a single row
+             "{type: reduced_ll, pl: [4, 4], area: [10, 0, 10, 10]}",  // south = north
+         }) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::SpecError);
+    }
+
+    // south > north
+    EXPECT_THROWS_AS(std::unique_ptr<const Grid>(
+                         GridFactory::make_from_string("{type: reduced_ll, pl: [4, 4], area: [0, 0, 10, 10]}")),
+                     exception::AreaError);
+
+    // a row of a single point (at west), or of none
+    std::unique_ptr<const Grid> grid(
+        GridFactory::make_from_string("{type: reduced_ll, pl: [1, 0, 2], area: [10, 0, 0, 10]}"));
+    EXPECT(grid->size() == 3);
+    EXPECT(points_equal(grid->first_point(), PointLonLat{0., 10.}));
+}
 
 }  // namespace eckit::geo::test
 

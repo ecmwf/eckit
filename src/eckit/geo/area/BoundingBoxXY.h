@@ -39,11 +39,13 @@ public:
     // -- Operators
 
     BoundingBoxXY& operator=(const BoundingBoxXY& other) {
+        Area::operator=(other);
         container_type::operator=(other);
         return *this;
     }
 
     BoundingBoxXY& operator=(BoundingBoxXY&& other) {
+        Area::operator=(other);
         container_type::operator=(other);
         return *this;
     }

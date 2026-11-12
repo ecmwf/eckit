@@ -9,8 +9,8 @@ import pytest
 from eckit.geo import Figure
 from eckit.geo import Grid
 from eckit.geo import Projection
-from eckit.geo import search_cache_clear
-from eckit.geo import search_cache_statistics
+from eckit.geo import cache
+from eckit.geo import cache_purge
 
 SPECS = [
     (dict(grid="1/1"), (181, 360)),
@@ -25,6 +25,24 @@ SPECS = [
 def test_grid_shape(spec, shape):
     grid = Grid(spec)
     assert shape == grid.shape
+
+
+@pytest.mark.parametrize(
+    "spec, name",
+    [
+        (dict(grid=[10, 10]), ""),
+        (dict(pl=[20, 24, 24, 20]), "O2"),
+        (dict(grid="n32"), "N32"),
+        (dict(grid="o8"), "O8"),
+        (dict(grid="h2"), "H2"),
+        (dict(grid="h2n"), "H2"),
+        (dict(grid="t20"), "T20"),
+    ],
+)
+def test_grid_name_arrangement(spec, name):
+    grid = Grid(spec)
+    assert grid.name == name
+    assert grid.arrangement == ""
 
 
 def test_grid_unstructured_ll():
@@ -127,7 +145,7 @@ def test_grid_figure():
     figure = grid.figure
 
     assert isinstance(figure, Figure)
-    assert figure.spec_str == figure.spec_str
+    assert figure.spec_str == '{"figure":"earth"}'  # the default figure
     assert figure.spec == loads(figure.spec_str)
     assert figure.a == figure.b  # default figure is spherical
     assert figure.spherical
@@ -234,41 +252,29 @@ def test_grid_search():
 def test_grid_search_spec():
     grid = Grid(grid=[30, 30])
 
-    search = grid.search(loader="memory", search="knn", k=3)
+    search = grid.search(search="knn", k=3)
     assert search.search((15, 0)) == search.search_knn((15, 0), 3)
 
     with pytest.raises(RuntimeError):
         grid.search(search="knn")  # k is required
 
-
-LOADERS = [
-    ("memory", "memory"),
-    ("mmap", "shared"),
-    ("mapped-memory", "shared"),  # the default, as mir
-    ("file-io", "memory"),
-    ("tmp-shmem", "shared"),  # removed at exit
-    ("tmp-shared-memory", "shared"),
-]
+    with pytest.raises(ValueError):
+        grid.search(loader="memory")  # of the library
 
 
-@pytest.mark.parametrize("loader, usage", LOADERS)
-def test_grid_search_loaders(loader, usage):
+def test_grid_search_footprint():
     grid = Grid(grid=[30, 30])
 
-    search_cache_clear()
-    before = search_cache_statistics()
+    cache_purge()
 
-    search = grid.search(loader=loader)
+    # the k-d tree loader is the library's (see cache())
+    search = grid.search()
 
     # the cache accounts for the loaded search, in process memory or shared
-    after = search_cache_statistics()
-    assert after["misses"] == before["misses"] + 1
-    assert after[usage] - before[usage] == search.footprint[usage] > 0
-
-    # whatever the loader, the same results
-    reference = grid.search(loader="memory")
-    for point in ((14, 1), (-100, 44), (170, -50)):
-        assert indices(search.search_knn(point, 4)) == indices(reference.search_knn(point, 4))
+    searches = cache()["memory"]["search"]
+    assert searches["size"] == 1
+    assert search.footprint["process"] + search.footprint["shared"] > 0
+    assert searches["footprint"] == search.footprint
 
 
 @pytest.mark.parametrize(
@@ -278,7 +284,7 @@ def test_grid_search_loaders(loader, usage):
             dict(
                 x=[0, 44961.0033558134, 2997.40022372089],
                 y=[0, -44961.0033558134, -2997.40022372089],
-                false=[1067074.48, -467594.435],
+                false_xy=[1067074.48, -467594.435],
                 projection=dict(type="space_view", h=35747054.5503, reverse=True),
             ),
             [(4.223693723, 350.299524805), (3.815601110, 350.719698129)],
@@ -287,7 +293,7 @@ def test_grid_search_loaders(loader, usage):
             dict(
                 x=[0, 45009.7522881123, 3000.65015254082],
                 y=[0, -33005.8361442917, -3000.53055857197],
-                false=[-1632353.683, -1968348.046],
+                false_xy=[-1632353.683, -1968348.046],
                 projection=dict(type="space_view", h=35785813.2659, lon_0=-75, figure="wgs84", reverse=True),
             ),
             [(18.425011761, 300.905565350), (18.106822780, 301.327135202)],

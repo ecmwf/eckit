@@ -3,12 +3,14 @@
 
 
 #include <algorithm>
+#include <fstream>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "eckit/cache/FileCache.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -18,7 +20,6 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/cache/CropCache.h"
-#include "eckit/geo/cache/Version.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -301,7 +302,7 @@ CASE("crop: projected grids (rotation, lcc)") {
 
     for (const auto& test : std::vector<test_t>{
              {"{grid: [1, 1], rotation: [-40, 10]}", 10., -10., -10., 10.},
-             {"{x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055], "
+             {"{x: [0, 120000, 2500], y: [0, 170000, 2500], false_xy: [60000.021, 85000.055], "
               "projection: {type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true}}",
               52., 4.5, 51.5, 5.5},
          }) {
@@ -339,7 +340,7 @@ CASE("crop: as the grid type, or unstructured (exchangeable by uid)") {
 
     const std::string bbox = BBOXES.front();
     const std::string lcc =
-        "{x: [0, 120000, 2500], y: [0, 170000, 2500], false: [60000.021, 85000.055], "
+        "{x: [0, 120000, 2500], y: [0, 170000, 2500], false_xy: [60000.021, 85000.055], "
         "projection: {type: lcc, lat_0: 51.967, lat_1: 51.967, lon_0: 4.9, reverse: true}}";
 
     for (const auto& test : std::vector<test_t>{
@@ -365,6 +366,9 @@ CASE("crop: as the grid type, or unstructured (exchangeable by uid)") {
 
         G by_uid(GridFactory::make_from_string("{uid: " + unstructured->uid() + "}"));
         EXPECT(same_points(*by_uid, *grid, indices));
+
+        // cropped again, as a grid of no particular order (all its points in the area)
+        EXPECT(unstructured->crop(*area).size() == unstructured->size());
     }
 
     // nothing to crop (between the grid points)
@@ -390,11 +394,11 @@ CASE("crop: cache") {
     EXPECT(cache.statistics().misses == statistics.misses + 1);
     EXPECT(cache.statistics().hits == statistics.hits + 1);
     EXPECT(cache.size() == 1);
-    EXPECT(cache.usage().memory() > 0);
+    EXPECT(cache.usage().processMemory() > 0);
 
     // on disk, loaded once the in-memory cache is cleared
     if (LibEcKitGeo::caching()) {
-        const auto dir = PathName{LibEcKitGeo::cacheDir()} / "crop" / std::to_string(cache::version::CROP);
+        const auto dir = (PathName{LibEcKitGeo::cacheDir()} / cache::CropCache::file_cache().relative("key")).dirName();
         EXPECT(dir.exists());
 
         std::vector<PathName> files;
@@ -404,6 +408,18 @@ CASE("crop: cache") {
 
         cache.clear();
         EXPECT(grid->crop(*bbox) == a);
+
+        // corrupt files (not of indices, or not of this grid's) are not loaded, but recomputed (and replaced)
+        for (const auto& corrupt : {std::string("corrupt"), std::string(3 * sizeof(size_t), '\xff')}) {
+            for (const auto& f : files) {
+                if (f.extension() == ".crop") {
+                    std::ofstream(f.asString(), std::ios::binary | std::ios::trunc) << corrupt;
+                }
+            }
+
+            cache.clear();
+            EXPECT(grid->crop(*bbox) == a);
+        }
     }
 
     cache.clear();

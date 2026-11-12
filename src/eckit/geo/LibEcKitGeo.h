@@ -7,11 +7,18 @@
 #include <string>
 #include <vector>
 
+#include "eckit/cache/MemoryUsage.h"
+#include "eckit/cache/Roots.h"
 #include "eckit/system/Library.h"
 
 
 namespace eckit {
+class JSON;
 class PathName;
+}  // namespace eckit
+
+namespace eckit::cache {
+class MemoryCaches;
 }
 
 
@@ -27,24 +34,91 @@ public:
     static std::vector<PathName> shareGrid();
     static std::vector<PathName> shareProjection();
 
-    static PathName cacheArea();
     static PathName cacheGrid();
-    static PathName cacheProjection();
 
+    // -- Caching
+    //
+    // Expensive results (k-d trees, crops, grid coordinates) are cached in-process and in cache files, set by resources
+
+    /**
+     * If cache files are written (eckit-geo-caching;$ECKIT_GEO_CACHING, default from CMake feature GEO_CACHING);
+     * otherwise cache files are only found, in any of the cache paths, and misses are computed in-process (searches in
+     * memory, crops, grid coordinates) or fail (downloads)
+     */
     static bool caching();
+
+    /**
+     * Cache paths (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH, "path1:path2:...", see eckit::cache::Roots), read once:
+     * searched in order, written to the first writable (if caching; a read-only path is of a provisioned cache)
+     */
+    static const cache::Roots& cacheRoots();
+
+    /// Cache paths of a kind (a subdirectory, e.g. downloads), not writable if throwing on a cache miss
+    static cache::Roots cacheRoots(const std::string& kind);
+
+    /// Cache paths existing (searched) and writable (none if not caching), as they are when called
+    static std::vector<PathName> cacheReadablePaths();
+    static std::vector<PathName> cacheWritablePaths();
+
+    /// Cache path for writing, the first writable (throws if none)
     static std::string cacheDir();
 
-    /// Search loader when caching (see search::KDTreeFactory)
-    static std::string searchLoader();
+    /**
+     * If a missing cache file is an error rather than computed or downloaded (searches, crops, downloads, not grid
+     * coordinates), for provisioned caches (eckit-geo-cache-throw-on-miss;$ECKIT_GEO_CACHE_THROW_ON_MISS, default
+     * LibEcKitCache::throwOnMiss)
+     */
+    static bool cacheThrowOnMiss();
+
+    /// k-d tree loader (eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER, default mapped-file)
+    static std::string searchCacheLoader();
+
+    /// k-d tree fast build, if not in the search spec (eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD,
+    /// default true)
     static bool searchFastBuild();
 
-    static std::string searchCacheCapacity();
-    static std::string cropCacheCapacity();
+    /**
+     * If shared memory uses huge pages (where reserved), and if its size is rounded up to the huge page size
+     * (eckit-geo-shared-memory-[round-]hugepages, default false)
+     */
+    static bool sharedMemoryHugePages();
+    static bool sharedMemoryRoundHugePages();
 
-    static void purgeCacheDir();
-    static void purgeCacheArea();
-    static void purgeCacheGrid();
-    static void purgeCacheProjection();
+    /**
+     * In-process cache capacities, "process[,shared]" (eckit-geo-cache-{search,crop}-capacity, default from CMake
+     * eckit_GEO_CACHE_{SEARCH,CROP}_CAPACITY; see eckit::cache::MemoryCache)
+     */
+    static cache::MemoryUsage searchCacheCapacity();
+    static cache::MemoryUsage cropCacheCapacity();
+
+    /// In-process cache eviction policies (eckit-geo-cache-{search,crop}-policy, default lru; see eckit::cache::Policy)
+    static std::string searchCachePolicy();
+    static std::string cropCachePolicy();
+
+    /**
+     * Release the in-process caches of searches and crops, both or by kind (cache files are kept); those in use stay
+     * valid. Values returned by reference (e.g. Gaussian latitudes, grid coordinates) are kept, as grids use them.
+     */
+    static void purgeCache();
+    static void purgeCacheSearch();
+    static void purgeCacheCrop();
+    static cache::MemoryUsage cacheFootprint();
+
+    /// In-process caches of eckit::geo (see purgeCache and cacheFootprint)
+    static cache::MemoryCaches& memoryCaches();
+
+    /**
+     * Caching state (JSON, sizes in bytes): memory, in-process (process and shared) footprint, capacity, policy and
+     * statistics of searches and crops; disk, its control (caching, throw on miss, paths) and cache files by kind
+     */
+    static std::string cacheInfo();
+
+    /// As cacheInfo, into a JSON (e.g. a section of the cache report of a library using eckit::geo)
+    static void cacheInfo(JSON&);
+
+    /// Remove the cache directory for writing, or its grid.yaml (none: nothing to remove)
+    static void removeCacheDir();
+    static void removeCacheGrid();
 
     static std::string url(const std::string& url_path);
     static std::string url(const std::string& url_path, const std::string& url_prefix);

@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <string>
+#include <utility>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
@@ -28,8 +29,6 @@ const Projection& Projection::instance() {
 
 
 Projection::Projection(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
-    ASSERT(spec_);
-
     for (const auto& path : paths) {
         if (path.exists()) {
             Log::debug<LibEcKitGeo>() << "eckit::geo::share::Projection::load('" << path.realName() << "')"
@@ -45,7 +44,7 @@ void Projection::load(const PathName& path) {
     ASSERT(custom != nullptr);
 
     struct SpecByNameGenerator final : ProjectionSpecByName::generator_t {
-        explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
+        explicit SpecByNameGenerator(std::unique_ptr<spec::Custom> spec) : spec_(std::move(spec)) { ASSERT(spec_); }
         geo::Projection::Spec* spec(ProjectionSpecByName::generator_t::arg1_t) const override {
             return new spec::Custom(spec_->container());
         }
@@ -67,7 +66,8 @@ void Projection::load(const PathName& path) {
                     ASSERT(m.size() == 1);
                     ProjectionSpecByName::instance().regist(
                         m.begin()->first.as<std::string>(),
-                        new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
+                        std::make_unique<SpecByNameGenerator>(
+                            std::unique_ptr<spec::Custom>(spec::Custom::make_from_value(m.begin()->second))));
                 }
                 continue;
             }

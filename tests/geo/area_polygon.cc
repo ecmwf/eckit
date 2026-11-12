@@ -7,6 +7,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
@@ -526,6 +527,42 @@ CASE("Polygon") {
     }
 }
 
+
+CASE("area::Polygon: rings, area and containment") {
+    using geo::polygon::Polygon;
+
+    // rings alternately including/excluding (e.g. a hole, an island in it), signed by nesting whatever their
+    // orientation
+    const Polygon outer{{0., 0.}, {4., 0.}, {4., 4.}, {0., 4.}};     // counter-clockwise
+    const Polygon outer_cw{{0., 0.}, {0., 4.}, {4., 4.}, {4., 0.}};  // clockwise (e.g. a shapefile)
+    const Polygon hole{{1., 1.}, {1., 3.}, {3., 3.}, {3., 1.}};      // clockwise
+    const Polygon hole_ccw{{1., 1.}, {3., 1.}, {3., 3.}, {1., 3.}};  // counter-clockwise
+    const Polygon island{{1.5, 1.5}, {2.5, 1.5}, {2.5, 2.5}, {1.5, 2.5}};
+    const Polygon other{{10., 10.}, {11., 10.}, {11., 11.}, {10., 11.}};  // apart
+
+    using rings = area::Polygon::container_type;
+
+    EXPECT(types::is_approximately_equal(area::Polygon(rings{outer}).area(), 16.));
+    EXPECT(types::is_approximately_equal(area::Polygon(rings{outer_cw}).area(), 16.));
+
+    for (const auto& r : {rings{outer, hole}, rings{outer, hole_ccw}, rings{outer_cw, hole}, rings{outer_cw, hole_ccw},
+                          rings{hole, outer}}) {
+        EXPECT(types::is_approximately_equal(area::Polygon(r).area(), 12.));
+    }
+
+    EXPECT(types::is_approximately_equal(area::Polygon(rings{outer, hole, island}).area(), 13.));
+    EXPECT(types::is_approximately_equal(area::Polygon(rings{outer, hole, other}).area(), 13.));
+
+    const area::Polygon a(rings{outer});
+    const area::Polygon b(rings{outer, hole});
+    const area::Polygon c(rings{outer, hole, island});
+
+    EXPECT(a.contains(PointLonLat{1.2, 1.2}));
+    EXPECT_NOT(b.contains(PointLonLat{1.2, 1.2}));
+    EXPECT(b.contains(PointLonLat{3.5, 3.5}));
+    EXPECT_NOT(b.contains(PointLonLat{5., 5.}));
+    EXPECT(c.contains(PointLonLat{2., 2.}));
+}
 
 }  // namespace eckit::geo::test
 

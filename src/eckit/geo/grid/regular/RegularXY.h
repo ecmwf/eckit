@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -17,8 +18,9 @@ namespace eckit::geo::grid::regular {
 
 /**
  * @brief Regular grid on a plane, of (x, y) points, as they are or projected (projection on top)
- * @details Spec: x and y as [start, stop, step] (stop included), optionally false: [x, y] (false easting/northing) and
- * projection (from (x, y), applied to the points less the false easting/northing).
+ * @details Spec: x and y as [start, stop, step] (stop included), and optionally projection (from (x, y), applied to the
+ * points less the false easting/northing) and, with a projection, the false easting/northing, as false_xy: [x, y] or by
+ * the coordinates of the false origin (x, y) = (0, 0), false_lonlat: [lon, lat].
  */
 class RegularXY : public Regular {
 public:
@@ -33,21 +35,24 @@ public:
     // -- Constructors
 
     explicit RegularXY(const Spec&);
-    RegularXY(const RangeXY& x, const RangeXY& y, const Projection* = nullptr, const PointXY& false_xy = {});
+    RegularXY(const RangeXY& x, const RangeXY& y, std::unique_ptr<const Projection> = nullptr,
+              const PointXY& false_xy = {});
 
     // -- Overridden methods
 
     const std::string& type() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
-
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
 
 private:
+
+    // -- Constructors
+
+    RegularXY(const RangeXY& x, const RangeXY& y, bool projected, std::unique_ptr<const Projection>&&,
+              const PointXY& false_xy);
 
     // -- Members
 
@@ -58,7 +63,7 @@ private:
 
     // -- Overridden methods
 
-    Point point(double x, double y) const override;
+    Point point_xy(double x, double y) const override;
     void fill_spec(spec::Custom&) const override;
 };
 

@@ -4,6 +4,7 @@
 list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
+    Arrangement.cc
     Arrangement.h
     Container.h
     Exceptions.cc
@@ -14,8 +15,6 @@ list(APPEND eckit_geo_srcs
     GreatCircle.h
     Grid.cc
     Grid.h
-    Iterator.cc
-    Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
     Point.cc
@@ -34,8 +33,6 @@ list(APPEND eckit_geo_srcs
     Range.h
     Search.cc
     Search.h
-    Shape.cc
-    Shape.h
     Trace.cc
     Trace.h
     area/BoundingBox.cc
@@ -54,23 +51,15 @@ list(APPEND eckit_geo_srcs
     cache/Crop.h
     cache/CropCache.cc
     cache/CropCache.h
-    cache/DiskCache.cc
-    cache/DiskCache.h
-    cache/Download.cc
     cache/Download.h
     cache/Grid.cc
     cache/Grid.h
-    cache/InMemoryCache.h
     cache/LatitudeLongitude.cc
     cache/LatitudeLongitude.h
-    cache/MemoryCache.cc
-    cache/MemoryCache.h
-    cache/MemoryUsage.cc
-    cache/MemoryUsage.h
     cache/RecordCache.h
     cache/SearchCache.cc
     cache/SearchCache.h
-    cache/Version.h
+    deprecated.cc
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -109,14 +98,12 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
     grid/unstructured/ICON.h
-    iterator/Reduced.cc
-    iterator/Reduced.h
-    iterator/Regular.cc
-    iterator/Regular.h
-    iterator/Unstructured.cc
-    iterator/Unstructured.h
     order/HEALPix.cc
     order/HEALPix.h
+    order/ReducedScan.cc
+    order/ReducedScan.h
+    order/RegularScan.cc
+    order/RegularScan.h
     order/Scan.cc
     order/Scan.h
     polygon/Polygon.cc
@@ -153,18 +140,12 @@ list(APPEND eckit_geo_srcs
     range/Regular.h
     range/RegularXY.cc
     range/RegularXY.h
-    search/FileIO.cc
-    search/FileIO.h
     search/KDTree.cc
     search/KDTree.h
-    search/LoadedFile.cc
-    search/LoadedFile.h
-    search/MappedFile.cc
-    search/MappedFile.h
-    search/Memory.cc
-    search/Memory.h
-    search/SharedMemory.cc
-    search/SharedMemory.h
+    search/KDTreeCache.cc
+    search/KDTreeCache.h
+    search/KDTreeMemory.cc
+    search/KDTreeMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc
@@ -174,8 +155,7 @@ list(APPEND eckit_geo_srcs
     util.cc
     util.h
     util/arange.cc
-    util/gaussian_latitudes.cc
-    util/gaussian_quadrature_weights.cc
+    util/gaussian_quadrature.cc
     util/hash_vector.cc
     util/linspace.cc
     util/monotonic_crop.cc
@@ -190,7 +170,7 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_codec eckit_maths eckit_spec)
+set(eckit_geo_libs eckit_cache eckit_codec eckit_maths eckit_spec)
 set(eckit_geo_private_libs)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID
@@ -210,14 +190,6 @@ if(eckit_HAVE_PROJ)
         projection/PROJ.h
     )
     list(APPEND eckit_geo_private_libs PROJ::proj)
-endif()
-
-if(eckit_HAVE_ZIP)
-    list(APPEND eckit_geo_srcs
-        cache/Unzip.cc
-        cache/Unzip.h
-    )
-    list(APPEND eckit_geo_private_libs libzip::zip)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)

@@ -41,10 +41,8 @@ const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
 };
 
 
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
+struct lock_tag;  // of this file's mutex
+using lock_type = util::lock_type<lock_tag>;
 
 
 }  // namespace
@@ -82,11 +80,9 @@ double Figure::area(const area::BoundingBox& bbox) const {
 
 
 spec::Custom* Figure::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
-
+    auto custom = std::make_unique<spec::Custom>();
     fill_spec(*custom);
-    return custom;
+    return custom.release();
 }
 
 
@@ -127,18 +123,22 @@ double Figure::flattening() const {
 
 
 double Figure::Conformal::m(double phi) const {
+    // Snyder (14-15), as PROJ pj_msfn
     const auto s = e_ * std::sin(phi);
     return std::cos(phi) / std::sqrt(1. - s * s);
 }
 
 
 double Figure::Conformal::t(double phi) const {
+    // Snyder (15-9), as PROJ pj_tsfn
     const auto s = e_ * std::sin(phi);
     return std::tan(M_PI_4 - phi / 2.) / std::pow((1. - s) / (1. + s), e_ / 2.);
 }
 
 
 double Figure::Conformal::phi(double t) const {
+    // Latitude of t, Snyder (7-9), as PROJ pj_phi2
+
     constexpr int max_iter = 15;
     constexpr double eps   = 1e-12;
 
@@ -160,6 +160,8 @@ Figure::Authalic::Authalic(double e) : e_(e), qp_(q(1.)) {}
 
 
 double Figure::Authalic::q(double sinphi) const {
+    // Snyder (3-12), as PROJ pj_qsfn
+
     if (types::is_approximately_equal(e_, 0.)) {
         return 2. * sinphi;
     }
@@ -170,30 +172,45 @@ double Figure::Authalic::q(double sinphi) const {
 
 
 double Figure::Authalic::phi(double q) const {
-    auto phi = std::asin(std::max(-1., std::min(1., q / 2.)));
+    // Latitude of q (as PROJ pj_authlat), from the authalic latitude: its series (Snyder 3-18) refined by Newton's
+    // method (Snyder 3-16), but at the poles, where the series is exact enough and the iteration is ill-conditioned
+
+    // beyond the poles (with some rounding), outside of the projection's domain
+    if (!(std::abs(q) <= qp_ * (1. + 1e-12))) {
+        throw exception::ProjectionError("Authalic: latitude outside of the projection domain", Here());
+    }
+
+    const auto beta = std::asin(std::max(-1., std::min(1., q / qp_)));
     if (types::is_approximately_equal(e_, 0.)) {
-        return phi;
+        return beta;
     }
 
-    if (std::abs(std::abs(q) - qp_) < 1e-12) {
-        return std::copysign(M_PI_2, q);
-    }
+    const auto e2 = e_ * e_;
+    const auto e4 = e2 * e2;
+    const auto e6 = e4 * e2;
 
-    constexpr int max_iter = 15;
-    constexpr double eps   = 1e-12;
+    auto phi = beta + (e2 / 3. + 31. * e4 / 180. + 517. * e6 / 5040.) * std::sin(2. * beta) +
+               (23. * e4 / 360. + 251. * e6 / 3780.) * std::sin(4. * beta) + (761. * e6 / 45360.) * std::sin(6. * beta);
 
+    constexpr int max_iter = 10;
     for (int i = 0; i < max_iter; ++i) {
+        const auto c = std::cos(phi);
+        if (c < 1e-10) {
+            break;
+        }
+
         const auto s    = std::sin(phi);
         const auto es   = e_ * s;
-        const auto dphi = (1. - es * es) * (1. - es * es) / (2. * std::cos(phi)) *
-                          (q / (1. - e_ * e_) - s / (1. - es * es) + std::log((1. - es) / (1. + es)) / (2. * e_));
+        const auto dphi = (1. - es * es) * (1. - es * es) / (2. * c) *
+                          (q / (1. - e2) - s / (1. - es * es) + std::log((1. - es) / (1. + es)) / (2. * e_));
+
         phi += dphi;
-        if (std::abs(dphi) < eps) {
-            return phi;
+        if (std::abs(dphi) < 1e-14) {
+            break;
         }
     }
 
-    throw exception::ProjectionError("Authalic: latitude calculation failed to converge", Here());
+    return phi;
 }
 
 

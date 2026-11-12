@@ -285,8 +285,8 @@ of those points:
 ``cropped`` keeps the grid type when the area is a bounding box on a
 geographic grid and returns an unstructured grid otherwise. An empty
 intersection is an ``eckit::Error::GridError``. Polygon areas are built with
-``Area::from_spec`` and need the disk cache described under `Grid Caches`_;
-shapefile areas need ``eckit-sys`` built with ``geo-area-shapefile``.
+``Area::from_spec``; shapefile areas need ``eckit-sys`` built with
+``geo-area-shapefile``.
 
 Coordinate Systems
 ^^^^^^^^^^^^^^^^^^
@@ -326,9 +326,10 @@ results are ``Neighbour`` values with the point's ``index``, its chord
    :dedent:
 
 ``search_with_spec`` configures the search from a spec (``search``,
-``search-k``, ``search-radius``, ``search-loader``) and ``Search::search``
-runs it. Searches are shared in a process-wide cache by grid and
-configuration; ``search_cache_statistics()`` reports on it and
+``search-k``, ``search-radius``, ``search-tolerance``, ``search-fast-build``)
+and ``Search::search`` runs it; the k-d tree loader is the library's
+(``ECKIT_GEO_SEARCH_LOADER``). Searches are shared in a process-wide cache by
+grid and configuration; ``search_cache_statistics()`` reports on it and
 ``search_cache_clear()`` empties it.
 
 Grid Caches
@@ -338,15 +339,20 @@ The memory caches of ``eckit::geo`` are exposed as
 ``eckit::geo::cache_footprint()`` and ``eckit::geo::cache_purge()``. Do not
 purge while another thread is inside a grid call.
 
-Unstructured grids (``Grid::from_latlons``, ``to_unstructured_ll``,
-``cropped_unstructured_ll``, cropping of projected grids) and polygon areas
-use the eckit geo disk cache, which is off by default. ``ECKIT_GEO_CACHING=1``
-enables it (the ``geo-caching`` feature of ``eckit-sys`` changes the default),
-``ECKIT_GEO_CACHE_PATH`` moves it from ``~/.cache/eckit/geo``, and its
-records are LZ4-compressed, which needs ``eckit-sys`` built with ``lz4``
-unless ``ECKIT_CODEC_COMPRESSION`` is set empty. Without the cache those
-calls fail with ``UserError: CacheManager cannot create key``; without LZ4,
-with ``No CompressorBuilder called lz4``.
+Searches, crops and the coordinates of unstructured grids
+(``Grid::from_latlons``, ``to_unstructured_ll``, ``cropped_unstructured_ll``,
+cropping of projected grids, polygon areas) are kept in memory, and also in
+cache files when caching is enabled, which is off by default.
+``ECKIT_GEO_CACHING=1`` enables it (the ``geo-caching`` feature of
+``eckit-sys`` changes the default), and ``ECKIT_GEO_CACHE_PATH``
+(``path1:path2:...``, searched in order, written to the first writable) moves
+it from ``~/.cache/eckit/geo``. Without caching, existing cache files (e.g. a
+provisioned read-only cache) are still found, but nothing is written and
+misses are computed in memory; ``ECKIT_GEO_CACHE_THROW_ON_MISS=1`` makes a
+missing search or crop cache file an error instead. The cached coordinates
+are LZ4-compressed, which needs ``eckit-sys`` built with ``lz4`` unless
+``ECKIT_CODEC_COMPRESSION`` is set empty; otherwise writing them fails with
+``No CompressorBuilder called lz4``.
 
 Threads
 -------

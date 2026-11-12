@@ -6,13 +6,12 @@
 
 #include <algorithm>
 #include <cmath>
-#include <memory>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/iterator/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -68,13 +67,39 @@ bool any_within(const Range& range, double a, double b) {
 }  // namespace
 
 
-Grid::iterator Regular::cbegin() const {
-    return iterator{new geo::iterator::Regular(*this, 0)};
+/// The coordinates by scanning direction: along (a, as rows or columns) and across (b)
+struct Regular::State final : Iterator::State {
+    explicit State(const Regular& grid) :
+        grid_(grid),
+        i_then_j_(grid.scan_.is_scan_i_then_j()),
+        alternating_(grid.scan_.is_scan_alternating()),
+        a_(i_then_j_ ? grid.x() : grid.y()),
+        b_(i_then_j_ ? grid.y() : grid.x()) {}
+
+    Point point(size_t index) override {
+        const auto j = index / a_.size();
+        const auto i = index % a_.size();
+        const auto k = alternating_ && j % 2 == 1 ? a_.size() - 1 - i : i;
+        return i_then_j_ ? grid_.point_xy(a_.value(k), b_.value(j)) : grid_.point_xy(b_.value(j), a_.value(k));
+    }
+
+    std::unique_ptr<Iterator::State> clone() const override { return std::make_unique<State>(*this); }
+
+    const Regular& grid_;
+    const bool i_then_j_;
+    const bool alternating_;
+    const Range& a_;
+    const Range& b_;
+};
+
+
+Point Regular::point(size_t index) const {
+    return State(*this).point(index);
 }
 
 
-Grid::iterator Regular::cend() const {
-    return iterator{new geo::iterator::Regular(*this, size())};
+std::unique_ptr<Grid::Iterator::State> Regular::make_state() const {
+    return std::make_unique<State>(*this);
 }
 
 
@@ -136,19 +161,20 @@ size_t Regular::index(size_t i, size_t j) const {
 }
 
 
-const order::Scan& Regular::scan_default() {
-    static const order::Scan SCAN;
+const order::RegularScan& Regular::scan_default() {
+    static const order::RegularScan SCAN;
     return SCAN;
 }
 
 
-Regular::Regular(order::Scan s, const Projection* proj) : Grid(nullptr, proj), scan_(s) {}
+Regular::Regular(order::RegularScan s, std::unique_ptr<const Projection> proj) :
+    Grid(nullptr, std::move(proj)), scan_(s) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
-    if (scan_.order() != order::Scan::order_default()) {
+    if (scan_.order() != order::RegularScan::order_default()) {
         custom.set("order", scan_.order());
     }
 }
@@ -157,7 +183,7 @@ void Regular::scan(const order_type& to) {
     scan_.order(to);
 }
 
-void Regular::scan(order::Scan s) {
+void Regular::scan(order::RegularScan s) {
     scan_ = s;
 }
 

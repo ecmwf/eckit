@@ -5,11 +5,13 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/util.h"
@@ -75,7 +77,7 @@ CASE("name") {
         EXPECT(grid->arrangement().empty());
     }
 
-    EXPECT(ReducedGaussian(3).octahedral());
+    EXPECT(ReducedGaussian(3).is_reduced_octahedral());
     EXPECT(ReducedGaussian(3).name() == "O3");
 }
 
@@ -204,6 +206,293 @@ CASE("equals") {
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == *grid4);
     EXPECT(*grid4 == *grid1);
+}
+
+
+CASE("first and last points") {
+    for (const std::string spec :
+         {"{grid: O8}", "{grid: N32}", "{grid: O8, rotation: [30, 30]}", "{grid: O32, area: [60, -10, 30, 40]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
+// pl with only the rows within [south, north], the other rows without points (0), as written for a cropped grid
+pl_type pl_within(const pl_type& pl, double north, double south) {
+    const auto& lats = util::gaussian_latitudes(pl.size() / 2, false);
+
+    pl_type within(pl.size(), 0);
+    for (size_t j = 0; j < pl.size(); ++j) {
+        if (south <= lats[j] + PointLonLat::EPS && lats[j] <= north + PointLonLat::EPS) {
+            within[j] = pl[j];
+        }
+    }
+    return within;
+}
+
+
+// the same points, in the same order
+bool same_points(const Grid& a, const Grid& b) {
+    if (a.size() != b.size()) {
+        return false;
+    }
+
+    const auto pa = a.to_points();
+    const auto pb = b.to_points();
+    for (size_t i = 0; i < pa.size(); ++i) {
+        if (!points_equal(pa[i], pb[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+// a grid as built from its spec
+std::unique_ptr<const Grid> rebuilt(const Grid& grid) {
+    return std::unique_ptr<const Grid>(GridFactory::make_from_string(grid.spec_str()));
+}
+
+
+CASE("cropped octahedral: size, name and spec, also from pl without points outside the area") {
+    const struct {
+        std::string grid;
+        size_t N;
+        std::vector<double> area;  // north, west, south, east
+        size_t size;
+        std::string spec;
+    } tests[]{
+        {"O96", 96, {90, -25, -40, 55}, 7507, R"({"area":[90,-25,-39.7400990572982,55],"grid":"O96"})"},
+        {"O96", 96, {40, 0, -40, 360}, 27176, R"({"area":[39.7400990572982,0,-39.7400990572982,360],"grid":"O96"})"},
+        {"O96", 96, {40, -25, -40, 55}, 6044, R"({"area":[39.7400990572982,-25,-39.7400990572982,55],"grid":"O96"})"},
+        {"O1280",
+         1280,
+         {40, -25, -40, 55},
+         1011620,
+         R"({"area":[39.9648496996204,-25,-39.9648496996204,55],"grid":"O1280"})"},
+    };
+
+    for (const auto& test : tests) {
+        // by name and area
+        std::unique_ptr<const Grid> named(GridFactory::build(spec::Custom({{"grid", test.grid}, {"area", test.area}})));
+
+        EXPECT(named->size() == test.size);
+        EXPECT(named->name() == test.grid);
+        EXPECT(named->spec_str() == test.spec);
+
+        // by pl without points outside the area (0), and area
+        const auto pl = pl_within(util::reduced_octahedral_pl(test.N), test.area[0], test.area[2]);
+        std::unique_ptr<const Grid> from_pl(GridFactory::build(spec::Custom({{"pl", pl}, {"area", test.area}})));
+
+        EXPECT(from_pl->size() == test.size);
+        EXPECT(from_pl->name() == test.grid);
+        EXPECT(from_pl->spec_str() == test.spec);
+
+        // rebuilt from the spec
+        auto grid = rebuilt(*from_pl);
+        EXPECT(grid->size() == test.size);
+        EXPECT(grid->spec_str() == test.spec);
+
+        // points (not compared for large grids)
+        if (test.N <= 96) {
+            EXPECT(same_points(*named, *from_pl));
+            EXPECT(same_points(*named, *grid));
+        }
+
+        // in the grid order, as many points as the grid
+        for (const auto* g : {named.get(), from_pl.get(), grid.get()}) {
+            EXPECT(g->reorder(g->order()).size() == test.size);
+        }
+    }
+}
+
+
+CASE("cropped classical: name and spec without pl, also from pl without points outside the area") {
+    const std::vector<double> area{40, -25, -40, 55};
+
+    std::unique_ptr<const Grid> named(GridFactory::build(spec::Custom({{"grid", "N96"}, {"area", area}})));
+
+    const auto pl = pl_within(util::reduced_classical_pl(96), area[0], area[2]);
+    std::unique_ptr<const Grid> from_pl(GridFactory::build(spec::Custom({{"pl", pl}, {"area", area}})));
+
+    EXPECT(from_pl->name() == "N96");
+    EXPECT(from_pl->spec_str() == named->spec_str());
+    EXPECT(from_pl->spec_str() == R"({"area":[39.7400990572982,-25,-39.7400990572982,55],"grid":"N96"})");
+    EXPECT(same_points(*named, *from_pl));
+    EXPECT(same_points(*named, *rebuilt(*from_pl)));
+}
+
+
+CASE("cropped, of pl neither octahedral nor classical: spec with pl") {
+    const std::vector<double> area{40, -25, -40, 55};
+    const auto& lats   = util::gaussian_latitudes(96, false);
+    const auto equator = lats.size() / 2;
+    ASSERT(-40 < lats[equator] && lats[equator] < 40);
+
+    auto octahedral = pl_within(util::reduced_octahedral_pl(96), area[0], area[2]);
+    std::unique_ptr<const Grid> reference(GridFactory::build(spec::Custom({{"pl", octahedral}, {"area", area}})));
+
+    // a row within the area with other points, or without points
+    for (long other : {octahedral[equator] + 4, 0L}) {
+        auto pl     = octahedral;
+        pl[equator] = other;
+
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"pl", pl}, {"area", area}})));
+        EXPECT(!same_points(*grid, *reference));
+        EXPECT(grid->name() == "N96");
+
+        // the spec has pl (as written), and rebuilds the same points
+        EXPECT(grid->spec_str().find(R"("pl":)") != std::string::npos);
+
+        auto again = rebuilt(*grid);
+        EXPECT(again->spec_str() == grid->spec_str());
+        EXPECT(same_points(*grid, *again));
+        EXPECT(grid->reorder(grid->order()).size() == grid->size());
+    }
+}
+
+
+CASE("pl of N without a known classical pl: spec with pl, rebuilt") {
+    std::unique_ptr<const Grid> grid(
+        GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
+
+    EXPECT(grid->spec_str() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
+
+    auto again = rebuilt(*grid);
+    EXPECT(again->spec_str() == grid->spec_str());
+    EXPECT(same_points(*grid, *again));
+}
+
+
+CASE("errors") {
+    // pl of 2N rows, of numbers of points
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{}}), exception::SpecError);
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{20, 24, 20}}), exception::SpecError);
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{20, -24, 24, 20}}), exception::SpecError);
+
+    // no points (in the bounding box)
+    EXPECT_THROWS_AS((ReducedGaussian{pl_type{0, 0, 0, 0}}), exception::GridError);
+    EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("{grid: O2, area: [90, 1, -90, 2]}")),
+                     exception::GridError);
+
+    // pl required for a name N<N> without a known classical pl
+    EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("{grid: N4}")), exception::SpecError);
+}
+
+
+// points in the default order of the reference, renumbered to the grid order
+bool same_points_renumbered(const Grid& grid, const Grid& reference, const Grid::renumber_type& ren) {
+    if (grid.size() != reference.size() || ren.size() != reference.size()) {
+        return false;
+    }
+
+    const auto points = grid.to_points();
+    const auto ref    = reference.to_points();
+    for (size_t k = 0; k < ref.size(); ++k) {
+        if (!points_equal(points.at(ren[k]), ref[k])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+CASE("order: scanning i and j, positively or negatively") {
+    // scanning rows north to south (j-) or south to north (j+), each west to east (i+) or east to west (i-)
+    std::unique_ptr<const Grid> reference(GridFactory::make_from_string("{grid: N32}"));
+
+    const auto& lats = util::gaussian_latitudes(32, false);
+    const auto& pl   = util::reduced_classical_pl(32);
+
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "N32"}, {"order", order}})));
+
+        EXPECT(grid->order() == order);
+        EXPECT(grid->size() == reference->size());
+
+        // the first point: of the northern or southern row, west or east
+        const bool j_positive = order.find("j+") != std::string::npos;
+        const bool i_negative = order.find("i-") != std::string::npos;
+        const auto n          = static_cast<double>(j_positive ? pl.back() : pl.front());
+        EXPECT(points_equal(grid->first_point(),
+                            PointLonLat{i_negative ? 360. - 360. / n : 0., j_positive ? lats.back() : lats.front()}));
+
+        // the same points as in the default order, renumbered; by index as iterating
+        EXPECT(same_points_renumbered(*grid, *reference, reference->reorder(order)));
+
+        const auto points = grid->to_points();
+        bool by_index     = true;
+        for (size_t k = 0; k < points.size(); ++k) {
+            by_index = by_index && points_equal(grid->point(k), points[k]);
+        }
+        EXPECT(by_index);
+
+        // rows of points are consecutive: all 2N latitudes, each once
+        size_t rows = 0;
+        for (size_t k = 0; k < points.size(); ++k) {
+            const auto lat = std::get<PointLonLat>(points[k]).lat();
+            rows += k == 0 || lat != std::get<PointLonLat>(points[k - 1]).lat() ? 1 : 0;
+        }
+        EXPECT(rows == 64);
+
+        // the spec has the order (if not the default), and rebuilds the grid
+        EXPECT(grid->spec_str() ==
+               (order == "i+j-" ? std::string{R"({"grid":"N32"})"} : R"({"grid":"N32","order":")" + order + R"("})"));
+        EXPECT(*rebuilt(*grid) == *grid);
+
+        // reordered to the default order
+        std::unique_ptr<const Grid> reordered(grid->make_grid_reordered("i+j-"));
+        EXPECT(*reordered == *reference);
+        EXPECT(same_points_renumbered(*reference, *grid, grid->reorder("i+j-")));
+    }
+
+    // as rows have different numbers of points, not scanning j then i, nor alternating direction
+    for (const std::string order : {"j+i+", "j-i-", "i+-j-", "i-+j+"}) {
+        EXPECT_THROWS_AS(
+            std::unique_ptr<const Grid>(GridFactory::build(spec::Custom({{"grid", "N32"}, {"order", order}}))),
+            exception::OrderError);
+    }
+}
+
+
+CASE("order: cropped, also from pl without points outside the area") {
+    const std::vector<double> area{40, -25, -40, 55};
+    const area::BoundingBox bbox(area[0], area[1], area[2], area[3]);
+
+    std::unique_ptr<const Grid> reference(GridFactory::build(spec::Custom({{"grid", "O32"}, {"area", area}})));
+
+    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "O32"}, {"order", order}})));
+
+        // cropped grid in the same order, of the points of the crop (the grid points of these indices)
+        std::unique_ptr<const Grid> cropped(grid->make_grid_cropped(bbox));
+        EXPECT(cropped->order() == order);
+        EXPECT(same_points_renumbered(*cropped, *reference, reference->reorder(order)));
+
+        const auto indices = grid->crop(bbox);
+        const auto points  = grid->to_points();
+        const auto cpoints = cropped->to_points();
+        EXPECT(indices.size() == cpoints.size());
+
+        bool same = indices.size() == cpoints.size();
+        for (size_t k = 0; same && k < indices.size(); ++k) {
+            same = points_equal(cpoints[k], points.at(indices[k]));
+        }
+        EXPECT(same);
+
+        // by pl without points outside the area, and area
+        const auto pl = pl_within(util::reduced_octahedral_pl(32), area[0], area[2]);
+        std::unique_ptr<const Grid> from_pl(
+            GridFactory::build(spec::Custom({{"pl", pl}, {"area", area}, {"order", order}})));
+
+        EXPECT(from_pl->spec_str() == cropped->spec_str());
+        EXPECT(same_points_renumbered(*from_pl, *reference, reference->reorder(order)));
+    }
 }
 
 

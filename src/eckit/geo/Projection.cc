@@ -33,10 +33,8 @@ namespace eckit::geo {
 namespace {
 
 
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
+struct lock_tag;  // of this file's mutex
+using lock_type = util::lock_type<lock_tag>;
 
 
 // Projection types interpreting "reverse": true themselves
@@ -133,7 +131,8 @@ void check_vectors(const std::vector<double>& v1, const std::vector<double>& v2,
 }
 
 
-/// Project points one by one, from/to point types known only at run time (resolved once); failures are NaN
+/// Project points one by one, from/to point types known only at run time (resolved once); points outside of the
+/// projection domain are NaN
 template <typename F>
 std::vector<std::vector<double>> project_points(const std::vector<double>& v1, const std::vector<double>& v2,
                                                 const std::vector<double>& v3, size_t from, size_t to, F project) {
@@ -160,7 +159,7 @@ std::vector<std::vector<double>> project_points(const std::vector<double>& v1, c
                         out[k][i] = r.data()[k];
                     }
                 }
-                catch (const eckit::Exception&) {
+                catch (const exception::ProjectionError&) {
                     for (auto& o : out) {
                         o[i] = std::numeric_limits<double>::quiet_NaN();
                     }
@@ -250,6 +249,8 @@ std::vector<std::vector<double>> Projection::inv_vector(const std::vector<double
 
 
 const Projection::Spec& Projection::spec() const {
+    lock_type lock;
+
     if (!spec_) {
         spec_ = std::make_shared<spec::Custom>();
 
@@ -454,9 +455,7 @@ Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
     lock_type lock;
     share::Projection::instance();
 
-    auto* cfg = new spec::Layered(spec);
-    ASSERT(cfg != nullptr);
-
+    auto cfg = std::make_unique<spec::Layered>(spec);
 
     // hardcoded, interpreted options (contributing to projectionspec)
 
@@ -469,7 +468,7 @@ Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
         cfg->push_back(new spec::Custom{{"type", "rotation"}, {"rotation", rotation}});
     }
 
-    return cfg;
+    return cfg.release();
 }
 
 

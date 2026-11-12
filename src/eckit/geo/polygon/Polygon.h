@@ -86,9 +86,10 @@ public:
     void simplify();
 
     /**
-     * @brief Area of polygon
-     * @param[in] sign if true, returns positive area irrespective of point ordering
-     * @return area respecting point ordering (positive on CCW point ordering)
+     * @brief Area of polygon (planar, of the longitude/latitude coordinates)
+     * @param[in] sign if true, the area respects the point ordering (positive if counter-clockwise), otherwise it is
+     * positive irrespective of it
+     * @return area
      */
     double area(bool sign = false) const;
 

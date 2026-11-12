@@ -67,6 +67,10 @@ CASE("name") {
         const auto name = "H" + std::to_string(n);
 
         for (const auto& suffix : std::vector<std::string>{"", "n", "r"}) {
+            if (suffix == "n" && (n & (n - 1)) != 0) {
+                continue;  // (the nested order is of Nside a power of 2)
+            }
+
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: " + name + suffix + "}"));
 
             EXPECT(grid->name() == name);
@@ -237,6 +241,51 @@ CASE("wrong spec") {
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:?}"), exception::OrderError);
 }
 
+
+CASE("first and last points") {
+    for (const std::string spec : {"{grid: H4}", "{grid: H4n}", "{grid: H4n, rotation: [30, 30]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
+}
+
+
+CASE("nested order: of Nside a power of 2") {
+    for (const std::string spec : {"{grid: H3, order: nested}", "{grid: H3n}", "{grid: H6n}"}) {
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::OrderError);
+    }
+
+    for (const std::string spec : {"{grid: H3}", "{grid: H6, order: ring}", "{grid: H4n}", "{grid: H8n}"}) {
+        EXPECT_NO_THROW(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)));
+    }
+}
+
+
+CASE("reordered: the same points, renumbered, of the same projection") {
+    std::unique_ptr<const Grid> ring(GridFactory::make_from_string("{grid: H4, rotation: [30, 30]}"));
+    std::unique_ptr<const Grid> nested(ring->make_grid_reordered(order::HEALPix::NESTED));
+
+    EXPECT(nested->order() == order::HEALPix::NESTED);
+    EXPECT(nested->projection() == ring->projection());
+    EXPECT(nested->size() == ring->size());
+
+    // ring point i is nested point ren[i]
+    const auto ren = ring->reorder(order::HEALPix::NESTED);
+    const auto a   = ring->to_points();
+    const auto b   = nested->to_points();
+
+    EXPECT(ren.size() == a.size());
+    for (size_t i = 0; i < ren.size(); ++i) {
+        EXPECT(points_equal(b.at(ren[i]), a[i]));
+    }
+
+    std::unique_ptr<const Grid> again(nested->make_grid_reordered(order::HEALPix::RING));
+    EXPECT(*again == *ring);
+}
 
 }  // namespace eckit::geo::test
 

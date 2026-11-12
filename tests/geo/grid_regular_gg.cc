@@ -11,8 +11,9 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -77,9 +78,11 @@ CASE("rotated") {
     EXPECT(grid->projection().type() == "rotation");
     EXPECT(grid->spec_str() == R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})");
 
-    // first/last points are in the rotated frame
-    EXPECT(points_equal(grid->first_point(), PointLonLat{0., 88.572168514007274}));
-    EXPECT(points_equal(grid->last_point(), PointLonLat{358.125, -88.572168514007274}));
+    // x and y are in the rotated frame
+    const auto& x = grid->x().values();
+    const auto& y = grid->y().values();
+    EXPECT(points_equal(PointLonLat{x.front(), y.front()}, PointLonLat{0., 88.572168514007274}));
+    EXPECT(points_equal(PointLonLat{x.back(), y.back()}, PointLonLat{358.125, -88.572168514007274}));
 
     const std::vector<PointLonLat> ref{
         {-150.00000000000000, -28.57216851400726}, {-150.05319064425672, -28.57292230625801},
@@ -192,7 +195,7 @@ CASE("scan modes") {
 
     SECTION("i+j+") {
         // Scan: i increasing, j increasing (south to north)
-        RegularGaussian grid(1, {}, order::Scan{"i+j+"});
+        RegularGaussian grid(1, {}, order::RegularScan{"i+j+"});
 
         EXPECT(grid.order() == "i+j+");
 
@@ -314,6 +317,19 @@ CASE("number of longitudes other than 4N") {
     std::unique_ptr<const Grid> cropped(
         GridFactory::make_from_string("{grid: F95, ni: 384, area: [10, 0, -10, 9.375]}"));
     EXPECT(cropped->shape()[1] == 11);
+}
+
+
+CASE("first and last points") {
+    for (const std::string spec :
+         {"{grid: F8}", "{grid: F8, rotation: [30, 30]}", "{grid: F8, order: i-j+}", "{grid: F8, order: i+-j-}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT(points_equal(grid->first_point(), grid->point(0)));
+        EXPECT(points_equal(grid->first_point(), *grid->begin()));
+        EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+        EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+    }
 }
 
 

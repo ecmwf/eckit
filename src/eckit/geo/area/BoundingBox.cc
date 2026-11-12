@@ -5,7 +5,9 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -137,11 +139,12 @@ struct Derivate {
     void operator=(const Derivate&) = delete;
     void operator=(Derivate&&)      = delete;
 
-    [[nodiscard]] static Derivate* make(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
-                                        double refLongitude = 0.) {
+    static std::unique_ptr<const Derivate> make(const std::string& type, const Projection& p, PointXY A, PointXY B,
+                                                double h, double refLongitude = 0.) {
+        // a segment shorter than h: a derivative of constant sign, so no extremum is searched
         struct Degenerate final : Derivate {
             using Derivate::Derivate;
-            PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
+            PointLonLat d(PointXY) const override { return {1., 1.}; }
         };
 
         struct Forwards final : Derivate {
@@ -164,19 +167,19 @@ struct Derivate {
         ASSERT(0. < h);
 
         if (A.distance2(B) < h * h) {
-            return new Degenerate(p, A, B, h, refLongitude);
+            return std::make_unique<Degenerate>(p, A, B, h, refLongitude);
         }
 
         if (type == "forwards") {
-            return new Forwards(p, A, B, h, refLongitude);
+            return std::make_unique<Forwards>(p, A, B, h, refLongitude);
         }
 
         if (type == "backwards") {
-            return new Backwards(p, A, B, h, refLongitude);
+            return std::make_unique<Backwards>(p, A, B, h, refLongitude);
         }
 
         if (type == "central") {
-            return new Central(p, A, B, h, refLongitude);
+            return std::make_unique<Central>(p, A, B, h, refLongitude);
         }
 
         throw BadValue("Derivate: unknown type '" + type + "', choices are: forwards, backwards, central", Here());
@@ -207,10 +210,7 @@ private:
 
     // 0. setup
 
-    // use central longitude as absolute reference (keep points within +-180 longitude range)
     const PointXY centre_xy{(min.X() + max.X()) / 2., (min.Y() + max.Y()) / 2.};
-    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> PointXY
-    const auto centre_lon = centre_ll.lon();
 
     const std::string derivative_type = "central";
     const double h_ll                 = precision_ll;
@@ -232,6 +232,27 @@ private:
                                                     {{max.X(), min.Y()}, {min.X(), min.Y()}},
                                                     {{min.X(), min.Y()}, {min.X(), max.Y()}}};
 
+    // the centre or corners outside of the projection domain (e.g. a full disk, of corners in space): the extrema are
+    // not on the edges, so the box is global (containing every point)
+    auto in_domain = [&projection](const PointXY& p) {
+        try {
+            const auto q = std::get<PointLonLat>(projection.inv(p));
+            return std::isfinite(q.lon()) && std::isfinite(q.lat());
+        }
+        catch (const exception::ProjectionError&) {
+            return false;
+        }
+    };
+
+    if (!in_domain(centre_xy) ||
+        !std::all_of(std::begin(segments), std::end(segments), [&](const auto& s) { return in_domain(s.first); })) {
+        return std::make_unique<BoundingBox>();
+    }
+
+    // use central longitude as absolute reference (keep points within +-180 longitude range)
+    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> PointXY
+    const auto centre_lon = centre_ll.lon();
+
     BoundLonLat bounds(centre_ll, centre_ll);
     for (const auto& [A, dummy] : segments) {
         auto q = longitude_in_range(centre_lon, std::get<PointLonLat>(projection.inv(A)));
@@ -252,8 +273,7 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.includesNorthPole() || !bounds.includesSouthPole()) {
-            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
-            ASSERT(derivate);
+            const auto derivate = Derivate::make(derivative_type, projection, A, B, h, centre_lon);
 
             double dAdy = derivate->d(A).lat();
             double dBdy = derivate->d(B).lat();
@@ -288,8 +308,7 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.crossesDateLine()) {
-            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
-            ASSERT(derivate);
+            const auto derivate = Derivate::make(derivative_type, projection, A, B, h, centre_lon);
 
             double dAdx = derivate->d(A).lon();
             double dBdx = derivate->d(B).lon();
@@ -365,8 +384,8 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
     }
 
     if (spec.has("area")) {
-        throw exception::SpecError("BoundingBox: 'area' expected [north,west,south,east] or 'north/west/south/east'",
-                                   Here());
+        throw exception::SpecError(
+            "BoundingBox: {area: [north, west, south, east]} or {area: north/west/south/east} expected", Here());
     }
 
     spec.get("north", n);
@@ -471,7 +490,9 @@ BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e)
                     : is_approx_ge(e - w, PointLonLat::FULL_ANGLE) ? w + PointLonLat::FULL_ANGLE
                                                                    : a;
 
-    ASSERT(south() <= north());
+    if (!(south() <= north())) {
+        throw exception::AreaError("BoundingBox: [north, west, south, east] expected, south <= north", Here());
+    }
     ASSERT(west() <= east());
 }
 

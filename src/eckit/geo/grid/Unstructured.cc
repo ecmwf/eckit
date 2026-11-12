@@ -4,16 +4,18 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
-#include <memory>
 #include <utility>
 
+#include "eckit/cache/FileCache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::util {
@@ -36,7 +38,7 @@ Unstructured::Unstructured(const Spec& spec) :
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
                  spec.get_string("name", spec.get_string("cache_as", "")), bounding_box_from_spec(spec),
-                 ProjectionFactory::build(spec)) {}
+                 projection_from_spec(spec)) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
@@ -44,15 +46,30 @@ Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vec
     Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name, BoundingBox* bbox, const Projection* p) :
-    Grid(bbox, p) {
-    ASSERT(is_uid(uid));
+Unstructured::Unstructured(const uid_type& _uid, const std::string& name, std::unique_ptr<BoundingBox> bbox,
+                           std::unique_ptr<const Projection> p) :
+    Grid(std::move(bbox), std::move(p)) {
+    ASSERT(is_uid(_uid));
+    const auto uid = StringTools::lower(_uid);
     reset_uid(uid);
     name_ = name;
 
-    spec::Custom::container_type custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
+    spec::Custom::container_type custom_map{{"type", type()}, {"uid", uid}};
+
+    // the coordinates file lets other processes use the grid by uid; with nowhere to write, only if found (else memory)
+    if (const auto path =
+            LibEcKitGeo::cacheWritablePaths().empty() ? record().find_cached_path() : record().to_cached_path()) {
+        custom_map["cached_path"] = *path;
+    }
     if (!name.empty()) {
         custom_map["name"] = name;
+    }
+
+    // the shared grids loaded first (not to replace this grid's registration later), and a name of its own, not of
+    // another grid (or matching a grid name pattern)
+    const auto& names = GridSpecByName::instance();
+    if (!name.empty() && names.matches(name) && !GridSpecByName::has_name(name)) {
+        throw exception::SpecError("Unstructured: name '" + name + "' is of another grid", Here());
     }
 
     const spec::Custom custom(custom_map);
@@ -67,8 +84,8 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
 
 
 Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement,
-                           BoundingBox* bbox, const Projection* p) :
-    Grid(bbox, p), name_(name), arrangement_(arrangement) {
+                           std::unique_ptr<BoundingBox> bbox, std::unique_ptr<const Projection> p) :
+    Grid(std::move(bbox), std::move(p)), name_(name), arrangement_(arrangement) {
     reset_uid(uid);
 }
 
@@ -78,34 +95,19 @@ std::vector<size_t> Unstructured::shape() const {
 }
 
 
-Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record().longitude(), record().latitude())};
+Point Unstructured::point(size_t index) const {
+    return record().point(index);
 }
 
 
-Grid::iterator Unstructured::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this)};
+std::unique_ptr<Grid::Iterator::State> Unstructured::make_state() const {
+    return record().make_state();
 }
 
 
 Grid::BoundingBox* Unstructured::calculate_bbox() const {
     // NOTE: a grid declaring its own bounding box (eg. a regional ICON) gets it from its spec, at construction
     return new BoundingBox;
-}
-
-
-std::vector<Point> Unstructured::to_points() const {
-    const auto& lons = record().longitude();
-    const auto& lats = record().latitude();
-
-    std::vector<Point> pts;
-    pts.reserve(size());
-
-    for (size_t i = 0; i < lons.size(); ++i) {
-        pts.emplace_back(PointLonLat{lons[i], lats[i]});
-    }
-
-    return pts;
 }
 
 
@@ -139,10 +141,11 @@ void Unstructured::fill_spec(spec::Custom& custom) const {
         auto grid = name_ + (name_.empty() || arrangement_.empty() ? "" : "_" + arrangement_);
         custom.set("grid", grid);
 
-        if (auto _uid = uid();
-            !GridSpecByName::instance().exists(grid) ||
-            std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
-            custom.set("uid", _uid);
+        // the uid, unless the name gives it
+        if (std::unique_ptr<const Spec> named(
+                GridSpecByName::has_name(grid) ? GridSpecByName::instance().match_spec(grid, grid) : nullptr);
+            !named || StringTools::lower(named->get_string("uid")) != uid()) {
+            custom.set("uid", uid());
         }
         return;
     }

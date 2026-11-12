@@ -1,13 +1,42 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <cstring>
 #include <locale>
 
 #include "eckit/eckit.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/types/DateTime.h"
 #include "eckit/utils/Tokenizer.h"
+
+namespace {
+
+bool isDigits(const std::string& s, size_t pos, size_t len) {
+    return std::all_of(s.begin() + pos, s.begin() + pos + len, [](unsigned char c) { return std::isdigit(c); });
+}
+
+long toLong(const std::string& s, size_t pos, size_t len) {
+    return std::stol(s.substr(pos, len));
+}
+
+// Matches the pattern, where 'd' is a digit and any other character matches itself
+bool matches(const std::string& s, const char* pattern) {
+    if (s.length() != std::strlen(pattern)) {
+        return false;
+    }
+    for (size_t i = 0; i < s.length(); ++i) {
+        if (pattern[i] == 'd' ? !std::isdigit(static_cast<unsigned char>(s[i])) : s[i] != pattern[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+}  // namespace
 
 namespace eckit {
 
@@ -18,13 +47,72 @@ DateTime::DateTime(const DateTime& other) : date_(other.date_), time_(other.time
 
 DateTime::DateTime(double julian) : date_(long(julian), true), time_((julian - long(julian)) * 24 * 60 * 60) {}
 
-DateTime::DateTime(const std::string& s) {
-    Tokenizer parse(" ");
+void DateTime::parse(const std::string& str, bool iso8601) {
+    // A trailing 'Z' is the UTC designator; DateTime is always UTC
+    const bool hasZ     = !str.empty() && str.back() == 'Z';
+    const std::string s = hasZ ? str.substr(0, str.length() - 1) : str;
+
+    if (iso8601) {
+        // Offsets into s of the date (always at 0) and the time, if there is one
+        size_t timePos = 0;
+        bool extended  = false;
+
+        if (matches(s, "dddddddd")) {
+            extended = false;
+        }
+        else if (matches(s, "dddd-dd-dd")) {
+            extended = true;
+        }
+        else if (matches(s, "dddddddddddddd")) {
+            timePos = 8;
+        }
+        else if (matches(s, "ddddddddTdddddd")) {
+            timePos = 9;
+        }
+        else if (matches(s, "dddd-dd-ddTdd:dd:dd") || matches(s, "dddd-dd-dd dd:dd:dd")) {
+            extended = true;
+            timePos  = 11;
+        }
+        else {
+            throw BadValue("Invalid ISO 8601 date time: " + str);
+        }
+
+        // 'Z' only makes sense after a time
+        if (hasZ && timePos == 0) {
+            throw BadValue("Invalid ISO 8601 date time: " + str);
+        }
+
+        const size_t m = extended ? 5 : 4;  // offset of the month
+        const size_t d = extended ? 8 : 6;  // offset of the day
+        date_          = Date(toLong(s, 0, 4), toLong(s, m, 2), toLong(s, d, 2));
+
+        if (timePos == 0) {
+            time_ = Time(0, 0, 0);
+        }
+        else {
+            const size_t step = extended ? 3 : 2;
+            time_ = Time(toLong(s, timePos, 2), toLong(s, timePos + step, 2), toLong(s, timePos + 2 * step, 2));
+        }
+        return;
+    }
+
+    // Compact forms: YYYYMMDDHHMMSS and YYYYMMDDHHMM
+    if ((s.length() == 14 || s.length() == 12) && isDigits(s, 0, s.length())) {
+        date_ = Date(s.substr(0, 8));
+        time_ = Time(s.substr(8));
+        return;
+    }
+
+    // Separator is a space or an upper case 'T' (ISO 8601); a lower case 't' is not accepted
+    // because it can be part of a month name (e.g. "oct")
+    Tokenizer parse(s.find(' ') != std::string::npos ? " " : "T");
     std::vector<std::string> result;
 
     parse(s, result);
 
-    ASSERT(result.size() == 2);
+    if (result.size() != 2) {
+        throw BadValue("Invalid date time (expected a date and a time): " + str);
+    }
     date_ = Date(result[0]);
     time_ = Time(result[1]);
 }

@@ -8,7 +8,6 @@
 
 ecbuild_add_library(
     TARGET eckit_openfam_mock
-    TYPE SHARED
     INSTALL_HEADERS LISTED
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}
 

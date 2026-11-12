@@ -147,18 +147,14 @@ Grid::Iterator& Grid::Iterator::operator+=(difference_type d) {
 
 
 Grid::Iterator Grid::Iterator::operator++(int) {
-    // the previous position, without a copy of the state (made on its first dereference, if ever)
-    Iterator old(*grid_);
-    old.index_ = index_;
+    auto old = *this;
     operator++();
     return old;
 }
 
 
 Grid::Iterator Grid::Iterator::operator--(int) {
-    // the previous position, without a copy of the state (made on its first dereference, if ever)
-    Iterator old(*grid_);
-    old.index_ = index_;
+    auto old = *this;
     operator--();
     return old;
 }

@@ -181,18 +181,22 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
-    /// Figure of the grid points (lon, lat), as the projection's
+
     virtual const Figure& figure() const { return projection().figure(); }
+
+    /// False easting and northing
+    virtual PointXY false_xy() const { return {}; }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
-    /// The grid cropped to the area, of the same type if supported (e.g. regular_ll by a bounding box), otherwise
-    /// unstructured (see make_grid_cropped_unstructured_ll)
+
+    /// The grid cropped to area, of the same type if supported otherwise unstructured (see
+    /// make_grid_cropped_unstructured_ll)
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
-    /// The points in the area (see crop), as an unstructured grid (its coordinates cached, exchangeable by uid)
+    /// The points in area (see crop), as an unstructured grid
     [[nodiscard]] Grid* make_grid_cropped_unstructured_ll(const Area&) const;
 
     double dx() const;

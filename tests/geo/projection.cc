@@ -497,7 +497,8 @@ CASE("projection: vectors") {
 
 
 CASE("projection: eqc, lat_ts in ]-90, 90[") {
-    for (const std::string spec : {"{type: eqc, lat_ts: 90}", "{type: eqc, lat_ts: -90}"}) {
+    const std::vector<std::string> specs{"{type: eqc, lat_ts: 90}", "{type: eqc, lat_ts: -90}"};
+    for (const std::string& spec : specs) {
         EXPECT_THROWS_AS(std::unique_ptr<const Projection>(ProjectionFactory::make_from_string(spec)),
                          exception::ProjectionError);
     }

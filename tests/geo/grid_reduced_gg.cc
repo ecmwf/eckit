@@ -305,7 +305,8 @@ CASE("cropped octahedral: size, name and spec, also from pl without points outsi
         }
 
         // in the grid order, as many points as the grid
-        for (const auto* g : {named.get(), from_pl.get(), grid.get()}) {
+        const std::vector<const Grid*> compared{named.get(), from_pl.get(), grid.get()};
+        for (const auto* g : compared) {
             EXPECT(g->reorder(g->order()).size() == test.size);
         }
     }
@@ -338,7 +339,8 @@ CASE("cropped, of pl neither octahedral nor classical: spec with pl") {
     std::unique_ptr<const Grid> reference(GridFactory::build(spec::Custom({{"pl", octahedral}, {"area", area}})));
 
     // a row within the area with other points, or without points
-    for (long other : {octahedral[equator] + 4, 0L}) {
+    const std::vector<long> others{octahedral[equator] + 4, 0L};
+    for (long other : others) {
         auto pl     = octahedral;
         pl[equator] = other;
 
@@ -409,7 +411,8 @@ CASE("order: scanning i and j, positively or negatively") {
     const auto& lats = util::gaussian_latitudes(32, false);
     const auto& pl   = util::reduced_classical_pl(32);
 
-    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+    const std::vector<std::string> orders{"i+j-", "i+j+", "i-j-", "i-j+"};
+    for (const std::string& order : orders) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "N32"}, {"order", order}})));
 
         EXPECT(grid->order() == order);
@@ -452,7 +455,8 @@ CASE("order: scanning i and j, positively or negatively") {
     }
 
     // as rows have different numbers of points, not scanning j then i, nor alternating direction
-    for (const std::string order : {"j+i+", "j-i-", "i+-j-", "i-+j+"}) {
+    const std::vector<std::string> unsupported{"j+i+", "j-i-", "i+-j-", "i-+j+"};
+    for (const std::string& order : unsupported) {
         EXPECT_THROWS_AS(
             std::unique_ptr<const Grid>(GridFactory::build(spec::Custom({{"grid", "N32"}, {"order", order}}))),
             exception::OrderError);
@@ -466,7 +470,8 @@ CASE("order: cropped, also from pl without points outside the area") {
 
     std::unique_ptr<const Grid> reference(GridFactory::build(spec::Custom({{"grid", "O32"}, {"area", area}})));
 
-    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+    const std::vector<std::string> orders{"i+j-", "i+j+", "i-j-", "i-j+"};
+    for (const std::string& order : orders) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "O32"}, {"order", order}})));
 
         // cropped grid in the same order, of the points of the crop (the grid points of these indices)

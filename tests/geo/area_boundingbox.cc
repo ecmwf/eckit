@@ -223,11 +223,13 @@ CASE("BoundingBoxXY") {
     const area::BoundingBoxXY box(0, 0, 2, 1);
 
     // inside, including the edges, and outside
-    for (const auto& p : {PointXY{1, 0.5}, PointXY{0, 0}, PointXY{2, 1}, PointXY{0, 1}}) {
+    const std::vector<PointXY> inside{PointXY{1, 0.5}, PointXY{0, 0}, PointXY{2, 1}, PointXY{0, 1}};
+    for (const auto& p : inside) {
         EXPECT(box.contains(p));
     }
 
-    for (const auto& p : {PointXY{-1, 0.5}, PointXY{3, 0.5}, PointXY{1, -1}, PointXY{1, 2}}) {
+    const std::vector<PointXY> outside{PointXY{-1, 0.5}, PointXY{3, 0.5}, PointXY{1, -1}, PointXY{1, 2}};
+    for (const auto& p : outside) {
         EXPECT_NOT(box.contains(p));
     }
 
@@ -246,8 +248,9 @@ CASE("BoundingBoxXY") {
     A from_spec(AreaFactory::make_from_string("{type: bounding_box_xy, bounding_box_xy: [0, 0, 2, 1]}"));
     EXPECT(from_spec->spec_str() == R"({"bounding_box_xy":[0,0,2,1],"type":"bounding_box_xy"})");
 
-    for (const std::string spec : {"{type: bounding_box_xy, bounding_box_xy: [0, 0, 2]}",
-                                   "{type: bounding_box_xy, min_x: 0, min_y: 0, max_x: 2, max_y: 1}"}) {
+    const std::vector<std::string> specs{"{type: bounding_box_xy, bounding_box_xy: [0, 0, 2]}",
+                                         "{type: bounding_box_xy, min_x: 0, min_y: 0, max_x: 2, max_y: 1}"};
+    for (const std::string& spec : specs) {
         EXPECT_THROWS_AS(A(AreaFactory::make_from_string(spec)), exception::SpecError);
     }
 

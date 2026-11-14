@@ -177,7 +177,8 @@ CASE("unstructured_ll: names, as given (not as patterns), and uids (in any case)
     const std::vector<double> lons{1., 2., 3.};
 
     // names with characters of regular expressions
-    for (const std::string name : {"custom.grid[1]", "custom(grid)+", "custom^grid$"}) {
+    const std::vector<std::string> all_names{"custom.grid[1]", "custom(grid)+", "custom^grid$"};
+    for (const std::string& name : all_names) {
         std::unique_ptr<const Grid> a(
             GridFactory::build(spec::Custom{{"latitudes", lats}, {"longitudes", lons}, {"cache_as", name}}));
         std::unique_ptr<const Grid> b(GridFactory::build(spec::Custom{{"grid", name}}));
@@ -206,7 +207,8 @@ CASE("unstructured_ll: names, as given (not as patterns), and uids (in any case)
     const auto upper = StringTools::upper(a->uid());
     EXPECT(upper != a->uid());
 
-    for (const auto& key : {"uid", "grid"}) {
+    const std::vector<std::string> keys{"uid", "grid"};
+    for (const auto& key : keys) {
         std::unique_ptr<const Grid> b(GridFactory::build(spec::Custom{{key, upper}}));
         EXPECT(b->uid() == a->uid());
         EXPECT(*a == *b);
@@ -225,7 +227,8 @@ CASE("unstructured_ll: names, of their own") {
     const std::vector<double> lons_b{1., 2., 3., 4.};
 
     // not of other grids (or their name patterns)
-    for (const std::string name : {"O32", "1/1", "H2"}) {
+    const std::vector<std::string> all_names{"O32", "1/1", "H2"};
+    for (const std::string& name : all_names) {
         EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::build(
                              spec::Custom{{"latitudes", lats_a}, {"longitudes", lons_a}, {"cache_as", name}})),
                          exception::SpecError);
@@ -265,7 +268,8 @@ CASE("unstructured_ll: names in any case, as given") {
     std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats, "Custom-Case"));
     EXPECT(GridSpecByName::has_name("custom-case"));
 
-    for (const std::string name : {"Custom-Case", "custom-case", "CUSTOM-CASE"}) {
+    const std::vector<std::string> names_a{"Custom-Case", "custom-case", "CUSTOM-CASE"};
+    for (const std::string& name : names_a) {
         std::unique_ptr<const Grid> b(GridFactory::build(spec::Custom{{"grid", name}}));
         EXPECT(*b == *a);
         EXPECT(b->name() == "Custom-Case");
@@ -273,7 +277,8 @@ CASE("unstructured_ll: names in any case, as given") {
 
     // another grid of the same name (in any case) replaces it (with a warning), rather than both matching
     std::unique_ptr<const Grid> c(new grid::Unstructured(lats, lons, "custom-case"));
-    for (const std::string name : {"Custom-Case", "custom-case"}) {
+    const std::vector<std::string> names_c{"Custom-Case", "custom-case"};
+    for (const std::string& name : names_c) {
         std::unique_ptr<const Grid> d(GridFactory::build(spec::Custom{{"grid", name}}));
         EXPECT(*d == *c);
         EXPECT(d->name() == "custom-case");

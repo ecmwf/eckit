@@ -73,19 +73,26 @@ CASE("stretch: Cartesian points, as (lon, lat)") {
 CASE("stretch: near the poles (reference values, at 50 significant digits)") {
     const projection::Stretch stretch(0.5773502691896258);
 
-    for (const auto& [lat, ref] : std::vector<std::pair<double, double>>{{89.999999, 89.99999942264974},
-                                                                         {-89.999999, -89.9999982679492},
-                                                                         {89.99999999, 89.9999999942265},
-                                                                         {-89.99999999, -89.9999999826795},
-                                                                         {45., 63.10104894772739}}) {
-        EXPECT(std::abs(stretch.fwd(PointLonLat{10., lat}).lat() - ref) < 1e-13);
-        EXPECT(std::abs(stretch.inv(PointLonLat{10., ref}).lat() - lat) < 1e-13);
+    struct test_t {
+        double lat;
+        double ref;
+    };
+
+    const std::vector<test_t> cases{{89.999999, 89.99999942264974},
+                                    {-89.999999, -89.9999982679492},
+                                    {89.99999999, 89.9999999942265},
+                                    {-89.99999999, -89.9999999826795},
+                                    {45., 63.10104894772739}};
+    for (const auto& test : cases) {
+        EXPECT(std::abs(stretch.fwd(PointLonLat{10., test.lat}).lat() - test.ref) < 1e-13);
+        EXPECT(std::abs(stretch.inv(PointLonLat{10., test.ref}).lat() - test.lat) < 1e-13);
     }
 }
 
 
 CASE("stretch: equatorial latitude") {
-    for (double lat : {-60., -30., 0., 10., 45., 80.}) {
+    const std::vector<double> lats{-60., -30., 0., 10., 45., 80.};
+    for (double lat : lats) {
         const projection::Stretch stretch(projection::Stretch::factor_from_equatorial_latitude(lat));
 
         // the equator to the given latitude, the poles fixed, longitudes unchanged

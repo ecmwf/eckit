@@ -71,8 +71,9 @@ CASE("iterator") {
 CASE("iterator: moving around") {
     using difference_type = Grid::Iterator::difference_type;
 
-    for (const std::string spec :
-         {"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}", "{grid: O8}", "{grid: H4}", "{grid: H4n}"}) {
+    const std::vector<std::string> specs{"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}", "{grid: O8}",
+                                         "{grid: H4}", "{grid: H4n}"};
+    for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
         const auto points = grid->to_points();
         const auto size   = static_cast<difference_type>(points.size());
@@ -81,7 +82,8 @@ CASE("iterator: moving around") {
         EXPECT(it != grid->end());
 
         // anywhere, in any direction (e.g. across rows)
-        for (const difference_type k : {size - 1, size / 2, difference_type{1}, size / 3}) {
+        const std::vector<difference_type> values{size - 1, size / 2, difference_type{1}, size / 3};
+        for (const difference_type k : values) {
             auto at = grid->begin();
             EXPECT(at += k);
             EXPECT(at.index() == static_cast<size_t>(k));
@@ -117,8 +119,10 @@ CASE("iterator: standard algorithms") {
     static_assert(std::is_same_v<traits::iterator_category, std::input_iterator_tag>);
     static_assert(std::is_same_v<traits::reference, decltype(*std::declval<Grid::Iterator>())>);
 
-    for (const std::string spec : {"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}", "{grid: O8}",
-                                   "{grid: O8, order: i-j+}", "{grid: H4}", "{grid: H4n}"}) {
+    const std::vector<std::string> specs{"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}",
+                                         "{grid: O8}",       "{grid: O8, order: i-j+}",
+                                         "{grid: H4}",       "{grid: H4n}"};
+    for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
         const auto points = grid->to_points();
         const auto equal  = [](const Point& p, const Point& q) { return points_equal(p, q); };
@@ -158,7 +162,8 @@ CASE("iterator: of different grids") {
 
 
 CASE("iterator: a reduced grid with rows without points") {
-    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+    const std::vector<std::string> orders{"i+j-", "i+j+", "i-j-", "i-j+"};
+    for (const std::string& order : orders) {
         std::unique_ptr<const Grid> grid(
             GridFactory::make_from_string("{grid: O32, area: [60, -10, 30, 40], order: " + order + "}"));
         EXPECT(grid->order() == order);

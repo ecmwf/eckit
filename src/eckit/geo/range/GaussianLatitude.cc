@@ -49,7 +49,8 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
 
     if (v.size() <= 1) {
         // a single value (or none), as is if within the crop
-        const auto [lo, hi] = std::minmax(crop_a, crop_b);
+        const auto lo = std::min(crop_a, crop_b);
+        const auto hi = std::max(crop_a, crop_b);
         if (!v.empty() && (is_less(v.front(), lo) || is_less(hi, v.front()))) {
             v.clear();
         }

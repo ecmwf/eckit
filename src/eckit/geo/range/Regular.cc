@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <optional>
-#include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -228,7 +227,8 @@ Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_
     const auto hi = std::min<double>(max(), std::max(crop_a, crop_b));
 
     if (auto w = detail::within(inc_, shift_, lo, hi)) {
-        const auto [first, last] = *w;
+        const auto first = w->first;
+        const auto last  = w->second;
         return new detail::Cropped(std::make_unique<detail::Plain>(inc_, up ? first : last, up ? last : first, a_));
     }
 

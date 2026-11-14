@@ -103,7 +103,8 @@ CASE("laea: near the poles, on an ellipsoid") {
         EXPECT(points_equal(laea->inv(PointXY{0., 0.}), north ? NORTH_POLE : SOUTH_POLE, TOLERANCE));
 
         auto previous = north ? NORTH_POLE.lat() : SOUTH_POLE.lat();
-        for (const double d : {1., 10., 100., 1000., 1e4}) {
+        const std::vector<double> values{1., 10., 100., 1000., 1e4};
+        for (const double d : values) {
             const auto p = std::get<PointLonLat>(laea->inv(PointXY{d, 0.}));
             EXPECT(north ? (89.9 < p.lat() && p.lat() < previous) : (previous < p.lat() && p.lat() < -89.9));
             EXPECT(points_equal(laea->fwd(p), PointXY{d, 0.}, 2e-3 * d));

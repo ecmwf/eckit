@@ -85,9 +85,15 @@ CASE("GeoJSON: an area per feature (by index or name), of its polygons") {
     std::unique_ptr<GeoJSON> lib(GeoJSON::make_from_json_string(json, "name"));
     EXPECT(lib->size() == 3);
 
-    for (const auto& [index, name] : std::vector<std::pair<size_t, std::string>>{{1, "square"}, {2, "squares"}}) {
-        std::unique_ptr<const Area> by_index(lib->make_area(index));
-        std::unique_ptr<const Area> by_name(lib->make_area_from_name(name));
+    struct test_t {
+        size_t index;
+        std::string name;
+    };
+
+    const std::vector<test_t> cases{{1, "square"}, {2, "squares"}};
+    for (const auto& test : cases) {
+        std::unique_ptr<const Area> by_index(lib->make_area(test.index));
+        std::unique_ptr<const Area> by_name(lib->make_area_from_name(test.name));
         EXPECT(*by_index == *by_name);
     }
 
@@ -120,19 +126,20 @@ CASE("GeoJSON: errors") {
         return R"({"type": "Feature", "properties": )" + properties + R"(, "geometry": )" + polygon + "}";
     };
 
-    for (const auto& json : std::vector<std::string>{
-             // names, of a feature collection
-             polygon,
-             // names, of every feature
-             R"({"type": "FeatureCollection", "features": [)" + feature(R"({"name": "a"})") + ", " +
-                 feature(R"({"other": "b"})") + "]}",
-             // names, unique
-             R"({"type": "FeatureCollection", "features": [)" + feature(R"({"name": "a"})") + ", " +
-                 feature(R"({"name": "a"})") + "]}",
-             // positions, [lon, lat]
-             R"({"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "a"},
+    const std::vector<std::string> jsons{
+        // names, of a feature collection
+        polygon,
+        // names, of every feature
+        R"({"type": "FeatureCollection", "features": [)" + feature(R"({"name": "a"})") + ", " +
+            feature(R"({"other": "b"})") + "]}",
+        // names, unique
+        R"({"type": "FeatureCollection", "features": [)" + feature(R"({"name": "a"})") + ", " +
+            feature(R"({"name": "a"})") + "]}",
+        // positions, [lon, lat]
+        R"({"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "a"},
                  "geometry": {"type": "Polygon", "coordinates": [[[0], [10, 0], [10, 10], [0, 0]]]}}]})",
-         }) {
+    };
+    for (const auto& json : jsons) {
         EXPECT_THROWS_AS(std::unique_ptr<GeoJSON>(GeoJSON::make_from_json_string(json, "name")), exception::AreaError);
     }
 }

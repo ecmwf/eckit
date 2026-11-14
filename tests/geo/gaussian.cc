@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <vector>
 
 #include "eckit/geo/util.h"
 #include "eckit/maths/FloatingPointExceptions.h"
@@ -56,7 +57,8 @@ CASE("gaussian_quadrature_weights") {
 
 
 CASE("gaussian quadrature: latitudes and weights") {
-    for (size_t N : {1, 2, 3, 16, 48, 640, 1280}) {
+    const std::vector<size_t> values{1, 2, 3, 16, 48, 640, 1280};
+    for (size_t N : values) {
         const auto& lats    = geo::util::gaussian_latitudes(N, false);
         const auto& weights = geo::util::gaussian_quadrature_weights(N);
 

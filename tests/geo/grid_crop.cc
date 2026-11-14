@@ -410,7 +410,8 @@ CASE("crop: cache") {
         EXPECT(grid->crop(*bbox) == a);
 
         // corrupt files (not of indices, or not of this grid's) are not loaded, but recomputed (and replaced)
-        for (const auto& corrupt : {std::string("corrupt"), std::string(3 * sizeof(size_t), '\xff')}) {
+        const std::vector<std::string> corrupts{"corrupt", std::string(3 * sizeof(size_t), '\xff')};
+        for (const auto& corrupt : corrupts) {
             for (const auto& f : files) {
                 if (f.extension() == ".crop") {
                     std::ofstream(f.asString(), std::ios::binary | std::ios::trunc) << corrupt;

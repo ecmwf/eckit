@@ -640,17 +640,18 @@ CASE("arakawa c-grids") {
 CASE("scanning orders: same points and bounding box") {
     const std::vector<std::string> orders{"i+j+", "i-j-", "i-j+", "j-i+", "j+i+", "j-i-", "j+i-"};
 
-    for (const std::string spec : {
-             "grid: [90, 90]",
-             "grid: [10, 10]",
-             "grid: [7, 7]",
-             "grid: [10, 10], reference: [5, 5]",
-             "grid: [10, 10], area: [60, -10, 30, 40]",
-             "grid: [10, 10], area: [60, 350, 30, 400]",
-             "grid: [10, 10], area: [60, -10, 30, 40], reference: [5, 5]",
-             "grid: [3, 3], area: [10, -7, -10, 7]",
-             "grid: [2, 2], area: [2, -4, -2, 4], rotation: [-40, 20]",
-         }) {
+    const std::vector<std::string> specs{
+        "grid: [90, 90]",
+        "grid: [10, 10]",
+        "grid: [7, 7]",
+        "grid: [10, 10], reference: [5, 5]",
+        "grid: [10, 10], area: [60, -10, 30, 40]",
+        "grid: [10, 10], area: [60, 350, 30, 400]",
+        "grid: [10, 10], area: [60, -10, 30, 40], reference: [5, 5]",
+        "grid: [3, 3], area: [10, -7, -10, 7]",
+        "grid: [2, 2], area: [2, -4, -2, 4], rotation: [-40, 20]",
+    };
+    for (const std::string& spec : specs) {
         const std::unique_ptr<const Grid> canonical(GridFactory::make_from_string("{" + spec + "}"));
         const auto canonical_points = canonical->to_points();
 
@@ -867,8 +868,9 @@ CASE("RegularLL: rotated, projection as PROJ") {
 
 
 CASE("first and last points") {
-    for (const std::string spec : {"{grid: [5, 5]}", "{grid: [5, 5], rotation: [-40, -20]}",
-                                   "{grid: [5, 5], order: i+-j-}", "{grid: [5, 5], order: j-i+}"}) {
+    const std::vector<std::string> specs{"{grid: [5, 5]}", "{grid: [5, 5], rotation: [-40, -20]}",
+                                         "{grid: [5, 5], order: i+-j-}", "{grid: [5, 5], order: j-i+}"};
+    for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
 
         EXPECT(points_equal(grid->first_point(), grid->point(0)));
@@ -881,12 +883,13 @@ CASE("first and last points") {
 
 CASE("spec round trip, near the poles") {
     // a pole is included if a value, or within an increment (not if at an increment, where a value would be)
-    for (const std::string spec : {
-             "{grid: [1, 1], area: [89, 0, 0, 10]}",
-             "{grid: [1, 1], area: [0, 0, -89, 10]}",
-             "{grid: [1, 1], area: [90, 0, 0, 10]}",
-             "{grid: [0.5, 0.5], area: [89.5, 0, -89.5, 10]}",
-         }) {
+    const std::vector<std::string> specs{
+        "{grid: [1, 1], area: [89, 0, 0, 10]}",
+        "{grid: [1, 1], area: [0, 0, -89, 10]}",
+        "{grid: [1, 1], area: [90, 0, 0, 10]}",
+        "{grid: [0.5, 0.5], area: [89.5, 0, -89.5, 10]}",
+    };
+    for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
         std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
 
@@ -905,10 +908,11 @@ CASE("spec round trip, near the poles") {
 
 CASE("no points (in the area)") {
     // of a reference not of the area (by default, its south-west corner, so of a point)
-    for (const std::string spec : {
-             "{grid: [1, 1], area: [10.8, 0, 10.2, 10], reference: [0, 0]}",
-             "{grid: [1, 1], area: [10, 0.2, 0, 0.8], reference: [0, 0]}",
-         }) {
+    const std::vector<std::string> specs{
+        "{grid: [1, 1], area: [10.8, 0, 10.2, 10], reference: [0, 0]}",
+        "{grid: [1, 1], area: [10, 0.2, 0, 0.8], reference: [0, 0]}",
+    };
+    for (const std::string& spec : specs) {
         EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::GridError);
     }
 }

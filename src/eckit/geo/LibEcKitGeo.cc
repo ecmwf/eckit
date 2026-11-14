@@ -310,7 +310,8 @@ void LibEcKitGeo::cacheInfo(JSON& j) {
     j << "size" << size("search");
     j.endObject();
 
-    for (const std::string name : {"crop", "latlon", "download"}) {
+    const std::vector<std::string> names{"crop", "latlon", "download"};
+    for (const std::string& name : names) {
         j << name;
         j.startObject();
         j << "size" << size(name);

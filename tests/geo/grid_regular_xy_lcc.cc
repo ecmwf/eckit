@@ -73,11 +73,11 @@ CASE("named grids: points and bounding box") {
 
         check_points(*grid, test);
 
-        const auto [n, w, s, e] = grid->boundingBox().deconstruct();
-        EXPECT(types::is_approximately_equal(n, test.bbox[0], BBOX_TOLERANCE));
-        EXPECT(types::is_approximately_equal(w, test.bbox[1], BBOX_TOLERANCE));
-        EXPECT(types::is_approximately_equal(s, test.bbox[2], BBOX_TOLERANCE));
-        EXPECT(types::is_approximately_equal(e, test.bbox[3], BBOX_TOLERANCE));
+        const auto bbox = grid->boundingBox();
+        EXPECT(types::is_approximately_equal(bbox.north(), test.bbox[0], BBOX_TOLERANCE));
+        EXPECT(types::is_approximately_equal(bbox.west(), test.bbox[1], BBOX_TOLERANCE));
+        EXPECT(types::is_approximately_equal(bbox.south(), test.bbox[2], BBOX_TOLERANCE));
+        EXPECT(types::is_approximately_equal(bbox.east(), test.bbox[3], BBOX_TOLERANCE));
 
         // also by grid, and from the spec
         std::unique_ptr<const Grid> by_grid(GridFactory::build(spec::Custom{{"grid", test.name}}));

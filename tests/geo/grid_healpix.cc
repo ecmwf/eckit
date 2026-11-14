@@ -243,7 +243,8 @@ CASE("wrong spec") {
 
 
 CASE("first and last points") {
-    for (const std::string spec : {"{grid: H4}", "{grid: H4n}", "{grid: H4n, rotation: [30, 30]}"}) {
+    const std::vector<std::string> specs{"{grid: H4}", "{grid: H4n}", "{grid: H4n, rotation: [30, 30]}"};
+    for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
 
         EXPECT(points_equal(grid->first_point(), grid->point(0)));
@@ -255,11 +256,13 @@ CASE("first and last points") {
 
 
 CASE("nested order: of Nside a power of 2") {
-    for (const std::string spec : {"{grid: H3, order: nested}", "{grid: H3n}", "{grid: H6n}"}) {
+    const std::vector<std::string> invalid{"{grid: H3, order: nested}", "{grid: H3n}", "{grid: H6n}"};
+    for (const std::string& spec : invalid) {
         EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::OrderError);
     }
 
-    for (const std::string spec : {"{grid: H3}", "{grid: H6, order: ring}", "{grid: H4n}", "{grid: H8n}"}) {
+    const std::vector<std::string> valid{"{grid: H3}", "{grid: H6, order: ring}", "{grid: H4n}", "{grid: H8n}"};
+    for (const std::string& spec : valid) {
         EXPECT_NO_THROW(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)));
     }
 }

@@ -37,8 +37,14 @@ using lock_type = util::lock_type<lock_tag>;
 using section_t = std::map<std::string, std::string>;
 
 
+struct sections_t {
+    section_t uids;
+    section_t names;
+};
+
+
 /// Sections of grid.yaml (as share::Grid::load), empty if it doesn't exist or is invalid (so it is rewritten)
-std::pair<section_t, section_t> read(const PathName& path, bool warn = true) {
+sections_t read(const PathName& path, bool warn = true) {
     if (!path.exists()) {
         return {};
     }
@@ -56,19 +62,18 @@ std::pair<section_t, section_t> read(const PathName& path, bool warn = true) {
     };
 
     try {
-        section_t uids;
-        section_t names;
+        sections_t sections;
 
-        for (const auto& [key, value] : ValueMap(YAMLParser::decodeFile(path))) {
-            if (const auto k = key.as<std::string>(); k == "grid_uids") {
-                uids = read_section(value, k);
+        for (const auto& kv : ValueMap(YAMLParser::decodeFile(path))) {
+            if (const auto k = kv.first.as<std::string>(); k == "grid_uids") {
+                sections.uids = read_section(kv.second, k);
             }
             else if (k == "grid_names") {
-                names = read_section(value, k);
+                sections.names = read_section(kv.second, k);
             }
         }
 
-        return {uids, names};
+        return sections;
     }
     catch (const eckit::Exception& e) {
         if (warn) {
@@ -97,8 +102,8 @@ void write(const PathName& path, const section_t& uids, const section_t& names) 
     auto write_section = [&fs, &quoted](const std::string& name, const section_t& section) {
         if (!section.empty()) {
             fs << '\n' << name << ':' << '\n';
-            for (const auto& [key, value] : section) {
-                fs << "  - " << quoted(key) << ": " << value << '\n';
+            for (const auto& kv : section) {
+                fs << "  - " << quoted(kv.first) << ": " << kv.second << '\n';
             }
         }
     };
@@ -147,7 +152,7 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     const auto path = writable.front() / "grid.yaml";
 
     // (an invalid file is reported once, when rewritten)
-    if (auto [uids, names] = read(path, false); has(uids, uid) && (name.empty() || has(names, name))) {
+    if (const auto s = read(path, false); has(s.uids, uid) && (name.empty() || has(s.names, name))) {
         return;
     }
 
@@ -156,14 +161,14 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
 
     // across processes, read again (another process can have written it meanwhile)
     eckit::cache::DiskCache::write(path, [&](const PathName& tmp) {
-        auto [uids, names] = read(path);
+        auto s = read(path);
 
-        uids[uid] = spec_str;
+        s.uids[uid] = spec_str;
         if (!name.empty()) {
-            names[name] = spec_str;
+            s.names[name] = spec_str;
         }
 
-        write(tmp, uids, names);
+        write(tmp, s.uids, s.names);
     });
 }
 

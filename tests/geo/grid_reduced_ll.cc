@@ -256,7 +256,8 @@ CASE("order: scanning i and j, positively or negatively") {
     const spec::Custom spec{{"type", "reduced_ll"}, {"pl", std::vector<long>{20, 24, 24, 20}}};
     std::unique_ptr<const Grid> reference(GridFactory::build(spec));
 
-    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+    const std::vector<std::string> orders{"i+j-", "i+j+", "i-j-", "i-j+"};
+    for (const std::string& order : orders) {
         spec::Custom ordered(spec.container());
         ordered.set("order", order);
 
@@ -289,11 +290,12 @@ CASE("order: scanning i and j, positively or negatively") {
 
 
 CASE("wrong spec") {
-    for (const std::string spec : {
-             "{type: reduced_ll, pl: [2, -1, 2]}",                     // negative number of points
-             "{type: reduced_ll, pl: [4]}",                            // a single row
-             "{type: reduced_ll, pl: [4, 4], area: [10, 0, 10, 10]}",  // south = north
-         }) {
+    const std::vector<std::string> specs{
+        "{type: reduced_ll, pl: [2, -1, 2]}",                     // negative number of points
+        "{type: reduced_ll, pl: [4]}",                            // a single row
+        "{type: reduced_ll, pl: [4, 4], area: [10, 0, 10, 10]}",  // south = north
+    };
+    for (const std::string& spec : specs) {
         EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string(spec)), exception::SpecError);
     }
 

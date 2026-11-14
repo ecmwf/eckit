@@ -407,7 +407,8 @@ CASE("Search: compared to brute force") {
     constexpr size_t k   = 7;
     constexpr double rad = 0.2;
 
-    for (bool fast : {true, false}) {
+    const std::vector<bool> fasts{true, false};
+    for (bool fast : fasts) {
         SECTION(fast ? "fast build" : "build by insertion") {
             const auto points = random_points_on_unit_sphere(1000, fast ? 11 : 13);
 

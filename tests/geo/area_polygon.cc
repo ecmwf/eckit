@@ -545,8 +545,9 @@ CASE("area::Polygon: rings, area and containment") {
     EXPECT(types::is_approximately_equal(area::Polygon(rings{outer}).area(), 16.));
     EXPECT(types::is_approximately_equal(area::Polygon(rings{outer_cw}).area(), 16.));
 
-    for (const auto& r : {rings{outer, hole}, rings{outer, hole_ccw}, rings{outer_cw, hole}, rings{outer_cw, hole_ccw},
-                          rings{hole, outer}}) {
+    const std::vector<rings> values{rings{outer, hole}, rings{outer, hole_ccw}, rings{outer_cw, hole},
+                                    rings{outer_cw, hole_ccw}, rings{hole, outer}};
+    for (const auto& r : values) {
         EXPECT(types::is_approximately_equal(area::Polygon(r).area(), 12.));
     }
 

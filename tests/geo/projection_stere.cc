@@ -71,8 +71,10 @@ CASE("stere: spec, proj_str") {
 
 
 CASE("stere: polar only, lat_ts in the hemisphere of the pole") {
-    for (const std::string spec : {"{type: stere, lat_0: 45}", "{type: stere, lat_0: 90, lat_ts: -60}",
-                                   "{type: stere, lat_0: -90, lat_ts: 71}", "{type: stere, lat_0: -90, lat_ts: 90}"}) {
+    const std::vector<std::string> specs{"{type: stere, lat_0: 45}", "{type: stere, lat_0: 90, lat_ts: -60}",
+                                         "{type: stere, lat_0: -90, lat_ts: 71}",
+                                         "{type: stere, lat_0: -90, lat_ts: 90}"};
+    for (const std::string& spec : specs) {
         EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string(spec)), exception::ProjectionError);
     }
 }

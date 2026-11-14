@@ -44,6 +44,8 @@ public:
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
+    PointXY false_xy() const override { return false_; }
+
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
 

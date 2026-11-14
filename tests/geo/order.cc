@@ -77,19 +77,14 @@ CASE("order=scan, reorder") {
     constexpr size_t nj = 2;
 
     // points, by their index in the default order (i+j-)
-    for (const auto& [order, points] : std::map<std::string, RegularScan::renumber_type>{
-             {"i+j-", {0, 1, 2, 3, 4, 5}},
-             {"i+j+", {3, 4, 5, 0, 1, 2}},
-             {"i-j-", {2, 1, 0, 5, 4, 3}},
-             {"i-j+", {5, 4, 3, 2, 1, 0}},
-             {"j-i+", {0, 3, 1, 4, 2, 5}},
-             {"j+i+", {3, 0, 4, 1, 5, 2}},
-             {"j-i-", {2, 5, 1, 4, 0, 3}},
-             {"j+i-", {5, 2, 4, 1, 3, 0}},
-             {"i+-j-", {0, 1, 2, 5, 4, 3}},
-             {"j-+i+", {0, 3, 4, 1, 2, 5}},
-         }) {
-        EXPECT(RegularScan{order}.reorder(RegularScan::order_default(), ni, nj) == points);
+    const std::map<std::string, RegularScan::renumber_type> renumbered{
+        {"i+j-", {0, 1, 2, 3, 4, 5}},  {"i+j+", {3, 4, 5, 0, 1, 2}}, {"i-j-", {2, 1, 0, 5, 4, 3}},
+        {"i-j+", {5, 4, 3, 2, 1, 0}},  {"j-i+", {0, 3, 1, 4, 2, 5}}, {"j+i+", {3, 0, 4, 1, 5, 2}},
+        {"j-i-", {2, 5, 1, 4, 0, 3}},  {"j+i-", {5, 2, 4, 1, 3, 0}}, {"i+-j-", {0, 1, 2, 5, 4, 3}},
+        {"j-+i+", {0, 3, 4, 1, 2, 5}},
+    };
+    for (const auto& r : renumbered) {
+        EXPECT(RegularScan{r.first}.reorder(RegularScan::order_default(), ni, nj) == r.second);
     }
 
     const std::vector<std::string> orders{"i+j+", "i+j-", "i-j+", "i-j-", "i-+j+", "i-+j-", "i+-j+", "i+-j-",
@@ -135,7 +130,8 @@ CASE("healpix") {
         EXPECT_THROWS_AS(HEALPix("?"), exception::OrderError);
 
         // nested: Nside a power of 2, up to 2^13 (checked before any int arithmetic)
-        for (size_t Nside : {size_t{0}, size_t{3}, size_t{1} << 14, size_t{1} << 40}) {
+        const std::vector<size_t> Nsides{size_t{0}, size_t{3}, size_t{1} << 14, size_t{1} << 40};
+        for (size_t Nside : Nsides) {
             EXPECT_THROWS_AS(HEALPix::Renumber{Nside}, exception::OrderError);
         }
         EXPECT_NO_THROW(HEALPix::Renumber{size_t{1} << 13});
@@ -157,11 +153,13 @@ CASE("order=reduced scan") {
     EXPECT(ReducedScan{""}.order() == "i+j-");
 
     // rows of points: consecutive along rows, rows not alternating direction
-    for (const std::string order : {"i+j-", "i+j+", "i-j-", "i-j+"}) {
+    const std::vector<std::string> supported{"i+j-", "i+j+", "i-j-", "i-j+"};
+    for (const std::string& order : supported) {
         EXPECT_NO_THROW(ReducedScan{order});
     }
 
-    for (const std::string order : {"j+i+", "j-i-", "i+-j-", "i-+j+", "j+-i+", "ring", "x"}) {
+    const std::vector<std::string> unsupported{"j+i+", "j-i-", "i+-j-", "i-+j+", "j+-i+", "ring", "x"};
+    for (const std::string& order : unsupported) {
         EXPECT_THROWS_AS(ReducedScan{order}, exception::OrderError);
     }
 
@@ -176,18 +174,18 @@ CASE("order=reduced scan") {
         {"i-j+", {5, 4, 3, 2, 1, 0}},
     };
 
-    for (const auto& [order, canonical] : expected) {
-        const ReducedScan scan(order);
+    for (const auto& e : expected) {
+        const ReducedScan scan(e.first);
 
-        EXPECT(scan.canonical(pl) == canonical);
-        EXPECT(scan.reorder(ReducedScan::order_default(), pl) == canonical);
+        EXPECT(scan.canonical(pl) == e.second);
+        EXPECT(scan.reorder(ReducedScan::order_default(), pl) == e.second);
     }
 
     // reordering, and back
-    for (const auto& [a, _a] : expected) {
-        for (const auto& [b, _b] : expected) {
-            const auto ab = ReducedScan{a}.reorder(b, pl);
-            const auto ba = ReducedScan{b}.reorder(a, pl);
+    for (const auto& a : expected) {
+        for (const auto& b : expected) {
+            const auto ab = ReducedScan{a.first}.reorder(b.first, pl);
+            const auto ba = ReducedScan{b.first}.reorder(a.first, pl);
 
             for (size_t k = 0; k < ab.size(); ++k) {
                 EXPECT(ba[ab[k]] == k);

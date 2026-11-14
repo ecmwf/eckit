@@ -111,7 +111,8 @@ CASE("RegularXY: x and y") {
             exception::SpecError);
 
         // the keys before false_xy
-        for (const std::string key : {"false: [1, 1]", "false_x: 1", "false_y: 1"}) {
+        const std::vector<std::string> keys{"false: [1, 1]", "false_x: 1", "false_y: 1"};
+        for (const std::string& key : keys) {
             EXPECT_THROWS_AS(
                 G(GridFactory::make_from_string("{x: [0, 2, 1], y: [0, 2, 1], " + key + ", " + projection + "}")),
                 exception::SpecError);
@@ -429,7 +430,9 @@ CASE("RegularXY") {
 
 
 CASE("first and last points") {
-    for (const std::string spec : {"{x: [0, 2, 1], y: [3, 0, -1]}", "{x: [0, 2, 1], y: [3, 0, -1], order: i+-j-}"}) {
+    const std::vector<std::string> specs{"{x: [0, 2, 1], y: [3, 0, -1]}",
+                                         "{x: [0, 2, 1], y: [3, 0, -1], order: i+-j-}"};
+    for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
 
         EXPECT(points_equal(grid->first_point(), grid->point(0)));

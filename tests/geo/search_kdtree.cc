@@ -130,7 +130,8 @@ CASE("KDTreeFactory") {
     }
 
     // unknown, or not loading k-d tree cache files (stream: not the k-d tree layout)
-    for (const auto& name : {"unknown", "stream"}) {
+    const std::vector<std::string> names{"unknown", "stream"};
+    for (const auto& name : names) {
         EXPECT_NOT(KDTreeFactory::has(name));
         EXPECT_THROWS_AS(KDTreeFactory::estimate(name, 1), exception::SearchError);
         EXPECT_THROWS_AS(std::unique_ptr<KDTree>(KDTreeFactory::build(name, "uid", 1)), exception::SearchError);
@@ -178,7 +179,8 @@ CASE("KDTree: build and query") {
     const auto points = random_points(500, 1);
 
     for (const auto& name : LOADERS) {
-        for (bool balanced : {true, false}) {
+        const std::vector<bool> balanceds{true, false};
+        for (bool balanced : balanceds) {
             SECTION(name + (balanced ? " (balanced)" : " (insertion)")) {
                 const auto uid = unique_uid("build-" + name + (balanced ? "-balanced" : "-insertion"));
 
@@ -244,7 +246,8 @@ CASE("KDTree: the values must be as many as the points") {
 
     for (const auto& name : LOADERS) {
         SECTION(name) {
-            for (size_t size : {points.size() - 1, points.size() + 1}) {
+            const std::vector<size_t> sizes{points.size() - 1, points.size() + 1};
+            for (size_t size : sizes) {
                 const auto uid = unique_uid("capacity-" + name);
                 std::unique_ptr<KDTree> kdtree(KDTreeFactory::build(name, uid, size));
                 EXPECT_THROWS_AS(kdtree->build(fill(points)), exception::SearchError);
@@ -309,7 +312,8 @@ CASE("KDTreeCache: built, then loaded") {
     }
 
     // by any loader
-    for (const auto& name : {"mmap", "file", "shmem"}) {
+    const std::vector<std::string> names{"mmap", "file", "shmem"};
+    for (const auto& name : names) {
         KDTreeCache kdtree(name, uid, points.size());
         EXPECT_NOT(kdtree.build(fill(points)));
         EXPECT(consistent(kdtree, points));

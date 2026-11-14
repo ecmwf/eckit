@@ -81,7 +81,9 @@ CASE("cell centres") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID_C}})));
     EXPECT(grid->shape() == SHAPE_C);
 
-    const auto [lat, lon] = grid->to_latlons();
+    const auto latlons = grid->to_latlons();
+    const auto& lat    = latlons.first;
+    const auto& lon    = latlons.second;
     EXPECT(lat.size() == SHAPE_C.front());
     EXPECT(types::is_approximately_equal(lon.front(), -153.771, 1e-3));
     EXPECT(types::is_approximately_equal(lat.front(), -76.8972, 1e-4));

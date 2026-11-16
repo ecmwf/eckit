@@ -223,6 +223,7 @@ rust-compiler = "rust-1.90"
 compiler-inputs = ["cxx-compiler", "rust-compiler"]
 
 [matrix.rust-publish]
+ci = false
 packages = ["eckit-crates"]
 publishes = false
 

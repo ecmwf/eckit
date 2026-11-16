@@ -671,6 +671,7 @@ list( APPEND eckit_net_srcs
     net/ProxiedTCPClient.h
     net/ProxiedTCPServer.cc
     net/ProxiedTCPServer.h
+    net/Socket.h
     net/SocketOptions.cc
     net/SocketOptions.h
     net/TCPClient.cc

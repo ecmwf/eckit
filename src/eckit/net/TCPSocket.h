@@ -8,6 +8,7 @@
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/net/Socket.h"
 #include "eckit/net/SocketOptions.h"
 #include "eckit/utils/Hash.h"
 
@@ -15,7 +16,7 @@ namespace eckit::net {
 
 /// @note this class calls sets a handler to ignore SIGPIPE
 
-class TCPSocket {
+class TCPSocket : public Socket {
 
 public:  // types
 
@@ -35,15 +36,14 @@ public:  // methods
     /// **** NOTE: copying gives ownership of the socket to new object
     /// **** Beware of 'slicing', i.e copying subclasses.
 
-    TCPSocket(net::TCPSocket&);
-
-    virtual ~TCPSocket();
+    TCPSocket(TCPSocket&);
+    ~TCPSocket() override;
 
     // See note on copy constructor
 
     TCPSocket& operator=(net::TCPSocket&);
 
-    long write(const void* buf, long length) const;
+    long write(const void* buf, long length) const override;
 
     /// Read from a TCP socket
     ///
@@ -55,16 +55,16 @@ public:  // methods
     ///   on flaky connections
     /// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
     ///   (only if **useSelectOnTCPSocket** is enabled)
-    long read(void* buf, long length) const;
+    long read(void* buf, long length) const override;
 
     long rawRead(void*, long);  // Non-blocking version
 
-    bool isConnected() const { return socket_ != -1; }
+    bool isConnected() const override { return socket_ != -1; }
 
     bool stillConnected() const;
 
     // close sockets
-    virtual void close();
+    void close() override;
 
     // peer name
 
@@ -85,10 +85,10 @@ public:  // methods
 
     void sendBufferSize(int n) { sendBufferSize_ = n; }
 
-    virtual int socket();
+    int socket() override;
 
-    void closeOutput();
-    void closeInput();
+    void closeOutput() override;
+    void closeInput() override;
 
     void debug(bool on);
 
@@ -125,18 +125,13 @@ protected:  // methods
 
     int createSocket(int port, const SocketOptions& options);
 
-    virtual void print(std::ostream& s) const;
+    void print(std::ostream& s) const override;
 
 private:  // methods
 
     /// @pre socket must be made
     virtual void bind();
     virtual std::string bindingAddress() const;
-
-    friend std::ostream& operator<<(std::ostream& s, const TCPSocket& socket) {
-        socket.print(s);
-        return s;
-    }
 };
 
 std::ostream& operator<<(std::ostream&, in_addr);

@@ -27,10 +27,6 @@ public:
     explicit ReducedLonLat(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
                            order::ReducedScan = order::ReducedScan(), std::unique_ptr<const Projection> = nullptr);
 
-    // -- Methods
-
-    const pl_type& pl() const { return pl_; }
-
     // -- Overridden methods
 
     size_t size() const override;
@@ -45,8 +41,6 @@ public:
 private:
 
     // -- Members
-
-    const pl_type pl_;
 
     std::vector<std::unique_ptr<range::RegularLongitude>> longitude_;
     std::unique_ptr<range::RegularLatitude> latitude_;

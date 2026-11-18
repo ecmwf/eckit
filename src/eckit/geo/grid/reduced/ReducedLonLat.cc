@@ -62,8 +62,8 @@ ReducedLonLat::ReducedLonLat(const Spec& spec) :
 
 ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan,
                              std::unique_ptr<const Projection> p) :
-    Reduced(std::move(scan), std::move(p)), pl_(pl), longitude_(pl.size()) {
-    if (pl_.empty() || std::any_of(pl_.begin(), pl_.end(), [](auto Ni) { return Ni < 0; })) {
+    Reduced(PL::own(pl), std::move(scan), std::move(p)), longitude_(pl.size()) {
+    if (pl.empty() || std::any_of(pl.begin(), pl.end(), [](auto Ni) { return Ni < 0; })) {
         throw exception::SpecError("ReducedLonLat: {pl: [...]} (numbers of points, not negative) expected", Here());
     }
 
@@ -85,8 +85,8 @@ ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, order::
     latitude_.reset(make_lat_range(pl.size(), bbox));
     ASSERT(latitude_);
 
-    for (size_t j = 0; j < pl_.size(); ++j) {
-        longitude_[j].reset(make_lon_range(into_unsigned(pl_[j]), boundingBox()));
+    for (size_t j = 0; j < pl.size(); ++j) {
+        longitude_[j].reset(make_lon_range(into_unsigned(pl[j]), boundingBox()));
         ASSERT(longitude_[j]);
     }
 }
@@ -121,7 +121,7 @@ void ReducedLonLat::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
     custom.set("type", type());
-    custom.set("pl", pl_);
+    custom.set("pl", pl());
 }
 
 
@@ -132,7 +132,7 @@ const std::string& ReducedLonLat::type() const {
 
 
 Grid* ReducedLonLat::make_grid_reordered(const order_type& to) const {
-    return new ReducedLonLat(pl_, boundingBox(), order::ReducedScan{to}, projection_copy());
+    return new ReducedLonLat(pl(), boundingBox(), order::ReducedScan{to}, projection_copy());
 }
 
 

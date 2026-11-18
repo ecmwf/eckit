@@ -4,8 +4,10 @@
 
 #pragma once
 
+#include <cstddef>
+#include <vector>
+
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::order {
@@ -26,11 +28,12 @@ public:
 
     // -- Methods
 
-    /// Renumber in the default order of each point in this order, of rows (in the default order) of pl points
-    renumber_type canonical(const pl_type& pl) const;
+    /// Renumber in the default order of each point in this order, of rows (in the default order) by the points before
+    /// each row, then the number of points
+    renumber_type canonical(const std::vector<size_t>& nxacc) const;
 
     /// Renumbering of the points, in this order, to another order (of rows as canonical)
-    renumber_type reorder(const order_type& to, const pl_type& pl) const;
+    renumber_type reorder(const order_type& to, const std::vector<size_t>& nxacc) const;
 };
 
 

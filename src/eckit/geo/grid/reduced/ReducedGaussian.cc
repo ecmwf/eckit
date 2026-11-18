@@ -59,17 +59,17 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, order::ReducedScan scan,
                                  std::unique_ptr<const Projection> p) :
-    Reduced(std::move(scan), std::move(p)), N_(pl_N(pl)), pl_(pl), latitude_(N_, false) {
+    Reduced(make_pl(pl), std::move(scan), std::move(p)), N_(pl_N(pl)), latitude_(N_, false) {
     const auto& lats = latitude_.values();
-    ASSERT(lats.size() == pl_.size());
+    ASSERT(lats.size() == pl.size());
 
     const auto [n, w, s, e] = bbox.deconstruct();
     auto periodic           = true;
     auto strictly_less      = [](double a, double b) { return a + PointLonLat::EPS < b; };
 
-    longitude_.reserve(pl_.size());
-    for (size_t j = 0; j < pl_.size(); ++j) {
-        auto Ni = pl_[j];
+    longitude_.reserve(pl.size());
+    for (size_t j = 0; j < pl.size(); ++j) {
+        auto Ni = pl[j];
         if (Ni == 0 || strictly_less(n, lats[j]) || strictly_less(lats[j], s)) {
             ASSERT(nullptr != longitude_.emplace_back(range::RegularLongitude::make_empty_range(w, e)));
             continue;
@@ -81,7 +81,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, ord
     }
 
     // rows with points, to the poles if the first or last rows have points
-    last_ = pl_.size();
+    last_ = pl.size();
     while (first_ < last_ && longitude_[first_]->size() == 0) {
         ++first_;
     }
@@ -94,8 +94,25 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, ord
     }
 
     boundingBox(new BoundingBox{first_ == 0 ? PointLonLat::RIGHT_ANGLE : lats[first_], w,
-                                last_ == pl_.size() ? -PointLonLat::RIGHT_ANGLE : lats[last_ - 1],
+                                last_ == pl.size() ? -PointLonLat::RIGHT_ANGLE : lats[last_ - 1],
                                 periodic ? w + PointLonLat::FULL_ANGLE : e});
+}
+
+
+Reduced::PL ReducedGaussian::make_pl(const pl_type& pl) {
+    const auto N = pl_N(pl);
+
+    if (const auto& octahedral = util::reduced_octahedral_pl(N); &octahedral == &pl || octahedral == pl) {
+        return PL::cached(octahedral);
+    }
+
+    if (util::reduced_classical_pl_known(N)) {
+        if (const auto& classical = util::reduced_classical_pl(N); &classical == &pl || classical == pl) {
+            return PL::cached(classical);
+        }
+    }
+
+    return PL::own(pl);
 }
 
 
@@ -120,12 +137,12 @@ bool ReducedGaussian::is_reduced_classical() const {
 
 
 bool ReducedGaussian::matches(const pl_type& reference) const {
-    ASSERT(reference.size() == pl_.size());
+    ASSERT(reference.size() == pl().size());
 
     // rows before the first and after the last with points are outside the bounding box, whatever their pl
     const auto first = static_cast<std::ptrdiff_t>(first_);
     const auto last  = static_cast<std::ptrdiff_t>(last_);
-    return std::equal(pl_.begin() + first, pl_.begin() + last, reference.begin() + first);
+    return std::equal(pl().begin() + first, pl().begin() + last, reference.begin() + first);
 }
 
 
@@ -136,7 +153,7 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
 
     // the name gives pl, unless pl is neither octahedral nor classical
     if (!is_reduced_octahedral() && !is_reduced_classical()) {
-        custom.set("pl", pl_);
+        custom.set("pl", pl());
     }
 }
 
@@ -154,7 +171,7 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
     }
 
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new ReducedGaussian(pl_, BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()},
+        return new ReducedGaussian(pl(), BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()},
                                    scan());
     }
 
@@ -163,7 +180,7 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
 
 
 Grid* ReducedGaussian::make_grid_reordered(const order_type& to) const {
-    return new ReducedGaussian(pl_, boundingBox(), order::ReducedScan{to}, projection_copy());
+    return new ReducedGaussian(pl(), boundingBox(), order::ReducedScan{to}, projection_copy());
 }
 
 

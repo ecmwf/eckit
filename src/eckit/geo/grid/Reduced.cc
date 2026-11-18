@@ -42,8 +42,17 @@ struct Reduced::State final : Iterator::State {
 };
 
 
-Reduced::Reduced(order::ReducedScan scan, std::unique_ptr<const Projection> p) :
-    Grid(nullptr, std::move(p)), scan_(std::move(scan)) {}
+Reduced::Reduced(PL pl, order::ReducedScan scan, std::unique_ptr<const Projection> p) :
+    Grid(nullptr, std::move(p)),
+    pl_owned_(std::move(pl.own_)),
+    pl_(pl.cached_ != nullptr ? *pl.cached_ : pl_owned_),
+    scan_(std::move(scan)) {}
+
+
+Reduced::Reduced(PL pl, std::unique_ptr<BoundingBox> bbox, std::unique_ptr<const Projection> p) :
+    Grid(std::move(bbox), std::move(p)),
+    pl_owned_(std::move(pl.own_)),
+    pl_(pl.cached_ != nullptr ? *pl.cached_ : pl_owned_) {}
 
 
 Point Reduced::point(size_t index) const {
@@ -64,15 +73,6 @@ void Reduced::fill_spec(spec::Custom& custom) const {
     if (!scan_.is_default()) {
         custom.set("order", scan_.order());
     }
-}
-
-
-pl_type Reduced::points_per_row() const {
-    pl_type pl(ny());
-    for (size_t j = 0; j < pl.size(); ++j) {
-        pl[j] = static_cast<pl_type::value_type>(nxj(j));
-    }
-    return pl;
 }
 
 

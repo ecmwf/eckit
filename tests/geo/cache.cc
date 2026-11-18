@@ -16,6 +16,7 @@
 #include "eckit/cache/loader/MappedFile.h"
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/TmpDir.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
@@ -231,6 +232,34 @@ CASE("SearchCache: a grid search, accounted for") {
 
     cache.capacity(capacity);
     cache.clear();
+}
+
+
+CASE("SearchCache: of its own storage (cache files and loader) and group of caches") {
+    TmpDir dir;
+    const auto files = geo::cache::SearchCache::make_file_cache(eckit::cache::Roots{PathName{dir}}, "own", false);
+
+    eckit::cache::MemoryCaches group;
+    geo::cache::SearchCache cache(group, eckit::cache::MemoryUsage::unlimited(), "lru",
+                                  Search::Storage{"mapped-file", *files});
+
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
+    auto search = cache.get(*grid);
+
+    // the k-d tree is in a cache file of this storage, accounted for in this group
+    const auto* cached = dynamic_cast<const search::KDTreeCache*>(&search->kdtree());
+    EXPECT(cached != nullptr);
+    EXPECT(cached->path() == PathName{dir} / files->relative(Search::uid(*grid)));
+    EXPECT(group.footprint() == search->footprint());
+
+    // found by another cache of the same storage (e.g. of another process), not built again
+    eckit::cache::MemoryCaches other;
+    geo::cache::SearchCache again(other, eckit::cache::MemoryUsage::unlimited(), "lru",
+                                  Search::Storage{"mapped-file", *files});
+
+    auto found = again.get(*grid);
+    EXPECT(dynamic_cast<const search::KDTreeCache&>(found->kdtree()).path() == cached->path());
+    EXPECT(found->search_nn(PointLonLat{14., 1.}).index == search->search_nn(PointLonLat{14., 1.}).index);
 }
 
 

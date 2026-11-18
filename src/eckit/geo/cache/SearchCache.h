@@ -5,16 +5,18 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "eckit/cache/FileCache.h"
 #include "eckit/cache/MemoryCache.h"
+#include "eckit/geo/Search.h"
 #include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo {
 class Grid;
-class Search;
-}  // namespace eckit::geo
+}
 
 
 namespace eckit::geo::cache {
@@ -29,6 +31,12 @@ namespace eckit::geo::cache {
  */
 class SearchCache final : public eckit::cache::MemoryCache<Search> {
 public:
+
+    // -- Constructors
+
+    /// Searches of k-d trees kept in storage (its file cache outliving this), within a capacity of a group of caches
+    SearchCache(eckit::cache::MemoryCaches&, const eckit::cache::MemoryUsage& capacity, std::string_view policy,
+                const Search::Storage&);
 
     // -- Methods
 
@@ -49,11 +57,19 @@ public:
     /// Cache files of k-d trees (search/VERSION/<uid>.kdtree)
     static const eckit::cache::FileCache& file_cache();
 
+    /// Cache files of k-d trees in these roots (<name>/VERSION/<uid>.kdtree)
+    static std::unique_ptr<eckit::cache::FileCache> make_file_cache(const eckit::cache::Roots&, const std::string& name,
+                                                                    bool throw_on_miss);
+
 private:
 
     // -- Constructors
 
     SearchCache();
+
+    // -- Members
+
+    const Search::Storage storage_;
 };
 
 

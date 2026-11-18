@@ -23,43 +23,45 @@ const HEALPix::order_type HEALPix::NESTED = "nested";
 namespace {
 
 
-struct CodecFijNest {
-    static constexpr uint64_t MASKS[] = {0x00000000ffffffff, 0x0000ffff0000ffff, 0x00ff00ff00ff00ff,
-                                         0x0f0f0f0f0f0f0f0f, 0x3333333333333333, 0x5555555555555555};
+constexpr uint64_t MASKS[] = {0x00000000ffffffff, 0x0000ffff0000ffff, 0x00ff00ff00ff00ff,
+                              0x0f0f0f0f0f0f0f0f, 0x3333333333333333, 0x5555555555555555};
 
-    inline static int nest_encode_bits(int n) {
-        auto b = static_cast<uint64_t>(n) & MASKS[0];
-        b      = (b ^ (b << 16)) & MASKS[1];
-        b      = (b ^ (b << 8)) & MASKS[2];
-        b      = (b ^ (b << 4)) & MASKS[3];
-        b      = (b ^ (b << 2)) & MASKS[4];
-        b      = (b ^ (b << 1)) & MASKS[5];
-        return static_cast<int>(b);
-    }
 
-    inline static int nest_decode_bits(int n) {
-        auto b = static_cast<uint64_t>(n) & MASKS[5];
-        b      = (b ^ (b >> 1)) & MASKS[4];
-        b      = (b ^ (b >> 2)) & MASKS[3];
-        b      = (b ^ (b >> 4)) & MASKS[2];
-        b      = (b ^ (b >> 8)) & MASKS[1];
-        b      = (b ^ (b >> 16)) & MASKS[0];
-        return static_cast<int>(b);
-    }
+inline int nest_encode_bits(int n) {
+    auto b = static_cast<uint64_t>(n) & MASKS[0];
+    b      = (b ^ (b << 16)) & MASKS[1];
+    b      = (b ^ (b << 8)) & MASKS[2];
+    b      = (b ^ (b << 4)) & MASKS[3];
+    b      = (b ^ (b << 2)) & MASKS[4];
+    b      = (b ^ (b << 1)) & MASKS[5];
+    return static_cast<int>(b);
+}
 
-    static std::tuple<int, int, int> nest_to_fij(int n, int k) {
-        ASSERT(0 <= n);
-        auto f = n >> (2 * k);    // f = n / (Nside * Nside)
-        n &= (1 << (2 * k)) - 1;  // n = n % (Nside * Nside)
-        auto i = nest_decode_bits(n);
-        auto j = nest_decode_bits(n >> 1);
-        return {f, i, j};
-    }
 
-    static int fij_to_nest(int f, int i, int j, int k) {
-        return (f << (2 * k)) + nest_encode_bits(i) + (nest_encode_bits(j) << 1);
-    }
-};
+inline int nest_decode_bits(int n) {
+    auto b = static_cast<uint64_t>(n) & MASKS[5];
+    b      = (b ^ (b >> 1)) & MASKS[4];
+    b      = (b ^ (b >> 2)) & MASKS[3];
+    b      = (b ^ (b >> 4)) & MASKS[2];
+    b      = (b ^ (b >> 8)) & MASKS[1];
+    b      = (b ^ (b >> 16)) & MASKS[0];
+    return static_cast<int>(b);
+}
+
+
+std::tuple<int, int, int> nest_to_fij(int n, int k) {
+    ASSERT(0 <= n);
+    auto f = n >> (2 * k);    // f = n / (Nside * Nside)
+    n &= (1 << (2 * k)) - 1;  // n = n % (Nside * Nside)
+    auto i = nest_decode_bits(n);
+    auto j = nest_decode_bits(n >> 1);
+    return {f, i, j};
+}
+
+
+int fij_to_nest(int f, int i, int j, int k) {
+    return (f << (2 * k)) + nest_encode_bits(i) + (nest_encode_bits(j) << 1);
+}
 
 
 inline int sqrt(int n) {
@@ -92,14 +94,24 @@ inline int pll(int f) {
 }  // namespace
 
 
-HEALPix::HEALPix(const order_type& order) : order_(order) {
+HEALPix::HEALPix(size_t Nside, const order_type& order) : Nside_(Nside), order_(order) {
     if (order_ != RING && order_ != NESTED) {
         throw exception::OrderError("HEALPix: supported ordering: ring, nested", Here());
+    }
+
+    if (order_ == NESTED) {
+        renumber_.emplace(Nside_);
     }
 }
 
 
-HEALPix::HEALPix(const Spec& spec) : HEALPix(spec.get_string("order", order_default())) {}
+HEALPix::HEALPix(const Spec& spec) : HEALPix(spec.get_unsigned("Nside"), spec.get_string("order", order_default())) {}
+
+
+const HEALPix::Renumber& HEALPix::renumber() const {
+    ASSERT(renumber_);
+    return *renumber_;
+}
 
 
 HEALPix::Renumber::Renumber(size_t Nside) :
@@ -128,7 +140,7 @@ size_t HEALPix::Renumber::ring_to_nest(size_t index) const {
         int j = (r - p) >> 1;
 
         ASSERT(f < 12 && i < Nside_ && j < Nside_);
-        return CodecFijNest::fij_to_nest(f, i, j, k_);
+        return fij_to_nest(f, i, j, k_);
     };
 
     if (Nside_ == 1) {
@@ -171,56 +183,44 @@ size_t HEALPix::Renumber::ring_to_nest(size_t index) const {
 }
 
 
-size_t HEALPix::Renumber::nest_to_ring(size_t index) const {
+std::pair<size_t, size_t> HEALPix::Renumber::nest_to_row(size_t index) const {
     const auto n = static_cast<int>(index);
 
-    auto [f, i, j] = CodecFijNest::nest_to_fij(n, k_);
+    auto [f, i, j] = nest_to_fij(n, k_);
     ASSERT(f < 12 && i < Nside_ && j < Nside_);
 
-    auto to_ring_local = [&](int f, int i, int j,
-                             int Nring,  //!< number of pixels in ring
-                             int shift   //!< if ring's first pixel is/is not at phi=0
-                             ) -> int {
-        Nring >>= 2;
-        int r = (pll(f) * Nring + i - j + 1 + shift) / 2 - 1;
-        ASSERT(r < 4 * Nring);
-
-        return r < 0 ? r + 4 * Nside_ : r;
-    };
-
     const int ring = ((f >> 2) + 2) * Nside_ - i - j - 1;  // 1-based ring number
-    if (ring < Nside_) {
-        // North polar cap
-        int Nring = 4 * ring;
-        int r0    = 2 * ring * (ring - 1);  // index of first ring pixel (ring numbering)
 
-        return r0 + to_ring_local(f, i, j, Nring, 0);
-    }
+    // number of pixels in ring (polar caps, equatorial belt), and if ring's first pixel is/is not at phi=0
+    const int Nring = ring < Nside_ ? 4 * ring : ring < 3 * Nside_ ? 4 * Nside_ : 4 * (4 * Nside_ - ring);
+    const int shift = Nside_ <= ring && ring < 3 * Nside_ ? (ring - Nside_) & 1 : 0;
 
-    if (ring < 3 * Nside_) {
-        // Equatorial belt
-        int Nring = 4 * Nside_;
-        int r0    = Ncap_ + (ring - Nside_) * Nring;  // index of first ring pixel (ring numbering)
-        int shift = (ring - Nside_) & 1;
+    int r = (pll(f) * (Nring >> 2) + i - j + 1 + shift) / 2 - 1;
+    ASSERT(r < Nring);
+    r = r < 0 ? r + 4 * Nside_ : r;
 
-        return r0 + to_ring_local(f, i, j, Nring, shift);
-    }
-
-    // South polar cap
-    int N     = 4 * Nside_ - ring;
-    int Nring = 4 * N;
-    int r0    = Npix_ - 2 * N * (N + 1);  // index of first ring pixel (ring numbering)
-
-    return r0 + to_ring_local(f, i, j, Nring, 0);
+    return {static_cast<size_t>(ring - 1), static_cast<size_t>(r)};
 }
 
 
-HEALPix::renumber_type HEALPix::reorder(const order_type& to, size_t Nside) const {
-    if (to != NESTED && to != RING) {
-        throw exception::OrderError("HEALPix: supported ordering: ring, nested", Here());
-    }
+size_t HEALPix::Renumber::nest_to_ring(size_t index) const {
+    const auto [row, r] = nest_to_row(index);
+    const auto ring     = static_cast<int>(row) + 1;
 
-    auto size = static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside));
+    // index of first ring pixel (ring numbering): North polar cap, equatorial belt, South polar cap
+    const int N  = 4 * Nside_ - ring;
+    const int r0 = ring < Nside_       ? 2 * ring * (ring - 1)
+                   : ring < 3 * Nside_ ? Ncap_ + (ring - Nside_) * 4 * Nside_
+                                       : Npix_ - 2 * N * (N + 1);
+
+    return static_cast<size_t>(r0) + r;
+}
+
+
+HEALPix::renumber_type HEALPix::reorder(const order_type& to) const {
+    const HEALPix target(Nside_, to);
+
+    auto size = static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside_));
     renumber_type ren(size);
 
     if (order_ == to) {
@@ -229,11 +229,11 @@ HEALPix::renumber_type HEALPix::reorder(const order_type& to, size_t Nside) cons
         return ren;
     }
 
-    auto from_nested = order_ == NESTED;
-    Renumber renumber(Nside);
+    const auto from_nested = order_ == NESTED;
+    const auto& numbering  = from_nested ? renumber() : target.renumber();
 
     for (int i = 0; i < size; ++i) {
-        ren[i] = from_nested ? renumber.nest_to_ring(i) : renumber.ring_to_nest(i);
+        ren[i] = from_nested ? numbering.nest_to_ring(i) : numbering.ring_to_nest(i);
     }
 
     return ren;

@@ -30,11 +30,11 @@ public:
 
     // -- Methods
 
-    size_t Nside() const { return Nside_; }
+    size_t Nside() const { return order_.Nside(); }
 
     // -- Overridden methods
 
-    std::string name() const override { return "H" + std::to_string(Nside_); }
+    std::string name() const override { return "H" + std::to_string(Nside()); }
 
     BoundingBox* calculate_bbox() const override;
 
@@ -46,7 +46,7 @@ public:
     const Range& lat() const override { return *y_; }
 
     const order_type& order() const override { return order_.order(); }
-    renumber_type reorder(const order_type& to) const override { return order_.reorder(to, Nside_); }
+    renumber_type reorder(const order_type& to) const override { return order_.reorder(to); }
 
     [[nodiscard]] Grid* make_grid_reordered(const order_type&) const override;
 
@@ -71,10 +71,12 @@ private:
 
     // -- Members
 
-    const size_t Nside_;
-    order::HEALPix order_;
-
+    const order::HEALPix order_;
     const std::unique_ptr<Range> y_;
+
+    // -- Methods
+
+    bool is_order_nested() const { return order_.order() == order::HEALPix::NESTED; }
 
     // -- Overridden methods
 

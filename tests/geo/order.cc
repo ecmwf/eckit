@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <numeric>
@@ -109,13 +110,13 @@ CASE("healpix") {
     SECTION("order=ring/nested") {
         size_t Nside = 4;
 
-        EXPECT(HEALPix::order_default() == HEALPix(spec::Custom{}).order());
-        EXPECT(HEALPix::RING == HEALPix(spec::Custom{{"order", HEALPix::RING}}).order());
-        EXPECT(HEALPix::NESTED == HEALPix(spec::Custom{{"order", HEALPix::NESTED}}).order());
+        EXPECT(HEALPix::order_default() == HEALPix(spec::Custom{{"Nside", Nside}}).order());
+        EXPECT(HEALPix::RING == HEALPix(spec::Custom{{"Nside", Nside}, {"order", HEALPix::RING}}).order());
+        EXPECT(HEALPix::NESTED == HEALPix(spec::Custom{{"Nside", Nside}, {"order", HEALPix::NESTED}}).order());
 
         for (const auto& type : {HEALPix::order_default(), HEALPix::RING, HEALPix::NESTED}) {
-            HEALPix order(type);
-            auto no_reorder = order.reorder(type, Nside);
+            HEALPix order(Nside, type);
+            auto no_reorder = order.reorder(type);
 
             std::vector<size_t> expected(no_reorder.size());
             std::iota(expected.begin(), expected.end(), 0);
@@ -124,10 +125,34 @@ CASE("healpix") {
     }
 
 
-    SECTION("exceptions") {
-        EXPECT_THROWS_AS(HEALPix(spec::Custom{{"order", "?"}}), exception::OrderError);
+    SECTION("nested to row (ring) and position") {
+        for (size_t Nside : {1, 2, 4, 8}) {
+            const HEALPix::Renumber renumber(Nside);
 
-        EXPECT_THROWS_AS(HEALPix("?"), exception::OrderError);
+            // points before each ring (rings of 4, 8, ... 4 Nside, ... 8, 4 points)
+            std::vector<size_t> acc{0};
+            for (size_t j = 0; j < 4 * Nside - 1; ++j) {
+                const auto k = std::min(j + 1, 4 * Nside - 1 - j);
+                acc.push_back(acc.back() + 4 * std::min(k, Nside));
+            }
+
+            for (size_t n = 0; n < acc.back(); ++n) {
+                const auto row_i = renumber.nest_to_row(n);
+                const auto row   = row_i.first;
+                const auto i     = row_i.second;
+                EXPECT(row + 1 < acc.size() && i < acc[row + 1] - acc[row]);
+                EXPECT_EQUAL(acc[row] + i, renumber.nest_to_ring(n));
+                EXPECT_EQUAL(renumber.ring_to_nest(renumber.nest_to_ring(n)), n);
+            }
+        }
+    }
+
+
+    SECTION("exceptions") {
+        EXPECT_THROWS_AS(HEALPix(spec::Custom{{"Nside", 2}, {"order", "?"}}), exception::OrderError);
+
+        EXPECT_THROWS_AS(HEALPix(2, "?"), exception::OrderError);
+        EXPECT_THROWS_AS(HEALPix(2).reorder("?"), exception::OrderError);
 
         // nested: Nside a power of 2, up to 2^13 (checked before any int arithmetic)
         const std::vector<size_t> Nsides{size_t{0}, size_t{3}, size_t{1} << 14, size_t{1} << 40};
@@ -137,11 +162,13 @@ CASE("healpix") {
         EXPECT_NO_THROW(HEALPix::Renumber{size_t{1} << 13});
 
         for (size_t Nside : {1, 2, 3}) {
-            const auto size = 12 * Nside * Nside;
-
-            EXPECT_NO_THROW(HEALPix{});
-            EXPECT_NO_THROW(HEALPix{HEALPix::order_default()});
+            EXPECT_NO_THROW(HEALPix{Nside});
+            EXPECT_NO_THROW(HEALPix(Nside, HEALPix::order_default()));
         }
+
+        // nested: Nside a power of 2, also to reorder to
+        EXPECT_THROWS_AS(HEALPix(3, HEALPix::NESTED), exception::OrderError);
+        EXPECT_THROWS_AS(HEALPix(3).reorder(HEALPix::NESTED), exception::OrderError);
     }
 }
 

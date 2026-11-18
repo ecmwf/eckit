@@ -10,9 +10,10 @@
 #include <ostream>
 #include <sstream>
 
+#include "eckit/cache/FileCache.h"
 #include "eckit/cache/Loader.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/search/KDTreeCache.h"
 #include "eckit/geo/search/KDTreeMemory.h"
 
@@ -115,6 +116,12 @@ std::vector<size_t> KDTree::query_order(const std::vector<Point>& points) {
 
 
 std::unique_ptr<KDTree> KDTreeFactory::build(const std::string& loader, const std::string& uid, size_t size) {
+    return build(loader, uid, size, cache::SearchCache::file_cache());
+}
+
+
+std::unique_ptr<KDTree> KDTreeFactory::build(const std::string& loader, const std::string& uid, size_t size,
+                                             const eckit::cache::FileCache& files) {
     // in memory, a k-d tree has its own layout (nodes allocated separately)
     if (loader == "memory") {
         return std::make_unique<KDTreeMemory>(size);
@@ -124,10 +131,10 @@ std::unique_ptr<KDTree> KDTreeFactory::build(const std::string& loader, const st
         unknown(loader);
     }
 
-    auto cached = std::make_unique<KDTreeCache>(loader, uid, size);
+    auto cached = std::make_unique<KDTreeCache>(loader, uid, size, files);
 
     // with nowhere to write, use a cache file only if found, else build in memory (unless a miss is an error)
-    if (LibEcKitGeo::cacheWritablePaths().empty() && !LibEcKitGeo::cacheThrowOnMiss() && !cached->found()) {
+    if (files.cacheRoots().writablePaths().empty() && !files.throw_on_miss() && !cached->found()) {
         return std::make_unique<KDTreeMemory>(size);
     }
 

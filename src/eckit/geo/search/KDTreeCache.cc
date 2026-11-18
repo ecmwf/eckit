@@ -126,7 +126,12 @@ struct KDTreeCache::Content {
 
 
 KDTreeCache::KDTreeCache(const std::string& loader, const std::string& uid, size_t size) :
-    KDTree(size), loader_name_(loader), uid_(uid) {
+    KDTreeCache(loader, uid, size, cache::SearchCache::file_cache()) {}
+
+
+KDTreeCache::KDTreeCache(const std::string& loader, const std::string& uid, size_t size,
+                         const eckit::cache::FileCache& files) :
+    KDTree(size), loader_name_(loader), uid_(uid), files_(files) {
     if (!loads(loader_name_)) {
         throw exception::SearchError("KDTreeCache: loader '" + loader_name_ + "' doesn't load k-d tree cache files",
                                      Here());
@@ -152,8 +157,7 @@ const PathName& KDTreeCache::path() const {
 
 bool KDTreeCache::found() const {
     if (!found_) {
-        if (auto path =
-                cache::SearchCache::file_cache().find(uid_, [this](const PathName& p) { return valid(p, size()); })) {
+        if (auto path = files_.find(uid_, [this](const PathName& p) { return valid(p, size()); })) {
             path_  = *path;
             found_ = true;
         }
@@ -177,7 +181,7 @@ bool KDTreeCache::build(const Fill& fill, bool balanced) {
 
     bool built = false;
     if (!found()) {
-        path_ = cache::SearchCache::file_cache().getOrCreate(
+        path_ = files_.getOrCreate(
             uid_,
             [this, &fill, balanced, &built](const PathName& tmp) {
                 built       = true;  // writing only when this creates the file
@@ -199,7 +203,7 @@ bool KDTreeCache::build(const Fill& fill, bool balanced) {
             [this](const PathName& path) { return valid(path, size()); });
     }
 
-    loader_ = cache::SearchCache::file_cache().load(loader_name_, path_);
+    loader_ = files_.load(loader_name_, path_);
 
     // as the cache file (e.g. not replaced since checked)
     const auto* content = static_cast<const char*>(loader_->address());
@@ -296,9 +300,8 @@ const KDTreeCache::Content& KDTreeCache::content() const {
 
 
 void KDTreeCache::print(std::ostream& out) const {
-    out << "KDTreeCache[loader=" << loader_name_
-        << ",path=" << (content_ ? path_ : cache::SearchCache::file_cache().relative(uid_)) << ",size=" << size()
-        << "]";
+    out << "KDTreeCache[loader=" << loader_name_ << ",path=" << (content_ ? path_ : files_.relative(uid_))
+        << ",size=" << size() << "]";
 }
 
 

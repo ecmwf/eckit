@@ -16,6 +16,11 @@
 #include "eckit/geo/PointXYZ.h"
 
 
+namespace eckit::cache {
+class FileCache;
+}
+
+
 namespace eckit::geo::search {
 
 
@@ -151,6 +156,8 @@ public:
     // -- Class methods
 
     static std::unique_ptr<KDTree> build(const std::string& loader, const std::string& uid, size_t size);
+    static std::unique_ptr<KDTree> build(const std::string& loader, const std::string& uid, size_t size,
+                                         const eckit::cache::FileCache&);
 
     /// Memory usage of a k-d tree of size points, once built or loaded
     static KDTree::MemoryUsage estimate(const std::string& loader, size_t size);

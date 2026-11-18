@@ -21,8 +21,8 @@ namespace eckit::geo::search {
 
 /**
  * @brief k-d tree in a cache file, built once and then loaded by any eckit::cache loader
- * @details The file (KDMapped layout, see cache::SearchCache::file_cache) is queried in place wherever loaded, so
- * loading never rebuilds; an invalid file is rebuilt.
+ * @details The file (KDMapped layout, in cache::SearchCache::file_cache by default) is queried in place wherever
+ * loaded, so loading never rebuilds; an invalid file is rebuilt.
  */
 class KDTreeCache final : public KDTree {
 public:
@@ -30,6 +30,7 @@ public:
     // -- Constructors
 
     KDTreeCache(const std::string& loader, const std::string& uid, size_t size);
+    KDTreeCache(const std::string& loader, const std::string& uid, size_t size, const eckit::cache::FileCache&);
 
     // -- Destructor
 
@@ -86,6 +87,7 @@ private:
 
     const std::string loader_name_;
     const std::string uid_;
+    const eckit::cache::FileCache& files_;
     mutable PathName path_;  ///< once found (see found_), or built
     mutable bool found_ = false;
     std::unique_ptr<eckit::cache::Loader> loader_;

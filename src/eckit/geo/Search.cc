@@ -12,6 +12,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Trace.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -66,9 +67,16 @@ struct Search::Shared {
 };
 
 
-void Search::build(const std::string& uid, size_t size, const Spec& spec, const KDTree::Fill& fill) {
+const Search::Storage& Search::Storage::library() {
+    static const Storage storage{LibEcKitGeo::searchCacheLoader(), cache::SearchCache::file_cache()};
+    return storage;
+}
+
+
+void Search::build(const std::string& uid, size_t size, const Spec& spec, const Storage& storage,
+                   const KDTree::Fill& fill) {
     auto& kdtree = shared_->kdtree;
-    kdtree       = geo::search::KDTreeFactory::build(LibEcKitGeo::searchCacheLoader(), uid, size);
+    kdtree       = search::KDTreeFactory::build(storage.loader, uid, size, storage.files);
 
     Trace trace("Search: build or load " + uid);
     if (!kdtree->build(fill, spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild()))) {
@@ -83,14 +91,14 @@ std::string Search::uid(const Grid& grid) {
 }
 
 
-Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Shared>()) {
+Search::Search(const Grid& grid, const Spec& spec, const Storage& storage) : shared_(std::make_shared<Shared>()) {
     configure(spec);
 
     // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
     const auto& figure = grid.figure();
     shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
 
-    build(uid(grid), grid.size(), spec, [&grid](std::vector<KDTree::Value>& values) {
+    build(uid(grid), grid.size(), spec, storage, [&grid](std::vector<KDTree::Value>& values) {
         const auto xyz = grid.to_xyz();
         ASSERT(xyz.size() == 3);
 
@@ -102,12 +110,13 @@ Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Sh
 }
 
 
-Search::Search(const std::vector<PointXYZ>& points, const Spec& spec) : shared_(std::make_shared<Shared>()) {
+Search::Search(const std::vector<PointXYZ>& points, const Spec& spec, const Storage& storage) :
+    shared_(std::make_shared<Shared>()) {
     configure(spec);
 
     shared_->to_xyz = std::make_unique<projection::LonLatToXYZ>(spec);
 
-    build(points_uid(points), points.size(), spec, [&points](std::vector<KDTree::Value>& values) {
+    build(points_uid(points), points.size(), spec, storage, [&points](std::vector<KDTree::Value>& values) {
         values.reserve(points.size());
         for (size_t i = 0; i < points.size(); ++i) {
             values.emplace_back(points[i], i);
@@ -139,8 +148,8 @@ const search::KDTree& Search::kdtree() const {
 }
 
 
-Search::MemoryUsage Search::estimate(size_t size) {
-    return geo::search::KDTreeFactory::estimate(LibEcKitGeo::searchCacheLoader(), size);
+Search::MemoryUsage Search::estimate(size_t size, const Storage& storage) {
+    return search::KDTreeFactory::estimate(storage.loader, size);
 }
 
 

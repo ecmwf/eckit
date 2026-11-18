@@ -33,10 +33,10 @@ public:
 
     const order::ReducedScan& scan() const { return scan_; }
 
-    /// Number of points of each row (rows in the default order), as pl of these grid points (e.g. if cropped)
-    pl_type points_per_row() const;
-
     // -- Overridden methods
+
+    /// Number of points of each row (rows in the default order), whatever the order of the points
+    const pl_type& pl() const final { return pl_; }
 
     [[nodiscard]] Point point(size_t index) const override;
 
@@ -44,15 +44,35 @@ public:
     std::vector<size_t> shape() const override { return {size()}; }
 
     const order_type& order() const override { return scan_.order(); }
-    renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, points_per_row()); }
+    renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, nxacc()); }
 
 protected:
 
+    // -- Types
+
+    /// A pl owned by the grid, or a reference to a cached pl (e.g. util::reduced_octahedral_pl), which outlives the
+    /// grid as such caches are not purged (see LibEcKitGeo::purgeCache)
+    class PL {
+    public:
+
+        static PL own(pl_type pl) { return {std::move(pl), nullptr}; }
+        static PL cached(const pl_type& pl) { return {{}, &pl}; }
+        static PL cached(pl_type&&) = delete;  // not of a temporary
+
+    private:
+
+        PL(pl_type own, const pl_type* cached) : own_(std::move(own)), cached_(cached) {}
+
+        pl_type own_;
+        const pl_type* cached_;
+
+        friend class Reduced;
+    };
+
     // -- Constructors
 
-    using Grid::Grid;
-
-    explicit Reduced(order::ReducedScan, std::unique_ptr<const Projection> = nullptr);
+    explicit Reduced(PL, order::ReducedScan, std::unique_ptr<const Projection> = nullptr);
+    explicit Reduced(PL, std::unique_ptr<BoundingBox>, std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
@@ -77,6 +97,9 @@ private:
     struct State;
 
     // -- Members
+
+    const pl_type pl_owned_;
+    const pl_type& pl_;  // pl_owned_, or a cached pl
 
     order::ReducedScan scan_;
 

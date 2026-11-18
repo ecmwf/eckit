@@ -174,6 +174,9 @@ public:
 
     virtual size_t truncation() const;
 
+    /// Number of points per row of reduced grids
+    virtual const std::vector<long>& pl() const;
+
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
 

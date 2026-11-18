@@ -128,6 +128,26 @@ namespace eckit::geo::grid::reduced {
 static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 
+static const pl_type& healpix_pl(size_t Nside) {
+    if (Nside == 0) {
+        throw exception::GridError("HEALPix: Nside must be greater than zero", Here());
+    }
+
+    static eckit::cache::MemoryCacheT<size_t, pl_type> cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(Nside)) {
+        return *cached;
+    }
+
+    // rings of 4 to 4 Nside points (polar caps), and of 4 Nside points (equatorial belt)
+    pl_type pl(4 * Nside - 1, static_cast<pl_type::value_type>(4 * Nside));
+    for (size_t j = 0; j < Nside; ++j) {
+        pl[j] = pl[pl.size() - 1 - j] = static_cast<pl_type::value_type>(4 * (j + 1));
+    }
+
+    return cache.insert(Nside, std::move(pl));
+}
+
+
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default()),
             bounding_box_from_spec(spec), projection_from_spec(spec)) {}
@@ -135,7 +155,10 @@ HEALPix::HEALPix(const Spec& spec) :
 
 HEALPix::HEALPix(size_t Nside, order_type order, std::unique_ptr<BoundingBox> bbox,
                  std::unique_ptr<const Projection> p) :
-    Reduced(std::move(bbox), std::move(p)), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
+    Reduced(PL::cached(healpix_pl(Nside)), std::move(bbox), std::move(p)),
+    Nside_(Nside),
+    order_(order),
+    y_(new range::HEALPixLatitude(Nside)) {
 
     // the nested order is of Nside a power of 2 (checked by its renumbering)
     if (order_.order() == order::HEALPix::NESTED) {
@@ -189,8 +212,7 @@ std::unique_ptr<Grid::Iterator::State> HEALPix::make_state() const {
 
 
 size_t HEALPix::nxj(size_t j) const {
-    ASSERT(j < ny());
-    return j < Nside_ ? 4 * (j + 1) : j < 3 * Nside_ ? 4 * Nside_ : nxj(ny() - 1 - j);
+    return static_cast<size_t>(pl().at(j));
 }
 
 

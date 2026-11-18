@@ -33,7 +33,6 @@ public:
     // -- Methods
 
     size_t N() const { return N_; }
-    const pl_type& pl() const { return pl_; }
 
     /// If pl is octahedral over the rows with points, as other rows (e.g. of pl 0) are outside the bounding box
     bool is_reduced_octahedral() const;
@@ -60,7 +59,6 @@ private:
     // -- Members
 
     const size_t N_;
-    const pl_type pl_;
     const range::GaussianLatitude latitude_;
 
     std::vector<std::unique_ptr<Range>> longitude_;
@@ -72,6 +70,11 @@ private:
 
     /// If pl matches a reference over the rows with points, so the reference and the bounding box make this grid
     bool matches(const pl_type& reference) const;
+
+    // -- Class methods
+
+    /// The cached pl, if pl is octahedral or classical (of its N), otherwise a copy
+    static PL make_pl(const pl_type&);
 
     // -- Overridden methods
 

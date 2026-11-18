@@ -363,6 +363,11 @@ size_t Grid::truncation() const {
 }
 
 
+const std::vector<long>& Grid::pl() const {
+    throw exception::NotImplemented("Grid: pl() is not implemented for type '" + type() + "'", Here());
+}
+
+
 const Grid::order_type& Grid::order() const {
     throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());
 }

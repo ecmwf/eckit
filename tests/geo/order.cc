@@ -163,9 +163,9 @@ CASE("order=reduced scan") {
         EXPECT_THROWS_AS(ReducedScan{order}, exception::OrderError);
     }
 
-    // rows of 2, 0, 3 and 1 points (rows in the default order, north to south): index in the default order of each
-    // point
-    const pl_type pl{2, 0, 3, 1};
+    // rows of 2, 0, 3 and 1 points (rows in the default order, north to south), by the points before each row then
+    // the number of points: index in the default order of each point
+    const std::vector<size_t> nxacc{0, 2, 2, 5, 6};
 
     const std::map<std::string, ReducedScan::renumber_type> expected{
         {"i+j-", {0, 1, 2, 3, 4, 5}},
@@ -177,15 +177,15 @@ CASE("order=reduced scan") {
     for (const auto& e : expected) {
         const ReducedScan scan(e.first);
 
-        EXPECT(scan.canonical(pl) == e.second);
-        EXPECT(scan.reorder(ReducedScan::order_default(), pl) == e.second);
+        EXPECT(scan.canonical(nxacc) == e.second);
+        EXPECT(scan.reorder(ReducedScan::order_default(), nxacc) == e.second);
     }
 
     // reordering, and back
     for (const auto& a : expected) {
         for (const auto& b : expected) {
-            const auto ab = ReducedScan{a.first}.reorder(b.first, pl);
-            const auto ba = ReducedScan{b.first}.reorder(a.first, pl);
+            const auto ab = ReducedScan{a.first}.reorder(b.first, nxacc);
+            const auto ba = ReducedScan{b.first}.reorder(a.first, nxacc);
 
             for (size_t k = 0; k < ab.size(); ++k) {
                 EXPECT(ba[ab[k]] == k);

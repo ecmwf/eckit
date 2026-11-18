@@ -432,16 +432,26 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
         throw exception::ProjectionError("BoundingBox: projection from (lon, lat) to (lon, lat) expected", Here());
     }
 
-    // (lon, lat) to the projection's target (lon, lat) as (x, y), by a copy of the projection
-    spec::Custom copy;
-    projection.fill_spec(copy);
-    if (!copy.has("type")) {
-        copy.set("type", projection.type());
+    std::unique_ptr<BoundingBox> after;
+
+    if (projection.identity()) {
+        // the factory builds an identity (e.g. a rotation of no effect) as the default projection, from (lon, lat) to
+        // (x, y), which doesn't compose as below
+        after = make_from_area(max.lat(), min.lon(), min.lat(), max.lon());
+    }
+    else {
+        // (lon, lat) to the projection's target (lon, lat) as (x, y), by a copy of the projection
+        spec::Custom copy;
+        projection.fill_spec(copy);
+        if (!copy.has("type")) {
+            copy.set("type", projection.type());
+        }
+
+        projection::Composer composer{ProjectionFactory::build(copy), new projection::EquidistantCylindrical};
+
+        after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     }
 
-    projection::Composer composer{ProjectionFactory::build(copy), new projection::EquidistantCylindrical};
-
-    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     if (after->periodic()) {
         return std::make_unique<BoundingBox>(after->north(), 0, after->south(), PointLonLat::FULL_ANGLE);
     }

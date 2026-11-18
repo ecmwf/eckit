@@ -527,6 +527,30 @@ CASE("rotation: bounding box (2)") {
 }
 
 
+CASE("rotation: bounding box (not rotated)") {
+    // the factory builds these as the default projection, from (lon, lat) to (x, y)
+    const std::vector<projection::Rotation> rotations{
+        projection::Rotation{},
+        projection::Rotation{{10., -90.}, 10.},
+        projection::Rotation{spec::Custom({{"type", "rotation"}})},
+    };
+
+    for (const auto& rotation : rotations) {
+        EXPECT(rotation.identity());
+
+        auto bbox = area::BoundingBox::make_from_projection(PointLonLat{-60., 21.}, PointLonLat{60., 69.}, rotation);
+        ASSERT(bbox);
+        EXPECT(*bbox == area::BoundingBox(69., -60., 21., 60.));
+
+        auto periodic =
+            area::BoundingBox::make_from_projection(PointLonLat{0., -10.}, PointLonLat{360., 10.}, rotation);
+        ASSERT(periodic);
+        EXPECT(periodic->periodic());
+        EXPECT(*periodic == area::BoundingBox(10., 0., -10., 360.));
+    }
+}
+
+
 using v = std::vector<double>;
 
 

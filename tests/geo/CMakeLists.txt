@@ -46,6 +46,7 @@ foreach(_test
         grid_cubed_sphere
         grid_cubed_sphere_lfric
         grid_healpix
+        grid_irregular_ll
         grid_reduced_gg
         grid_reduced_ll
         grid_regular_gg

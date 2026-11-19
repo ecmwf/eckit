@@ -288,11 +288,23 @@ std::string Projection::proj_str(const spec::Custom& custom) {
     // projection types with a PROJ equivalent
     static const std::map<std::string, std::string> NAMES{
         {"", "longlat"},  // the default projection
-        {"aea", "aea"},          {"albers", "aea"},  {"eqc", "eqc"},
-        {"plate-carree", "eqc"}, {"laea", "laea"},   {"lambert_azimuthal_equal_area", "laea"},
-        {"lcc", "lcc"},          {"lambert", "lcc"}, {"lambert_lam", "lcc"},
-        {"ll-to-xyz", "cart"},   {"merc", "merc"},   {"mercator", "merc"},
-        {"rotation", "ob_tran"}, {"stere", "stere"}, {"polar_stereographic", "stere"},
+        {"aea", "aea"},
+        {"albers", "aea"},
+        {"eqc", "eqc"},
+        {"plate-carree", "eqc"},
+        {"laea", "laea"},
+        {"lambert_azimuthal_equal_area", "laea"},
+        {"lcc", "lcc"},
+        {"lambert", "lcc"},
+        {"lambert_lam", "lcc"},
+        {"ll-to-xyz", "cart"},
+        {"merc", "merc"},
+        {"mercator", "merc"},
+        {"rotation", "ob_tran"},
+        {"stere", "stere"},
+        {"polar_stereographic", "stere"},
+        {"tmerc", "tmerc"},
+        {"transverse_mercator", "tmerc"},
     };
 
     const auto name = NAMES.find(type);

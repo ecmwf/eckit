@@ -138,6 +138,8 @@ list(APPEND eckit_geo_srcs
     projection/SpaceView.h
     projection/Stretch.cc
     projection/Stretch.h
+    projection/TransverseMercator.cc
+    projection/TransverseMercator.h
     range/GaussianLatitude.cc
     range/GaussianLatitude.h
     range/Regular.cc

@@ -76,6 +76,7 @@ foreach(_test
         projection_stretch
         projection_space_view
         projection_stere
+        projection_tmerc
         range
         sh
         util)

@@ -268,7 +268,7 @@ CASE("KDTreeCache: location") {
     // ECKIT_GEO_CACHE_PATH is set by the test environment, its first path (writable) for writing
     if (const auto* env = ::getenv("ECKIT_GEO_CACHE_PATH"); env != nullptr) {
         const std::string paths(env);
-        EXPECT(LibEcKitGeo::cacheDir() == PathName(paths.substr(0, paths.find(':')), true).asString());
+        EXPECT(LibEcKitGeo::cacheDir() == (PathName(paths.substr(0, paths.find(':')), true) / "eckit/geo").asString());
     }
 
     const auto uid = unique_uid("location");

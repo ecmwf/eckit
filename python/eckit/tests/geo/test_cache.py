@@ -22,7 +22,7 @@ def test_cache_report():
     control = info["disk"]["control"]
     assert control["caching"] is True
     assert isinstance(control["throw_on_miss"], bool)
-    assert os.path.realpath(control["paths"]["writable"][0]) == os.path.realpath(os.environ["ECKIT_GEO_CACHE_PATH"])
+    assert os.path.realpath(control["paths"]["writable"][0]) == os.path.realpath(os.path.join(os.environ["ECKIT_GEO_CACHE_PATH"], "eckit", "geo"))
 
     # in-process memory, in the process and shared
     memory = info["memory"]

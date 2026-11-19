@@ -65,7 +65,7 @@ CASE("cache directories: found in order, written to the first writable") {
     EXPECT(share.back() == ro / "grid.yaml");
 
     const auto* env = ::getenv("ECKIT_GEO_TEST_CACHE_RW");
-    EXPECT(env != nullptr && rw == PathName(env));
+    EXPECT(env != nullptr && rw == PathName(env) / "eckit/geo");
 
     // permissions are not enforced for the super-user
     if (::geteuid() == 0) {

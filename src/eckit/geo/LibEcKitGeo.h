@@ -48,8 +48,9 @@ public:
     static bool caching();
 
     /**
-     * Cache paths (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH, "path1:path2:...", see eckit::cache::Roots), read once:
-     * searched in order, written to the first writable (if caching; a read-only path is of a provisioned cache)
+     * Cache directories, under "eckit/geo" of the cache paths (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH,
+     * "path1:path2:...", see eckit::cache::Roots) then of eckit's (see LibEcKitCache::cachePath), read once: searched
+     * in order, written to the first writable (if caching; a read-only path is of a provisioned cache)
      */
     static const cache::Roots& cacheRoots();
 

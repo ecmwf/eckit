@@ -89,9 +89,11 @@ bool LibEcKitGeo::caching() {
 
 
 const cache::Roots& LibEcKitGeo::cacheRoots() {
-    static const cache::Roots roots{
-        LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH),
-        caching()};
+    static const std::string paths{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH)};
+
+    // cache directories can be shared with other libraries (e.g. eckit's), so eckit::geo's files are under a prefix
+    static const cache::Roots roots = LibEcKitCache::cacheRoots(paths, caching()) / "eckit/geo";
     return roots;
 }
 
@@ -116,7 +118,8 @@ std::string LibEcKitGeo::cacheDir() {
     const auto writable = cacheWritablePaths();
     if (writable.empty()) {
         throw UserError(
-            "LibEcKitGeo: no writable cache path (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH), or not "
+            "LibEcKitGeo: no writable cache path (eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH, then "
+            "eckit-cache-path;$ECKIT_CACHE_PATH), or not "
             "caching (eckit-geo-caching;$ECKIT_GEO_CACHING)",
             Here());
     }

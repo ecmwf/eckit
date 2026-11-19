@@ -16,6 +16,12 @@ foreach(_test
 endforeach()
 
 ecbuild_add_test(
+    TARGET      eckit_test_cache_library
+    SOURCES     library.cc
+    LIBS        eckit_cache
+    ENVIRONMENT ECKIT_CACHE_PATH=/eckit/a:/eckit/b ECKIT_CACHE_TOTAL_CACHE_MEMORY_FOOTPRINT=1000,10 )
+
+ecbuild_add_test(
     TARGET    eckit_test_cache_unzip
     SOURCES   unzip.cc
     LIBS      eckit_cache libzip::zip

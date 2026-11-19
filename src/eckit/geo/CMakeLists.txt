@@ -100,6 +100,8 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularLL.h
     grid/regular/RegularXY.cc
     grid/regular/RegularXY.h
+    grid/regular/SpaceView.cc
+    grid/regular/SpaceView.h
     grid/unstructured/FESOM.cc
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc

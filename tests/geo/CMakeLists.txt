@@ -48,6 +48,7 @@ foreach(_test
         grid_healpix
         grid_irregular_ll
         grid_reduced_gg
+        grid_space_view
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll

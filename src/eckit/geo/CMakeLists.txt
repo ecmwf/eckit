@@ -92,6 +92,8 @@ list(APPEND eckit_geo_srcs
     grid/reduced/ReducedGaussian.h
     grid/reduced/ReducedLonLat.cc
     grid/reduced/ReducedLonLat.h
+    grid/regular/IrregularLL.cc
+    grid/regular/IrregularLL.h
     grid/regular/RegularGaussian.cc
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
@@ -142,6 +144,8 @@ list(APPEND eckit_geo_srcs
     projection/TransverseMercator.h
     range/GaussianLatitude.cc
     range/GaussianLatitude.h
+    range/Irregular.cc
+    range/Irregular.h
     range/Regular.cc
     range/Regular.h
     range/RegularXY.cc

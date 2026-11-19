@@ -333,6 +333,37 @@ CASE("unstructured_ll: usable after purging the caches") {
 }
 
 
+CASE("unstructured_ll: duplicates_allowed") {
+    cleanup();
+
+    // like ORCA periodic columns: the last point repeats the first
+    const std::vector<double> lats{0., 10., 0.};
+    const std::vector<double> lons{0., 10., 0.};
+
+    auto duplicates_allowed = [](const Grid& grid) {
+        return dynamic_cast<const grid::Unstructured&>(grid).duplicates_allowed();
+    };
+
+    std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats));
+    std::unique_ptr<const Grid> b(new grid::Unstructured(lons, lats, "", true));
+
+    EXPECT(a->uid() == b->uid());
+    EXPECT(!duplicates_allowed(*a) && !a->spec().has("duplicates_allowed"));
+    EXPECT(duplicates_allowed(*b) && b->spec().get_bool("duplicates_allowed"));
+
+    std::unique_ptr<const Grid> c(GridFactory::make_from_string(b->spec_str()));
+    EXPECT(duplicates_allowed(*c));
+
+    const std::string name = "custom-duplicates-allowed";
+    std::unique_ptr<const Grid> d(GridFactory::build(
+        spec::Custom{{"longitudes", lons}, {"latitudes", lats}, {"name", name}, {"duplicates_allowed", true}}));
+    std::unique_ptr<const Grid> e(GridFactory::make_from_string("{grid:" + name + "}"));
+    EXPECT(duplicates_allowed(*d) && duplicates_allowed(*e));
+
+    cleanup();
+}
+
+
 CASE("to_unstructured_ll") {
     cleanup();
 

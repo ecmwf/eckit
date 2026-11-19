@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from libcpp cimport bool
 from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
@@ -57,6 +58,7 @@ cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
             const vector[double]& longitudes,
             const vector[double]& latitudes,
             const string& name,
+            bool duplicates_allowed,
         ) except +
 
 

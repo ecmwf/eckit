@@ -38,23 +38,26 @@ Unstructured::Unstructured(const Spec& spec) :
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
                  spec.get_string("name", spec.get_string("cache_as", "")), bounding_box_from_spec(spec),
-                 projection_from_spec(spec)) {}
+                 projection_from_spec(spec), spec.get_bool("duplicates_allowed", false)) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
-                           const std::string& name) :
-    Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
+                           const std::string& name, bool duplicates_allowed) :
+    Unstructured(uid_from_cached_ll({latitudes, longitudes}), name, nullptr, nullptr, duplicates_allowed) {}
 
 
 Unstructured::Unstructured(const uid_type& _uid, const std::string& name, std::unique_ptr<BoundingBox> bbox,
-                           std::unique_ptr<const Projection> p) :
-    Grid(std::move(bbox), std::move(p)) {
+                           std::unique_ptr<const Projection> p, bool duplicates_allowed) :
+    Grid(std::move(bbox), std::move(p)), duplicates_allowed_(duplicates_allowed) {
     ASSERT(is_uid(_uid));
     const auto uid = StringTools::lower(_uid);
     reset_uid(uid);
     name_ = name;
 
     spec::Custom::container_type custom_map{{"type", type()}, {"uid", uid}};
+    if (duplicates_allowed_) {
+        custom_map["duplicates_allowed"] = true;
+    }
 
     // the coordinates file lets other processes use the grid by uid; with nowhere to write, only if found (else memory)
     if (const auto path =
@@ -147,16 +150,22 @@ void Unstructured::fill_spec(spec::Custom& custom) const {
             !named || StringTools::lower(named->get_string("uid")) != uid()) {
             custom.set("uid", uid());
         }
-        return;
+    }
+    else {
+        // NOTE: every unstructured grid is known by uid
+        std::unique_ptr<spec::Custom> ptr(dynamic_cast<spec::Custom*>(GridSpecByUID::instance().get_spec(uid())));
+        ASSERT(ptr);
+
+        // duplicates_allowed is of this grid, not of the latest registration of the uid (same points)
+        auto custom_map = ptr->container();
+        custom_map.erase("cached_path");
+        custom_map.erase("duplicates_allowed");
+        custom.set(custom_map);
     }
 
-    // NOTE: every unstructured grid is known by uid
-    std::unique_ptr<spec::Custom> ptr(dynamic_cast<spec::Custom*>(GridSpecByUID::instance().get_spec(uid())));
-    ASSERT(ptr);
-
-    auto custom_map = ptr->container();
-    custom_map.erase("cached_path");
-    custom.set(custom_map);
+    if (duplicates_allowed_) {
+        custom.set("duplicates_allowed", true);
+    }
 }
 
 

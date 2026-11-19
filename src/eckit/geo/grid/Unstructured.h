@@ -29,7 +29,7 @@ public:
 
     explicit Unstructured(const Spec&);
     explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
-                          const std::string& name = "");
+                          const std::string& name = "", bool duplicates_allowed = false);
 
     using Grid::Grid;
 
@@ -37,6 +37,9 @@ public:
 
     std::string name() const override { return name_; }
     std::string arrangement() const override { return arrangement_; }
+
+    /// Duplicate points are declared allowed (spec "duplicates_allowed: true"), they are not searched for
+    bool duplicates_allowed() const { return duplicates_allowed_; }
 
     // -- Overridden methods
 
@@ -61,7 +64,7 @@ protected:
     // -- Constructors
 
     explicit Unstructured(const uid_type&, const std::string& name = "", std::unique_ptr<BoundingBox> = nullptr,
-                          std::unique_ptr<const Projection> = nullptr);
+                          std::unique_ptr<const Projection> = nullptr, bool duplicates_allowed = false);
     explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
                           std::unique_ptr<BoundingBox> = nullptr, std::unique_ptr<const Projection> = nullptr);
 
@@ -79,6 +82,7 @@ private:
 
     std::string name_;
     std::string arrangement_;
+    bool duplicates_allowed_ = false;
 
     // -- Overridden methods
 

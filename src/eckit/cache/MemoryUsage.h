@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <limits>
 #include <string>
 
 
@@ -24,6 +25,10 @@ public:
     constexpr MemoryUsage() noexcept = default;
     constexpr MemoryUsage(size_t process, size_t shared) noexcept : process_(process), shared_(shared) {}
     explicit MemoryUsage(const std::string&);
+
+    static constexpr MemoryUsage unlimited() noexcept {
+        return {std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max()};
+    }
 
     // -- Operators
 

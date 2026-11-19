@@ -318,6 +318,41 @@ CASE("MemoryCaches: footprint and purge, of a group of caches") {
 }
 
 
+CASE("MemoryCaches: capacity of a group, across its caches") {
+    auto value = [](size_t n) { return [n]() { return std::make_shared<const Footprint>(MemoryUsage{n, 0}); }; };
+
+    // caches within their own capacity, but not together
+    MemoryCaches group(MemoryUsage{1000, 0});
+    MemoryCache<Footprint> a(group, MemoryUsage{1000, 0});
+    MemoryCache<Footprint> b(group, MemoryUsage{1000, 0});
+
+    a.get("1", MemoryUsage{400, 0}, value(400));
+    b.get("2", MemoryUsage{400, 0}, value(400));
+    EXPECT(group.footprint() == MemoryUsage(800, 0));
+
+    // room is made in the other caches of the group too
+    b.get("3", MemoryUsage{400, 0}, value(400));
+    EXPECT(group.footprint() == MemoryUsage(800, 0));
+    EXPECT(a.size() == 0);
+    EXPECT(a.statistics().evictions == 1);
+
+    // values in use are not evicted
+    auto in_use = b.get("2", MemoryUsage{400, 0}, value(400));
+    a.get("4", MemoryUsage{400, 0}, value(400));
+    EXPECT(b.size() == 1);
+    EXPECT(group.footprint() == MemoryUsage(800, 0));
+
+    // a lower capacity evicts what isn't in use
+    group.capacity(MemoryUsage{0, 0});
+    EXPECT(group.capacity() == MemoryUsage(0, 0));
+    EXPECT(a.size() == 0);
+    EXPECT(b.size() == 1);
+
+    // without a capacity, the default
+    EXPECT(MemoryCaches{}.capacity() == MemoryUsage::unlimited());
+}
+
+
 CASE("MemoryCacheT: values by key, returned by reference") {
     using cache_t = MemoryCacheT<int, std::vector<double>>;
     MemoryCaches caches;

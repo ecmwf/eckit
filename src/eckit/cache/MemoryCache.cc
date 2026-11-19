@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "eckit/cache/LibEcKitCache.h"
+
 
 namespace eckit::cache {
 
@@ -26,6 +28,37 @@ void MemoryCaches::purge() {
 
     for (auto* cache : caches_) {
         cache->purge();
+    }
+}
+
+
+MemoryUsage MemoryCaches::capacity() const {
+    util::lock_guard<util::recursive_mutex> lock(mutex_);
+    return capacity_.value_or(LibEcKitCache::totalMemoryCapacity());
+}
+
+
+void MemoryCaches::capacity(const MemoryUsage& capacity) {
+    util::lock_guard<util::recursive_mutex> lock(mutex_);
+    capacity_ = capacity;
+    fit();
+}
+
+
+void MemoryCaches::fit() {
+    util::lock_guard<util::recursive_mutex> lock(mutex_);
+
+    MemoryUsage usage;
+    for (const auto* cache : caches_) {
+        usage += cache->footprint() + cache->reserved();
+    }
+
+    auto over = usage - capacity();
+    for (auto* cache : caches_) {
+        if (over == MemoryUsage{}) {
+            break;
+        }
+        over -= cache->release(over);
     }
 }
 

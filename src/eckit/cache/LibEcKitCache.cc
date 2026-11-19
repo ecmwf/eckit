@@ -40,6 +40,27 @@ int LibEcKitCache::sharedMemoryWait_s() {
 }
 
 
+std::string LibEcKitCache::cachePath() {
+    static const std::string path{LibResource<std::string, LibEcKitCache>("eckit-cache-path;$ECKIT_CACHE_PATH", "")};
+    return path;
+}
+
+
+cache::Roots LibEcKitCache::cacheRoots(const std::string& paths, bool writing) {
+    return cache::Roots{paths + ":" + cachePath(), writing};
+}
+
+
+cache::MemoryUsage LibEcKitCache::totalMemoryCapacity() {
+    static const cache::MemoryUsage capacity = [] {
+        const std::string str{LibResource<std::string, LibEcKitCache>(
+            "eckit-cache-total-memory-footprint;$ECKIT_CACHE_TOTAL_CACHE_MEMORY_FOOTPRINT", "")};
+        return str.empty() ? cache::MemoryUsage::unlimited() : cache::MemoryUsage{str};
+    }();
+    return capacity;
+}
+
+
 int LibEcKitCache::fileCacheKept_s() {
     static const int seconds{
         LibResource<int, LibEcKitCache>("eckit-cache-file-kept;$ECKIT_CACHE_FILE_KEPT", eckit_CACHE_FILE_KEPT)};

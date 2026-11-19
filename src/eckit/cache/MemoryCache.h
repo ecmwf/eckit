@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -23,13 +24,15 @@ namespace eckit::cache {
 class MemoryCacheBase;
 
 
-/// In-process caches of a library, reported and released as a whole
+/// In-process caches of a library, reported and released as a whole, and bound together by a capacity (default
+/// LibEcKitCache::totalMemoryCapacity) as each cache is bound by its own
 class MemoryCaches {
 public:
 
     // -- Constructors
 
     MemoryCaches() = default;
+    explicit MemoryCaches(const MemoryUsage& capacity) : capacity_(capacity) {}
 
     MemoryCaches(const MemoryCaches&) = delete;
     MemoryCaches(MemoryCaches&&)      = delete;
@@ -50,12 +53,19 @@ public:
     /// Release the cached values; those in use stay valid or not by cache (see MemoryCache and MemoryCacheT purge)
     void purge();
 
+    MemoryUsage capacity() const;
+    void capacity(const MemoryUsage&);
+
+    /// Evict values not in use, across the caches, until values and those being made fit the capacity
+    void fit();
+
 private:
 
     // -- Members
 
     mutable util::recursive_mutex mutex_;
     std::vector<MemoryCacheBase*> caches_;
+    std::optional<MemoryUsage> capacity_;  // if not the default
 
     // -- Friends
 
@@ -87,6 +97,13 @@ public:
 
     virtual void purge() = 0;
 
+    /// Estimates of the values being made
+    virtual MemoryUsage reserved() const { return {}; }
+
+    /// Evict values not in use, relieving what is over, as far as possible
+    /// @return the footprint evicted
+    virtual MemoryUsage release(const MemoryUsage& /*over*/) { return {}; }
+
 protected:
 
     // -- Constructors
@@ -94,6 +111,8 @@ protected:
     explicit MemoryCacheBase(MemoryCaches& group) : group_(group) {}
 
     // -- Methods
+
+    MemoryCaches& group() const { return group_; }
 
     /**
      * Call last in derived constructors and first in derived destructors, so a concurrent purge or footprint (of the
@@ -177,6 +196,9 @@ public:
             evict();
         }
 
+        // the group's capacity, without holding the cache lock (the group locks its caches)
+        group().fit();
+
         // make without holding the cache lock, as it can be slow
         value_type value;
         try {
@@ -189,14 +211,17 @@ public:
             throw;
         }
 
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
+        {
+            util::lock_guard<util::recursive_mutex> lock(mutex_);
 
-        reserved_.erase(key);
-        const auto now = ++clock_;
-        entries_.try_emplace(key, Entry{value, {footprint(*value), now, now, 1}});
-        ++statistics_.insertions;
-        evict();  // the footprint can differ from the estimate
+            reserved_.erase(key);
+            const auto now = ++clock_;
+            entries_.try_emplace(key, Entry{value, {footprint(*value), now, now, 1}});
+            ++statistics_.insertions;
+            evict();  // the footprint can differ from the estimate
+        }
 
+        group().fit();
         return value;
     }
 
@@ -246,6 +271,21 @@ public:
     /// Values in use stay valid for their users
     void purge() override { clear(); }
 
+    MemoryUsage reserved() const override {
+        util::lock_guard<util::recursive_mutex> lock(mutex_);
+
+        MemoryUsage sum;
+        for (const auto& [key, estimate] : reserved_) {
+            sum += estimate;
+        }
+        return sum;
+    }
+
+    MemoryUsage release(const MemoryUsage& over) override {
+        util::lock_guard<util::recursive_mutex> lock(mutex_);
+        return evict(over);
+    }
+
 private:
 
     // -- Types
@@ -286,16 +326,14 @@ private:
         return *mutex;
     }
 
-    /// Evict values not in use (in policy order), until values and those being made fit
-    void evict() {
-        auto usage = this->usage();
-        for (const auto& [key, estimate] : reserved_) {
-            usage += estimate;
-        }
+    /// Evict values not in use (in policy order), until values and those being made fit the capacity
+    void evict() { evict(usage() + reserved() - capacity_); }
 
-        while (usage.exceeds(capacity_)) {
-            const auto over = usage - capacity_;
+    /// Evict values not in use (in policy order), relieving what is over, as far as possible
+    MemoryUsage evict(MemoryUsage over) {
+        MemoryUsage released;
 
+        while (over != MemoryUsage{}) {
             auto victim = entries_.end();
             for (auto it = entries_.begin(); it != entries_.end(); ++it) {
                 const auto& entry = it->second;
@@ -312,13 +350,16 @@ private:
             }
 
             if (victim == entries_.end()) {
-                return;  // beyond capacity, nothing else to evict
+                break;  // nothing else to evict
             }
 
-            usage -= victim->second.info.footprint;
+            released += victim->second.info.footprint;
+            over -= victim->second.info.footprint;
             entries_.erase(victim);
             ++statistics_.evictions;
         }
+
+        return released;
     }
 };
 

@@ -346,7 +346,8 @@ cache files when caching is enabled, which is off by default.
 ``ECKIT_GEO_CACHING=1`` enables it (the ``geo-caching`` feature of
 ``eckit-sys`` changes the default), and ``ECKIT_GEO_CACHE_PATH``
 (``path1:path2:...``, searched in order, written to the first writable) moves
-it from ``~/.cache/eckit/geo``. Without caching, existing cache files (e.g. a
+it from ``~/.cache`` (files are under ``eckit/geo`` of each path, then of
+those of ``ECKIT_CACHE_PATH``). Without caching, existing cache files (e.g. a
 provisioned read-only cache) are still found, but nothing is written and
 misses are computed in memory; ``ECKIT_GEO_CACHE_THROW_ON_MISS=1`` makes a
 missing search or crop cache file an error instead. The cached coordinates

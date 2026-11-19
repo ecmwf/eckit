@@ -22,8 +22,8 @@
 //! `eckit-geo-caching` or environment variable `ECKIT_GEO_CACHING`, defaulting
 //! to the `geo-caching` feature of `eckit-sys` (off). Cache paths are resource
 //! `eckit-geo-cache-path` or `ECKIT_GEO_CACHE_PATH` (`path1:path2:...`,
-//! searched in order, written to the first writable), by default
-//! `~/.cache/eckit/geo`.
+//! searched in order, written to the first writable), by default `~/.cache`,
+//! then those of `ECKIT_CACHE_PATH`; files are under `eckit/geo` of each.
 //!
 //! eckit registers every unstructured grid by uid in a process-wide registry
 //! as it is built, re-registering on each build. Building grids of the same

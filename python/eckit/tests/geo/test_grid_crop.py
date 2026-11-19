@@ -128,7 +128,7 @@ def test_cache_is_temporary():
 
     # tests do not write to the runtime cache (see conftest)
     writable = cache()["disk"]["control"]["paths"]["writable"]
-    assert os.path.realpath(writable[0]) == os.path.realpath(os.environ["ECKIT_GEO_CACHE_PATH"])
+    assert os.path.realpath(writable[0]) == os.path.realpath(os.path.join(os.environ["ECKIT_GEO_CACHE_PATH"], "eckit", "geo"))
 
 
 @pytest.mark.parametrize("spec, type", [(dict(grid=[9, 9]), "regular_ll"), (dict(grid="O2"), "reduced_gg")])

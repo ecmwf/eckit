@@ -8,6 +8,7 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CUR
 
 set(eckit_geo_test_cache_seeds "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 set(eckit_geo_test_environment
+    "ECKIT_CACHE_PATH="
     "ECKIT_GEO_CACHING=1"
     "ECKIT_GEO_CACHE_CROP_CAPACITY=${eckit_GEO_CACHE_CROP_CAPACITY}"
     "ECKIT_GEO_CACHE_CROP_POLICY=lru"
@@ -127,6 +128,11 @@ endforeach()
 eckit_geo_add_test(cache_roots ENVIRONMENT
     "ECKIT_GEO_TEST_CACHE_RW=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/rw"
     "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/ro:{ENVVAR?ECKIT_GEO_TEST_CACHE_RW}")
+
+# eckit's cache directories, after those of eckit::geo
+eckit_geo_add_test(cache_eckit_path ENVIRONMENT
+    "ECKIT_GEO_CACHE_PATH=/geo/a:/geo/b"
+    "ECKIT_CACHE_PATH=/eckit/a:/eckit/b")
 
 # a read-only (provisioned) cache: cache files are only found, and computed in memory otherwise
 eckit_geo_add_test(cache_readonly ENVIRONMENT

@@ -223,7 +223,7 @@ cdef class Grid:
 
     @property
     def name(self) -> str:
-        """Name, for the grids identified by it (eg. ORCA, ICON), otherwise
+        """Name, for the grids identified by it (eg. ORCA, ICON, CS-LFR), otherwise
         empty."""
         return self._grid.name()
 

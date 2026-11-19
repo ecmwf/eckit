@@ -67,20 +67,21 @@ CASE("Grid name/arrangement") {
         const char* grid;
         const char* name;
     } tests[]{
-        {"{grid: [10, 10]}", ""},          // unnamed
-        {"{pl: [20, 24, 24, 20]}", "O2"},  //
-        {"{grid: n32}", "N32"},            //
-        {"{grid: o8}", "O8"},              //
-        {"{grid: h2}", "H2"},              //
-        {"{grid: h2n}", "H2"},             //
-        {"{grid: t20}", "T20"},            //
+        {"{grid: [10, 10]}", ""},            // unnamed
+        {"{pl: [20, 24, 24, 20]}", "O2"},    //
+        {"{grid: n32}", "N32"},              //
+        {"{grid: o8}", "O8"},                //
+        {"{grid: h2}", "H2"},                //
+        {"{grid: h2n}", "H2"},               //
+        {"{grid: t20}", "T20"},              //
+        {"{grid: CS-LFR-2}", "CS-LFR-2-C"},  //
     };
 
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
         EXPECT(grid->name() == test.name);
-        EXPECT(grid->arrangement().empty());
+        EXPECT(grid->arrangement().empty() == (grid->type() != "cubed_sphere_lfric"));
 
         // every grid known by name has a type
         if (!grid->name().empty()) {

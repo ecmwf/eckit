@@ -25,10 +25,21 @@ struct Entry {
 
 
 const Entry TABLE[]{
-    {ARAKAWA_C_T, "ArakawaC", "T"}, {ARAKAWA_C_U, "ArakawaC", "U"}, {ARAKAWA_C_V, "ArakawaC", "V"},
-    {FESOM_C, "FESOM", "C"},        {FESOM_N, "FESOM", "N"},        {ICON_C, "ICON", "C"},
-    {ICON_V, "ICON", "V"},          {ICON_E, "ICON", "E"},          {ORCA_F, "ORCA", "F"},
-    {ORCA_T, "ORCA", "T"},          {ORCA_U, "ORCA", "U"},          {ORCA_V, "ORCA", "V"},
+    {ARAKAWA_C_T, "ArakawaC", "T"},
+    {ARAKAWA_C_U, "ArakawaC", "U"},
+    {ARAKAWA_C_V, "ArakawaC", "V"},
+    {CUBED_SPHERE_C, "CubedSphere", "C"},
+    {CUBED_SPHERE_V, "CubedSphere", "V"},
+    {CUBED_SPHERE_E, "CubedSphere", "E"},
+    {FESOM_C, "FESOM", "C"},
+    {FESOM_N, "FESOM", "N"},
+    {ICON_C, "ICON", "C"},
+    {ICON_V, "ICON", "V"},
+    {ICON_E, "ICON", "E"},
+    {ORCA_F, "ORCA", "F"},
+    {ORCA_T, "ORCA", "T"},
+    {ORCA_U, "ORCA", "U"},
+    {ORCA_V, "ORCA", "V"},
     {ORCA_W, "ORCA", "W"},
 };
 

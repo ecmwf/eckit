@@ -71,8 +71,9 @@ CASE("iterator") {
 CASE("iterator: moving around") {
     using difference_type = Grid::Iterator::difference_type;
 
-    const std::vector<std::string> specs{"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}", "{grid: O8}",
-                                         "{grid: H4}", "{grid: H4n}"};
+    const std::vector<std::string> specs{"{grid: [30, 30]}", "{grid: [30, 30], order: i+-j-}",
+                                         "{grid: O8}",       "{grid: H4}",
+                                         "{grid: H4n}",      "{type: cubed_sphere, n: 4, panels: lfric}"};
     for (const std::string& spec : specs) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
         const auto points = grid->to_points();

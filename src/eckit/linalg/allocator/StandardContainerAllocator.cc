@@ -4,8 +4,10 @@
 
 #include "eckit/linalg/allocator/StandardContainerAllocator.h"
 
+#include <limits>
 #include <numeric>
 #include <ostream>
+#include <string>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -15,12 +17,25 @@ namespace eckit::linalg::allocator {
 
 StandardContainerAllocator::StandardContainerAllocator(Size Nr, Size Nc, const container_type& cont) :
     Nr_(Nr), Nc_(Nc), nnz_([Nc](const auto& cont) {
-        return std::accumulate(cont.begin(), cont.end(), 0, [Nc](const auto& acc, const auto& row) {
+        return std::accumulate(cont.begin(), cont.end(), Size{0}, [Nc](const auto& acc, const auto& row) {
             ASSERT(row.empty() || row.rbegin()->first < Nc);
             return acc + row.size();
         });
     }(cont)) {
     ASSERT(Nr == cont.size());
+
+    // outer and inner indices are narrowed to UIndex and Index
+    if (auto max = static_cast<Size>(std::numeric_limits<SparseMatrix::UIndex>::max()); max < nnz_) {
+        throw OutOfRange("StandardContainerAllocator: too many non-zero entries, nnz=" + std::to_string(nnz_) +
+                             ", max=" + std::to_string(max),
+                         Here());
+    }
+
+    if (auto max = static_cast<Size>(std::numeric_limits<Index>::max()); 0 < Nc && max < Nc - 1) {
+        throw OutOfRange("StandardContainerAllocator: too many columns, Nc=" + std::to_string(Nc) +
+                             ", max=" + std::to_string(max + 1),
+                         Here());
+    }
 
     ia_.reserve(Nr_ + 1);
     ja_.reserve(nnz_);

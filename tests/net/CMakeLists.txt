@@ -6,3 +6,7 @@ ecbuild_add_test( TARGET  eckit_test_net_netservice_limiter
                   SOURCES test_netservice_limiter.cc
                   LIBS    eckit
 )
+
+ecbuild_add_test( TARGET      eckit_test_unix_socket
+                  SOURCES     test_unix_socket.cc
+                  LIBS        eckit )

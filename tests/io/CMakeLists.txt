@@ -39,6 +39,7 @@ foreach(_test
         bufferlist
         circularbuffer
         compress
+        fileflock
         filelock
         filepool
         multihandle

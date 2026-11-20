@@ -32,6 +32,9 @@ public:
     virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0,
                               bool* connected = nullptr);
 
+    std::unique_ptr<Socket> acceptSocket(const std::string& message = "Waiting for connection",
+                                         int timeout                = 0) override;
+
     void closeExec(bool on) { closeExec_ = on; }
 
     int socket() override;

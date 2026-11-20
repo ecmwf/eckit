@@ -844,6 +844,14 @@ bool LocalPathName::isLink() const {
     return S_ISLNK(info.st_mode);
 }
 
+bool LocalPathName::isSocket() const {
+    Stat::Struct info;
+    if (Stat::lstat(path_.c_str(), &info) < 0) {
+        throw FailedSystemCall(path_);
+    }
+    return S_ISSOCK(info.st_mode);
+}
+
 bool LocalPathName::sameAs(const LocalPathName& other) const {
     if (!exists() || !other.exists()) {
         return false;

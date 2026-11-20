@@ -167,6 +167,8 @@ list( APPEND eckit_io_srcs
     io/FileBase.h
     io/FileDescHandle.cc
     io/FileDescHandle.h
+    io/FileFlock.cc
+    io/FileFlock.h
     io/FileHandle.cc
     io/FileHandle.h
     io/FileLock.cc
@@ -671,6 +673,7 @@ list( APPEND eckit_net_srcs
     net/ProxiedTCPClient.h
     net/ProxiedTCPServer.cc
     net/ProxiedTCPServer.h
+    net/Socket.cc
     net/Socket.h
     net/SocketOptions.cc
     net/SocketOptions.h
@@ -692,6 +695,12 @@ list( APPEND eckit_net_srcs
     net/UDPClient.h
     net/UDPServer.cc
     net/UDPServer.h
+    net/UnixSocket.cc
+    net/UnixSocket.h
+    net/UnixSocketClient.cc
+    net/UnixSocketClient.h
+    net/UnixSocketServer.cc
+    net/UnixSocketServer.h
 )
 
 list( APPEND eckit_serialisation_srcs

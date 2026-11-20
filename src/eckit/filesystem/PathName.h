@@ -153,6 +153,10 @@ public:
     /// @return true if the path is a symlink
     bool isLink() const;
 
+    /// Check if path is a socket
+    /// @return true if the path is a socket
+    bool isSocket() const;
+
     /// Clear the file
     void empty() const;
 

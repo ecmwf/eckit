@@ -4,6 +4,8 @@
 #pragma once
 
 #include <iosfwd>
+#include <memory>
+#include <string>
 
 namespace eckit::net {
 
@@ -17,14 +19,19 @@ public:  // methods
     virtual bool isConnected() const = 0;
 
     virtual long write(const void* buf, long length) const = 0;
-    virtual long read(void* buf, long length) const = 0;
+    virtual long read(void* buf, long length) const        = 0;
 
-    virtual void close() = 0;
+    virtual void close()       = 0;
     virtual void closeOutput() = 0;
-    virtual void closeInput() = 0;
+    virtual void closeInput()  = 0;
 
     /// The underlying file descriptor
     virtual int socket() = 0;
+
+    /// Wait for a connection and return it
+    /// TimeOut is thrown if non-zero timeout is exceeded
+    virtual std::unique_ptr<Socket> acceptSocket(const std::string& message = "Waiting for connection",
+                                                 int timeout                = 0);
 
 protected:  // methods
 
@@ -43,4 +50,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::net
-

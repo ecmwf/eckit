@@ -92,6 +92,10 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
     return *this;
 }
 
+std::unique_ptr<Socket> TCPServer::acceptSocket(const std::string& message, int timeout) {
+    return std::make_unique<TCPSocket>(accept(message, timeout));
+}
+
 void TCPServer::close() {
     TCPSocket::close();
     if (listen_ >= 0) {

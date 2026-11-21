@@ -24,6 +24,7 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/spec/Spec.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::area::library {
@@ -270,13 +271,18 @@ Area* Shapefile::make_area_from_name(const std::string& name) const {
         throw exception::AreaError("Shapefile: '" + name + "' not unique (in field '" + name_ + "')", Here());
     }
 
-    return make_area(static_cast<size_t>(it->second), name);
+    return make_area(into_unsigned(it->second), name);
+}
+
+
+size_t Shapefile::size() const {
+    return into_unsigned(nEntities_);
 }
 
 
 Area* Shapefile::make_area(size_t entity) const {
     auto it = std::find_if(to_entity.begin(), to_entity.end(),
-                           [entity](const auto& kv) { return static_cast<size_t>(kv.second) == entity; });
+                           [entity](const auto& kv) { return into_unsigned(kv.second) == entity; });
     return make_area(entity, it != to_entity.end() ? it->first : "");
 }
 

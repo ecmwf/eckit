@@ -12,6 +12,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::polygon {
@@ -55,10 +56,10 @@ bool Polygon::operator==(const Polygon& other) const {
             return true;
         }
 
-        auto i = std::distance(begin(), std::min_element(begin(), end()));
-        auto j = std::distance(other.begin(), std::min_element(other.begin(), other.end()));
+        const auto i = into_unsigned(std::distance(begin(), std::min_element(begin(), end())));
+        const auto j = into_unsigned(std::distance(other.begin(), std::min_element(other.begin(), other.end())));
 
-        for (int k = 0, n = static_cast<int>(size()); k < n; ++k) {
+        for (size_t k = 0, n = size(); k < n; ++k) {
             if (!points_equal(operator[]((i + k) % n), other[(j + k) % n])) {
                 return false;
             }
@@ -77,7 +78,7 @@ bool Polygon::intersects(area::BoundingBox& bbox) const {
 
 Polygon::Edge Polygon::edge(int i) const {
     const auto n = static_cast<int>(size());
-    return {at(((i % n) + n) % n), at(((i % n) + n + 1) % n)};
+    return {at(into_unsigned(((i % n) + n) % n)), at(into_unsigned(((i % n) + n + 1) % n))};
 }
 
 

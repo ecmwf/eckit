@@ -11,6 +11,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::order {
@@ -28,7 +29,7 @@ constexpr uint64_t MASKS[] = {0x00000000ffffffff, 0x0000ffff0000ffff, 0x00ff00ff
 
 
 inline int nest_encode_bits(int n) {
-    auto b = static_cast<uint64_t>(n) & MASKS[0];
+    auto b = uint64_t{into_unsigned(n)} & MASKS[0];
     b      = (b ^ (b << 16)) & MASKS[1];
     b      = (b ^ (b << 8)) & MASKS[2];
     b      = (b ^ (b << 4)) & MASKS[3];
@@ -39,7 +40,7 @@ inline int nest_encode_bits(int n) {
 
 
 inline int nest_decode_bits(int n) {
-    auto b = static_cast<uint64_t>(n) & MASKS[5];
+    auto b = uint64_t{into_unsigned(n)} & MASKS[5];
     b      = (b ^ (b >> 1)) & MASKS[4];
     b      = (b ^ (b >> 2)) & MASKS[3];
     b      = (b ^ (b >> 4)) & MASKS[2];
@@ -144,7 +145,7 @@ size_t HEALPix::Renumber::ring_to_nest(size_t index) const {
     };
 
     if (Nside_ == 1) {
-        return _r;
+        return into_unsigned(_r);
     }
 
     if (_r < Ncap_) {
@@ -154,7 +155,7 @@ size_t HEALPix::Renumber::ring_to_nest(size_t index) const {
         int r     = Nring;
         int f     = div_03(phi - 1, Nring);
 
-        return to_nest(f, r, Nring, phi, 0);
+        return into_unsigned(to_nest(f, r, Nring, phi, 0));
     }
 
     if (Npix_ - Ncap_ <= _r) {
@@ -164,7 +165,7 @@ size_t HEALPix::Renumber::ring_to_nest(size_t index) const {
         int ring  = 4 * Nside_ - Nring;  // (from South pole)
         int f     = div_03(phi - 1, Nring) + 8;
 
-        return to_nest(f, ring, Nring, phi, 0);
+        return into_unsigned(to_nest(f, ring, Nring, phi, 0));
     }
 
     // Equatorial belt
@@ -179,7 +180,7 @@ size_t HEALPix::Renumber::ring_to_nest(size_t index) const {
     int ifp = 1 + ((phi - 1 - ((1 - tmp + 2 * Nside_) >> 1)) >> k_);
     int f   = (ifp == ifm) ? (ifp | 4) : ((ifp < ifm) ? ifp : (ifm + 8));
 
-    return to_nest(f, ring, Nring, phi, ring & 1);
+    return into_unsigned(to_nest(f, ring, Nring, phi, ring & 1));
 }
 
 
@@ -199,7 +200,7 @@ std::pair<size_t, size_t> HEALPix::Renumber::nest_to_row(size_t index) const {
     ASSERT(r < Nring);
     r = r < 0 ? r + 4 * Nside_ : r;
 
-    return {static_cast<size_t>(ring - 1), static_cast<size_t>(r)};
+    return {into_unsigned(ring - 1), into_unsigned(r)};
 }
 
 
@@ -213,26 +214,26 @@ size_t HEALPix::Renumber::nest_to_ring(size_t index) const {
                    : ring < 3 * Nside_ ? Ncap_ + (ring - Nside_) * 4 * Nside_
                                        : Npix_ - 2 * N * (N + 1);
 
-    return static_cast<size_t>(r0) + r;
+    return into_unsigned(r0) + r;
 }
 
 
 HEALPix::renumber_type HEALPix::reorder(const order_type& to) const {
     const HEALPix target(Nside_, to);
 
-    auto size = static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside_));
+    const auto size = grid::reduced::HEALPix::size_from_nside(Nside_);
     renumber_type ren(size);
 
     if (order_ == to) {
         // no reordering
-        std::iota(ren.begin(), ren.end(), 0);
+        std::iota(ren.begin(), ren.end(), size_t{0});
         return ren;
     }
 
     const auto from_nested = order_ == NESTED;
     const auto& numbering  = from_nested ? renumber() : target.renumber();
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         ren[i] = from_nested ? numbering.nest_to_ring(i) : numbering.ring_to_nest(i);
     }
 

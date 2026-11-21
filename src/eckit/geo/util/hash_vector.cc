@@ -7,6 +7,7 @@
 
 #include "eckit/eckit_config.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 
 #if eckit_LITTLE_ENDIAN
 #else
@@ -19,7 +20,7 @@ namespace eckit::geo::util {
 
 template <typename T>
 void hash_vector(MD5& hash, const std::vector<T>& v) {
-    const auto len = static_cast<long>(v.size() * sizeof(T));
+    const auto len = into_signed(v.size() * sizeof(T));
 
 #if eckit_LITTLE_ENDIAN
     hash.add(v.data(), len);

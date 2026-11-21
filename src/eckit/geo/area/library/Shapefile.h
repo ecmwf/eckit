@@ -51,7 +51,7 @@ public:
     // -- Overridden methods
 
     std::ostream& list(std::ostream&) const override;
-    size_t size() const override { return static_cast<size_t>(nEntities_); }
+    size_t size() const override;
 
     [[nodiscard]] Area* make_area(size_t) const override;
     [[nodiscard]] Area* make_area_from_name(const std::string&) const override;

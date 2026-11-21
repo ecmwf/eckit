@@ -14,6 +14,7 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid {
@@ -44,7 +45,7 @@ std::vector<size_t> indices_of(const Range& cropped, const Range& range) {
         }
 
         ASSERT(types::is_approximately_equal(*it, value, PointLonLat::EPS));
-        indices.push_back(static_cast<size_t>(it - values.begin()));
+        indices.push_back(into_unsigned(it - values.begin()));
     }
 
     return indices;

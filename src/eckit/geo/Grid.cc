@@ -22,6 +22,7 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 #include "eckit/utils/StringTools.h"
 
 
@@ -140,8 +141,8 @@ Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
 
 
 Grid::Iterator& Grid::Iterator::operator+=(difference_type d) {
-    const auto i = static_cast<difference_type>(index_) + d;
-    index_       = 0 <= i && i < static_cast<difference_type>(size_) ? static_cast<size_t>(i) : size_;
+    const auto i = into_signed(index_) + d;
+    index_       = 0 <= i && i < into_signed(size_) ? into_unsigned(i) : size_;
     return *this;
 }
 

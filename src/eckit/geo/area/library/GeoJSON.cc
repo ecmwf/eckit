@@ -12,6 +12,7 @@
 #include "eckit/parser/JSONParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
+#include "eckit/utils/SafeCasts.h"
 #include "eckit/value/Content.h"
 
 
@@ -173,7 +174,7 @@ Area* GeoJSON::make_area_from_name(const std::string& name) const {
         throw exception::AreaError("GeoJSON: unknown area '" + name + "'", Here());
     }
 
-    return make_area(static_cast<size_t>(it->second));
+    return make_area(into_unsigned(it->second));
 }
 
 

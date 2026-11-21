@@ -91,7 +91,7 @@ def test_cache_purge():
     assert cache()["memory"]["crop"]["size"] == 0
 
     # in use, still valid
-    assert grid.to_latlons() == latlons
+    assert list(map(list, grid.to_latlons())) == list(map(list, latlons))
     assert search.search_nn((10, 20)) == nearest
 
 

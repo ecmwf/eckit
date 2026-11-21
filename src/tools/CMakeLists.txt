@@ -33,7 +33,8 @@ foreach( _name
         eckit-geo-grid-cache
         eckit-geo-grid-list
         eckit-geo-grid-nearest
-        eckit-geo-grid-spec )
+        eckit-geo-grid-spec
+        eckit-geo-search )
     string(REPLACE "-" "_" _target ${_name})
     ecbuild_add_executable( TARGET      ${_target}
                             OUTPUT_NAME ${_name}

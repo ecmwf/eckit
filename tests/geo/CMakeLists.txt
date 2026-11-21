@@ -149,6 +149,37 @@ foreach(_loader memory mapped-file)
     endif()
 endforeach()
 
+# eckit-geo-search, many-point searches of a grid (about 10 s in a Debug build), single-threaded and on 4 threads if
+# OpenMP; the k-d tree in a cache file, as the library by default
+set(_num_threads 1)
+if(eckit_HAVE_OMP)
+    list(APPEND _num_threads 4)
+endif()
+
+foreach(_n ${_num_threads})
+    ecbuild_add_test(
+        TARGET          eckit_test_geo_search_tool_${_n}
+        COMMAND         eckit_geo_search
+        ARGS            --grid=O320 --query-grid=O288 --search=knn --k=4
+        ENVIRONMENT     ${eckit_geo_test_environment}
+                        "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_tool_${_n}:${eckit_geo_test_cache_seeds}"
+                        "ECKIT_GEO_SEARCH_LOADER=mapped-file"
+                        "ECKIT_GEO_SEARCH_NUM_THREADS=${_n}"
+        TEST_PROPERTIES PASS_REGULAR_EXPRESSION "num_threads: ${_n}.*rows: 342144.*entries: 1368576"
+                        FIXTURES_REQUIRED eckit_geo_cache )
+endforeach()
+
+# eckit-geo-search, the phases of a many-point search timed single-threaded (in the test output)
+ecbuild_add_test(
+    TARGET          eckit_test_geo_search_tool_profile
+    COMMAND         eckit_geo_search
+    ARGS            --grid=O320 --query-grid=O48 --search=knn --k=16 --profile
+    ENVIRONMENT     ${eckit_geo_test_environment}
+                    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_tool_profile:${eckit_geo_test_cache_seeds}"
+                    "ECKIT_GEO_SEARCH_NUM_THREADS=1"
+    TEST_PROPERTIES PASS_REGULAR_EXPRESSION "k-d tree queries, in Morton order"
+                    FIXTURES_REQUIRED eckit_geo_cache )
+
 # cache directories: read-only, then writable (given by an environment variable, as an expansion)
 eckit_geo_add_test(cache_roots ENVIRONMENT
     "ECKIT_GEO_TEST_CACHE_RW=${CMAKE_CURRENT_BINARY_DIR}/cache_roots/rw"

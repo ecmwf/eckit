@@ -132,6 +132,8 @@ list(APPEND eckit_geo_srcs
     projection/LambertConformalConic.h
     projection/LonLatToXYZ.cc
     projection/LonLatToXYZ.h
+    projection/LonLatHToXYZ.cc
+    projection/LonLatHToXYZ.h
     projection/Mercator.cc
     projection/Mercator.h
     projection/PolarStereographic.cc
@@ -144,6 +146,8 @@ list(APPEND eckit_geo_srcs
     projection/SpaceView.h
     projection/Stretch.cc
     projection/Stretch.h
+    projection/ToFromXYZ.cc
+    projection/ToFromXYZ.h
     projection/TransverseMercator.cc
     projection/TransverseMercator.h
     range/GaussianLatitude.cc

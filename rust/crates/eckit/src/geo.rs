@@ -69,6 +69,8 @@ pub enum Point {
     LonLat { lon: f64, lat: f64 },
     /// Geographic coordinates, in radians.
     LonLatR { lon: f64, lat: f64 },
+    /// Geographic coordinates, in degrees, and height above the figure, in metres.
+    LonLatH { lon: f64, lat: f64, height: f64 },
 }
 
 impl From<eckit_sys::geo::RawPoint> for Point {
@@ -81,6 +83,11 @@ impl From<eckit_sys::geo::RawPoint> for Point {
             PointKind::Xyz => Self::Xyz { x: a, y: b, z: c },
             PointKind::LonLat => Self::LonLat { lon: a, lat: b },
             PointKind::LonLatR => Self::LonLatR { lon: a, lat: b },
+            PointKind::LonLatH => Self::LonLatH {
+                lon: a,
+                lat: b,
+                height: c,
+            },
             kind => unreachable!("unknown eckit::geo::Point kind {}", kind.repr),
         }
     }
@@ -95,6 +102,7 @@ impl From<Point> for eckit_sys::geo::RawPoint {
             Point::Xyz { x, y, z } => (PointKind::Xyz, [x, y, z]),
             Point::LonLat { lon, lat } => (PointKind::LonLat, [lon, lat, 0.0]),
             Point::LonLatR { lon, lat } => (PointKind::LonLatR, [lon, lat, 0.0]),
+            Point::LonLatH { lon, lat, height } => (PointKind::LonLatH, [lon, lat, height]),
         };
         Self { kind, coords }
     }
@@ -428,7 +436,7 @@ impl Grid {
     /// buffers; O1280 alone is 6.6 million points per array.
     ///
     /// Fails with [`Error::GridError`](crate::Error) if the grid's points are
-    /// not geographic ([`Point::LonLat`] or [`Point::LonLatR`]); see
+    /// not geographic ([`Point::LonLat`], [`Point::LonLatR`] or [`Point::LonLatH`]); see
     /// [`Grid::fill_xyz`] for coordinates every grid can give.
     pub fn fill_latlons(&self, lat: &mut [f64], lon: &mut [f64]) -> Result<()> {
         self.inner
@@ -733,4 +741,34 @@ pub fn cache_footprint() -> usize {
 /// If the caches cannot be set up (e.g. an unknown eviction policy).
 pub fn cache_purge() -> Result<()> {
     eckit_sys::geo::GridWrapper::cache_purge().map_err(eckit_sys::Error::from)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Point;
+
+    #[test]
+    fn point_roundtrip_through_raw_point() {
+        for point in [
+            Point::Xy { x: 1.0, y: 2.0 },
+            Point::Xyz {
+                x: 1.0,
+                y: 2.0,
+                z: 3.0,
+            },
+            Point::LonLat {
+                lon: 10.0,
+                lat: 20.0,
+            },
+            Point::LonLatR { lon: 0.1, lat: 0.2 },
+            Point::LonLatH {
+                lon: 10.0,
+                lat: 20.0,
+                height: 30.0,
+            },
+        ] {
+            let raw = eckit_sys::geo::RawPoint::from(point);
+            assert_eq!(Point::from(raw), point);
+        }
+    }
 }

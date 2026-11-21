@@ -300,6 +300,9 @@ fn point(p: Point) -> String {
         Point::Xyz { x, y, z } => format!("x {x:.4}  y {y:.4}  z {z:.4}"),
         Point::LonLat { lon, lat } => format!("lat {lat:.4}  lon {lon:.4}"),
         Point::LonLatR { lon, lat } => format!("lat {lat:.4} rad  lon {lon:.4} rad"),
+        Point::LonLatH { lon, lat, height } => {
+            format!("lat {lat:.4}  lon {lon:.4}  height {height:.4}")
+        }
     }
 }
 

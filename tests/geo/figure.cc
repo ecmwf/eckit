@@ -15,6 +15,7 @@
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/figure/SphereT.h"
 #include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -170,12 +171,12 @@ CASE("Unit Sphere") {
 
 
     SECTION("north pole") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({0., 90.}), PointXYZ{0, 0, R}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {0., 90.}), PointXYZ{0, 0, R}));
     }
 
 
     SECTION("south pole") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({0., -90.}), PointXYZ{0, 0, -R}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {0., -90.}), PointXYZ{0, 0, -R}));
     }
 
 
@@ -211,50 +212,50 @@ CASE("Unit Sphere") {
 
 
     SECTION("lon 0 (quadrant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({0., 0.}), PointXYZ{R, 0, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-360., 0.}), PointXYZ{R, 0, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {0., 0.}), PointXYZ{R, 0, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-360., 0.}), PointXYZ{R, 0, 0}));
     }
 
 
     SECTION("lon 90 (quadrant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({90., 0.}), PointXYZ{0, R, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-270., 0.}), PointXYZ{0, R, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {90., 0.}), PointXYZ{0, R, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-270., 0.}), PointXYZ{0, R, 0}));
     }
 
 
     SECTION("lon 180 (quadrant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({180., 0.}), PointXYZ{-R, 0, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-180., 0.}), PointXYZ{-R, 0, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {180., 0.}), PointXYZ{-R, 0, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-180., 0.}), PointXYZ{-R, 0, 0}));
     }
 
 
     SECTION("lon 270 (quadrant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({270., 0.}), PointXYZ{0, -R, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-90., 0.}), PointXYZ{0, -R, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {270., 0.}), PointXYZ{0, -R, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-90., 0.}), PointXYZ{0, -R, 0}));
     }
 
 
     SECTION("lon 45 (octant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({45., 0.}), PointXYZ{L, L, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-315., 0.}), PointXYZ{L, L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {45., 0.}), PointXYZ{L, L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-315., 0.}), PointXYZ{L, L, 0}));
     }
 
 
     SECTION("lon 135 (octant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({135., 0.}), PointXYZ{-L, L, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-225., 0.}), PointXYZ{-L, L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {135., 0.}), PointXYZ{-L, L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-225., 0.}), PointXYZ{-L, L, 0}));
     }
 
 
     SECTION("lon 225 (octant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({225., 0.}), PointXYZ{-L, -L, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-135., 0.}), PointXYZ{-L, -L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {225., 0.}), PointXYZ{-L, -L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-135., 0.}), PointXYZ{-L, -L, 0}));
     }
 
 
     SECTION("lon 315 (octant)") {
-        EXPECT(points_equal(s1._convertSphericalToCartesian({315., 0.}), PointXYZ{L, -L, 0}));
-        EXPECT(points_equal(s1._convertSphericalToCartesian({-45., 0.}), PointXYZ{L, -L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {315., 0.}), PointXYZ{L, -L, 0}));
+        EXPECT(points_equal(projection::ToFromXYZ::to_xyz(R, {-45., 0.}), PointXYZ{L, -L, 0}));
     }
 
 
@@ -262,8 +263,8 @@ CASE("Unit Sphere") {
         // Default behavior throws
         EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(0., 100.)), BadValue);
 
-        auto p = s1._convertSphericalToCartesian(PointLonLat::make(0., 100.), 0.);
-        auto q = s1._convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
+        auto p = projection::ToFromXYZ::to_xyz(R, PointLonLat::make(0., 100.), 0.);
+        auto q = projection::ToFromXYZ::to_xyz(R, PointLonLat::make(180., 80.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
         EXPECT(types::is_approximately_equal(p.X(), q.X()));
@@ -276,8 +277,8 @@ CASE("Unit Sphere") {
         // Default behavior throws
         EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(15., 290.)), BadValue);
 
-        auto p = s1._convertSphericalToCartesian(PointLonLat::make(15., 290.), 0.);
-        auto q = s1._convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
+        auto p = projection::ToFromXYZ::to_xyz(R, PointLonLat::make(15., 290.), 0.);
+        auto q = projection::ToFromXYZ::to_xyz(R, PointLonLat::make(15., -70.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
         EXPECT(types::is_approximately_equal(p.X(), q.X()));
@@ -290,8 +291,8 @@ CASE("Unit Sphere") {
         // Default behavior throws
         EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(45., -120.)), BadValue);
 
-        auto p = s1._convertSphericalToCartesian(PointLonLat::make(45., -120.), 0.);
-        auto q = s1._convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);
+        auto p = projection::ToFromXYZ::to_xyz(R, PointLonLat::make(45., -120.), 0.);
+        auto q = projection::ToFromXYZ::to_xyz(R, PointLonLat::make(225., -60.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
         EXPECT(types::is_approximately_equal(p.X(), q.X()));

@@ -13,6 +13,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
+#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/search/KDTreeCache.h"
 #include "eckit/spec/Custom.h"
@@ -73,7 +74,7 @@ std::vector<PointXYZ> random_points_on_unit_sphere(size_t n, unsigned seed) {
     std::uniform_real_distribution<double> lon(-180., 180.);
     std::uniform_real_distribution<double> sinlat(-1., 1.);
 
-    projection::LonLatToXYZ to_xyz(1.);
+    projection::LonLatToXYZ to_xyz(new figure::Sphere(1.));
 
     std::vector<PointXYZ> points;
     points.reserve(n);
@@ -282,7 +283,7 @@ CASE("Search: (lon, lat) points") {
     // unit sphere, as configured
     const spec::Custom spec{{{"R", 1.}}};
 
-    projection::LonLatToXYZ to_xyz(1.);
+    projection::LonLatToXYZ to_xyz(new figure::Sphere(1.));
     const std::vector<PointXYZ> points{to_xyz.fwd(PointLonLat{0., 0.}), to_xyz.fwd(PointLonLat{90., 0.}),
                                        to_xyz.fwd(PointLonLat{180., 0.}), to_xyz.fwd(PointLonLat{0., 90.})};
 

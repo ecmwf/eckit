@@ -73,6 +73,7 @@ foreach(_test
         projection_laea
         projection_lcc
         projection_ll_to_xyz
+        projection_llh_to_xyz
         projection_mercator
         projection_plate-caree
         projection_rotation

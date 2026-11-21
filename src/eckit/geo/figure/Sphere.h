@@ -46,12 +46,6 @@ public:
     static void greatCircleLongitudeGivenLatitude(const PointLonLat&, const PointLonLat&, double lat, double& lon1,
                                                   double& lon2);
 
-    /// Convert spherical to Cartesian coordinates
-    static PointXYZ convertSphericalToCartesian(double radius, const PointLonLat&, double height = 0.);
-
-    /// Convert Cartesian to spherical coordinates
-    static PointLonLat convertCartesianToSpherical(double radius, const PointXYZ&);
-
 private:
 
     // -- Members

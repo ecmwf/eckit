@@ -12,9 +12,9 @@
 #include <set>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/projection/Stretch.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
@@ -292,7 +292,7 @@ PointXYZ normalise(const PointXYZ& p) {
 
 
 Point to_lonlat(const PointXYZ& xyz) {
-    const auto p = figure::Sphere::convertCartesianToSpherical(1., xyz);
+    const auto p = projection::ToFromXYZ::to_lonlat(xyz);
     return PointLonLat::make(p.lon(), p.lat());
 }
 

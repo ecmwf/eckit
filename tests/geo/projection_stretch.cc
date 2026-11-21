@@ -10,8 +10,8 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/Stretch.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/testing/Test.h"
 
 
@@ -50,10 +50,10 @@ CASE("stretch: Cartesian points, as (lon, lat)") {
     const projection::Stretch stretch(0.3);
 
     for (const auto& p : POINTS) {
-        const auto xyz = figure::UnitSphere::_convertSphericalToCartesian(p);
+        const auto xyz = projection::ToFromXYZ::to_xyz(1., p);
 
         const auto q = stretch.fwd(xyz);
-        EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(q), stretch.fwd(p)));
+        EXPECT(points_equal(projection::ToFromXYZ::to_lonlat(q), stretch.fwd(p)));
         EXPECT(points_equal(stretch.inv(q), xyz));
 
         // as Point (variant)

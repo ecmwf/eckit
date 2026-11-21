@@ -25,6 +25,9 @@ RawPoint RustPoint::to_raw(const eckit::geo::Point& point) {
     if (const auto* p = std::get_if<PointLonLatR>(&point)) {
         return {PointKind::LonLatR, {p->lonr(), p->latr(), 0.}};
     }
+    if (const auto* p = std::get_if<PointLonLatH>(&point)) {
+        return {PointKind::LonLatH, {p->lon(), p->lat(), p->height()}};
+    }
     throw exception::GridError("RustPoint: point holds no value", Here());
 }
 
@@ -41,6 +44,8 @@ eckit::geo::Point RustPoint::from_raw(const RawPoint& raw) {
             return PointLonLat{c[0], c[1]};
         case PointKind::LonLatR:
             return PointLonLatR{c[0], c[1]};
+        case PointKind::LonLatH:
+            return PointLonLatH{c[0], c[1], c[2]};
     }
     throw exception::GridError("RustPoint: unknown point kind", Here());
 }

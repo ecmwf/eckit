@@ -108,6 +108,8 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
     grid/unstructured/ICON.h
+    grid/unstructured/UnstructuredLLH.cc
+    grid/unstructured/UnstructuredLLH.h
     order/HEALPix.cc
     order/HEALPix.h
     order/ReducedScan.cc

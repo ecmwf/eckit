@@ -15,7 +15,6 @@
 #include "eckit/geo/Trace.h"
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
@@ -62,9 +61,6 @@ void check_radius(double radius) {
 struct Search::Shared {
     std::unique_ptr<KDTree> kdtree;
     std::unique_ptr<const projection::LonLatToXYZ> to_xyz;
-
-    // queries update the k-d tree statistics
-    util::recursive_mutex mutex;
 };
 
 
@@ -239,9 +235,6 @@ std::vector<Search::Neighbours> Search::search(const std::vector<Point>& points)
     }
 
     std::vector<Neighbours> result(points.size());
-
-    // locked once for all queries
-    util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
     for (auto i : KDTree::query_order(xyz)) {
         result[i] = search(xyz[i]);
     }
@@ -251,10 +244,7 @@ std::vector<Search::Neighbours> Search::search(const std::vector<Point>& points)
 
 
 Search::Neighbour Search::search_nn(const Point& p) const {
-    const auto q = to_xyz(p);
-
-    util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-    return shared_->kdtree->nearest_neighbour(q);
+    return shared_->kdtree->nearest_neighbour(to_xyz(p));
 }
 
 
@@ -267,14 +257,7 @@ Search::Neighbours Search::search_knn(const Point& p, size_t k) const {
         return {search_nn(p)};
     }
 
-    const auto q = to_xyz(p);
-
-    Neighbours result;
-    {
-        util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        result = shared_->kdtree->k_nearest_neighbours(q, k);
-    }
-
+    auto result = shared_->kdtree->k_nearest_neighbours(to_xyz(p), k);
     sort(result);
     return result;
 }
@@ -283,14 +266,7 @@ Search::Neighbours Search::search_knn(const Point& p, size_t k) const {
 Search::Neighbours Search::search_radius(const Point& p, double radius) const {
     check_radius(radius);
 
-    const auto q = to_xyz(p);
-
-    Neighbours result;
-    {
-        util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        result = shared_->kdtree->find_in_sphere(q, radius);
-    }
-
+    auto result = shared_->kdtree->find_in_sphere(to_xyz(p), radius);
     sort(result);
     return result;
 }

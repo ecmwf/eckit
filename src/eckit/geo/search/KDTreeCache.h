@@ -51,12 +51,9 @@ public:
 
     bool build(const Fill&, bool balanced = true) override;
 
-    Neighbour nearest_neighbour(const Point&) override;
-    Neighbours k_nearest_neighbours(const Point&, size_t k) override;
-    Neighbours find_in_sphere(const Point&, double radius) override;
-
-    void stats_print(std::ostream&, bool pretty) const override;
-    void stats_reset() override;
+    Neighbour nearest_neighbour(const Point&) const override;
+    Neighbours k_nearest_neighbours(const Point&, size_t k) const override;
+    Neighbours find_in_sphere(const Point&, double radius) const override;
 
     MemoryUsage footprint() const override;
 

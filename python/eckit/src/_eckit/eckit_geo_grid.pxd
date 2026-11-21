@@ -52,6 +52,12 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         const Grid* make_from_string(const string) except +
 
 
+cdef extern from "eckit/geo/grid/unstructured/UnstructuredLLH.h" namespace \
+        "eckit::geo::grid::unstructured":
+    cdef cppclass UnstructuredLLH(Grid):
+        UnstructuredLLH(vector[double], vector[double], vector[double]) except +
+
+
 cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
     cdef cppclass Unstructured(Grid):
         Unstructured(

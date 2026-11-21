@@ -124,7 +124,7 @@ def test_search():
     grid = Grid(grid="CS-LFR-48")
     lat, lon = grid.to_latlons()
 
-    index, distance = grid.search().search_nn((lon[1234], lat[1234]))
+    index, distance = grid.search().search_nn((lon[1234], lat[1234]), distance=True)
     assert index == 1234
     assert distance == pytest.approx(0, abs=1e-3)
 

@@ -193,6 +193,11 @@ set(eckit_geo_include_dirs
 
 set(eckit_geo_libs eckit_cache eckit_codec eckit_maths eckit_spec)
 set(eckit_geo_private_libs)
+
+if(eckit_HAVE_OMP)
+    list(APPEND eckit_geo_private_libs OpenMP::OpenMP_CXX)
+endif()
+
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID
     "~eckit/share/eckit/geo/grid.yaml"

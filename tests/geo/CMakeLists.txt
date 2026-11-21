@@ -83,6 +83,7 @@ foreach(_test
         projection_stere
         projection_tmerc
         range
+        search_height
         sh
         util)
     eckit_geo_add_test(${_test})
@@ -129,6 +130,22 @@ foreach(_loader ${_loaders})
 
     if(TEST eckit_test_geo_search_${_loader})
         set_tests_properties(eckit_test_geo_search_${_loader} PROPERTIES FIXTURES_REQUIRED eckit_geo_cache)
+    endif()
+endforeach()
+
+# searches of many points, on threads if OpenMP, by the k-d tree loaders in memory and in a cache file
+foreach(_loader memory mapped-file)
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_search_csr_${_loader}
+        SOURCES     search_csr.cc
+        LIBS        eckit_geo
+        ENVIRONMENT ${eckit_geo_test_environment}
+                    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_csr_${_loader}:${eckit_geo_test_cache_seeds}"
+                    "ECKIT_GEO_SEARCH_LOADER=${_loader}"
+                    "ECKIT_GEO_SEARCH_NUM_THREADS=4" )
+
+    if(TEST eckit_test_geo_search_csr_${_loader})
+        set_tests_properties(eckit_test_geo_search_csr_${_loader} PROPERTIES FIXTURES_REQUIRED eckit_geo_cache)
     endif()
 endforeach()
 

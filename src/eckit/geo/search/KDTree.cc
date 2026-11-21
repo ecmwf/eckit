@@ -9,6 +9,7 @@
 #include <numeric>
 #include <ostream>
 #include <sstream>
+#include <utility>
 
 #include "eckit/cache/FileCache.h"
 #include "eckit/cache/Loader.h"
@@ -103,14 +104,22 @@ std::vector<size_t> KDTree::query_order(const std::vector<Point>& points) {
     };
 
     // Morton code: coordinate bits interleaved, so points near in space are mostly near in order
-    std::vector<std::uint64_t> code;
+    auto morton = [&](const Point& p) {
+        return spread(quantise(p.X(), min.X(), max.X())) | spread(quantise(p.Y(), min.Y(), max.Y())) << 1 |
+               spread(quantise(p.Z(), min.Z(), max.Z())) << 2;
+    };
+
+    // sorted with the indices, faster than sorting the indices by code
+    std::vector<std::pair<std::uint64_t, size_t>> code;
     code.reserve(points.size());
-    for (const auto& p : points) {
-        code.push_back(spread(quantise(p.X(), min.X(), max.X())) | spread(quantise(p.Y(), min.Y(), max.Y())) << 1 |
-                       spread(quantise(p.Z(), min.Z(), max.Z())) << 2);
+    for (size_t i = 0; i < points.size(); ++i) {
+        code.emplace_back(morton(points[i]), i);
     }
 
-    std::stable_sort(order.begin(), order.end(), [&code](size_t a, size_t b) { return code[a] < code[b]; });
+    std::sort(code.begin(), code.end());
+    for (size_t j = 0; j < code.size(); ++j) {
+        order[j] = code[j].second;
+    }
     return order;
 }
 

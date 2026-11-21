@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/Earth.h"
@@ -181,7 +182,7 @@ CASE("Grid::to_xyz") {
 
     // the (lon, lat) grid points, one by one, on the given figure
     auto expect_on_figure = [](const Grid& grid, double a, double b) {
-        const projection::LonLatToXYZ to_xyz(a, b);
+        const projection::LonLatToXYZ to_xyz(FigureFactory::build(spec::Custom{{"a", a}, {"b", b}}));
         const auto [lat, lon] = grid.to_latlons();
         const auto xyz        = grid.to_xyz();
 

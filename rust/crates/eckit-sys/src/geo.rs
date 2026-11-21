@@ -26,6 +26,8 @@ mod ffi {
         LonLat,
         /// `PointLonLatR`: `coords` is `[lon, lat, _]`, in radians.
         LonLatR,
+        /// `PointLonLatH`: `coords` is `[lon, lat, height]`, in degrees and metres.
+        LonLatH,
     }
 
     /// An `eckit::geo::Point`, flattened for FFI. Unused trailing coordinates are `0`.

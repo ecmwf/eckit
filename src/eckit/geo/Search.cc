@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Trace.h"
@@ -87,7 +88,7 @@ void Search::build(const std::string& uid, size_t size, const Spec& spec, const 
 
 std::string Search::uid(const Grid& grid) {
     const auto& figure = grid.figure();
-    return MD5{grid.uid() + projection::LonLatToXYZ(figure.a(), figure.b()).spec_str()}.digest();
+    return MD5{grid.uid() + projection::LonLatToXYZ(FigureFactory::build(figure)).spec_str()}.digest();
 }
 
 
@@ -96,7 +97,7 @@ Search::Search(const Grid& grid, const Spec& spec, const Storage& storage) : sha
 
     // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
     const auto& figure = grid.figure();
-    shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
+    shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(FigureFactory::build(figure));
 
     build(uid(grid), grid.size(), spec, storage, [&grid](std::vector<KDTree::Value>& values) {
         const auto xyz = grid.to_xyz();

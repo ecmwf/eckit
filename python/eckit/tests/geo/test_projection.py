@@ -11,6 +11,7 @@ except ImportError:  # numpy is optional
     np = None
 
 LL = ("longitude", "latitude")
+LLH = ("longitude", "latitude", "height")
 XY = ("x", "y")
 XYZ = ("x", "y", "z")
 
@@ -45,6 +46,7 @@ def check_point_coordinates(projection, source, target):
         (dict(type="eqc"), "eqc", LL, XY),
         (dict(type="plate-carree", lat_ts=60.0), "eqc", LL, XY),
         (dict(type="ll-to-xyz", R=1.0), "ll-to-xyz", LL, XYZ),
+        (dict(type="llh-to-xyz", R=1.0), "llh-to-xyz", LLH, XYZ),
     ],
 )
 def test_projection_point_coordinates(spec, type_, source, target):
@@ -328,3 +330,34 @@ def test_projection_identity(spec):
     assert projection.spec == {}
     assert not projection.identity
     assert not projection.reverse
+
+
+def test_projection_llh_to_xyz():
+    # height along the normal, scaled
+    llh = Projection(type="llh-to-xyz", R=1.0, height_scale_factor=25.0)
+    assert llh.spec == dict(type="llh-to-xyz", figure=dict(r=1), height_scale_factor=25)
+
+    assert llh.fwd(0.0, 0.0, 0.1) == pytest.approx((3.5, 0.0, 0.0))
+    assert llh.inv(3.5, 0.0, 0.0) == pytest.approx((0.0, 0.0, 0.1))
+    assert llh.fwd(longitude=90.0, latitude=0.0, height=0.0) == pytest.approx((0.0, 1.0, 0.0), abs=EPS_XY)
+
+    # at height 0, as ll-to-xyz
+    ll = Projection(type="ll-to-xyz", a=6378137.0, b=6356752.314245)
+    llh = Projection(type="llh-to-xyz", a=6378137.0, b=6356752.314245)
+    assert llh.fwd(8.5, 47.4, 0.0) == pytest.approx(ll.fwd(8.5, 47.4), abs=EPS_XY)
+
+    with pytest.raises(Exception):
+        Projection(type="llh-to-xyz", R=1.0, height_scale_factor=-1.0)
+
+
+@pytest.mark.skipif(np is None, reason="numpy not available")
+def test_projection_llh_to_xyz_numpy():
+    llh = Projection(type="llh-to-xyz", R=1.0, height_scale_factor=2.0)
+    lon = np.array([0.0, 90.0, 0.0])
+    lat = np.array([0.0, 0.0, 90.0])
+    height = np.array([0.5, 0.25, 1.0])
+
+    x, y, z = llh.fwd(lon, lat, height)
+    assert x == pytest.approx([2.0, 0.0, 0.0], abs=EPS_XY)
+    assert y == pytest.approx([0.0, 1.5, 0.0], abs=EPS_XY)
+    assert z == pytest.approx([0.0, 0.0, 3.0], abs=EPS_XY)

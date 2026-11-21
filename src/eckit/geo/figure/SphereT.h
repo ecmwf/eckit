@@ -6,6 +6,7 @@
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/figure/Sphere.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 
 
 namespace eckit::geo::figure {
@@ -50,14 +51,16 @@ public:
         return Sphere::distance(DATUM::radius, A, B);
     }
 
-    /// Convert spherical to Cartesian coordinates
-    inline static PointXYZ _convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
-        return Sphere::convertSphericalToCartesian(DATUM::radius, P, height);
+    // -- Deprecated
+
+    [[deprecated("use projection::ToFromXYZ::to_xyz")]] inline static PointXYZ _convertSphericalToCartesian(
+        const PointLonLat& P, double height = 0.) {
+        return projection::ToFromXYZ::to_xyz(DATUM::radius, P, height);
     }
 
-    /// Convert Cartesian to spherical coordinates
-    inline static PointLonLat _convertCartesianToSpherical(const PointXYZ& P) {
-        return Sphere::convertCartesianToSpherical(DATUM::radius, P);
+    [[deprecated("use projection::ToFromXYZ::to_lonlat")]] inline static PointLonLat _convertCartesianToSpherical(
+        const PointXYZ& P) {
+        return projection::ToFromXYZ::to_lonlat(P);
     }
 };
 

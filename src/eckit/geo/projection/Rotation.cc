@@ -7,7 +7,7 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -104,8 +104,7 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
         explicit RotationMatrix(const M& R) : R_(R) {}
         using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override {
-            return figure::UnitSphere::_convertCartesianToSpherical(
-                R_ * figure::UnitSphere::_convertSphericalToCartesian(p));
+            return ToFromXYZ::to_lonlat(R_ * ToFromXYZ::to_xyz(1., p));
         }
         std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
                                                     const std::vector<double>& lat) const override {
@@ -115,10 +114,9 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
             // spherical to Cartesian (unit sphere), rotation, Cartesian to spherical
             std::vector<std::vector<double>> out{std::vector<double>(n), std::vector<double>(n)};
             for (size_t i = 0; i < n; ++i) {
-                const auto q = figure::UnitSphere::_convertCartesianToSpherical(
-                    R_ * figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]}));
-                out[0][i] = q.lon();
-                out[1][i] = q.lat();
+                const auto q = ToFromXYZ::to_lonlat(R_ * ToFromXYZ::to_xyz(1., PointLonLat{lon[i], lat[i]}));
+                out[0][i]    = q.lon();
+                out[1][i]    = q.lat();
             }
             return out;
         }

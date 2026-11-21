@@ -97,6 +97,9 @@ cdef extern from * namespace "eckit::geo::python":
                 else if constexpr (std::is_same_v<P, PointLonLatR>) {
                     return {q.lonr(), q.latr()};
                 }
+                else if constexpr (std::is_same_v<P, PointLonLatH>) {
+                    return {q.lon(), q.lat(), q.height()};
+                }
                 else {
                     throw exception::GridError("Grid: invalid point", Here());
                 }

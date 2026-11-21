@@ -31,6 +31,7 @@ namespace eckit::geo {
  *
  * @details Points are geocentric (X, Y, Z): grid points as Grid::to_xyz, and queries either (X, Y, Z) or (lon, lat) on
  * the same figure. Distances are chord lengths (metres, on the Earth). Results are by increasing distance, then index.
+ * Queries can run concurrently.
  *
  * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius, knn_or_same_radius), search-k,
  * search-radius, search-tolerance (metres, default 1).

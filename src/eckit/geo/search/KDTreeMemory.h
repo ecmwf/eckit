@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "eckit/container/KDMemory.h"
 #include "eckit/container/KDTree.h"
 #include "eckit/geo/search/KDTree.h"
 
@@ -17,7 +18,19 @@ public:
 
     // -- Types
 
-    using Container = eckit::KDTreeMemory<Traits>;
+    struct Alloc : NoStatistics<KDMemory> {
+        // as KDMemory::deleteNode, recursing with this type (of the nodes' allocator, see SPNode::left)
+        template <class Node>
+        void deleteNode(Ptr p, const Node* n) {
+            if (auto* node = static_cast<Node*>(p); node != nullptr) {
+                deleteNode(node->left(*this), n);
+                deleteNode(node->right(*this), n);
+                delete node;
+            }
+        }
+    };
+
+    using Container = KDTreeX<TT<Traits, Alloc>>;
 
     // -- Constructors
 
@@ -31,12 +44,9 @@ public:
 
     bool build(const Fill&, bool balanced = true) override;
 
-    Neighbour nearest_neighbour(const Point&) override;
-    Neighbours k_nearest_neighbours(const Point&, size_t k) override;
-    Neighbours find_in_sphere(const Point&, double radius) override;
-
-    void stats_print(std::ostream&, bool pretty) const override;
-    void stats_reset() override;
+    Neighbour nearest_neighbour(const Point&) const override;
+    Neighbours k_nearest_neighbours(const Point&, size_t k) const override;
+    Neighbours find_in_sphere(const Point&, double radius) const override;
 
     MemoryUsage footprint() const override { return {count_ * sizeof(Container::Node), 0}; }
 
@@ -44,7 +54,10 @@ private:
 
     // -- Members
 
-    Container tree_;
+    Alloc alloc_;
+
+    // queries don't modify it once built (no statistics), but aren't const (eckit::SPTree)
+    mutable Container tree_{alloc_};
     size_t count_ = 0;
 
     // -- Overridden methods

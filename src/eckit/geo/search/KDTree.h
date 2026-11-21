@@ -48,9 +48,24 @@ struct Neighbour {
 using Neighbours = std::vector<Neighbour>;
 
 
+// allocator (e.g. eckit::KDMemory) without eckit::StatCollector, whose counters queries would write concurrently
+template <class Alloc>
+struct NoStatistics : Alloc {
+    using Alloc::Alloc;
+
+    void statsCall() {}
+    void statsVisitNode() {}
+    void statsDepth(size_t) {}
+    void statsNewCandidateOK() {}
+    void statsNewCandidateMiss() {}
+    void statsCrossOver() {}
+};
+
+
 /**
  * @brief k-d tree of any storage (process memory, file, shared memory)
- * @details Built once (see build), then queried; queries update statistics, so they need external synchronisation.
+ * @details Built once (see build), then queried; queries don't modify the k-d tree (no statistics are collected, see
+ * NoStatistics), so they can run concurrently.
  */
 class KDTree {
 public:
@@ -86,12 +101,9 @@ public:
     /// Build balanced (reordering values) or by insertion, unless already built (e.g. cached); @return if built
     virtual bool build(const Fill&, bool balanced = true) = 0;
 
-    virtual Neighbour nearest_neighbour(const Point&)               = 0;
-    virtual Neighbours k_nearest_neighbours(const Point&, size_t k) = 0;
-    virtual Neighbours find_in_sphere(const Point&, double radius)  = 0;
-
-    virtual void stats_print(std::ostream&, bool pretty) const = 0;
-    virtual void stats_reset()                                 = 0;
+    virtual Neighbour nearest_neighbour(const Point&) const               = 0;
+    virtual Neighbours k_nearest_neighbours(const Point&, size_t k) const = 0;
+    virtual Neighbours find_in_sphere(const Point&, double radius) const  = 0;
 
     virtual MemoryUsage footprint() const = 0;
 

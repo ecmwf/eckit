@@ -7,6 +7,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -264,6 +265,36 @@ CASE("Search: search(points), as search(point) for each") {
     }
 
     EXPECT(search.search(std::vector<Point>{}).empty());
+}
+
+
+CASE("Search: concurrent queries, sharing a k-d tree") {
+    const Search search(random_points_on_unit_sphere(5000, 3), spec::Custom{{{"R", 1.}}});
+    const auto queries = random_points_on_unit_sphere(200, 4);
+
+    std::vector<Search::Neighbours> expected;
+    for (const auto& q : queries) {
+        expected.emplace_back(search.search_knn(q, 5));
+    }
+
+    std::vector<std::vector<Search::Neighbours>> results(8);
+    std::vector<std::thread> threads;
+    for (auto& result : results) {
+        threads.emplace_back([&search, &queries, &result]() {
+            const Search nn(search, spec::Custom{{{"search", "knn"}, {"search-k", 5}}});
+            for (const auto& q : queries) {
+                result.emplace_back(nn.search(q));
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    for (const auto& result : results) {
+        EXPECT(result == expected);
+    }
 }
 
 

@@ -49,6 +49,7 @@ foreach(_test
         grid_irregular_ll
         grid_reduced_gg
         grid_space_view
+        grid_unstructured_llh
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll

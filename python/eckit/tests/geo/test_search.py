@@ -14,7 +14,7 @@ def test_nearest_grid_point():
     grid = Grid(grid=[1, 1])
     lat, lon = grid.to_latlons()
 
-    index, distance = grid.search().search_nn((-0.2, 51.6))
+    index, distance = grid.search().search_nn((-0.2, 51.6), distance=True)
 
     assert (lon[index], lat[index]) == (0, 52)
     assert distance < 50e3
@@ -25,9 +25,9 @@ def test_inverse_distance_weighting():
     lat, _ = grid.to_latlons()
     field = lat  # a field of latitudes
 
-    neighbours = grid.search().search_knn((10.3, 45.4), 4)
-    weights = [1 / distance for _, distance in neighbours]
-    value = sum(w * field[i] for (i, _), w in zip(neighbours, weights)) / sum(weights)
+    index, distance = grid.search().search_knn((10.3, 45.4), 4, distance=True)
+    weights = 1 / distance
+    value = sum(w * field[i] for i, w in zip(index, weights)) / sum(weights)
 
     assert 45 < value < 46
 
@@ -52,5 +52,5 @@ def test_projected_grid():
     grid = Grid(type="swisslv95", x=[2480000, 2840000, 20000], y=[1080000, 1300000, 20000])
 
     # Bern, the grid spacing is 20 km
-    _, distance = grid.search().search_nn((7.44, 46.95))
+    _, distance = grid.search().search_nn((7.44, 46.95), distance=True)
     assert distance < 15e3

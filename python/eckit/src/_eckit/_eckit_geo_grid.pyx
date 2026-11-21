@@ -87,6 +87,15 @@ cdef class Grid:
                 )
                 return
 
+            # (longitude, latitude, height) points
+            if set(spec) == {"longitudes", "latitudes", "heights"}:
+                self._grid = new eckit_geo_grid.UnstructuredLLH(
+                    _doubles(spec["longitudes"]),
+                    _doubles(spec["latitudes"]),
+                    _doubles(spec["heights"]),
+                )
+                return
+
             spec = _spec_str(spec)
 
         assert isinstance(spec, str)

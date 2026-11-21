@@ -84,6 +84,13 @@ const std::vector<std::string>& point_coordinates<PointLonLatR>() {
 }
 
 
+template <>
+const std::vector<std::string>& point_coordinates<PointLonLatH>() {
+    static const std::vector<std::string> names{"longitude", "latitude", "height"};
+    return names;
+}
+
+
 const std::vector<std::string>& point_coordinates(const Point& p) {
     if (std::holds_alternative<std::monostate>(p)) {
         throw BadValue("point_coordinates: invalid point (empty)", Here());

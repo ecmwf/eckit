@@ -21,6 +21,8 @@ list(APPEND eckit_geo_srcs
     Point.h
     PointLonLat.cc
     PointLonLat.h
+    PointLonLatH.cc
+    PointLonLatH.h
     PointLonLatR.cc
     PointLonLatR.h
     PointXY.cc

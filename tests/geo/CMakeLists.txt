@@ -66,6 +66,7 @@ foreach(_test
         point2
         point3
         pointlonlat
+        pointlonlath
         pointlonlatr
         projection
         projection_albers

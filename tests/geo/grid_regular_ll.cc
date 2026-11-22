@@ -762,7 +762,7 @@ CASE("alternating rows (or columns)") {
 
 
 CASE("single point, row or column") {
-    // the points as given, without increment in the direction of a single point
+    // the points as given, of the increment given (even in the direction of a single point)
     struct test_t {
         std::string spec;
         std::vector<size_t> shape;
@@ -774,17 +774,17 @@ CASE("single point, row or column") {
     for (const auto& test : std::vector<test_t>{
              {"{grid: [0.5, 0.5], area: [45, 10, 45, 10]}",
               {1, 1},
-              R"({"area":[45,10,45,10],"grid":[0,0]})",
+              R"({"area":[45,10,45,10],"grid":[0.5,0.5]})",
               {10., 45.},
               {10., 45.}},
              {"{grid: [0.5, 0.5], area: [45, 10, 45, 11]}",
               {1, 3},
-              R"({"area":[45,10,45,11],"grid":[0.5,0]})",
+              R"({"area":[45,10,45,11],"grid":[0.5,0.5]})",
               {10., 45.},
               {11., 45.}},
              {"{grid: [0.5, 0.5], area: [46, 10, 45, 10]}",
               {3, 1},
-              R"({"area":[46,10,45,10],"grid":[0,0.5]})",
+              R"({"area":[46,10,45,10],"grid":[0.5,0.5]})",
               {10., 46.},
               {10., 45.}},
              {"{grid: [0, 0], area: [45, 10, 45, 10]}",
@@ -818,7 +818,7 @@ CASE("single point, row or column") {
 
         EXPECT(grid->size() == 1);
         EXPECT(grid->spec_str() ==
-               R"({"area":[1,2,1,2],"grid":[0,0],"projection":{"south_pole":[10,-40],"type":"rotation"}})");
+               R"({"area":[1,2,1,2],"grid":[0.5,0.5],"projection":{"south_pole":[10,-40],"type":"rotation"}})");
 
         const projection::Rotation rotation(PointLonLat{10., -40.});
         const auto p = std::get<PointLonLat>(grid->to_points().front());

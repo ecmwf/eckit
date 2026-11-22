@@ -194,8 +194,8 @@ Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fr
         }
     }
 
-    // a single value (or none) has no increment
-    if (size_ <= 1) {
+    // no value has no increment, a single value keeps it (e.g. of a grid of a single row, as encoded)
+    if (size_ == 0) {
         inc_   = {};
         shift_ = {};
     }

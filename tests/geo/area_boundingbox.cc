@@ -43,7 +43,8 @@ CASE("AreaFactory::make_from_string") {
     std::unique_ptr<const Area> area2(
         geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
 
-    EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
+    // west as given
+    EXPECT(area2->spec_str() == R"({"area":[10,35641,0,35650]})");
 }
 
 

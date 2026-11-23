@@ -83,6 +83,21 @@ struct StatCollector {
 };
 
 //-----------------------------------------------------------------------------
+
+// allocator (e.g. KDMemory) not collecting statistics, so concurrent queries write no shared counters
+template <class Alloc>
+struct NoStatistics : Alloc {
+    using Alloc::Alloc;
+
+    void statsCall() {}
+    void statsVisitNode() {}
+    void statsDepth(size_t) {}
+    void statsNewCandidateOK() {}
+    void statsNewCandidateMiss() {}
+    void statsCrossOver() {}
+};
+
+//-----------------------------------------------------------------------------
 //
 }  // namespace eckit
 

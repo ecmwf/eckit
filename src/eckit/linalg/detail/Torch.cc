@@ -25,7 +25,8 @@ torch::Tensor Torch::tensor_transpose(const torch::Tensor& tensor) const {
 
 
 torch::Tensor Torch::tensor_to_host(const torch::Tensor& tensor) const {
-    return tensor.to(torch::DeviceType::CPU, torch::kFloat64).contiguous();  // reverse MPS float32 (if applicable)
+    // device first, then type: MPS has no float64, so converting both at once fails there
+    return tensor.to(torch::DeviceType::CPU).to(torch::kFloat64).contiguous();  // reverse MPS float32 (if applicable)
 }
 
 

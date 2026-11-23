@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <pwd.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -81,11 +82,11 @@ CASE("Roots: a list, expanded") {
     }
 
     SECTION("the user's home") {
-        const auto* home = ::getenv("HOME");
-        if (home != nullptr) {
-            Roots roots("~/x");
-            EXPECT(roots.paths()[0] == PathName(home) / "x");
-        }
+        // from the user database, not $HOME: they differ in containers (root, HOME=/github/home)
+        const auto* pw = ::getpwuid(::geteuid());
+        EXPECT(pw != nullptr);
+        Roots roots("~/x");
+        EXPECT(roots.paths()[0] == PathName(pw->pw_dir) / "x");
     }
 
     DiskCache::remove(a.dirName());

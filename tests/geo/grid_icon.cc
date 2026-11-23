@@ -56,6 +56,18 @@ CASE("spec") {
 }
 
 
+CASE("spec round trip") {
+    // by name, its name (not with its arrangement, as the grid isn't known by it), by uid too
+    for (const auto& spec : {"{grid: " + GRID + "}", "{uid: " + UID + "}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        EXPECT(grid->spec_str() == R"({"grid":")" + GRID + R"("})");
+
+        std::unique_ptr<const Grid> same(GridFactory::make_from_string(grid->spec_str()));
+        EXPECT(*grid == *same);
+    }
+}
+
+
 CASE("name") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
 

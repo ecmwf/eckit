@@ -53,11 +53,15 @@ CASE("canonical (global grids)") {
              {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},
              {"{grid: o96}", R"({"grid":"O96"})", 40320},
 
-             // rotated (also about the rotated pole)
+             // rotated (also about the rotated pole), as a projection or as given (rotation: [lat, lon])
              {"{grid: 10/10, projection: {type: rotation, south_pole: [30, -40]}}",
               R"({"grid":[10,10],"projection":{"south_pole":[30,-40],"type":"rotation"}})", 684},
              {"{grid: 10/10, projection: {type: rotation, south_pole: [30, -40], rotation_angle: 15}}",
               R"({"grid":[10,10],"projection":{"rotation_angle":15,"south_pole":[30,-40],"type":"rotation"}})", 684},
+             {"{grid: 10/10, rotation: [-40, 30], rotation_angle: -15}",
+              R"({"grid":[10,10],"projection":{"rotation_angle":-15,"south_pole":[30,-40],"type":"rotation"}})", 684},
+             {"{grid: o8, rotation: [-40, 30], rotation_angle: 15}",
+              R"({"grid":"O8","projection":{"rotation_angle":15,"south_pole":[30,-40],"type":"rotation"}})", 544},
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.gridspec));
 

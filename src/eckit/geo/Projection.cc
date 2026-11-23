@@ -477,7 +477,12 @@ Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
     else if (spec.has("rotation")) {
         std::vector<double> rotation;
         spec.get("rotation", rotation);
-        cfg->push_back(new spec::Custom{{"type", "rotation"}, {"rotation", rotation}});
+
+        auto* custom = new spec::Custom{{"type", "rotation"}, {"rotation", rotation}};
+        if (double angle = 0.; spec.get("rotation_angle", angle)) {
+            custom->set("rotation_angle", angle);
+        }
+        cfg->push_back(custom);
     }
 
     return cfg.release();

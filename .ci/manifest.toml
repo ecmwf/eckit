@@ -30,7 +30,9 @@ compiler-inputs = ["cxx-compiler"]
 [matrix.build.defaults]
 job-script = "./.ci/build.sh.j2"
 build-type = "RelWithDebInfo"
-runs-on = "arc-runner-very-large"
+# ARC runners off: GitHub-hosted until they are back.
+# runs-on = "arc-runner-very-large"
+runs-on = "ubuntu-latest"
 ctest-args = '-j "$(nproc)"'
 c-flags = "-fno-fast-math"
 cxx-flags = "-fno-fast-math"
@@ -54,47 +56,48 @@ options = "mpi"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13-openmpi:latest"
 platform = "ubuntu-24.04"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-15"
-c-compiler = "gcc-15"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu26.04-gcc15-gfortran15"
-platform = "ubuntu-26.04"
+# ARC runners off: legs on other platforms disabled until they are back.
+# [[matrix.build.include]]
+# cxx-compiler = "g++-15"
+# c-compiler = "gcc-15"
+# container = "eccr.ecmwf.int/public-ci-images/ubuntu26.04-gcc15-gfortran15"
+# platform = "ubuntu-26.04"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-8"
-c-compiler = "gcc-8"
-container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8"
-platform = "rocky-8"
+# [[matrix.build.include]]
+# cxx-compiler = "g++-8"
+# c-compiler = "gcc-8"
+# container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8"
+# platform = "rocky-8"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-11"
-c-compiler = "gcc-11"
-container = "eccr.ecmwf.int/public-ci-images/rocky9-gcc11-gfortran11"
-platform = "rocky-9"
+# [[matrix.build.include]]
+# cxx-compiler = "g++-11"
+# c-compiler = "gcc-11"
+# container = "eccr.ecmwf.int/public-ci-images/rocky9-gcc11-gfortran11"
+# platform = "rocky-9"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-14"
-c-compiler = "gcc-14"
-container = "eccr.ecmwf.int/public-ci-images/rocky10-gcc14-gfortran14"
-platform = "rocky-10"
+# [[matrix.build.include]]
+# cxx-compiler = "g++-14"
+# c-compiler = "gcc-14"
+# container = "eccr.ecmwf.int/public-ci-images/rocky10-gcc14-gfortran14"
+# platform = "rocky-10"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-10"
-c-compiler = "gcc-10"
-container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10"
-platform = "debian-11"
+# [[matrix.build.include]]
+# cxx-compiler = "g++-10"
+# c-compiler = "gcc-10"
+# container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10"
+# platform = "debian-11"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-12"
-c-compiler = "gcc-12"
-container = "eccr.ecmwf.int/public-ci-images/debian12-gcc12-gfortran12"
-platform = "debian-12"
+# [[matrix.build.include]]
+# cxx-compiler = "g++-12"
+# c-compiler = "gcc-12"
+# container = "eccr.ecmwf.int/public-ci-images/debian12-gcc12-gfortran12"
+# platform = "debian-12"
 
-[[matrix.build.include]]
-cxx-compiler = "g++-14"
-c-compiler = "gcc-14"
-container = "eccr.ecmwf.int/public-ci-images/debian13-gcc14-gfortran14"
-platform = "debian-13"
+# [[matrix.build.include]]
+# cxx-compiler = "g++-14"
+# c-compiler = "gcc-14"
+# container = "eccr.ecmwf.int/public-ci-images/debian13-gcc14-gfortran14"
+# platform = "debian-13"
 
 [matrix.build]
 triggers = ["upstream-change", "rebuild-request"]
@@ -208,7 +211,8 @@ publishes = false
 [matrix.rust.defaults]
 job-script = "./.ci/rust.sh.j2"
 build-type = "RelWithDebInfo"
-runs-on = "arc-runner-normal"
+# runs-on = "arc-runner-normal"
+runs-on = "ubuntu-latest"
 cxx-compiler = "g++-13"
 c-compiler = "gcc-13"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13-boost-qt6-rust1.90"
@@ -223,12 +227,14 @@ rust-compiler = "rust-1.90"
 compiler-inputs = ["cxx-compiler", "rust-compiler"]
 
 [matrix.rust-publish]
+ci = false
 packages = ["eckit-crates"]
 publishes = false
 
 [[matrix.rust-publish.include]]
 job-script = "./.ci/rust-publish.sh.j2"
-runs-on = "arc-runner-very-large"
+# runs-on = "arc-runner-very-large"
+runs-on = "ubuntu-latest"
 cxx-compiler = "g++-13"
 c-compiler = "gcc-13"
 rust-compiler = "rust-1.90"

@@ -203,8 +203,11 @@ private:
 };
 
 
+// The bounding box of the rectangle [min, max] of the projection's target (x, y); if x is periodic (period_x > 0, e.g.
+// longitudes), points of x outside of the rectangle by periods are in it
 [[nodiscard]] std::unique_ptr<BoundingBox> make_bounding_box(PointXY min, PointXY max, const Projection& projection,
-                                                             double precision_ll, double precision_xy) {
+                                                             double precision_ll, double precision_xy,
+                                                             double period_x = 0.) {
     using types::is_strictly_greater;
 
 
@@ -222,10 +225,16 @@ private:
 
     struct : public std::pair<PointXY, PointXY> {
         using pair::pair;
+        double period = 0.;
         bool contains(const PointXY& P) const {
-            return (first.X() < P.X() && P.X() < second.X()) && (first.Y() < P.Y() && P.Y() < second.Y());
+            auto x = P.X();
+            if (period > 0.) {
+                x = first.X() + std::fmod(std::fmod(x - first.X(), period) + period, period);
+            }
+            return (first.X() < x && x < second.X()) && (first.Y() < P.Y() && P.Y() < second.Y());
         }
     } rect(min, max);
+    rect.period = period_x;
 
     const std::pair<PointXY, PointXY> segments[] = {{{min.X(), max.Y()}, {max.X(), max.Y()}},
                                                     {{max.X(), max.Y()}, {max.X(), min.Y()}},
@@ -449,7 +458,9 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
 
         projection::Composer composer{ProjectionFactory::build(copy), new projection::EquidistantCylindrical};
 
-        after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
+        // (x, y) are longitudes and latitudes, so x is periodic
+        after = make_bounding_box(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer, PRECISION_LL,
+                                  PRECISION_XY, PointLonLat::FULL_ANGLE);
     }
 
     if (after->periodic()) {

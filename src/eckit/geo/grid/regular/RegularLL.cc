@@ -142,7 +142,9 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
         return calculate_bbox_xy();
     }
 
-    return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()}, p)
+    // the longitudes around the globe (periodic) to the full angle, not to the last longitude
+    const auto east = x_.periodic() ? x_.min() + PointLonLat::FULL_ANGLE : x_.max();
+    return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{east, y_.max()}, p)
         .release();
 }
 

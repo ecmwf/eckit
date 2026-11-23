@@ -52,6 +52,12 @@ CASE("canonical (global grids)") {
              {"{grid: hr2}", R"({"grid":"H2"})", 48},
              {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},
              {"{grid: o96}", R"({"grid":"O96"})", 40320},
+
+             // rotated (also about the rotated pole)
+             {"{grid: 10/10, projection: {type: rotation, south_pole: [30, -40]}}",
+              R"({"grid":[10,10],"projection":{"south_pole":[30,-40],"type":"rotation"}})", 684},
+             {"{grid: 10/10, projection: {type: rotation, south_pole: [30, -40], rotation_angle: 15}}",
+              R"({"grid":[10,10],"projection":{"rotation_angle":15,"south_pole":[30,-40],"type":"rotation"}})", 684},
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.gridspec));
 
@@ -96,6 +102,10 @@ CASE("spec round trip (same points)") {
     std::vector<std::string> gridspecs{
         "{grid: [2, 2], area: [60, -10, 30, 40]}",
         R"({"area":[3.4,-6.8,-4.4,4.8],"grid":[0.2,0.2],"order":"i+j+","projection":{"south_pole":[10,-43],"type":"rotation"}})",
+        R"({"grid":[10,10],"projection":{"rotation_angle":15,"south_pole":[30,-40],"type":"rotation"}})",
+        R"({"area":[10,0,-10,20],"grid":[2,2],"projection":{"rotation_angle":-15,"south_pole":[30,-40],"type":"rotation"}})",
+        "{grid: F16, projection: {type: rotation, south_pole: [30, -40], rotation_angle: 15}}",
+        "{grid: O16, projection: {type: rotation, south_pole: [30, -40], rotation_angle: 15}}",
         "{grid: F16}",
         "{grid: F16, area: [60, -10, 30, 40]}",
         "{grid: O16}",

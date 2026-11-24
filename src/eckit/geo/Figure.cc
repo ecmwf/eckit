@@ -5,23 +5,23 @@
 #include "eckit/geo/Figure.h"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <map>
 #include <memory>
+#include <sstream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/eckit_geo_config.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/figure/Sun.h"
+#include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
-
-#if eckit_HAVE_PROJ
-#include "eckit/geo/projection/PROJ.h"
-#endif
 
 
 namespace eckit::geo {
@@ -66,12 +66,18 @@ double Figure::b() const {
 
 
 double Figure::area() const {
-    NOTIMP;
+    return 2. * M_PI * a() * a() * authalic().qp();
 }
 
 
-double Figure::area(const area::BoundingBox&) const {
-    NOTIMP;
+double Figure::area(const area::BoundingBox& bbox) const {
+    // between parallels, of the authalic latitude (q), Snyder (3-12)
+    const auto auth = authalic();
+    const auto dlam = bbox.periodic() ? 2. * M_PI : util::DEGREE_TO_RADIAN * (bbox.east() - bbox.west());
+    const auto dq   = auth.q(std::sin(util::DEGREE_TO_RADIAN * bbox.north())) -
+                    auth.q(std::sin(util::DEGREE_TO_RADIAN * bbox.south()));
+
+    return 0.5 * a() * a() * dlam * dq;
 }
 
 
@@ -91,12 +97,17 @@ std::string Figure::spec_str() const {
 
 
 std::string Figure::proj_str() const {
-#if eckit_HAVE_PROJ
-    std::unique_ptr<const spec::Custom> custom(spec());
-    return projection::PROJ::proj_str(*custom);
-#else
-    NOTIMP;
-#endif
+    auto to_str = [](double value) {
+        std::ostringstream str;
+        str.precision(std::numeric_limits<double>::digits10);
+        str << value;
+        return str.str();
+    };
+
+    return *this == figure::EARTH_WGS84   ? "+ellps=WGS84"
+           : *this == figure::EARTH_GRS80 ? "+ellps=GRS80"
+           : spherical()                  ? "+R=" + to_str(R())
+                                          : "+a=" + to_str(a()) + " +b=" + to_str(b());
 }
 
 
@@ -112,6 +123,77 @@ double Figure::eccentricity() const {
 
 double Figure::flattening() const {
     return figure::OblateSpheroid::flattening(a(), b());
+}
+
+
+double Figure::Conformal::m(double phi) const {
+    const auto s = e_ * std::sin(phi);
+    return std::cos(phi) / std::sqrt(1. - s * s);
+}
+
+
+double Figure::Conformal::t(double phi) const {
+    const auto s = e_ * std::sin(phi);
+    return std::tan(M_PI_4 - phi / 2.) / std::pow((1. - s) / (1. + s), e_ / 2.);
+}
+
+
+double Figure::Conformal::phi(double t) const {
+    constexpr int max_iter = 15;
+    constexpr double eps   = 1e-12;
+
+    auto phi = M_PI_2 - 2. * std::atan(t);
+    for (int i = 0; i < max_iter; ++i) {
+        const auto s    = e_ * std::sin(phi);
+        const auto next = M_PI_2 - 2. * std::atan(t * std::pow((1. - s) / (1. + s), e_ / 2.));
+        if (std::abs(next - phi) < eps) {
+            return next;
+        }
+        phi = next;
+    }
+
+    throw exception::ProjectionError("Conformal: latitude calculation failed to converge", Here());
+}
+
+
+Figure::Authalic::Authalic(double e) : e_(e), qp_(q(1.)) {}
+
+
+double Figure::Authalic::q(double sinphi) const {
+    if (types::is_approximately_equal(e_, 0.)) {
+        return 2. * sinphi;
+    }
+
+    const auto es = e_ * sinphi;
+    return (1. - e_ * e_) * (sinphi / (1. - es * es) - std::log((1. - es) / (1. + es)) / (2. * e_));
+}
+
+
+double Figure::Authalic::phi(double q) const {
+    auto phi = std::asin(std::max(-1., std::min(1., q / 2.)));
+    if (types::is_approximately_equal(e_, 0.)) {
+        return phi;
+    }
+
+    if (std::abs(std::abs(q) - qp_) < 1e-12) {
+        return std::copysign(M_PI_2, q);
+    }
+
+    constexpr int max_iter = 15;
+    constexpr double eps   = 1e-12;
+
+    for (int i = 0; i < max_iter; ++i) {
+        const auto s    = std::sin(phi);
+        const auto es   = e_ * s;
+        const auto dphi = (1. - es * es) * (1. - es * es) / (2. * std::cos(phi)) *
+                          (q / (1. - e_ * e_) - s / (1. - es * es) + std::log((1. - es) / (1. + es)) / (2. * e_));
+        phi += dphi;
+        if (std::abs(dphi) < eps) {
+            return phi;
+        }
+    }
+
+    throw exception::ProjectionError("Authalic: latitude calculation failed to converge", Here());
 }
 
 
@@ -133,9 +215,24 @@ void Figure::fill_spec(spec::Custom& custom) const {
 }
 
 
+void Figure::fill_projection_spec(spec::Custom& custom) const {
+    if (!is_default()) {
+        fill_spec(custom);
+    }
+}
+
+
 Figure* FigureFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Figure::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return build(*spec);
+}
+
+
+const std::set<std::string>& FigureFactory::keys() {
+    static const std::set<std::string> KEYS{
+        "figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis",
+    };
+    return KEYS;
 }
 
 
@@ -167,7 +264,7 @@ Figure* FigureFactory::build(const Figure::Spec& spec) {
                                                    : new figure::OblateSpheroid(a, b);
     }
 
-    if (double R = 0.; spec.get("R", R) || spec.get("radius", R)) {
+    if (double R = 0.; spec.get("R", R) || spec.get("r", R) || spec.get("radius", R)) {
         return new figure::Sphere(R);
     }
 

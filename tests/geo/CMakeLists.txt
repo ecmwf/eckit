@@ -17,6 +17,7 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
+        download
         figure
         figure_earth
         figure_sun
@@ -28,6 +29,7 @@ foreach(_test
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
+        grid_crop
         grid_regular_xy
         grid_reorder
         grid_to_points
@@ -42,11 +44,17 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
+        projection_laea
+        projection_lcc
         projection_ll_to_xyz
+        projection_mercator
         projection_plate-caree
         projection_rotation
+        projection_space_view
+        projection_stere
         range
         search
+        search_kdtree
         sh
         util)
     eckit_geo_add_test(${_test})
@@ -64,7 +72,6 @@ foreach(_test
         grid_regular_xy_swisslv03
         grid_regular_xy_swisslv95
         projection_albers
-        projection_mercator
         projection_proj)
     eckit_geo_add_test(${_test} CONDITION eckit_HAVE_PROJ)
 endforeach()

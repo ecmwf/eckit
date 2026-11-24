@@ -10,8 +10,23 @@
 
 use bindman::track_cpp_api;
 
-// Auto-generated exception Error enum + From<cxx::Exception> impl
-include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
+// Auto-generated exception Error enum + From<cxx::Exception> impl.
+//
+// Wrapped in a private module purely so the lint allow has something to attach
+// to — attributes on `include!` are ignored. `Error` is re-exported at the
+// crate root, so `eckit_sys::Error` and its variants, `try_from_cxx` and trait
+// impls are all reachable exactly as before.
+#[allow(clippy::too_many_lines)]
+mod exceptions {
+    include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
+}
+
+pub use exceptions::Error;
+
+// `eckit::geo` lives in its own cxx bridge: cxx does not support `#[cfg]` on
+// individual bridge items, so an optional area needs a separate module.
+#[cfg(feature = "eckit-geo")]
+pub mod geo;
 
 #[track_cpp_api(
     ("eckit/config/LocalConfiguration.h", class = "LocalConfiguration"),
@@ -34,6 +49,7 @@ mod ffi {
 
     unsafe extern "C++" {
         include!("EckitBridge.h");
+        include!("eckit_exceptions.h");
 
         // ==================== Runtime ====================
 
@@ -143,6 +159,11 @@ mod ffi {
         /// `std::io::Read` source wrapped in a [`ReaderBox`].
         #[Self = "DataHandleWrapper"]
         fn from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
+
+        /// Create a DataHandle that forwards `write()` calls to a Rust
+        /// `std::io::Write` sink wrapped in a [`WriterBox`].
+        #[Self = "DataHandleWrapper"]
+        fn from_writer(writer: Box<WriterBox>) -> Result<UniquePtr<DataHandleWrapper>>;
 
         // ==================== Message + Reader ====================
 
@@ -256,6 +277,26 @@ mod ffi {
         ///
         /// Returns the new absolute position, or `-1` on error.
         fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64;
+
+        /// Opaque Rust box holding a `dyn Write + Send` sink.
+        ///
+        /// Constructed via [`make_writer_box`]; the C++ `RustWriterHandle`
+        /// holds it by `rust::Box<WriterBox>` and forwards `write()` and
+        /// `close()` calls through [`invoke_writer_write`] /
+        /// [`invoke_writer_flush`].
+        type WriterBox;
+
+        /// Called by the C++ `RustWriterHandle::write` shim to forward the
+        /// next chunk to the wrapped Rust `Write` sink.
+        ///
+        /// Returns the chunk length on success, or `-1` on error.
+        fn invoke_writer_write(writer: &mut WriterBox, buf: &[u8]) -> i64;
+
+        /// Called by the C++ `RustWriterHandle::close` shim to flush the
+        /// wrapped Rust sink.
+        ///
+        /// Returns `0` on success, or `-1` on error.
+        fn invoke_writer_flush(writer: &mut WriterBox) -> i64;
     }
 }
 
@@ -313,6 +354,42 @@ fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64 {
         .0
         .seek(std::io::SeekFrom::Start(off_u64))
         .map_or(-1, |n| i64::try_from(n).unwrap_or(i64::MAX))
+}
+
+// ==================== Write → DataHandle adapter ====================
+
+/// Opaque wrapper holding a `Box<dyn Write + Send>`.
+///
+/// The C++ `RustWriterHandle` (declared in `DataHandleWrapper.h` as `struct
+/// WriterBox`) carries this by `rust::Box<WriterBox>` and forwards each C++
+/// `write(const void*, long)` call via `invoke_writer_write`.
+pub struct WriterBox(Box<dyn std::io::Write + Send>);
+
+/// Wrap a Rust `Write` sink for `ffi::from_writer`.
+pub fn make_writer_box<W>(writer: W) -> Box<WriterBox>
+where
+    W: std::io::Write + Send + 'static,
+{
+    Box::new(WriterBox(Box::new(writer)))
+}
+
+/// Called from C++ `RustWriterHandle::write` to forward the next chunk to
+/// the wrapped Rust sink. The whole chunk is consumed. Returns the chunk
+/// length, or `-1` on error — including a panicking sink, since the C++
+/// caller treats any failed write as fatal to the transfer (partial
+/// progress is never retried, the resulting exception aborts it).
+fn invoke_writer_write(writer: &mut WriterBox, buf: &[u8]) -> i64 {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| writer.0.write_all(buf)))
+        .map_or(-1, |result| {
+            result.map_or(-1, |()| i64::try_from(buf.len()).unwrap_or(i64::MAX))
+        })
+}
+
+/// Called from C++ `RustWriterHandle::close` to flush the wrapped sink.
+/// Returns `0` on success, or `-1` on error, including a panicking sink.
+fn invoke_writer_flush(writer: &mut WriterBox) -> i64 {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| writer.0.flush()))
+        .map_or(-1, |result| result.map_or(-1, |()| 0))
 }
 
 /// Called from C++ `RustLogTarget::write()`; routes to Rust `log` crate.

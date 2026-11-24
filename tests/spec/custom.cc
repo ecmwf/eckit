@@ -148,6 +148,16 @@ b:
 }
 
 
+CASE("Custom::make_from_value, booleans") {
+    std::unique_ptr<Custom> custom(
+        Custom::make_from_value(YAMLParser::decodeString("{a: true, b: false, c: [true, false]}")));
+
+    EXPECT(custom->str() == R"({"a":true,"b":false,"c":[true,false]})");
+    EXPECT(custom->get_bool("a"));
+    EXPECT_NOT(custom->get_bool("b"));
+}
+
+
 CASE("Custom::operator==") {
     Custom a({{"foo", "bar"}, {"boo", "far"}});
     Custom b({{"bOo", "far"}, {"Foo", "bar"}});
@@ -187,24 +197,24 @@ CASE("Spec <- Custom") {
 
         int a = 0;
         EXPECT(spec->get("a", a));
-        EXPECT_EQUAL(a, -123);
+        EXPECT(a == -123);
 
         std::string b;
         EXPECT(spec->get("b", b));
-        EXPECT_EQUAL(b, "B");
+        EXPECT(b == "B");
 
         size_t c = 0;
         EXPECT(spec->get("c", c));
-        EXPECT_EQUAL(c, 123UL);
+        EXPECT(c == 123UL);
 
         std::string b2;
         EXPECT(spec->get("B", b2));
-        EXPECT_EQUAL(b2, b);
+        EXPECT(b2 == b);
 
         int d = 0;
         dynamic_cast<Custom*>(spec.get())->set("B", 321);
         EXPECT(spec->get("b", d));
-        EXPECT_EQUAL(d, 321);
+        EXPECT(d == 321);
     }
 
 
@@ -372,7 +382,7 @@ CASE("Spec <- Custom") {
 
         const std::string a_str = a->str();
         const std::string a_ref = R"({"a":"a","b":1,"c":"c"})";
-        EXPECT_EQUAL(a_str, a_ref);
+        EXPECT(a_str == a_ref);
 
         // test types
         std::unique_ptr<Spec> b(new Custom({{"string", "string"},
@@ -395,7 +405,7 @@ CASE("Spec <- Custom") {
         const std::string b_str = b->str();
         const std::string b_ref =
             R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<bool>":[true,false],"vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
-        EXPECT_EQUAL(b_str, b_ref);
+        EXPECT(b_str == b_ref);
     }
 }
 

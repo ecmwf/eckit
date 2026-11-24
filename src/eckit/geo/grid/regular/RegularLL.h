@@ -61,14 +61,18 @@ public:
     /// Bounding box in the grid's own (possibly rotated) frame
     [[nodiscard]] BoundingBox* calculate_bbox_xy() const;
 
-    [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-
     const Range& lon() const override { return x_; };
     const Range& lat() const override { return y_; };
 
     //-- Class methods
 
     [[nodiscard]] static Reference reference_default();
+
+protected:
+
+    // -- Overridden methods
+
+    [[nodiscard]] Regular* make_regular_cropped(const BoundingBox&) const override;
 
 private:
 

@@ -9,7 +9,6 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/ORCA.h"
-#include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
@@ -45,7 +44,6 @@ CASE("spec") {
     grid::ORCA grid3(UID);
 
     const std::string expected_spec_str = R"({"grid":")" + GRID + R"("})";
-    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID);
     EXPECT(grid3.calculate_uid() == UID);
@@ -75,6 +73,14 @@ CASE("type") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
 
     EXPECT(grid->type() == "ORCA");
+
+    std::unique_ptr<const Grid> from_gridspec(GridFactory::make_from_string("{grid: eORCA1_T}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "ORCA");
+    EXPECT(from_gridspec->spec_str() == R"({"grid":"eORCA1_T"})");
+    EXPECT(from_gridspec->size() == 120184);
+    EXPECT(*from_spec == *from_gridspec);
 }
 
 

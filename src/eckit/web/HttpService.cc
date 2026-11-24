@@ -15,7 +15,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpService::HttpService(int port, bool visible) : net::NetService(port, visible) {}
+HttpService::HttpService(int port, bool visible) : net::NetService(port, visible), preferProcess_(false) {}
+
+HttpService::HttpService(int port, bool visible, ConcurrencyLimiter& limiter, bool preferProcess) :
+    net::NetService(port, limiter, visible), preferProcess_(preferProcess) {}
 
 HttpService::~HttpService() {}
 
@@ -35,8 +38,13 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
 
     HttpStream http;
 
+    // May wait a long time: clients can open connections that they only use later, or never
+    Log::status() << "Waiting for request from " << protocol_.remoteHost() << std::endl;
+
     Url url(in);
     Monitor::instance().name(url.method());
+
+    Log::status() << "Handling " << url.method() << " " << url << std::endl;
 
     try {
         HttpResource::dispatch(s, in, http, url);
@@ -49,10 +57,28 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
     }
 
 
+    Log::status() << "Sending response to " << url.method() << " " << url << std::endl;
+
     InstantTCPSocketHandle stream(protocol_);
     http.write(out, url, stream);
 
+    Log::status() << "Response sent to " << url.method() << " " << url << std::endl;
+
     Monitor::instance().show(false);
+}
+
+void HttpUser::refuse(eckit::Stream&, std::istream& in, std::ostream& out, const std::string& reason) {
+    HttpStream http;
+
+    // Consume the request before answering
+    Url url(in);
+
+    url.status(HttpError::TOO_MANY_REQUESTS);
+    url.type("text/plain");
+    http << reason;
+
+    InstantTCPSocketHandle stream(protocol_);
+    http.write(out, url, stream);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

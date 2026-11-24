@@ -98,6 +98,14 @@ void HttpHeader::print(std::ostream& s) const {
                 s << "Internal Server Error";
                 break;
 
+            case HttpError::TOO_MANY_REQUESTS:
+                s << "Too Many Requests";
+                break;
+
+            case HttpError::SERVICE_UNAVAILABLE:
+                s << "Service Unavailable";
+                break;
+
             case HttpError::BAD_REQUEST:
                 s << "Bad Request";
                 break;

@@ -11,6 +11,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
@@ -103,6 +104,11 @@ const std::string& ReducedGaussian::type() const {
 
 
 Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
+    // of the same type by a bounding box (unprojected), otherwise unstructured
+    if (!projection().is_default() || dynamic_cast<const area::BoundingBox*>(&crop) == nullptr) {
+        return make_grid_cropped_unstructured_ll(crop);
+    }
+
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
         return new ReducedGaussian(pl_, BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()});
     }

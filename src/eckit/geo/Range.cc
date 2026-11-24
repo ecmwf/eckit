@@ -30,7 +30,7 @@ Fraction Range::increment() const {
 
 
 bool Range::periodic() const {
-    throw exception::GridError("Range::periodic not implemented", Here());
+    return false;
 }
 
 

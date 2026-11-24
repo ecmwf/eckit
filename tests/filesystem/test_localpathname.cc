@@ -2,21 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
+#include <cstdlib>
 #include <memory>
 #include <string>
 
-#include "eckit/types/Types.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/filesystem/NFSMountInfo.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpDir.h"
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/utils/Hash.h"
-
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
+#include "eckit/utils/Hash.h"
+#if defined(__linux__)
+#include "eckit/filesystem/detail/FileSystemType.h"
+#endif
+
 
 using namespace std;
 using namespace eckit;
@@ -431,6 +437,81 @@ CASE("Test PathName hashing") {
     // Check that the hash matches
 
     EXPECT(h->digest() == file.hash(hash_method));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_localpathname_filesystemtype") {
+    auto cwd = LocalPathName::cwd();
+
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
+    const auto type = cwd.fileSystemType();
+
+    // unrecognised type yields "unknown(0x...)" and reject empty or malformed types
+    EXPECT(!type.empty());
+    const bool recognised = type.substr(0, 8) != "unknown(";
+    EXPECT(recognised || type.back() == ')');
+    if (!recognised) {
+        Log::warning() << "fileSystemType() unrecognised on build tree: " << type << std::endl;
+    }
+
+    EXPECT(PathName(cwd).fileSystemType() == type);
+
+    // a path that cannot be interrogated is an error, not a silent answer.
+    EXPECT_THROWS_AS(LocalPathName("/does/not/exist/at/all").fileSystemType(), FailedSystemCall);
+#else
+    EXPECT_THROWS_AS(cwd.fileSystemType(), NotImplemented);
+#endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#if defined(__linux__)
+CASE("test_localpathname_filesystemtype_magic_mapping") {
+    EXPECT(std::string(filesystem::detail::file_system_type_name(0x6969)) == "nfs");
+    EXPECT(filesystem::detail::file_system_type_name(0xFFFFFFFF) == nullptr);
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_localpathname_filesystemtype_on_real_nfs") {
+    const char* nfs_mount = ::getenv("ECKIT_TEST_NFS_MOUNT");
+    if (nfs_mount == nullptr || nfs_mount[0] == '\0') {
+        Log::info() << "NFS mount (ECKIT_TEST_NFS_MOUNT) not available -- skipping NFS-backed test" << std::endl;
+        return;
+    }
+
+    const LocalPathName mount(nfs_mount);
+    EXPECT(mount.exists());
+    EXPECT_EQUAL(mount.fileSystemType(), std::string("nfs"));
+    EXPECT_EQUAL(PathName(mount).fileSystemType(), std::string("nfs"));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_localpathname_device") {
+    // a path that cannot be interrogated is an error, not a silent answer
+    EXPECT_THROWS_AS(LocalPathName("/does/not/exist/at/all").device(), FailedSystemCall);
+
+    // "major:minor", the same on every path of a filesystem
+    const auto cwd    = LocalPathName::cwd();
+    const auto device = cwd.device();
+    const auto colon  = device.find(':');
+    EXPECT(colon != std::string::npos && colon > 0 && colon + 1 < device.size());
+    EXPECT(device.find_first_not_of("0123456789:") == std::string::npos);
+    EXPECT_EQUAL(cwd.device(), device);
+
+    // the mount table of this process is readable whatever the filesystem
+    EXPECT_NO_THROW(filesystem::nfs::local_lock_option(device));
+
+    const char* nfs_mount = ::getenv("ECKIT_TEST_NFS_MOUNT");
+    if (nfs_mount == nullptr || nfs_mount[0] == '\0') {
+        Log::info() << "NFS mount (ECKIT_TEST_NFS_MOUNT) not available -- skipping NFS-backed test" << std::endl;
+        return;
+    }
+
+    EXPECT_NO_THROW(filesystem::nfs::local_lock_option(LocalPathName(nfs_mount).device()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

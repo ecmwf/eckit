@@ -29,6 +29,7 @@ class JSON;
 namespace geo {
 class Area;
 class Range;
+class Search;
 }  // namespace geo
 }  // namespace eckit
 
@@ -96,7 +97,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Grid() = default;
+    virtual ~Grid();
 
     // -- Operators
 
@@ -134,9 +135,21 @@ public:
     [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
+
+    /// Coordinate names of the grid, eg. ("x", "y") or ("longitude", "latitude") (see point_coordinates)
+    const std::vector<std::string>& point_coordinates() const;
+
+    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lon, lat)
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
+    /// Coordinates (one vector per coordinate), on their figure, as geocentric cartesian (x, y, z)
+    [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
+
+    /// Convert the grid to an unstructured grid (coordinates are cached, exchangeable by uid)
     [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
+
+    /// Shared (cache::SearchCache), valid for the grid lifetime
+    const Search& search() const;
 
     virtual size_t truncation() const;
 
@@ -147,13 +160,19 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
+    /// Figure of the grid points (lon, lat), as the projection's
     virtual const Figure& figure() const { return projection().figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
+    /// The grid cropped to the area, of the same type if supported (e.g. regular_ll by a bounding box), otherwise
+    /// unstructured (see make_grid_cropped_unstructured_ll)
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    /// The points in the area (see crop), as an unstructured grid (its coordinates cached, exchangeable by uid)
+    [[nodiscard]] Grid* make_grid_cropped_unstructured_ll(const Area&) const;
 
     double dx() const;
     double dy() const;
@@ -201,6 +220,11 @@ private:
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;
 
+    mutable std::shared_ptr<const Search> search_;
+
+    struct Once;
+    const std::unique_ptr<Once> once_;
+
     // -- Methods
 
     const spec::Custom& custom_spec() const;
@@ -221,6 +245,7 @@ struct GridSpecByName {
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
     static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+    static void replace(const key_t& key, const spec::Custom&);
 };
 
 
@@ -233,6 +258,7 @@ struct GridSpecByUID {
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
     static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+    static void replace(const key_t& key, const spec::Custom&);
 };
 
 

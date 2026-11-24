@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"

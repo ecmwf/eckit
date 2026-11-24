@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/memory/Shmget.h"
+
+#include <sys/ipc.h>
+
 #include <map>
 
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/BigNum.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/memory/Shmget.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 
@@ -15,64 +14,77 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static eckit::StaticMutex local_mutex;
+namespace {
 
-static long count_;
-static long maxCount_;
+// Track the segments attached by this process and each's size by addr
+struct Attached {
+    static Attached& instance() {
+        // never destroyed, as segments can be detached at exit (by static objects)
+        // value-initialised (parentheses, no user-provided constructor), as StaticMutex relies on zeroed memory
+        static auto* attached = new Attached();
+        return *attached;
+    }
 
-static size_t length_;
-static size_t maxLength_;
+    StaticMutex mutex;
+    std::map<const void*, size_t> sizes;
+    size_t size = 0;
+};
 
-static std::map<int, size_t> sizes_;
-static std::map<const void*, int> ids_;
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
 int Shmget::shmget(key_t key, size_t size, int shmflg) {
-    int shmid = ::shmget(key, size, shmflg);
-    if (shmid >= 0) {
-        AutoLock<StaticMutex> lock(local_mutex);
-        sizes_[shmid] = size;
-    }
-    return shmid;
+    return ::shmget(key, size, shmflg);
 }
 
 void* Shmget::shmat(int shmid, const void* shmaddr, int shmflg) {
     void* addr = ::shmat(shmid, shmaddr, shmflg);
-    if (addr) {
-        AutoLock<StaticMutex> lock(local_mutex);
-        count_++;
-        maxCount_ = std::max(count_, maxCount_);
-
-        length_ += sizes_[shmid];
-        maxLength_ = std::max(length_, maxLength_);
-
-        ids_[addr] = shmid;
+    if (addr == reinterpret_cast<void*>(-1)) {
+        return addr;
     }
+
+    if (addr != nullptr) {
+        // the segment's size, as a segment can be attached without knowing it (e.g. got with size 0)
+        shmid_ds buf{};
+        const auto segment_size = shmctl(shmid, IPC_STAT, &buf) == 0 ? static_cast<size_t>(buf.shm_segsz) : 0;
+
+        auto& attached = Attached::instance();
+        AutoLock<StaticMutex> lock(attached.mutex);
+
+        attached.sizes[addr] = segment_size;
+        attached.size += segment_size;
+    }
+
     return addr;
 }
 
 int Shmget::shmdt(const void* shmaddr) {
-    int code = ::shmdt(shmaddr);
+    const int code = ::shmdt(shmaddr);
     if (code == 0) {
-        AutoLock<StaticMutex> lock(local_mutex);
+        auto& attached = Attached::instance();
+        AutoLock<StaticMutex> lock(attached.mutex);
 
-        count_--;
-        length_ -= sizes_[ids_[shmaddr]];
-
-        sizes_.erase(ids_[shmaddr]);
-        ids_.erase(shmaddr);
+        if (auto it = attached.sizes.find(shmaddr); it != attached.sizes.end()) {
+            attached.size -= it->second;
+            attached.sizes.erase(it);
+        }
     }
+
     return code;
 }
 
-
-void Shmget::info(size_t& count, size_t& size) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    count = count_;
-    size  = length_;
+int Shmget::shmctl(int shmid, int cmd, shmid_ds* buf) {
+    return ::shmctl(shmid, cmd, buf);
 }
 
+void Shmget::info(size_t& count, size_t& size) {
+    auto& attached = Attached::instance();
+    AutoLock<StaticMutex> lock(attached.mutex);
+
+    count = attached.sizes.size();
+    size  = attached.size;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

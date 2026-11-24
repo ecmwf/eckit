@@ -384,8 +384,11 @@ list( APPEND eckit_filesystem_srcs
     filesystem/FileSystem.cc
     filesystem/FileSystem.h
     filesystem/FileSystemSize.h
+    filesystem/detail/FileSystemType.h
     filesystem/LocalPathName.cc
     filesystem/LocalPathName.h
+    filesystem/NFSMountInfo.cc
+    filesystem/NFSMountInfo.h
     filesystem/PathExpander.cc
     filesystem/PathExpander.h
     filesystem/PathName.cc
@@ -410,6 +413,8 @@ list( APPEND eckit_filesystem_srcs
 
 list( APPEND eckit_thread_srcs
     thread/AutoLock.h
+    thread/ConcurrencyLimiter.cc
+    thread/ConcurrencyLimiter.h
     thread/Mutex.cc
     thread/Mutex.h
     thread/MutexCond.cc
@@ -1057,6 +1062,10 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( eckit_HAVE_ECKIT_CACHE )
+    add_subdirectory( cache )
+endif()
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )

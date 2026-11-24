@@ -10,7 +10,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
-#include "eckit/geo/util/sincos.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -114,14 +113,18 @@ bool GreatCircle::crossesPoles() const {
 
 
 std::pair<double, double> GreatCircle::course() const {
-    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (B_.lon() - A_.lon()));
-    const util::sincos_t scA(util::DEGREE_TO_RADIAN * A_.lat());
-    const util::sincos_t scB(util::DEGREE_TO_RADIAN * B_.lat());
+    // sine and cosine [degree]
+    static const auto sincos = [](double a) {
+        const auto r = util::DEGREE_TO_RADIAN * a;
+        return std::pair{std::sin(r), std::cos(r)};
+    };
 
-    return {util::RADIAN_TO_DEGREE *
-                std::atan2(scB.cos() * dl.sin(), scA.cos() * scB.sin() - scA.sin() * scB.cos() * dl.cos()),
-            util::RADIAN_TO_DEGREE *
-                std::atan2(scA.cos() * dl.sin(), -scB.cos() * scA.sin() + scB.sin() * scA.cos() * dl.cos())};
+    const auto [sd, cd] = sincos(B_.lon() - A_.lon());
+    const auto [sa, ca] = sincos(A_.lat());
+    const auto [sb, cb] = sincos(B_.lat());
+
+    return {util::RADIAN_TO_DEGREE * std::atan2(cb * sd, ca * sb - sa * cb * cd),
+            util::RADIAN_TO_DEGREE * std::atan2(ca * sd, -cb * sa + sb * ca * cd)};
 }
 
 

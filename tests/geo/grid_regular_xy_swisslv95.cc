@@ -6,7 +6,9 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -34,6 +36,33 @@ CASE("swisslv95") {
 
     EXPECT(*grid_2 == *grid);
     EXPECT(*grid_3 == *grid);
+}
+
+
+CASE("type") {
+    std::unique_ptr<const Grid> from_gridspec(
+        GridFactory::make_from_string("{type: swisslv95, x: [2480000, 2840000, 20000], y: [1080000, 1300000, 20000]}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "regular_xy");
+    EXPECT(*from_spec == *from_gridspec);
+
+    // the type is the projection's name (see projection.yaml)
+    EXPECT(from_gridspec->spec_str() ==
+           R"({"order":"i+j+","projection":"swisslv95","x":[2480000,2840000,20000],"y":[1080000,1300000,20000]})");
+}
+
+
+CASE("projection by name") {
+    std::unique_ptr<const Projection> by_name(ProjectionFactory::make_from_string("{projection: swisslv95}"));
+    std::unique_ptr<const Projection> by_spec(
+        ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"source", "EPSG:2056"}}));
+
+    EXPECT(by_name->spec_str() == R"({"projection":"swisslv95"})");
+    EXPECT(*by_name == *by_spec);
+
+    EXPECT_THROWS_AS(std::unique_ptr<const Projection>(ProjectionFactory::make_from_string("{projection: unknown}")),
+                     exception::ProjectionError);
 }
 
 

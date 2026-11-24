@@ -25,12 +25,6 @@ public:
     double a() const override { return R_; }
     double b() const override { return R_; }
 
-    /// Surface area [L^2]
-    double area() const override { return area(R_); }
-
-    /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) const override { return area(R_, bbox); }
-
     // -- Class methods
 
     /// Great-circle central angle between two points [radian]
@@ -44,12 +38,6 @@ public:
 
     /// Great-circle distance between two points (Cartesian coordinates)
     static double distance(double radius, const PointXYZ&, const PointXYZ&);
-
-    /// Surface area [L^2]
-    static double area(double radius);
-
-    /// Surface area between parallels and meridians [L^2]
-    static double area(double radius, const area::BoundingBox&);
 
     /// Great-circle intermediate latitude provided two circle points and intermediate longitude [degree]
     static double greatCircleLatitudeGivenLongitude(const PointLonLat&, const PointLonLat&, double lon);

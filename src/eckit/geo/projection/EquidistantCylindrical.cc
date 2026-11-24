@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -59,8 +58,9 @@ const std::string& EquidistantCylindrical::type() const {
 
 
 void EquidistantCylindrical::fill_spec(spec::Custom& custom) const {
-    // this is the default projection so spec is only set with non-default parameters
-    // NOTE: the figure is deliberately not set here, Grid::fill_spec is its single emitter
+    Projection::fill_spec(custom);
+
+    // this is the default projection so its type is only set with non-default parameters
     if (auto set_lat_ts = !types::is_approximately_equal(lat_ts_, 0., PointLonLat::EPS),
         set_lat_0       = !types::is_approximately_equal(lat_0_, 0., PointLonLat::EPS);
         set_lat_ts || set_lat_0) {

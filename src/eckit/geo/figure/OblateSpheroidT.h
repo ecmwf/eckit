@@ -26,14 +26,6 @@ public:
     double b() const override { return DATUM::b; }
 
     bool is_default() const override { return DATUM::default_figure; }
-
-    /// Surface area [L^2]
-    double area() const override { return OblateSpheroid::_area(DATUM::a, DATUM::b); }
-
-    /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) const override {
-        return OblateSpheroid::_area(DATUM::a, DATUM::b, bbox);
-    }
 };
 
 

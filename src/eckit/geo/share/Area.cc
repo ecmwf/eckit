@@ -59,12 +59,26 @@ void Area::load(const PathName& path) {
     if (path.exists()) {
         ValueMap map(YAMLParser::decodeFile(path));
 
+        // relative library urls are of this file's url_prefix (if any)
+        std::string url_prefix;
+        if (auto it = map.find("url_prefix"); it != map.end()) {
+            url_prefix = it->second.as<std::string>();
+        }
+
         for (const auto& kv : map) {
             const auto key = kv.first.as<std::string>();
 
+            if (key == "url_prefix") {
+                continue;
+            }
+
             if (key == "area_libraries") {
                 for (const auto& [name, spec] : kv.second.as<ValueMap>()) {
-                    AreaFactory::add_library(name.as<std::string>(), spec::Custom::make_from_value(spec));
+                    auto* lib = spec::Custom::make_from_value(spec);
+                    if (std::string url; !url_prefix.empty() && lib->get("url", url)) {
+                        lib->set("url", LibEcKitGeo::url(url, url_prefix));
+                    }
+                    AreaFactory::add_library(name.as<std::string>(), lib);
                 }
                 continue;
             }

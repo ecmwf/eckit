@@ -14,6 +14,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "eckit/eckit.h"
@@ -101,6 +102,7 @@ public:  // methods
 
     JSON& operator<<(const std::string&);
     JSON& operator<<(const char*);
+    JSON& operator<<(std::string_view);
 
     template <typename T>
     JSON& operator<<(const std::vector<T>&);

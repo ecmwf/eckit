@@ -19,6 +19,7 @@ repos:
     hooks:
       - id: cython-lint
         types: [cython]
+        args: [--max-line-length=90]
       - id: double-quote-cython-strings
         types: [cython]
   - repo: https://github.com/pre-commit/mirrors-clang-format
@@ -29,9 +30,10 @@ repos:
         exclude: 'src/_eckit/_.*\.(h|cpp)'
 
   - repo: https://github.com/ecmwf/ci-infrastructure
-    rev: dac4b18ffe60c317fbab05246e851b6971f7eabf
+    rev: 9f6732172c4ae14f62d150727d8f56f115c69aa4
     hooks:
       - id: check-ci-approval
+      - id: check-ci-result
 
   # Off until the tree is cleaned up; the counts are what each would flag today.
   #

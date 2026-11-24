@@ -34,6 +34,14 @@ CASE("Convert to upper") {
     EXPECT(ostr == "FOO BAR");
 }
 
+CASE("Convert to lower and upper, non-ASCII bytes unchanged") {
+
+    const std::string istr = "Caf\xc3\xa9 \xff\x80";
+
+    EXPECT(StringTools::lower(istr) == "caf\xc3\xa9 \xff\x80");
+    EXPECT(StringTools::upper(istr) == "CAF\xc3\xa9 \xff\x80");
+}
+
 CASE("substitute") {
     StringDict m;
 

@@ -9,7 +9,9 @@ Low-level Rust bindings to ECMWF's [eckit](https://github.com/ecmwf/eckit) C++
 library.
 
 This crate provides raw FFI bindings using [cxx](https://cxx.rs/). For a safe
-API, use the higher-level [`eckit`](https://crates.io/crates/eckit) crate.
+API, use the higher-level [`eckit`](https://crates.io/crates/eckit) crate. The
+design of both crates is described in the Rust Interface section of the eckit
+documentation (`docs/content/rust` in the repository).
 
 ## Cargo build features
 
@@ -64,7 +66,6 @@ These flags control what the underlying C++ eckit library is compiled with.
   `eckit-geo`, `lz4`).
 - `geo-caching` - Default eckit::geo caching behaviour.
 - `geo-bitreproducible` - Bit-reproducibility tests.
-- `geo-projection-proj-default` - Default to PROJ-based projections.
 - `geo-area-shapefile` - Shapefile support.
 
 ### Other (off by default)

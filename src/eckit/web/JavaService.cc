@@ -9,7 +9,10 @@
 namespace eckit {
 
 
-JavaService::JavaService(int port) : net::NetService(port) {}
+JavaService::JavaService(int port) : net::NetService(port), preferProcess_(false) {}
+
+JavaService::JavaService(int port, ConcurrencyLimiter& limiter, bool preferProcess) :
+    net::NetService(port, limiter), preferProcess_(preferProcess) {}
 
 JavaService::~JavaService() {}
 

@@ -28,6 +28,14 @@ protected:
 
     MemoryCache();
 
+    MemoryCache(const MemoryCache&) = delete;
+    MemoryCache(MemoryCache&&)      = delete;
+
+    virtual ~MemoryCache();
+
+    MemoryCache& operator=(const MemoryCache&) = delete;
+    MemoryCache& operator=(MemoryCache&&)      = delete;
+
 private:
 
     virtual bytes_size_t footprint() const = 0;
@@ -86,7 +94,10 @@ public:
                                });
     }
 
-    void purge() final { container_.clear(); }
+    void purge() final {
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
+        container_.clear();
+    }
 
 private:
 

@@ -54,6 +54,14 @@ def test_spec_str_no_python_tags():
     assert "numpy" not in s
 
 
+def test_spec_str_one_line():
+    # long values (such as PROJ strings) must not wrap, which eckit::geo's parser cannot read
+    proj = "+proj=lcc +lat_0=51.967 +lat_1=51.967 +lon_0=4.9 +R=6371229"
+    s = _spec_str(dict(x=[0, 120000, 2500], y=[0, 170000, 2500], projection=dict(type="proj", source=proj)))
+    assert "\n" not in s
+    assert roundtrip(dict(source=proj)) == dict(source=proj)
+
+
 def test_grid_unstructured_ll_numpy_arrays():
     reference = Grid(latitudes=LATS, longitudes=LONS)
 

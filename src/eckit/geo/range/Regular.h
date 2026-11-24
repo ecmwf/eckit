@@ -109,13 +109,4 @@ private:
 };
 
 
-struct RegularXY : Regular {
-    explicit RegularXY(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
-    explicit RegularXY(double inc, double a, double b, double ref = 0) :
-        RegularXY(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
-
-    [[nodiscard]] RegularXY* make_cropped_range(double crop_a, double crop_b) const override;
-};
-
-
 }  // namespace eckit::geo::range

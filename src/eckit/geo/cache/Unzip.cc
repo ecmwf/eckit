@@ -13,7 +13,10 @@
 #include <ios>
 #include <memory>
 
+#include "eckit/container/CacheManager.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/os/AutoUmask.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/utils/MD5.h"
 
 #include "zip.h"
@@ -43,7 +46,6 @@ struct unzip_type : std::unique_ptr<zip_file_t, decltype(&zip_fclose)> {
             }
         }
 
-        // decompression buffer
         std::array<char, 4096> buffer{
             0,
         };
@@ -67,7 +69,6 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
         throw CantOpenFile(zip + "', errorp=" + std::to_string(errorp), Here());
     }
 
-    // Extract all files, or a specific one
     if (what.empty()) {
         const auto num_entries = static_cast<zip_uint64_t>(zip_get_num_entries(z.get(), 0));
         for (zip_uint64_t i = 0; i < num_entries; ++i) {
@@ -94,11 +95,23 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
 
 PathName Unzip::to_cached_path(const PathName& zip, const std::string& what, const std::string& prefix,
                                const std::string& suffix) const {
+    static util::recursive_mutex mutex;
+    util::lock_guard<util::recursive_mutex> lock(mutex);
+
     const auto key  = MD5{zip / what}.digest();
     const auto path = cache_root() / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + suffix);
 
     if (!path.exists()) {
-        to_path(zip, path, what);
+        // across processes, as eckit::CacheManager: the first extracts (staged, renamed in place), the others find it
+        CacheManagerFileFlock locker(path);
+        AutoLock<CacheManagerFileFlock> flock(locker);
+
+        if (!path.exists()) {
+            const auto tmp = PathName::unique(path);
+            to_path(zip, tmp, what);
+            PathName::rename(tmp, path);
+        }
+
         ASSERT_MSG(path.exists(), "Unzip: file '" + path + "' not found");
     }
 

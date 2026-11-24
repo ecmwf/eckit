@@ -15,8 +15,9 @@ namespace eckit_bridge {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Forward declaration — defined on the Rust side, cxx generates the type.
+// Forward declarations — defined on the Rust side, cxx generates the types.
 struct ReaderBox;
+struct WriterBox;
 
 /// Wraps `eckit::DataHandle*` for Rust FFI. Takes ownership.
 class DataHandleWrapper {
@@ -75,6 +76,16 @@ public:
     /// The returned handle is owned by the Rust side; on drop, the contained
     /// `ReaderBox` is dropped, releasing the underlying `Read` source.
     static std::unique_ptr<DataHandleWrapper> from_reader(rust::Box<ReaderBox> reader);
+
+    /// Create a DataHandle that forwards `write()` calls to a Rust
+    /// `std::io::Write` sink wrapped in a `WriterBox`. Used to stream bytes
+    /// from any C++ API that produces into an `eckit::DataHandle&` (e.g.
+    /// the odc encoder) directly into a Rust sink, without staging through
+    /// a temp file or buffer.
+    ///
+    /// The returned handle is owned by the Rust side; on drop, the contained
+    /// `WriterBox` is dropped, releasing the underlying `Write` sink.
+    static std::unique_ptr<DataHandleWrapper> from_writer(rust::Box<WriterBox> writer);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

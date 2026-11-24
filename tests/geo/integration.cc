@@ -133,7 +133,6 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            // EXPECT(grid->spec_str() == t.spec);
             Log::info() << "grid->spec_str() = '" << grid->spec_str() << "'" << std::endl;
             EXPECT(grid->shape() == t.shape);
         }

@@ -203,11 +203,21 @@ if( eckit_HAVE_CONVEX_HULL )
     target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
 endif()
 
+### eckit::cache
+
+ecbuild_add_option( FEATURE ECKIT_CACHE
+                    DEFAULT ON
+                    DESCRIPTION "eckit::cache cache files and in-process caches library" )
+
+set( eckit_CACHE_THROW_ON_MISS OFF CACHE BOOL "eckit::cache throw on cache miss default" )
+set( eckit_CACHE_SHARED_MEMORY_WAIT 60 CACHE STRING "eckit::cache maximum wait for shared memory being loaded [s] default" )
+set( eckit_CACHE_FILE_KEPT 60 CACHE STRING "eckit::cache time recently used cache files are kept [s] default" )
+
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
+                    CONDITION eckit_HAVE_ECKIT_CACHE AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_CACHING
@@ -219,11 +229,6 @@ ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     DEFAULT OFF
                     CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
-
-ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
-                    DEFAULT OFF
-                    CONDITION eckit_HAVE_ECKIT_GEO
-                    DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
 ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     DEFAULT ON
@@ -240,6 +245,11 @@ endif()
 # (keep paths as strings to avoid normalisation/expansion)
 set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
+
+# in-memory cache capacities, as "in-process[,shared]" (bytes)
+math( EXPR _one_GiB "1024 * 1024 * 1024" )
+set( eckit_GEO_CACHE_SEARCH_CAPACITY "${_one_GiB},0" CACHE STRING "eckit::geo cache search capacity default" )
+set( eckit_GEO_CACHE_CROP_CAPACITY "0" CACHE STRING "eckit::geo cache crop capacity default" )
 
 ### LAPACK
 
@@ -362,6 +372,7 @@ endif()
 # sources
 
 include(cmake/compiler_warnings.cmake) # optionally handle compiler specific warnings
+include(cmake/compiler_flags.cmake)    # handle compiler specific fixes
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 

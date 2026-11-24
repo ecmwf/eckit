@@ -120,8 +120,7 @@ CASE("test_eckit_container_kdtree_constructor") {
     }
     kd.build(points.begin(), points.end());
 
-    // size
-    EXPECT_EQUAL(kd.size(), points.size());
+    EXPECT(kd.size() == points.size());
 
     // pick a point
     auto ref = points[points.size() / 2].point();
@@ -183,8 +182,7 @@ CASE("test_eckit_container_kdtree_insert") {
         }
     }
 
-    // size
-    EXPECT_EQUAL(kd.size(), points.size());
+    EXPECT(kd.size() == points.size());
 
     // pick a point
     auto ref = points[points.size() / 2].point();
@@ -257,7 +255,7 @@ CASE("test_kdtree_mapped") {
 
         kd.build(points);
 
-        EXPECT_EQUAL(kd.size(), points.size());
+        EXPECT(kd.size() == points.size());
         EXPECT(passTest(kd, ref));
     }
 
@@ -271,7 +269,7 @@ CASE("test_kdtree_mapped") {
         // Cannot build with points as the tree is readonly
         EXPECT_THROWS_AS(kd.build(points), AssertionFailed);
 
-        EXPECT_EQUAL(kd.size(), points.size());
+        EXPECT(kd.size() == points.size());
         EXPECT(passTest(kd, ref));
     }
 }
@@ -284,7 +282,7 @@ CASE("test_kdtree_iterate_empty") {
     for (auto& item : kd) {
         count++;
     }
-    EXPECT_EQUAL(count, 0);
+    EXPECT(count == 0);
     EXPECT(kd.empty());
 }
 

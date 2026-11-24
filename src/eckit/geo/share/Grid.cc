@@ -4,7 +4,6 @@
 
 #include "eckit/geo/share/Grid.h"
 
-#include <memory>
 #include <ostream>
 #include <string>
 

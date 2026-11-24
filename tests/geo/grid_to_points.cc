@@ -71,7 +71,7 @@ CASE("HEALPix") {
         };
 
         auto points = grid->to_points();
-        EXPECT_EQUAL(points.size(), expected_points_ring.size());
+        EXPECT(points.size() == expected_points_ring.size());
 
         for (int i = 0; i < points.size(); ++i) {
             EXPECT(points_equal(std::get<PointLonLat>(points[i]), expected_points_ring[i]));

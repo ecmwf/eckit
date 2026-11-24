@@ -235,6 +235,17 @@ public:  // methods
     const std::string& path() const;
 
     void fileSystemSize(FileSystemSize&) const;
+
+    /// Name of the filesystem backing this path, e.g. "nfs", "ext", "xfs", "lustre".
+    /// On Linux an unrecognised superblock magic is reported as "unknown(0x...)".
+    /// @throws FailedSystemCall if the filesystem cannot be interrogated
+    /// @throws NotImplemented if filesystem interrogation is unsupported
+    std::string fileSystemType() const;
+
+    /// Device of the filesystem holding this path, as "major:minor"
+    /// @throws FailedSystemCall if the path cannot be stat'ed
+    std::string device() const;
+
     DataHandle* fileHandle(bool overwrite) const;
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;

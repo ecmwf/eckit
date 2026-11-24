@@ -3,6 +3,7 @@
 
 set(_files
     "area.yaml"
+    "projection.yaml"
 
     "grid.yaml"
     "FESOM.yaml"

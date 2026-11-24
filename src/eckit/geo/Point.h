@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 #include <variant>
@@ -21,6 +22,7 @@ namespace eckit::geo {
 using Point = std::variant<std::monostate, PointXY, PointXYZ, PointLonLat, PointLonLatR>;
 
 
+/// Point comparison functions
 bool points_equal(const Point&, const Point&);
 bool points_equal(const Point&, const Point&, double eps);
 
@@ -43,6 +45,12 @@ const std::vector<std::string>& point_coordinates<PointLonLat>();
 
 template <>
 const std::vector<std::string>& point_coordinates<PointLonLatR>();
+
+const std::vector<std::string>& point_coordinates(const Point&);
+
+
+/// Coordinate names of the point type at an index of Point
+const std::vector<std::string>& point_coordinates(size_t index);
 
 
 }  // namespace eckit::geo

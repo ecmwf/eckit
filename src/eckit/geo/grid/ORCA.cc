@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/iterator/Unstructured.h"
@@ -115,7 +114,7 @@ Grid::renumber_type ORCA::reorder(const order_type& to) const {
 
 
 Grid::Spec* ORCA::spec_from_uid(const uid_type& uid) {
-    return GridSpecByUID::instance().get(uid).spec();
+    return GridSpecByUID::instance().get_spec(uid);
 }
 
 
@@ -146,8 +145,9 @@ void ORCA::fill_spec(spec::Custom& custom) const {
     auto grid = name_ + "_" + arrangement_to_string(arrangement_);
     custom.set("grid", grid);
 
-    if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                           GridSpecByName::instance().match(grid).spec(grid)->get_string("uid") != _uid) {
+    if (auto _uid = uid();
+        !GridSpecByName::instance().exists(grid) ||
+        std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
         custom.set("uid", _uid);
     }
 }

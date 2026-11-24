@@ -8,7 +8,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
-#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
@@ -43,28 +42,18 @@ private:
         args.get("nearest-point", point);
         ASSERT(point.size() == 2);
 
-        geo::projection::LonLatToXYZ to_xyz;
-
-        auto nearest = to_xyz.fwd(geo::PointLonLat{point[0], point[1]});
-        geo::Search::PointType nearest_point{nearest.X(), nearest.Y(), nearest.Z()};
+        geo::PointLonLat nearest_point{point[0], point[1]};
 
         auto& out = Log::info();
         out.precision(args.getInt("precision", 16));
 
         for (const auto& arg : args) {
             std::unique_ptr<const geo::Grid> grid(
-                geo::GridFactory::build(spec::Custom({{uid ? "uid" : "name", std::string(arg)}})));
+                geo::GridFactory::build(spec::Custom({{uid ? "uid" : "grid", std::string(arg)}})));
 
-            std::vector<geo::Search::PointValueType> closest;
-            geo::Search search(*grid);
-
-            search.closestNPoints(nearest_point, nearest_k, closest);
-
-            for (auto& near : closest) {
-                auto p = near.point();
-                auto q = to_xyz.inv(geo::PointXYZ{p.x(0), p.x(1), p.x(2)});
-
-                out << near.payload() << ", " << q << std::endl;
+            const auto points = grid->to_points();
+            for (const auto& near : grid->search().search_knn(nearest_point, nearest_k)) {
+                out << near.index << ", " << points[near.index] << ", " << near.distance << std::endl;
             }
         }
     }

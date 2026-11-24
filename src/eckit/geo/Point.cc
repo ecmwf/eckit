@@ -5,6 +5,7 @@
 #include "eckit/geo/Point.h"
 
 #include <ostream>
+#include <type_traits>
 
 #include "eckit/geo/Exceptions.h"
 
@@ -55,6 +56,40 @@ template <>
 const std::vector<std::string>& point_coordinates<PointLonLatR>() {
     static const std::vector<std::string> names{"longitude_r", "latitude_r"};
     return names;
+}
+
+
+const std::vector<std::string>& point_coordinates(const Point& p) {
+    if (std::holds_alternative<std::monostate>(p)) {
+        throw BadValue("point_coordinates: invalid point (empty)", Here());
+    }
+    return point_coordinates(p.index());
+}
+
+
+namespace {
+
+
+static_assert(std::is_same_v<std::variant_alternative_t<0, Point>, std::monostate>, "the empty point first");
+
+
+template <size_t I = 1>
+const std::vector<std::string>& point_coordinates_by_index(size_t index) {
+    if constexpr (I < std::variant_size_v<Point>) {
+        return index == I ? point_coordinates<std::variant_alternative_t<I, Point>>()
+                          : point_coordinates_by_index<I + 1>(index);
+    }
+    else {
+        throw BadValue("point_coordinates: invalid point type (" + std::to_string(index) + ")", Here());
+    }
+}
+
+
+}  // namespace
+
+
+const std::vector<std::string>& point_coordinates(size_t index) {
+    return point_coordinates_by_index(index);
 }
 
 

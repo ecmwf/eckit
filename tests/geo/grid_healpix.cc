@@ -31,20 +31,20 @@ CASE("gridspec") {
     spec::Custom spec1({{"grid", "H3"}});
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec1));
 
-    EXPECT_EQUAL(grid1->size(), 108);
-    EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"H3"})");
+    EXPECT(grid1->size() == 108);
+    EXPECT(grid1->spec_str() == R"({"grid":"H3"})");
 
     spec::Custom spec2({{"grid", "h2"}, {"order", "nested"}});
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec2));
 
-    EXPECT_EQUAL(grid2->size(), 48);
-    EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2","order":"nested"})");
+    EXPECT(grid2->size() == 48);
+    EXPECT(grid2->spec_str() == R"({"grid":"H2","order":"nested"})");
 
     spec::Custom spec3({{"grid", "h2"}, {"order", "ring"}});
     std::unique_ptr<const Grid> grid3(GridFactory::build(spec3));
 
-    EXPECT_EQUAL(grid3->size(), 48);
-    EXPECT_EQUAL(grid3->spec_str(), R"({"grid":"H2"})");
+    EXPECT(grid3->size() == 48);
+    EXPECT(grid3->spec_str() == R"({"grid":"H2"})");
 
     for (const auto& name : std::vector<std::string>{"h2N", "Hn2"}) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
@@ -69,7 +69,7 @@ CASE("name") {
         for (const auto& suffix : std::vector<std::string>{"", "n", "r"}) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: " + name + suffix + "}"));
 
-            EXPECT_EQUAL(grid->name(), name);
+            EXPECT(grid->name() == name);
             EXPECT(grid->arrangement().empty());
         }
     }

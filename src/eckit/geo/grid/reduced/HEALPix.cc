@@ -5,14 +5,12 @@
 #include "eckit/geo/grid/reduced/HEALPix.h"
 
 #include <algorithm>
-#include <cctype>
 #include <cmath>
 #include <regex>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"

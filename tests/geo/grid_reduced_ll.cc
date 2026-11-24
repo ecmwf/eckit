@@ -20,7 +20,7 @@ CASE("points (global)") {
     spec::Custom spec{{"type", "reduced_ll"}, {"pl", std::vector<long>{20, 24, 24, 20}}};
     std::unique_ptr<const Grid> grid(GridFactory::build(spec));
 
-    EXPECT_EQUAL(grid->size(), 88);
+    EXPECT(grid->size() == 88);
 
     const std::vector<PointLonLat> ref{
         {0., 90.},    {18., 90.},   {36., 90.},   {54., 90.},   {72., 90.},    //

@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
@@ -18,12 +17,12 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<Rotation> PROJECTION("rotation");
+static ProjectionRegisterType<Rotation> PROJECTION("rotation", true);
 
 
 Rotation::Rotation(const Spec& spec) :
     Rotation(
-        [](const auto& spec) -> PointLonLat {
+        [&spec]() -> PointLonLat {
             if (std::vector<double> p; spec.get("south_pole", p)) {
                 ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
                 return {p[0], p[1]};
@@ -34,25 +33,32 @@ Rotation::Rotation(const Spec& spec) :
                 return {p[1], p[0]};
             }
 
-            if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
-                spec.has("south_pole_lon") || spec.has("south_pole_lat")) {
-                ASSERT_MSG(spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat),
-                           "Rotation: 'south_pole_lon' and 'south_pole_lat' are required together");
-                return {lon, lat};
-            }
+            auto lon = SOUTH_POLE.lon();
+            auto lat = SOUTH_POLE.lat();
+            spec.get("south_pole_lon", lon);
+            spec.get("south_pole_lat", lat);
 
-            return SOUTH_POLE;
-        }(spec),
-        [](const auto& spec) -> double {
+            return {lon, lat};
+        }(),
+        [&spec]() -> double {
             double angle = 0.;
             spec.get("rotation_angle", angle);
             return angle;
-        }(spec)) {}
+        }(),
+        spec.get_bool("reverse", false)) {}
 
 
-Rotation::Rotation(const PointLonLat& south_pole, double angle) :
+Rotation::Rotation(const PointLonLat& south_pole, double angle, bool reverse) :
     Projection(nullptr, PointLonLat{}, PointLonLat{}), south_pole_(south_pole), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
+
+    if (reverse) {
+        // the inverse rotation, of South Pole (angle - 180, lat) and angle lon + 180
+        south_pole_ = {
+            PointLonLat::normalise_angle_to_minimum(angle - PointLonLat::FLAT_ANGLE, -PointLonLat::FLAT_ANGLE),
+            south_pole.lat()};
+        angle_ = south_pole.lon() + PointLonLat::FLAT_ANGLE;
+    }
 
     struct NonRotated final : Implementation {
         using Implementation::operator();
@@ -88,41 +94,22 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
         std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
                                                     const std::vector<double>& lat) const override {
             const auto n = lon.size();
+            ASSERT(lat.size() == n);
 
-            // spherical to Cartesian (unit sphere)
-            std::vector<double> x(n);
-            std::vector<double> y(n);
-            std::vector<double> z(n);
-            for (size_t i = 0; i < n; ++i) {
-                const auto p = figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]});
-                x[i]         = p.X();
-                y[i]         = p.Y();
-                z[i]         = p.Z();
-            }
-
-            // rotation, as the matrix product of all points at once
-            for (size_t i = 0; i < n; ++i) {
-                const auto a = x[i];
-                const auto b = y[i];
-                const auto c = z[i];
-                x[i]         = R_.XX() * a + R_.XY() * b + R_.XZ() * c;
-                y[i]         = R_.YX() * a + R_.YY() * b + R_.YZ() * c;
-                z[i]         = R_.ZX() * a + R_.ZY() * b + R_.ZZ() * c;
-            }
-
-            // Cartesian to spherical
+            // spherical to Cartesian (unit sphere), rotation, Cartesian to spherical
             std::vector<std::vector<double>> out{std::vector<double>(n), std::vector<double>(n)};
             for (size_t i = 0; i < n; ++i) {
-                const auto q = figure::UnitSphere::_convertCartesianToSpherical(PointXYZ{x[i], y[i], z[i]});
-                out[0][i]    = q.lon();
-                out[1][i]    = q.lat();
+                const auto q = figure::UnitSphere::_convertCartesianToSpherical(
+                    R_ * figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]}));
+                out[0][i] = q.lon();
+                out[1][i] = q.lat();
             }
             return out;
         }
         const M R_;
     };
 
-    const auto alpha = util::DEGREE_TO_RADIAN * angle;
+    const auto alpha = util::DEGREE_TO_RADIAN * angle_;
     const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_.lat() + 90.);
     const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_.lon();
 
@@ -134,8 +121,10 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
         angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon(), -PointLonLat::FLAT_ANGLE);
         rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
-        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
-        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);
+        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle_)) : new NonRotated);
+        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle_)) : new NonRotated);
+
+        south_pole_ = SOUTH_POLE;
         return;
     }
 
@@ -146,21 +135,21 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
     const auto st = std::sin(theta);
     const auto sp = std::sin(phi);
 
-    // Rotate: rotate by α, then ϑ (y-axis, along the rotated Greenwich meridian), then φ (z-axis)
+    // inv (from the rotated sphere), rotate by α, then ϑ (y-axis, along the rotated Greenwich meridian), then φ:
     // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
     //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
     //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
-    fwd_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
+    inv_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
                                               cp * st,  //
                                               -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp,
                                               -sp * st,  //
                                               -ca * st, -sa * st, ct});
 
-    // Un-rotate (rotate by -φ, -ϑ, -α):
+    // fwd (to the rotated sphere), the reverse (rotate by -φ, -ϑ, -α):
     // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
     //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
     //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
-    inv_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
+    fwd_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
                                               -ca * st,  //
                                               sa * cp * ct + ca * sp, ca * cp - sa * ct * sp,
                                               -sa * st,  //
@@ -176,52 +165,19 @@ const std::string& Rotation::type() const {
 }
 
 
-Rotation* Rotation::make_from_spec(const Spec& spec) {
-    double angle = 0.;
-    spec.get("rotation_angle", angle);
-
-    auto lon = SOUTH_POLE.lon();
-    auto lat = SOUTH_POLE.lat();
-    if (std::vector<double> p; spec.get("south_pole", p)) {
-        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
-        lon = p[0];
-        lat = p[1];
-    }
-    else if (spec.get("rotation", p)) {
-        ASSERT_MSG(p.size() == 2, "Rotation: expected 'rotation' as [lat, lon]");
-        lon = p[1];
-        lat = p[0];
-    }
-    else {
-        ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),
-                   "Rotation: expected 'south_pole_lon' and 'south_pole_lat'");
-    }
-
-    auto* r = new Rotation{{lon, lat}, angle};
-    if (!r->rotated()) {
-        delete r;
-        r = nullptr;
-    }
-
-    return r;
-}
-
-
 void Rotation::fill_spec(spec::Custom& custom) const {
-    bool projection = false;
+    if (!rotated_) {
+        return;
+    }
+
+    custom.set("type", type());
 
     if (!points_equal(SOUTH_POLE, south_pole_)) {
         custom.set("south_pole", std::vector<double>{south_pole_.lon(), south_pole_.lat()});
-        projection = true;
     }
 
     if (!types::is_approximately_equal(angle_, 0., PointLonLat::EPS)) {
         custom.set("rotation_angle", angle_);
-        projection = true;
-    }
-
-    if (projection) {
-        custom.set("type", type());
     }
 }
 

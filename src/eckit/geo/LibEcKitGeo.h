@@ -34,25 +34,23 @@ public:
     static bool caching();
     static std::string cacheDir();
 
+    /// Search loader when caching (see search::KDTreeFactory)
+    static std::string searchLoader();
+    static bool searchFastBuild();
+
+    static std::string searchCacheCapacity();
+    static std::string cropCacheCapacity();
+
     static void purgeCacheDir();
     static void purgeCacheArea();
     static void purgeCacheGrid();
     static void purgeCacheProjection();
 
     static std::string url(const std::string& url_path);
+    static std::string url(const std::string& url_path, const std::string& url_prefix);
 
-    static bool proj();
-
-    /// If PROJ has a usable database.
-    /// @return true if PROJ has a usable database, false otherwise
     static bool projdb_is_available();
-
-    /// Set PROJ search paths for the database.
-    /// @param db_path Path to the PROJ database.
-    /// @param search_paths Additional search paths for the PROJ database.
     static void projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths = {});
-
-    /// Reset PROJ search paths to the default values.
     static void projdb_reset();
 
     std::string version() const override;

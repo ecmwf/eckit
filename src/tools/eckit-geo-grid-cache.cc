@@ -20,16 +20,15 @@ namespace eckit::tools {
 
 struct EckitGeoGridCache final : EckitTool {
     EckitGeoGridCache(int argc, char** argv) : EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<std::string>("grid", "grid regular expression (case insensitive)"));
         options_.push_back(new option::SimpleOption<bool>("match", "match instead of search (default: false)"));
         options_.push_back(new option::SimpleOption<bool>("dryrun", "dry run (default: false)"));
     }
 
-    int numberOfPositionalArguments() const override { return 0; }
-    int minimumPositionalArguments() const override { return 0; }
+    int minimumPositionalArguments() const override { return 1; }
 
     void usage(const std::string& tool) const override {
-        Log::info() << "\nUsage: " << tool << " [options] ..." << std::endl;
+        Log::info() << "\nUsage: " << tool << " [options] <grid regular expression (case insensitive)|uid> ..."
+                    << std::endl;
     }
 
     void execute(const option::CmdArgs& args) override {

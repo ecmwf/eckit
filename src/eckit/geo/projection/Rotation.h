@@ -16,20 +16,25 @@
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/// Rotation of the sphere, given the location of its South Pole and an angle: fwd from (lon, lat) to (lon, lat) on the
+/// rotated sphere (as PROJ ob_tran), inv the reverse (e.g. the grid points, from the rotated sphere); reversed, as the
+/// inverse rotation
 class Rotation : public Projection {
 public:
 
     // -- Constructors
 
     explicit Rotation(const Spec&);
-    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
+    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0, bool reverse = false);
 
     // -- Methods
 
     PointLonLat south_pole() const { return south_pole_; }
     double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
+
+    using Projection::fwd;
+    using Projection::inv;
 
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
     inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
@@ -38,15 +43,10 @@ public:
 
     const std::string& type() const override;
 
+    bool identity() const override { return !rotated_; }
+
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
-
-    /// NOTE: a rotated grid's (x, y) are (lon, lat) on the rotated sphere, which fwd() un-rotates
-    inline Point from_grid_xy(double x, double y) const override { return fwd(PointLonLat{x, y}); }
-
-    // -- Class methods
-
-    [[nodiscard]] static Rotation* make_from_spec(const Spec&);
 
 protected:
 

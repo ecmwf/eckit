@@ -17,6 +17,7 @@ class JavaService : public eckit::net::NetService {
 public:
 
     JavaService(int port);
+    JavaService(int port, eckit::ConcurrencyLimiter& limiter, bool preferProcess);
 
     ~JavaService();
 
@@ -24,6 +25,9 @@ private:
 
     virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& socket) const;
     virtual std::string name() const { return "java"; }
+    bool preferToRunAsProcess() const override { return preferProcess_; }
+
+    bool preferProcess_;
 };
 
 

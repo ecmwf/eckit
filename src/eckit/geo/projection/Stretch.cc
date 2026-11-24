@@ -15,18 +15,18 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<Stretch> PROJECTION("stretch");
+static ProjectionRegisterType<Stretch> PROJECTION("stretch", true);
 
 
-Stretch::Stretch(double c) : Projection(nullptr, PointLonLat{}, PointLonLat{}), c_(c) {
-    if (types::is_approximately_equal(c_, 0.)) {
-        throw exception::ProjectionError("Stretch: stretching_factor != 0", Here());
-    }
-    ASSERT(c_ != 0.);
-}
+Stretch::Stretch(double c, bool reverse) :
+    Projection(nullptr, PointLonLat{}, PointLonLat{}),
+    c_(types::is_approximately_equal(c, 0.)
+           ? throw exception::ProjectionError("Stretch: stretching_factor != 0", Here())
+       : reverse ? 1. / c
+                 : c) {}
 
 
-Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("stretching_factor")) {}
+Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("stretching_factor"), spec.get_bool("reverse", false)) {}
 
 
 const std::string& Stretch::type() const {

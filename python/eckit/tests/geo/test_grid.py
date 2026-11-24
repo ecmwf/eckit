@@ -9,6 +9,8 @@ import pytest
 from eckit.geo import Figure
 from eckit.geo import Grid
 from eckit.geo import Projection
+from eckit.geo import search_cache_clear
+from eckit.geo import search_cache_statistics
 
 SPECS = [
     (dict(grid="1/1"), (181, 360)),
@@ -103,13 +105,12 @@ def test_grid_rotated_default_south_pole_is_not_a_rotation():
         assert Grid(spec).spec == dict(grid=[5, 5])
 
 
-def test_grid_rotated_south_pole_lon_lat_required_together():
-    for projection in [
-        dict(south_pole_lon=-20, type="rotation"),
-        dict(south_pole_lat=-40, type="rotation"),
+def test_grid_rotated_south_pole_lon_lat_optional():
+    for rotation, projection in [
+        ([-90, -20], dict(south_pole_lon=-20, type="rotation")),
+        ([-40, 0], dict(south_pole_lat=-40, type="rotation")),
     ]:
-        with pytest.raises(Exception):
-            Grid(dict(grid=[5, 5], projection=projection))
+        assert Grid(dict(grid=[5, 5], projection=projection)).spec == Grid(dict(grid=[5, 5], rotation=rotation)).spec
 
 
 def test_grid_rotated_gg():
@@ -149,3 +150,157 @@ def test_grid_projection():
 
     del grid
     assert projection.spec_str
+
+
+@pytest.mark.parametrize(
+    "spec, expected",
+    [
+        (dict(grid=[30, 30]), dict(grid=[30, 30])),
+        (dict(grid=[30, 30], figure="earth"), dict(grid=[30, 30])),
+        (dict(grid=[30, 30], figure="wgs84"), dict(grid=[30, 30], figure="wgs84")),
+        (dict(grid="F48", rotation=[30, 30]), dict(grid="F48", projection=dict(type="rotation", south_pole=[30, 30]))),
+    ],
+)
+def test_grid_spec(spec, expected):
+    # the area, projection and figure are part of the grid spec, unless the defaults
+    grid = Grid(spec)
+    assert grid.spec == expected
+    assert Grid(grid.spec) == grid
+
+
+@pytest.mark.parametrize(
+    "spec, a, b",
+    [
+        (dict(grid=[30, 30]), 6371229.0, 6371229.0),  # default figure
+        (dict(grid=[30, 30], figure="wgs84"), 6378137.0, 6356752.314245),
+    ],
+)
+def test_grid_to_xyz(spec, a, b):
+    grid = Grid(spec)
+    lat, _ = grid.to_latlons()
+    x, y, z = grid.to_xyz()
+    assert len(x) == len(y) == len(z) == grid.size()
+
+    # radius at the equator and the poles
+    for i, la in enumerate(lat):
+        radius = (x[i] ** 2 + y[i] ** 2 + z[i] ** 2) ** 0.5
+        if la == 0:
+            assert radius == pytest.approx(a)
+        if abs(la) == 90:
+            assert radius == pytest.approx(b)
+
+
+@pytest.mark.parametrize(
+    "spec, coordinates",
+    [
+        (dict(grid=[30, 30]), ("longitude", "latitude")),
+        (dict(grid=[30, 30], rotation=[-40, -20]), ("longitude", "latitude")),
+        (dict(grid="o2"), ("longitude", "latitude")),
+        (dict(x=[0, 2, 1], y=[0, 1, 1]), ("x", "y")),
+    ],
+)
+def test_grid_point_coordinates(spec, coordinates):
+    grid = Grid(spec)
+    assert grid.point_coordinates == coordinates
+    assert tuple(grid.to_points()) == coordinates
+
+
+def indices(neighbours):
+    return [index for index, _ in neighbours]
+
+
+def test_grid_search():
+    grid = Grid(grid=[30, 30])
+    search = grid.search()
+    assert len(search) == len(grid)
+
+    # rows of 12 points from the North Pole: (lon, lat) = (0, 0) is point 36
+    index, distance = search.search_nn((0, 0))
+    assert index == 36
+    assert distance == pytest.approx(0, abs=1e-6)
+
+    # equidistant to (0, 0) and (30, 0), in metres (chord on the Earth)
+    knn = search.search_knn((15, 0), 2)
+    assert sorted(indices(knn)) == [36, 37]
+    assert knn[0][1] == pytest.approx(knn[1][1])
+    assert knn[0][1] == pytest.approx(1.663e6, rel=1e-3)
+
+    radius = knn[0][1] * 1.001
+    assert sorted(indices(search.search_radius((15, 0), radius))) == [36, 37]
+    assert sorted(indices(search.search_knn_and_radius((15, 0), 4, radius))) == [36, 37]
+    assert len(search.search_knn_or_radius((15, 0), 4, 1.0)) == 4
+
+
+def test_grid_search_spec():
+    grid = Grid(grid=[30, 30])
+
+    search = grid.search(loader="memory", search="knn", k=3)
+    assert search.search((15, 0)) == search.search_knn((15, 0), 3)
+
+    with pytest.raises(RuntimeError):
+        grid.search(search="knn")  # k is required
+
+
+LOADERS = [
+    ("memory", "memory"),
+    ("mmap", "shared"),
+    ("mapped-memory", "shared"),  # the default, as mir
+    ("file-io", "memory"),
+    ("tmp-shmem", "shared"),  # removed at exit
+    ("tmp-shared-memory", "shared"),
+]
+
+
+@pytest.mark.parametrize("loader, usage", LOADERS)
+def test_grid_search_loaders(loader, usage):
+    grid = Grid(grid=[30, 30])
+
+    search_cache_clear()
+    before = search_cache_statistics()
+
+    search = grid.search(loader=loader)
+
+    # the cache accounts for the loaded search, in process memory or shared
+    after = search_cache_statistics()
+    assert after["misses"] == before["misses"] + 1
+    assert after[usage] - before[usage] == search.footprint[usage] > 0
+
+    # whatever the loader, the same results
+    reference = grid.search(loader="memory")
+    for point in ((14, 1), (-100, 44), (170, -50)):
+        assert indices(search.search_knn(point, 4)) == indices(reference.search_knn(point, 4))
+
+
+@pytest.mark.parametrize(
+    "spec, first_last",
+    [
+        (
+            dict(
+                x=[0, 44961.0033558134, 2997.40022372089],
+                y=[0, -44961.0033558134, -2997.40022372089],
+                false=[1067074.48, -467594.435],
+                projection=dict(type="space_view", h=35747054.5503, reverse=True),
+            ),
+            [(4.223693723, 350.299524805), (3.815601110, 350.719698129)],
+        ),
+        (
+            dict(
+                x=[0, 45009.7522881123, 3000.65015254082],
+                y=[0, -33005.8361442917, -3000.53055857197],
+                false=[-1632353.683, -1968348.046],
+                projection=dict(type="space_view", h=35785813.2659, lon_0=-75, figure="wgs84", reverse=True),
+            ),
+            [(18.425011761, 300.905565350), (18.106822780, 301.327135202)],
+        ),
+    ],
+)
+def test_grid_space_view(spec, first_last):
+    # as GRIB space_view (by eccodes), points as the eccodes iterator
+    grid = Grid(spec)
+    assert grid.spec == spec
+    assert grid.shape in ((16, 16), (12, 16))
+
+    lat, lon = grid.to_latlons()
+    for (lat0, lon0), i in zip(first_last, (0, -1)):
+        assert lat[i] == pytest.approx(lat0, abs=1e-6)
+        assert (lon[i] - lon0 + 180.0) % 360.0 - 180.0 == pytest.approx(0.0, abs=1e-6)

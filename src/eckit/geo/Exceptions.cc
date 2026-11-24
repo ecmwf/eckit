@@ -12,6 +12,10 @@ AreaError::AreaError(const std::string& what, const CodeLocation& location) :
     Exception("AreaError: [" + what + "]", location) {}
 
 
+DownloadError::DownloadError(const std::string& what, const CodeLocation& location) :
+    Exception("DownloadError: [" + what + "]", location) {}
+
+
 FigureError::FigureError(const std::string& what, const CodeLocation& location) :
     Exception("FigureError: [" + what + "]", location) {}
 

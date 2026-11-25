@@ -7,7 +7,6 @@ ecbuild_add_test( TARGET  eckit_test_net_tcpsocket
 )
 
 ecbuild_add_test( TARGET  eckit_test_net_netservice_limiter
-                  ENABLED OFF
                   SOURCES test_netservice_limiter.cc
                   LIBS    eckit
 )

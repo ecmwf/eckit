@@ -94,6 +94,12 @@ ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_torch
                   CONDITION eckit_HAVE_TORCH
                   ARGS      --log_level=message -linearAlgebraDenseBackend torch )
 
+# MPS (Apple GPUs) has no float64
+ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_torch_mps
+                  COMMAND   eckit_test_linalg_dense_backend
+                  CONDITION eckit_HAVE_TORCH AND APPLE
+                  ARGS      --log_level=message -linearAlgebraDenseBackend torch-mps )
+
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_openmp
                   COMMAND   eckit_test_linalg_dense_backend
                   CONDITION eckit_HAVE_OMP

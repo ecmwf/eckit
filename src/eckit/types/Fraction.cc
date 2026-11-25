@@ -46,6 +46,7 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
 
     // Implementation of the continued fraction algorithm, with
     // - protection overflows, by limiting to sqrt(value_type maximum)
+    // - the last convergent within that limit (of the numerator too, as rescaling one beyond loses precision)
     // - limited interations
     // - increased tolerance on non-convergence (top/bottom greater than value_type maximum)
 
@@ -66,6 +67,10 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
         size_t cnt = 0;
 
         while (t2 <= MAX_DENOM) {
+            if (m10 != 0 && m00 > 0 && a > (MAX_DENOM - m01) / m00) {
+                break;
+            }
+
             const auto t1 = m00 * a + m01;
 
             m01 = m00;

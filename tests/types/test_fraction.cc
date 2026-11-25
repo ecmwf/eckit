@@ -80,6 +80,13 @@ CASE("Constructing fractions") {
     EXPECT(Fraction(0.07) == Fraction(7, 100));
     EXPECT(Fraction(0.0000007) == Fraction(7, 10000000));
 
+    // of many digits (e.g. angles to the microdegree): the last convergent within the limits, not one rescaled
+
+    EXPECT(Fraction(-89.583334) == Fraction(-44791667, 500000));
+    EXPECT(Fraction(89.995834) == Fraction(44997917, 500000));
+    EXPECT(Fraction(359.995834) == Fraction(179997917, 500000));
+    EXPECT(Fraction(-179.999999) == Fraction(-179999999, 1000000));
+
     // operations
 
     EXPECT(Fraction(1, 3) + Fraction(2, 3) == Fraction(10, 10));

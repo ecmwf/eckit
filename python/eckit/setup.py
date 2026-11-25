@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 # SPDX-License-Identifier: Apache-2.0
 
+import os
 import platform
 import sys
 
@@ -10,11 +11,13 @@ from wheel.bdist_wheel import bdist_wheel
 with open("VERSION", "r") as fVersion:
     version = fVersion.readlines()[0].strip()
 install_requires = [
-    f"eckitlib=={version}",
     "findlibs",
     "pyyaml",
     "requests",
 ]
+# Set by the PyPI build (wheelmaker); other builds use an eckit installed alongside.
+if os.environ.get("VERSION_SUFFIX"):
+    install_requires.insert(0, f"eckitlib=={version}")
 
 
 # NOTE see ci-utils/wheelmaker/buildscripts/setup_utils, we need to get the right abi compat tag

@@ -13,12 +13,16 @@
 #include <netdb.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
+#include <poll.h>
 #include <setjmp.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <csignal>
 
+#include <algorithm>
+#include <cerrno>
+#include <climits>
 #include <cstring>
 
 #include "eckit/config/Resource.h"
@@ -285,6 +289,73 @@ long TCPSocket::read(void* buf, long length) const {
     }
 
     return received;
+}
+
+TCPSocket::InputStatus TCPSocket::waitForInput(std::chrono::milliseconds timeout) const {
+    ASSERT(timeout.count() >= 0);
+    ASSERT(timeout.count() < INT_MAX);
+    if (socket_ < 0) {
+        errno = EBADF;
+        throw FailedSystemCall("TCPSocket::waitForInput");
+    }
+
+    using Clock         = std::chrono::steady_clock;
+    const auto deadline = Clock::now() + timeout;
+
+    for (;;) {
+        const auto remaining = deadline - Clock::now();
+        const int wait       = remaining > Clock::duration::zero()
+                                   ? static_cast<int>(std::chrono::ceil<std::chrono::milliseconds>(remaining).count())
+                                   : 0;
+        pollfd pfd{};
+        pfd.fd           = socket_;
+        pfd.events       = POLLIN;
+        const int result = ::poll(&pfd, 1, wait);
+
+        // Poll failed. Retry if it was just due to a signal interruption.
+        if (result < 0) {
+            if (errno == EINTR) {
+                if (Clock::now() >= deadline) {
+                    return InputStatus::Timeout;
+                }
+                continue;
+            }
+            throw FailedSystemCall("poll");
+        }
+
+        // Poll reported no events
+        if (result == 0) {
+            if (Clock::now() >= deadline) {
+                return InputStatus::Timeout;
+            }
+            continue;
+        }
+
+        if (pfd.revents & POLLNVAL) {
+            errno = EBADF;
+            throw FailedSystemCall("poll");
+        }
+
+        // Inspect socket: poll may report data, hangup or an error.
+        char byte;
+        const auto n = ::recv(socket_, &byte, 1, MSG_PEEK | MSG_DONTWAIT);
+        if (n > 0) {
+            return InputStatus::Ready;
+        }
+
+        // Connection closed and no data remains to be consumed.
+        if (n == 0) {
+            return InputStatus::Closed;
+        }
+
+        // Retry poll unless there is a socket failure.
+        if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+            throw FailedSystemCall("recv(MSG_PEEK)");
+        }
+        if (Clock::now() >= deadline) {
+            return InputStatus::Timeout;
+        }
+    }
 }
 
 void TCPSocket::close() {

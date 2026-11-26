@@ -21,3 +21,4 @@ compile_commands.json
 # Rust
 rust/target/
 rust/Cargo.lock
+Testing/

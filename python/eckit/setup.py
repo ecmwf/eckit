@@ -11,7 +11,7 @@ from wheel.bdist_wheel import bdist_wheel
 with open("VERSION", "r") as fVersion:
     version = fVersion.readlines()[0].strip()
 install_requires = [
-    "findlibs",
+    "findlibs>=0.1.2",
     "pyyaml",
     "requests",
 ]

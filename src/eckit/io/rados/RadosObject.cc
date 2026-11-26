@@ -20,7 +20,6 @@
 #include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/io/rados/RadosName.h"
 #include "eckit/io/rados/RadosNamespace.h"
-#include "eckit/io/rados/RadosPartHandle.h"
 
 namespace eckit {
 
@@ -61,29 +60,28 @@ void RadosObject::ensureAllDestroyed() const {
     eckit::RadosMultiObject(*this).remove();
 }
 
-eckit::DataHandle* RadosObject::dataHandle() const {
+eckit::DataHandle* RadosObject::dataHandle(RadosWriteMode mode, size_t maxPendingBytes) const {
+    if (mode == RadosWriteMode::Async) {
+        return new eckit::RadosAsyncHandle(*this, maxPendingBytes);
+    }
     return new eckit::RadosHandle(*this);
 }
 
-eckit::DataHandle* RadosObject::asyncDataHandle(size_t maxAioBuffSize) const {
-    return new eckit::RadosAsyncHandle(*this, maxAioBuffSize);
-}
-
 eckit::DataHandle* RadosObject::rangeReadHandle(const eckit::Offset& off, const eckit::Length& len) const {
-    return new eckit::RadosPartHandle(*this, off, len);
+    return new eckit::PartHandle(dataHandle(), off, len);
 }
 
-eckit::DataHandle* RadosObject::multipartWriteHandle(const eckit::Length& maxPartSize) const {
-    return new eckit::RadosMultiObjWriteHandle(*this, false, maxPartSize);
+eckit::DataHandle* RadosObject::multipartWriteHandle(const eckit::Length& maxPartSize, RadosWriteMode mode,
+                                                     size_t maxPendingBytes, size_t maxOpenParts) const {
+    return new eckit::RadosMultiObjWriteHandle(*this, maxPartSize, mode, maxPendingBytes, maxOpenParts);
 }
 
-eckit::DataHandle* RadosObject::asyncMultipartWriteHandle(const eckit::Length& maxPartSize, size_t maxAioBuffSize,
-                                                          size_t maxHandleBuffSize) const {
-    return new eckit::RadosMultiObjWriteHandle(*this, true, maxPartSize, maxAioBuffSize, maxHandleBuffSize);
+eckit::DataHandle* RadosObject::multipartReadHandle() const {
+    return new eckit::RadosMultiObjReadHandle(*this);
 }
 
 eckit::DataHandle* RadosObject::multipartRangeReadHandle(const eckit::Offset& off, const eckit::Length& len) const {
-    return new eckit::PartHandle(new eckit::RadosMultiObjReadHandle(*this), off, len);
+    return new eckit::PartHandle(multipartReadHandle(), off, len);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

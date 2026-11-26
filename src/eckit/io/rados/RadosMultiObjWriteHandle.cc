@@ -19,9 +19,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
-#include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/log/Log.h"
 
@@ -34,18 +32,13 @@ void RadosMultiObjWriteHandle::print(std::ostream& s) const {
     s << "RadosMultiObjWriteHandle[" << object_.str() << ']';
 }
 
-RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, bool async, const Length& maxPartSize,
-                                                   size_t maxAioBuffSize, size_t maxHandleBuffSize) :
+RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, const Length& maxPartSize,
+                                                   RadosWriteMode mode, size_t maxPendingBytes, size_t maxOpenParts) :
     object_(obj),
-    async_(async),
-    maxPartSize_(maxPartSize),
-    maxAioBuffSize_(maxAioBuffSize),
-    maxHandleBuffSize_(maxHandleBuffSize) {
-
-    if (maxPartSize_ == Length(0)) {
-        maxPartSize_ = RadosCluster::instance().maxObjectSize();
-    }
-}
+    maxPartSize_(maxPartSize == Length(0) ? RadosCluster::instance().maxObjectSize() : maxPartSize),
+    mode_(mode),
+    maxPendingBytes_(maxPendingBytes),
+    maxOpenParts_(maxOpenParts) {}
 
 RadosMultiObjWriteHandle::~RadosMultiObjWriteHandle() {
     if (opened_) {
@@ -80,14 +73,8 @@ void RadosMultiObjWriteHandle::openPart() {
     const RadosObject object = RadosMultiObject(object_).part(part_);
     LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
 
-    std::unique_ptr<DataHandle> handle;
-    if (async_) {
-        handle = std::make_unique<RadosAsyncHandle>(object, maxAioBuffSize_);
-    }
-    else {
-        handle = std::make_unique<RadosHandle>(object);
-    }
-    handle->openForWrite(0);  // TODO: use proper size
+    std::unique_ptr<DataHandle> handle(object.dataHandle(mode_, maxPendingBytes_));
+    handle->openForWrite(0);
 
     handles_.push_back(std::move(handle));
     ++part_;
@@ -142,7 +129,7 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
         if (partOpen_ && Length(written_) >= maxPartSize_) {
             /// @note: asynchronous handles of completed parts stay open, so that their writes
             ///   proceed in the background, until too many of them are held.
-            if (!async_ || handles_.size() >= maxHandleBuffSize_) {
+            if (mode_ == RadosWriteMode::Sync || handles_.size() >= maxOpenParts_) {
                 closeParts(false);
             }
             partOpen_ = false;

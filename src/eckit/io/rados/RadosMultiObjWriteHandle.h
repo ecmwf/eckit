@@ -27,8 +27,14 @@ class RadosMultiObjWriteHandle : public eckit::DataHandle {
 
 public:  // methods
 
-    RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0,
-                             size_t maxAioBuffSize = 1024 * 1024, size_t maxHandleBuffSize = 1024);
+    /// @param maxPartSize size of the parts; if 0, the largest object the cluster accepts
+    /// @param maxPendingBytes for asynchronous writes: amount of data per part not yet waited for, above which a
+    ///   write flushes
+    /// @param maxOpenParts for asynchronous writes: number of parts written at a time
+    explicit RadosMultiObjWriteHandle(const RadosObject&, const Length& maxPartSize = 0,
+                                      RadosWriteMode mode    = RadosWriteMode::Sync,
+                                      size_t maxPendingBytes = radosDefaultMaxPendingBytes,
+                                      size_t maxOpenParts    = radosDefaultMaxOpenParts);
 
     ~RadosMultiObjWriteHandle() override;
 
@@ -59,10 +65,10 @@ private:  // members
 
     RadosObject object_;
 
-    bool async_;
     Length maxPartSize_;
-    size_t maxAioBuffSize_;
-    size_t maxHandleBuffSize_;
+    RadosWriteMode mode_;
+    size_t maxPendingBytes_;
+    size_t maxOpenParts_;
 
     size_t written_{0};
     Offset position_{0};

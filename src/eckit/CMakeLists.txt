@@ -347,8 +347,6 @@ if( eckit_HAVE_RADOS )
         io/rados/RadosAttributes.h
         io/rados/RadosException.cc
         io/rados/RadosException.h
-        io/rados/RadosPartHandle.cc
-        io/rados/RadosPartHandle.h
         io/rados/RadosURIManager.cc
         io/rados/RadosURIManager.h
     )

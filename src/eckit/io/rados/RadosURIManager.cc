@@ -10,6 +10,8 @@
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/io/PartHandle.h"
+#include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
@@ -26,13 +28,25 @@ DataHandle* RadosURIManager::newWriteHandle(const URI& uri) {
     return RadosObject(uri).dataHandle();
 }
 
+/// @note: an object written as a multipart object is read as a whole, not only its first part
 DataHandle* RadosURIManager::newReadHandle(const URI& uri) {
-    return RadosObject(uri).dataHandle();
+
+    const RadosObject object(uri);
+
+    try {
+        if (RadosMultiObject(object).layout()) {
+            return object.multipartReadHandle();
+        }
+    }
+    catch (NotFound&) {
+        /// @note: the pool does not exist, which is to be reported when the handle is opened
+    }
+
+    return object.dataHandle();
 }
 
-DataHandle* RadosURIManager::newReadHandle(const URI& /*uri*/, const OffsetList& /*offsets*/,
-                                           const LengthList& /*lengths*/) {
-    NOTIMP;
+DataHandle* RadosURIManager::newReadHandle(const URI& uri, const OffsetList& offsets, const LengthList& lengths) {
+    return new PartHandle(newReadHandle(uri), offsets, lengths);
 }
 
 std::string RadosURIManager::asString(const URI& uri) const {

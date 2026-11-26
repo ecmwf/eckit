@@ -22,6 +22,15 @@ namespace eckit {
 
 class DataHandle;
 
+/// Whether a write returns once it is done, or is only submitted, to be waited for on flush or close
+enum class RadosWriteMode {
+    Sync,
+    Async
+};
+
+constexpr size_t radosDefaultMaxPendingBytes = 1024 * 1024;
+constexpr size_t radosDefaultMaxOpenParts    = 1024;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class RadosObject {
@@ -47,13 +56,26 @@ public:
     /// Removes the object and, if it was written as a multipart object, all its parts
     void ensureAllDestroyed() const;
 
-    eckit::DataHandle* dataHandle() const;
-    eckit::DataHandle* asyncDataHandle(size_t maxAioBuffSize = 1024 * 1024) const;
+    // -- handles, owned by the caller
+
+    /// Reads or writes the object, which must fit in one object of the cluster
+    /// @param maxPendingBytes for asynchronous writes: amount of data not yet waited for, above which a write flushes
+    eckit::DataHandle* dataHandle(RadosWriteMode mode    = RadosWriteMode::Sync,
+                                  size_t maxPendingBytes = radosDefaultMaxPendingBytes) const;
+
+    /// Reads a range of the object
     eckit::DataHandle* rangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
-    eckit::DataHandle* multipartWriteHandle(const eckit::Length& maxPartSize = 0) const;
-    eckit::DataHandle* asyncMultipartWriteHandle(const eckit::Length& maxPartSize = 0,
-                                                 size_t maxAioBuffSize            = 1024 * 1024,
-                                                 size_t maxHandleBuffSize         = 1024) const;
+
+    /// Writes data of any size, as a multipart object. See RadosMultiObject.
+    /// @param maxPartSize size of the parts; if 0, the largest object the cluster accepts
+    /// @param maxOpenParts for asynchronous writes: number of parts written at a time
+    eckit::DataHandle* multipartWriteHandle(const eckit::Length& maxPartSize = 0,
+                                            RadosWriteMode mode              = RadosWriteMode::Sync,
+                                            size_t maxPendingBytes           = radosDefaultMaxPendingBytes,
+                                            size_t maxOpenParts              = radosDefaultMaxOpenParts) const;
+
+    /// Reads a multipart object, or a range of it
+    eckit::DataHandle* multipartReadHandle() const;
     eckit::DataHandle* multipartRangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
 
 private:  // methods

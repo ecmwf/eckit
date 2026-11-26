@@ -163,7 +163,7 @@ CASE("Test Rados Handles") {
 
         RadosObject obj(pool.name(), nspace, "foobar");
 
-        RadosMultiObjWriteHandle h(obj, false, 16);
+        RadosMultiObjWriteHandle h(obj, 16);
 
         h.openForWrite(sizeof(buf));
         h.write(buf, sizeof(buf));
@@ -187,7 +187,7 @@ CASE("Test Rados Handles") {
         const char buf[] = "abcdefghijklmnopqrstuvwxyz012345";
 
         RadosObject obj(pool.name(), nspace, "exact-part");
-        RadosMultiObjWriteHandle h(obj, false, 16);
+        RadosMultiObjWriteHandle h(obj, 16);
 
         h.openForWrite(sizeof(buf) - 1);
         h.write(buf, sizeof(buf) - 1);
@@ -211,7 +211,7 @@ CASE("Test Rados Handles") {
         const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
         RadosObject obj(pool.name(), nspace, "async");
-        RadosMultiObjWriteHandle h(obj, true, 16);
+        RadosMultiObjWriteHandle h(obj, 16, RadosWriteMode::Async);
 
         h.openForWrite(sizeof(buf) - 1);
         h.write(buf, sizeof(buf) - 1);
@@ -255,7 +255,7 @@ CASE("Test Rados Handles") {
         RadosObject obj(pool.name(), nspace, "async-many-parts");
 
         // 4 KiB of pending data per part, at most 3 open handles, 13 parts
-        std::unique_ptr<DataHandle> h(obj.asyncMultipartWriteHandle(8, 4096, 3));
+        std::unique_ptr<DataHandle> h(obj.multipartWriteHandle(8, RadosWriteMode::Async, 4096, 3));
         h->openForWrite(0);
         h->write(data.data(), 50);
         h->flush();
@@ -428,22 +428,18 @@ CASE("Test Rados Handles") {
             EXPECT(g->openForRead() == Length(40));
             EXPECT(g->read(out, 10) == 10);
             EXPECT(std::string(out, 10) == data.substr(13, 10));
-            EXPECT(g->position() == Offset(10));
-            EXPECT(g->seek(35) == Offset(35));
-            EXPECT(g->read(out, sizeof(out)) == 5);
-            EXPECT(std::string(out, 5) == data.substr(48, 5));
+            EXPECT(g->read(out, sizeof(out)) == 30);
+            EXPECT(std::string(out, 30) == data.substr(23, 30));
             EXPECT(g->read(out, sizeof(out)) == 0);
 
             // rewinding goes back to the start of the range
             g->rewind();
-            EXPECT(g->position() == Offset(0));
             EXPECT(g->read(out, 10) == 10);
             EXPECT(std::string(out, 10) == data.substr(13, 10));
             g->close();
 
             // so does opening the handle again
             EXPECT(g->openForRead() == Length(40));
-            EXPECT(g->position() == Offset(0));
             EXPECT(g->read(out, sizeof(out)) == 40);
             EXPECT(std::string(out, 40) == data.substr(13, 40));
             g->close();
@@ -675,7 +671,7 @@ CASE("Test Rados Handles") {
 
         RadosObject obj(pool.name(), nspace, "async-multi");
 
-        std::unique_ptr<DataHandle> h(obj.asyncMultipartWriteHandle(10000));
+        std::unique_ptr<DataHandle> h(obj.multipartWriteHandle(10000, RadosWriteMode::Async));
         h->openForWrite(0);
         for (int i = 0; i < 5; ++i) {
             h->write(data.data(), data.size());

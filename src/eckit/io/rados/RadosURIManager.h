@@ -15,6 +15,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Handles for rados:<pool>/<namespace>/<name> URIs.
+/// Writing through a URI creates a single object, so the data must fit in one object of the cluster.
 class RadosURIManager : public URIManager {
 public:  // methods
 

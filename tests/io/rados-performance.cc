@@ -58,7 +58,7 @@ CASE("Test rados performance") {
 
     RadosObject obj(pool.name(), nspace, "largeFile");
 
-    RadosMultiObjWriteHandle h(obj, false, 0);
+    RadosMultiObjWriteHandle h(obj);
     h.openForWrite(size);
 
     timer.start();

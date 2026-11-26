@@ -350,6 +350,82 @@ CASE("Test Rados Handles") {
         EXPECT_NOT(inDefault.exists());
     }
 
+    SECTION("Range reads") {
+
+        std::string data;
+        for (int i = 0; i < 100; ++i) {
+            data += static_cast<char>('a' + i % 26);
+        }
+
+        // 7 parts of at most 16 bytes
+        RadosObject multi(pool.name(), nspace, "range-multi");
+        {
+            std::unique_ptr<DataHandle> h(multi.multipartWriteHandle(16));
+            h->openForWrite(0);
+            h->write(data.data(), data.size());
+            h->close();
+        }
+
+        RadosObject single(pool.name(), nspace, "range-single");
+        {
+            std::unique_ptr<DataHandle> h(single.dataHandle());
+            h->openForWrite(0);
+            h->write(data.data(), data.size());
+            h->close();
+        }
+
+        char out[128];
+
+        // seek and read across the parts of a multipart object
+        {
+            RadosMultiObjReadHandle g(multi);
+            EXPECT(g.size() == Length(100));
+            EXPECT(g.openForRead() == Length(100));
+
+            EXPECT(g.seek(10) == Offset(10));
+            EXPECT(g.read(out, 30) == 30);
+            EXPECT(std::string(out, 30) == data.substr(10, 30));
+            EXPECT(g.position() == Offset(40));
+
+            EXPECT(g.seek(96) == Offset(96));
+            EXPECT(g.read(out, 30) == 4);
+            EXPECT(std::string(out, 4) == data.substr(96));
+            EXPECT(g.read(out, 30) == 0);
+
+            g.rewind();
+            EXPECT(g.read(out, sizeof(out)) == 100);
+            EXPECT(std::string(out, 100) == data);
+            g.close();
+        }
+
+        // a range of a multipart object, starting and ending inside parts
+        {
+            std::unique_ptr<DataHandle> g(multi.multipartRangeReadHandle(13, 40));
+            EXPECT(g->openForRead() == Length(40));
+            long n = g->read(out, sizeof(out));
+            EXPECT(n == 40);
+            EXPECT(std::string(out, n) == data.substr(13, 40));
+            g->close();
+        }
+
+        // a range of a single object
+        {
+            std::unique_ptr<DataHandle> g(single.rangeReadHandle(13, 40));
+            EXPECT(g->openForRead() == Length(40));
+            EXPECT(g->read(out, 10) == 10);
+            EXPECT(std::string(out, 10) == data.substr(13, 10));
+            EXPECT(g->position() == Offset(10));
+            EXPECT(g->seek(35) == Offset(35));
+            EXPECT(g->read(out, sizeof(out)) == 5);
+            EXPECT(std::string(out, 5) == data.substr(48, 5));
+            EXPECT(g->read(out, sizeof(out)) == 0);
+            g->close();
+        }
+
+        multi.ensureAllDestroyed();
+        single.ensureAllDestroyed();
+    }
+
     SECTION("removeAll removes every part, also when some are already gone") {
 
         const std::string data(100, 'p');

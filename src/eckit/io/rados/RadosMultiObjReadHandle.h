@@ -15,7 +15,6 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
 #include <ostream>
 #include <string>
 
@@ -27,8 +26,6 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class MultiHandle;
 
 class RadosMultiObjReadHandle : public eckit::DataHandle {
 
@@ -56,18 +53,28 @@ public:  // methods
 
     Offset position() override;
     Length estimate() override;
+    Length size() override;
 
     void print(std::ostream& s) const override;
 
+
+private:  // methods
+
+    /// Reads the attributes describing the parts, once.
+    void load();
 
 private:  // members
 
     RadosObject object_;
 
+    bool loaded_{false};
+    bool opened_{false};
+
     Length length_{0};
     size_t parts_{0};
+    Length maxPartSize_{0};
 
-    std::unique_ptr<MultiHandle> handle_;
+    Offset position_{0};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

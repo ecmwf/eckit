@@ -38,7 +38,7 @@ RadosPartHandle::~RadosPartHandle() {
 }
 
 void RadosPartHandle::print(std::ostream& s) const {
-    s << "RadosPartHandle[notimp]";
+    s << "RadosPartHandle[" << object_.str() << ',' << offset_ << ',' << len_ << ']';
 }
 
 Length RadosPartHandle::openForRead() {

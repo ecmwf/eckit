@@ -44,6 +44,14 @@ CASE("Test Rados Handles") {
     RadosPool pool(pool_name);
 #endif
 
+    SECTION("ensureCreated accepts an existing pool") {
+        EXPECT(pool.exists());
+        pool.ensureCreated();
+        pool.ensureCreated();
+        EXPECT(pool.exists());
+        EXPECT_NOT(RadosPool("eckit-test-no-such-pool").exists());
+    }
+
     SECTION("RadosHandle") {
 
         const char buf[] = "abcdefghijklmnopqrstuvwxyz";

@@ -297,8 +297,14 @@ void RadosCluster::createPool(const std::string& pool) const {
 }
 
 void RadosCluster::ensurePool(const std::string& pool) const {
-    if (!poolExists(pool)) {
-        createPool(pool);
+    if (poolExists(pool)) {
+        return;
+    }
+
+    /// @note: another client may have created the pool in the meantime
+    int rc = rados_pool_create(cluster_, pool.c_str());
+    if (rc != -EEXIST) {
+        eckit::call_rados(rc, "rados_pool_create(cluster_, pool.c_str())", __FILE__, __LINE__, __func__);
     }
 }
 

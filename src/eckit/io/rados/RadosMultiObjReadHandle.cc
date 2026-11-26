@@ -17,7 +17,9 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosAttributes.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Log.h"
 
@@ -46,9 +48,9 @@ void RadosMultiObjReadHandle::load() {
     RadosAttributes attr = RadosCluster::instance().attributes(object_);
     LOG_DEBUG_LIB(LibEcKit) << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
 
-    ASSERT(attr.get("length", length_));
-    ASSERT(attr.get("maxsize", maxPartSize_));
-    ASSERT(maxPartSize_ > Length(0));
+    if (!attr.get("length", length_) || !attr.get("maxsize", maxPartSize_) || !(maxPartSize_ > Length(0))) {
+        throw RadosException("RADOS object " + object_.str() + " was not written as a multipart object", Here());
+    }
 
     loaded_ = true;
 }
@@ -95,8 +97,7 @@ long RadosMultiObjReadHandle::read(void* buffer, long length) {
         const long long offset = pos % maxPart;
 
         /// @note: librados rejects reads larger than INT_MAX
-        const long long len =
-            std::min<long long>({length, maxPart - offset, total - pos, std::numeric_limits<int>::max()});
+        const long long len = std::min<long long>({length, maxPart - offset, total - pos, radosMaxReadSize});
 
         RadosObject object(object_, part);
 

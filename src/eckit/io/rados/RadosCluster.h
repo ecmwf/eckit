@@ -25,17 +25,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int call_rados(int code, const char* msg, const char* file, int line, const char* func);
-
-#define RADOS_CALL(a) eckit::call_rados(a, #a, __FILE__, __LINE__, __func__)
-
-/// Same as call_rados, but reports ENOENT by returning false instead of throwing
-bool call_rados_found(int code, const char* msg, const char* file, int line, const char* func);
-
-#define RADOS_CALL_FOUND(a) eckit::call_rados_found(a, #a, __FILE__, __LINE__, __func__)
-
-//----------------------------------------------------------------------------------------------------------------------
-
 class RadosObject;
 class RadosKeyValue;
 class RadosAttributes;
@@ -103,57 +92,6 @@ private:
 
     /// @returns false if the object does not exist
     bool readAttributes(const RadosObject& object, RadosAttributes& attr) const;
-
-public:
-
-    static void error(int code, const char* msg, const char* file, int line, const char* func);
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class RadosAIO {
-public:
-
-    rados_completion_t comp_{nullptr};
-    RadosAIO();
-    ~RadosAIO();
-
-    void waitForComplete() const;
-    /// @returns false if the operation failed because its target does not exist
-    bool waitForCompleteIfFound() const;
-
-    /// Waits for every completion and empties the list, also if some of them failed.
-    /// Rethrows the first failure once all completions have been waited for.
-    static void waitForAll(std::vector<std::unique_ptr<RadosAIO>>& comps);
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class RadosWriteOp {
-public:
-
-    rados_write_op_t op_;
-    RadosWriteOp();
-    ~RadosWriteOp();
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class RadosReadOp {
-public:
-
-    rados_read_op_t op_;
-    RadosReadOp();
-    ~RadosReadOp();
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class RadosIter {
-public:
-
-    rados_omap_iter_t it_{nullptr};
-    ~RadosIter();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

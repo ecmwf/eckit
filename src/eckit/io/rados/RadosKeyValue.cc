@@ -16,6 +16,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosNamespace.h"
@@ -137,11 +138,12 @@ bool RadosKeyValue::has(const std::string& key) const {
                                          ));
 
     /// @note: a key-value which does not exist has no keys
-    if (!comp.waitForCompleteIfFound()) {
+    RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+    if (!RADOS_CALL_FOUND(rados_aio_get_return_value(comp.comp_))) {
         return false;
     }
 
-    ASSERT(rc == 0);
+    RADOS_CALL(rc);
 
     return (rados_omap_iter_size(iter.it_) == 1);
 }
@@ -211,10 +213,10 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
 
     comp.waitForComplete();
 
-    ASSERT(rc == 0);
+    RADOS_CALL(rc);
 
     if (rados_omap_iter_size(iter->it_) != 1) {
-        throw eckit::RadosEntityNotFoundException("Key '" + key + "' not found in KeyValue with name " + oid_);
+        throw eckit::NotFound("RADOS key '" + key + "' in key-value " + str(), Here(), true);
     }
 
     char* found_key      = nullptr;
@@ -328,7 +330,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
         comp.waitForComplete();
 
-        ASSERT(rc == 0);
+        RADOS_CALL(rc);
 
         char* key = nullptr;
         size_t key_len;

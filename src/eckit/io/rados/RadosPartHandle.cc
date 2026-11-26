@@ -13,6 +13,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Log.h"
@@ -52,7 +53,7 @@ long RadosPartHandle::read(void* buf, long len) {
     }
 
     /// @note: librados rejects reads larger than INT_MAX. A short read is fine for the caller.
-    len = std::min<long long>({len, remaining, std::numeric_limits<int>::max()});
+    len = std::min<long long>({len, remaining, radosMaxReadSize});
 
     int read = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                      reinterpret_cast<char*>(buf), len, offset_ + pos_));

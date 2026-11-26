@@ -14,6 +14,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosAsyncKeyValue.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
@@ -103,7 +104,7 @@ CASE("Rados KeyValue") {
         // size
         EXPECT(kv.size(key) == Length(val.size()));
         EXPECT(kv.size(empty_key) == Length(0));
-        EXPECT_THROWS_AS(kv.size("key3"), eckit::RadosEntityNotFoundException);
+        EXPECT_THROWS_AS(kv.size("key3"), eckit::NotFound);
 
         // get into a buffer which is too small
         char small[4];
@@ -119,7 +120,7 @@ CASE("Rados KeyValue") {
         RadosKeyValue missing(pool.name(), nspace, "no-such-kv");
         EXPECT_NOT(missing.exists());
         EXPECT_NOT(missing.has(key));
-        EXPECT_THROWS_AS(missing.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
+        EXPECT_THROWS_AS(missing.get(key, read_val, sizeof(read_val)), eckit::NotFound);
 
         // URIs
         EXPECT(RadosKeyValue(kv.uri()).str() == kv.str());
@@ -133,7 +134,7 @@ CASE("Rados KeyValue") {
         kv.remove(empty_key);
 
         // get non-existing key
-        EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
+        EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::NotFound);
 
         // list keys for empty kv
         keys.clear();

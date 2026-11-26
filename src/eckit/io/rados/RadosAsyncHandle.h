@@ -12,6 +12,7 @@
 #include <ostream>
 #include <vector>
 
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosObject.h"

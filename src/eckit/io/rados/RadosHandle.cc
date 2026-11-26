@@ -8,12 +8,14 @@
 #include <algorithm>
 #include <limits>
 #include <ostream>
+#include <sstream>
 #include <string>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Log.h"
@@ -88,13 +90,33 @@ void RadosHandle::firstWrite(RadosWriteOp& op, const void* buffer, long length) 
     rados_write_op_write(op.op_, buf, length, offset_);
 }
 
+void RadosHandle::checkWrite(long length) const {
+
+    const long long maxWrite  = RadosCluster::instance().maxWriteSize();
+    const long long maxObject = RadosCluster::instance().maxObjectSize();
+
+    if (length > maxWrite) {
+        std::ostringstream oss;
+        oss << "Write of " << length << " bytes to " << object_.str() << " exceeds the maximum write size of "
+            << maxWrite << " bytes";
+        throw BadValue(oss.str(), Here());
+    }
+
+    if (static_cast<long long>(offset_) + length > maxObject) {
+        std::ostringstream oss;
+        oss << "Write of " << length << " bytes at offset " << offset_ << " of " << object_.str()
+            << " exceeds the maximum object size of " << maxObject << " bytes";
+        throw BadValue(oss.str(), Here());
+    }
+}
+
 long RadosHandle::read(void* buffer, long length) {
 
     ASSERT(opened_);
     ASSERT(!write_);
 
     /// @note: librados rejects reads larger than INT_MAX. A short read is fine for the caller.
-    length = std::min<long>(length, std::numeric_limits<int>::max());
+    length = std::min(length, radosMaxReadSize);
 
     int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                     reinterpret_cast<char*>(buffer), length, offset_));
@@ -113,8 +135,7 @@ long RadosHandle::write(const void* buffer, long length) {
         return 0;
     }
 
-    ASSERT(length <= RadosCluster::instance().maxWriteSize());
-    ASSERT((offset_ + length) <= RadosCluster::instance().maxObjectSize());
+    checkWrite(length);
 
     if (truncate_) {
         RadosWriteOp op;

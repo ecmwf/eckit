@@ -7,18 +7,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RadosException::RadosException(const std::string& w) : Exception(w) {}
-
-RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l) : Exception(w, l) {}
-
-RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l, bool quiet) :
-    Exception(w, l, quiet) {}
-
-RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w) :
-    RadosException(w, eckit::CodeLocation(), true) {}
-
-RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w, const eckit::CodeLocation& l) :
-    RadosException(w, l, true) {}
+RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l, int code) :
+    Exception(w, l), code_(code) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

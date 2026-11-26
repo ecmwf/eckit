@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 

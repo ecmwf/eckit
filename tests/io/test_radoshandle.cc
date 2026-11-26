@@ -18,6 +18,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosAsyncHandle.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosHandle.h"
@@ -699,12 +700,12 @@ CASE("Test Rados Handles") {
 
         {
             RadosHandle h(obj);
-            EXPECT_THROWS_AS(h.openForWrite(0), RadosEntityNotFoundException);
-            EXPECT_THROWS_AS(h.openForRead(), RadosEntityNotFoundException);
+            EXPECT_THROWS_AS(h.openForWrite(0), NotFound);
+            EXPECT_THROWS_AS(h.openForRead(), NotFound);
         }
         {
             RadosAsyncHandle h(obj);
-            EXPECT_THROWS_AS(h.openForWrite(0), RadosEntityNotFoundException);
+            EXPECT_THROWS_AS(h.openForWrite(0), NotFound);
         }
     }
 

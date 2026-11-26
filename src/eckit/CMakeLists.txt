@@ -319,6 +319,8 @@ if( eckit_HAVE_RADOS )
     list( APPEND eckit_io_srcs
         io/rados/RadosHandle.cc
         io/rados/RadosHandle.h
+        io/rados/RadosCall.cc
+        io/rados/RadosCall.h
         io/rados/RadosCluster.cc
         io/rados/RadosCluster.h
         io/rados/RadosMultiObjReadHandle.cc

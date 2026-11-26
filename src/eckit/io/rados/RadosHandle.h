@@ -16,6 +16,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
@@ -62,6 +63,9 @@ protected:  // members
     bool truncate_{false};
 
     void open();
+
+    /// @throws BadValue if a write of this length at the current offset exceeds what the cluster accepts
+    void checkWrite(long length) const;
 
     /// Sets up the operation which empties the object and writes to it at the current offset.
     void firstWrite(RadosWriteOp& op, const void* buffer, long length) const;

@@ -10,6 +10,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosObject.h"
@@ -34,8 +35,7 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
         return 0;
     }
 
-    ASSERT(length <= RadosCluster::instance().maxWriteSize());
-    ASSERT((offset_ + length) <= RadosCluster::instance().maxObjectSize());
+    checkWrite(length);
 
     /// @note: bound the amount of data held by in-flight writes
     if (pendingBytes_ >= maxAioBuffSize_) {

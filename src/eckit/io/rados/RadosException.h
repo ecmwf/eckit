@@ -16,24 +16,20 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// A failure reported by the Ceph cluster or its client library, or stored data which is not as expected.
+/// @note: errors with a meaning of their own are thrown as the eckit exception for it instead:
+///   NotFound, AlreadyExists, PermissionDenied and OutOfStorage. See call_rados().
 class RadosException : public eckit::Exception {
 public:
 
-    RadosException(const std::string& msg);
-    RadosException(const std::string& msg, const eckit::CodeLocation& loc);
-    RadosException(const std::string& msg, const eckit::CodeLocation& loc, bool quiet);
-};
+    /// @param code the (negative) error number returned by librados, or 0 if the failure is not one of librados
+    explicit RadosException(const std::string& msg, const eckit::CodeLocation& loc = {}, int code = 0);
 
-//----------------------------------------------------------------------------------------------------------------------
+    int code() const { return code_; }
 
-/// An object, key-value, key or pool does not exist.
-/// @note: this is an ordinary outcome which callers handle, so, unlike other exceptions, it is
-///   not logged as an error when thrown.
-class RadosEntityNotFoundException : public RadosException {
-public:
+private:
 
-    RadosEntityNotFoundException(const std::string& msg);
-    RadosEntityNotFoundException(const std::string& msg, const eckit::CodeLocation& loc);
+    int code_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

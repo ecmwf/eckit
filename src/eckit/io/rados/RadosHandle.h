@@ -4,6 +4,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @author Nicolau Manubens
+/// @author Metin Çakırcalı
 /// @date   June 2019
 
 #pragma once

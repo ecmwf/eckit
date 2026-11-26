@@ -3,6 +3,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Metin Çakırcalı
 /// @date   June 2019
 
 #pragma once

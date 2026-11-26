@@ -19,7 +19,6 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosException.h"
-#include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
@@ -41,9 +40,7 @@ RadosPool::RadosPool(const eckit::URI& uri) {
 RadosPool::RadosPool(std::string pool) : pool_{std::move(pool)} {}
 
 void RadosPool::destroy() const {
-    for (const auto& ns : listNamespaces()) {
-        eckit::RadosNamespace(pool_, ns).destroy();
-    }
+    /// @note: deleting a pool removes all its objects
     RadosCluster::instance().destroyPool(pool_);
 }
 

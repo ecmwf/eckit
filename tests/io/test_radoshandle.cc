@@ -205,6 +205,24 @@ CASE("Test Rados Handles") {
         RadosCluster::instance().removeAll(obj);
     }
 
+    SECTION("RadosMultiObjWriteHandle splits a write larger than the maximum write size") {
+
+        const long size = static_cast<long>(RadosCluster::instance().maxWriteSize()) + 1024 * 1024;
+        Buffer data(size);
+        std::memset(data.data(), 'w', size);
+
+        RadosObject obj(pool.name(), nspace, "large-write");
+
+        std::unique_ptr<DataHandle> h(obj.multipartWriteHandle());
+        h->openForWrite(0);
+        EXPECT(h->write(data.data(), size) == size);
+        h->close();
+
+        EXPECT(RadosCluster::instance().size(obj) == Length(size));
+
+        obj.ensureAllDestroyed();
+    }
+
     SECTION("removeAll removes every part, also when some are already gone") {
 
         const std::string data(100, 'p');

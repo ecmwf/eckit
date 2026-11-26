@@ -90,7 +90,9 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 
     while (length > 0) {
 
+        /// @note: a part can be larger than what a single write operation accepts
         Length len = std::min(Length(maxPartSize_ - Length(written_)), Length(length));
+        len        = std::min(len, RadosCluster::instance().maxWriteSize());
         long l     = (long)len;
         ASSERT(len == Length(l));
 

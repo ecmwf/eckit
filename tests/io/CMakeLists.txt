@@ -56,6 +56,11 @@ endforeach()
 #
 # The Ceph user has no default. It is taken from the ECKIT_RADOS_TEST_USER cmake variable or, if that is
 # not set, from the ECKIT_RADOS_CLUSTER_USER environment variable at the time the tests run.
+set( _rados_test_defs )
+if( eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
+    list( APPEND _rados_test_defs eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
+endif()
+
 set( _rados_test_env )
 if( eckit_HAVE_RADOS AND ECKIT_RADOS_TEST_USER )
     list( APPEND _rados_test_env ECKIT_RADOS_CLUSTER_USER=${ECKIT_RADOS_TEST_USER} )
@@ -73,6 +78,7 @@ ecbuild_add_test( TARGET      eckit_test_radoshandle
                   CONDITION   eckit_HAVE_RADOS
                   LABELS      rados
                   LIBS        eckit
+                  DEFINITIONS ${_rados_test_defs}
                   ENVIRONMENT ${_rados_test_env} )
 
 ecbuild_add_test( TARGET      eckit_test_rados_kv
@@ -80,6 +86,7 @@ ecbuild_add_test( TARGET      eckit_test_rados_kv
                   CONDITION   eckit_HAVE_RADOS
                   LABELS      rados
                   LIBS        eckit
+                  DEFINITIONS ${_rados_test_defs}
                   ENVIRONMENT ${_rados_test_env} )
 
 ecbuild_add_test( TARGET      eckit_rados-performance
@@ -88,6 +95,7 @@ ecbuild_add_test( TARGET      eckit_rados-performance
                   LABELS      rados
                   TEST_DEPENDS get_eckit_io_test_data
                   LIBS        eckit
+                  DEFINITIONS ${_rados_test_defs}
                   ENVIRONMENT ${_rados_test_env} )
 
 add_subdirectory( fam )

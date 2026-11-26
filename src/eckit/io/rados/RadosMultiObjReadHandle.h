@@ -34,13 +34,9 @@ public:  // methods
 public:  // methods
 
     Length openForRead() override;
-    void openForWrite(const Length& length) override;
-    void openForAppend(const Length& length) override;
 
     long read(void* buffer, long length) override;
-    long write(const void* buffer, long length) override;
     void close() override;
-    void flush() override;
     void rewind() override;
     Offset seek(const Offset& offset) override;
     bool canSeek() const override { return true; };
@@ -65,7 +61,6 @@ private:  // members
     bool opened_{false};
 
     Length length_{0};
-    size_t parts_{0};
     Length maxPartSize_{0};
 
     Offset position_{0};

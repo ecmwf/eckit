@@ -44,8 +44,7 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 
     /// @note: only track the completion once the operation has been submitted. Waiting on a
     ///   completion which was never submitted would block forever.
-    auto comp  = std::make_unique<eckit::RadosAIO>();
-    comp->len_ = length;
+    auto comp = std::make_unique<eckit::RadosAIO>();
 
     if (truncate_) {
         RadosWriteOp op;

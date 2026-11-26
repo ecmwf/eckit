@@ -443,13 +443,6 @@ void RadosCluster::truncate(const RadosObject& object, const Length& length) con
     RADOS_CALL(rados_trunc(ioCtx(object), object.name().c_str(), length));
 }
 
-time_t RadosCluster::lastModified(const RadosObject& object) const {
-    uint64_t psize = 0;
-    time_t pmtime  = 0;
-    RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
-    return pmtime;
-}
-
 std::vector<std::string> RadosCluster::listPools() const {
     std::vector<std::string> res;
 

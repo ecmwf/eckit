@@ -36,15 +36,11 @@ public:  // methods
 
 public:  // methods
 
-    Length openForRead() override;
     void openForWrite(const Length& length) override;
-    void openForAppend(const Length& length) override;
 
-    long read(void* buffer, long length) override;
     long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
-    void rewind() override;
 
     Offset position() override;
 

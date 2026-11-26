@@ -19,9 +19,6 @@
 
 namespace eckit {
 
-class Stream;
-
-
 class RadosAttributes {
 public:
 

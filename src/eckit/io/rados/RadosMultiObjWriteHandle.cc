@@ -59,10 +59,6 @@ RadosMultiObjWriteHandle::~RadosMultiObjWriteHandle() {
     }
 }
 
-Length RadosMultiObjWriteHandle::openForRead() {
-    NOTIMP;
-}
-
 void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
 
     ASSERT(!opened_);
@@ -75,15 +71,6 @@ void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
     part_     = 0;
     partOpen_ = false;
     opened_   = true;
-}
-
-void RadosMultiObjWriteHandle::openForAppend(const Length&) {
-    NOTIMP;
-}
-
-long RadosMultiObjWriteHandle::read(void* buffer, long length) {
-
-    NOTIMP;
 }
 
 void RadosMultiObjWriteHandle::openPart() {
@@ -233,10 +220,6 @@ void RadosMultiObjWriteHandle::close() {
     }
 
     closeParts(false);
-}
-
-void RadosMultiObjWriteHandle::rewind() {
-    NOTIMP;
 }
 
 

@@ -47,7 +47,6 @@ void RadosMultiObjReadHandle::load() {
     LOG_DEBUG_LIB(LibEcKit) << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
 
     ASSERT(attr.get("length", length_));
-    ASSERT(attr.get("parts", parts_));
     ASSERT(attr.get("maxsize", maxPartSize_));
     ASSERT(maxPartSize_ > Length(0));
 
@@ -75,14 +74,6 @@ Length RadosMultiObjReadHandle::openForRead() {
     opened_   = true;
 
     return length_;
-}
-
-void RadosMultiObjReadHandle::openForWrite(const Length& length) {
-    NOTIMP;
-}
-
-void RadosMultiObjReadHandle::openForAppend(const Length&) {
-    NOTIMP;
 }
 
 /// @note: every part but the last holds maxPartSize_ bytes, so the part holding a given
@@ -122,14 +113,6 @@ long RadosMultiObjReadHandle::read(void* buffer, long length) {
     }
 
     return result;
-}
-
-long RadosMultiObjReadHandle::write(const void* buffer, long length) {
-    NOTIMP;
-}
-
-void RadosMultiObjReadHandle::flush() {
-    NOTIMP;
 }
 
 eckit::Offset RadosMultiObjReadHandle::seek(const eckit::Offset& offset) {

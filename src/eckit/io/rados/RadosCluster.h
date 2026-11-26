@@ -54,8 +54,6 @@ public:
     Length maxWriteSize() const;
     Length maxObjectSize() const;
 
-    rados_t cluster() const { return cluster_; }
-
     bool poolExists(const std::string& pool) const;
     void createPool(const std::string& pool) const;
     void ensurePool(const std::string& pool) const;
@@ -73,7 +71,6 @@ public:
     /// @returns false if the object did not exist
     bool removeIfExists(const RadosObject& object) const;
     void truncate(const RadosObject& object, const Length& length = 0) const;
-    time_t lastModified(const RadosObject& object) const;
 
     bool exists(const RadosKeyValue& object) const;
     void remove(const RadosKeyValue& object) const;
@@ -104,8 +101,6 @@ private:
     mutable std::vector<std::unique_ptr<RadosIOCtx>> retired_;
     mutable std::mutex ctxMutex_;
 
-    void reset();
-
     /// @returns false if the object does not exist
     bool readAttributes(const RadosObject& object, RadosAttributes& attr) const;
 
@@ -120,7 +115,6 @@ class RadosAIO {
 public:
 
     rados_completion_t comp_{nullptr};
-    size_t len_{0};
     RadosAIO();
     ~RadosAIO();
 

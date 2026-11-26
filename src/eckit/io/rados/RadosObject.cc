@@ -10,6 +10,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
@@ -57,6 +58,14 @@ RadosObject::RadosObject(const eckit::URI& uri) {
 
 RadosObject::RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid) :
     ns_(pool, nspace), oid_(oid) {}
+
+eckit::URI RadosObject::uri() const {
+    if (ns_.name().empty()) {
+        throw eckit::UserError("The object " + str() + " is in the default namespace, which a RADOS URI cannot express",
+                               Here());
+    }
+    return eckit::URI{"rados", eckit::PathName(str())};
+}
 
 std::string RadosObject::str() const {
     return ns_.pool().name() + '/' + ns_.name() + '/' + oid_;

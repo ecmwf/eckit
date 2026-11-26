@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
@@ -40,6 +41,14 @@ RadosNamespace::RadosNamespace(const eckit::URI& uri) {
 }
 
 RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_({pool}), ns_(nspace) {}
+
+eckit::URI RadosNamespace::uri() const {
+    if (ns_.empty()) {
+        throw eckit::UserError(
+            "The namespace " + str() + " is in the default namespace, which a RADOS URI cannot express", Here());
+    }
+    return eckit::URI{"rados", eckit::PathName(str())};
+}
 
 std::string RadosNamespace::str() const {
     return pool_.name() + '/' + ns_;

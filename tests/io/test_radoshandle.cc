@@ -470,6 +470,11 @@ CASE("Test Rados Handles") {
         obj.ensureDestroyed();
         EXPECT_NOT(uri.exists());
 
+        // the default namespace has no URI form
+        EXPECT_THROWS_AS(RadosObject(pool.name(), "", "name").uri(), eckit::UserError);
+        EXPECT_THROWS_AS(RadosNamespace(pool.name(), "").uri(), eckit::UserError);
+        EXPECT(RadosObject(pool.name(), "", "name").str() == pool.name() + "//name");
+
         // malformed URIs are reported as such
         EXPECT_THROWS_AS(RadosObject(URI("rados:pool/name")), eckit::UserError);
         EXPECT_THROWS_AS(RadosObject(URI("rados:pool/ns/name/more")), eckit::UserError);

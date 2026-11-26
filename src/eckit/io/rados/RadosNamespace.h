@@ -33,7 +33,8 @@ public:
 
     const eckit::RadosPool& pool() const { return pool_; }
     const std::string& name() const { return ns_; }
-    eckit::URI uri() const { return eckit::URI{"rados", eckit::PathName(str())}; }
+    /// @note: the default (empty) namespace cannot be expressed in a URI, so this throws for it
+    eckit::URI uri() const;
     std::string str() const;
 
     bool exists() const { return pool_.exists(); };

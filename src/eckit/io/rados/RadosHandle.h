@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <string>
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
@@ -36,6 +37,7 @@ public:  // methods
     long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
+    void rewind() override;
     Offset seek(const Offset& offset) override;
     bool canSeek() const override { return true; };
 
@@ -44,6 +46,7 @@ public:  // methods
     Length size() override;
 
     void print(std::ostream& s) const override;
+    std::string title() const override;
 
 protected:  // members
 
@@ -52,7 +55,6 @@ protected:  // members
     uint64_t offset_;
     bool opened_;
     bool write_;
-    bool first_write_;
 
     void open();
 };

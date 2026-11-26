@@ -9,8 +9,10 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
@@ -62,6 +64,63 @@ CASE("Test Rados Handles") {
         g.close();
 
         EXPECT(buf == std::string(mem));
+
+        obj.ensureDestroyed();
+    }
+
+    SECTION("RadosHandle openForWrite empties an existing object") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "truncate");
+
+        RadosHandle h(obj);
+        h.openForWrite(0);
+        h.write(buf, sizeof(buf));
+        h.close();
+        EXPECT(h.size() == Length(sizeof(buf)));
+
+        // nothing written: the object exists and is empty
+        h.openForWrite(0);
+        h.close();
+        EXPECT(obj.exists());
+        EXPECT(h.size() == Length(0));
+
+        // a shorter rewrite leaves nothing of the previous content
+        h.openForWrite(0);
+        h.write(buf, 4);
+        h.close();
+        EXPECT(h.size() == Length(4));
+
+        obj.ensureDestroyed();
+    }
+
+    SECTION("RadosHandle seek and rewind") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "seek");
+
+        // seek before the first write is honoured
+        RadosHandle h(obj);
+        h.openForWrite(0);
+        EXPECT(h.seek(4) == Offset(4));
+        h.write(buf, 26);
+        EXPECT(h.position() == Offset(30));
+        h.close();
+        EXPECT(h.size() == Length(30));
+
+        char out[8] = {};
+        h.openForRead();
+        EXPECT(h.seek(14) == Offset(14));
+        EXPECT(h.read(out, 3) == 3);
+        EXPECT(std::string(out, 3) == "klm");
+        h.rewind();
+        EXPECT(h.position() == Offset(0));
+        EXPECT(h.seek(4) == Offset(4));
+        EXPECT(h.read(out, 3) == 3);
+        EXPECT(std::string(out, 3) == "abc");
+        h.close();
 
         obj.ensureDestroyed();
     }
@@ -249,16 +308,19 @@ CASE("Test Rados Handles") {
         RadosCluster::instance().removeAll(obj);
     }
 
-    SECTION("RadosAsyncHandle close reports a failed write") {
+    SECTION("Opening a handle on a missing pool fails and leaves it closed") {
 
-        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+        RadosObject obj("eckit-test-no-such-pool", nspace, "missing-pool");
 
-        RadosObject obj("eckit-test-no-such-pool", nspace, "async-fail");
-
-        RadosAsyncHandle h(obj);
-        h.openForWrite(0);
-        EXPECT_THROWS(h.write(buf, sizeof(buf)));
-        h.close();
+        {
+            RadosHandle h(obj);
+            EXPECT_THROWS_AS(h.openForWrite(0), RadosEntityNotFoundException);
+            EXPECT_THROWS_AS(h.openForRead(), RadosEntityNotFoundException);
+        }
+        {
+            RadosAsyncHandle h(obj);
+            EXPECT_THROWS_AS(h.openForWrite(0), RadosEntityNotFoundException);
+        }
     }
 
 #ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS

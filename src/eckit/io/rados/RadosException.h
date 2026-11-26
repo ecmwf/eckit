@@ -27,10 +27,14 @@ public:
 
     RadosException(const std::string& msg);
     RadosException(const std::string& msg, const eckit::CodeLocation& loc);
+    RadosException(const std::string& msg, const eckit::CodeLocation& loc, bool quiet);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// An object, key-value, key or pool does not exist.
+/// @note: this is an ordinary outcome which callers handle, so, unlike other exceptions, it is
+///   not logged as an error when thrown.
 class RadosEntityNotFoundException : public RadosException {
 public:
 

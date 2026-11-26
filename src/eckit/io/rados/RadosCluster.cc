@@ -53,6 +53,18 @@ int call_rados(int code, const char* msg, const char* file, int line, const char
     return code;
 }
 
+bool call_rados_found(int code, const char* msg, const char* file, int line, const char* func) {
+
+    if (code == -ENOENT) {
+        LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL not found: " << msg << std::endl;
+        return false;
+    }
+
+    call_rados(code, msg, file, line, func);
+
+    return true;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class RadosIOCtx {
@@ -122,6 +134,11 @@ RadosAIO::~RadosAIO() {
 void RadosAIO::waitForComplete() const {
     RADOS_CALL(rados_aio_wait_for_complete(comp_));
     RADOS_CALL(rados_aio_get_return_value(comp_));
+}
+
+bool RadosAIO::waitForCompleteIfFound() const {
+    RADOS_CALL(rados_aio_wait_for_complete(comp_));
+    return RADOS_CALL_FOUND(rados_aio_get_return_value(comp_));
 }
 
 void RadosAIO::waitForAll(std::vector<std::unique_ptr<RadosAIO>>& comps) {
@@ -289,13 +306,7 @@ rados_ioctx_t& RadosCluster::ioCtx(const RadosKeyValue& object) const {
 }
 
 bool RadosCluster::poolExists(const std::string& pool) const {
-    try {
-        RADOS_CALL(rados_pool_lookup(cluster_, pool.c_str()));
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
-        return false;
-    }
-    return true;
+    return RADOS_CALL_FOUND(rados_pool_lookup(cluster_, pool.c_str()));
 }
 
 void RadosCluster::createPool(const std::string& pool) const {
@@ -315,6 +326,12 @@ void RadosCluster::ensurePool(const std::string& pool) const {
 }
 
 void RadosCluster::destroyPool(const std::string& pool) const {
+    if (!destroyPoolIfExists(pool)) {
+        throw RadosEntityNotFoundException("Pool " + pool + " does not exist", Here());
+    }
+}
+
+bool RadosCluster::destroyPoolIfExists(const std::string& pool) const {
 
     std::lock_guard lock(ctxMutex_);
 
@@ -328,7 +345,7 @@ void RadosCluster::destroyPool(const std::string& pool) const {
         ctx_.erase(j);
     }
 
-    RADOS_CALL(rados_pool_delete(cluster_, pool.c_str()));
+    return RADOS_CALL_FOUND(rados_pool_delete(cluster_, pool.c_str()));
 }
 
 void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& attr) const {
@@ -342,10 +359,18 @@ void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& 
 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
     RadosAttributes attr;
+    if (!readAttributes(object, attr)) {
+        throw RadosEntityNotFoundException("Object " + object.str() + " does not exist", Here());
+    }
+    return attr;
+}
+
+bool RadosCluster::readAttributes(const RadosObject& object, RadosAttributes& attr) const {
 
     XattrsIterGuard iter;
-    RADOS_CALL(rados_getxattrs(ioCtx(object), object.name().c_str(), &iter.iter_));
-
+    if (!RADOS_CALL_FOUND(rados_getxattrs(ioCtx(object), object.name().c_str(), &iter.iter_))) {
+        return false;
+    }
 
     for (;;) {
         const char* name = nullptr;
@@ -371,20 +396,14 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
         attr.set(name, std::string(val, val + len));
     }
 
-    return attr;
+    return true;
 }
 
 bool RadosCluster::exists(const RadosObject& object) const {
     uint64_t psize = 0;
     time_t pmtime  = 0;
 
-    try {
-        RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
-        return false;
-    }
-    return true;
+    return RADOS_CALL_FOUND(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
 }
 
 /// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
@@ -401,7 +420,13 @@ Length RadosCluster::size(const RadosObject& object) const {
 }
 
 void RadosCluster::remove(const RadosObject& object) const {
-    RADOS_CALL(rados_remove(ioCtx(object), object.name().c_str()));
+    if (!removeIfExists(object)) {
+        throw RadosEntityNotFoundException("Object " + object.str() + " does not exist", Here());
+    }
+}
+
+bool RadosCluster::removeIfExists(const RadosObject& object) const {
+    return RADOS_CALL_FOUND(rados_remove(ioCtx(object), object.name().c_str()));
 }
 
 /// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
@@ -450,14 +475,8 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
 
     /// @note: the end of the listing is reported as ENOENT
     const char* entry = nullptr;
-    while (true) {
-        try {
-            RADOS_CALL(rados_nobjects_list_next(list.ctx_, &entry, NULL, NULL));
-            res.emplace_back(entry);
-        }
-        catch (eckit::RadosEntityNotFoundException& e) {
-            break;
-        }
+    while (RADOS_CALL_FOUND(rados_nobjects_list_next(list.ctx_, &entry, NULL, NULL))) {
+        res.emplace_back(entry);
     }
 
     return res;
@@ -475,36 +494,37 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
 
     const char* entry  = nullptr;
     const char* nspace = nullptr;
-    while (true) {
-        try {
-            RADOS_CALL(rados_nobjects_list_next(list.ctx_, &entry, NULL, &nspace));
-            res.insert(std::string(nspace));
-        }
-        catch (eckit::RadosEntityNotFoundException& e) {
-            break;
-        }
+    while (RADOS_CALL_FOUND(rados_nobjects_list_next(list.ctx_, &entry, NULL, &nspace))) {
+        res.insert(std::string(nspace));
     }
 
     return {res.begin(), res.end()};
 }
 
 void RadosCluster::removeAll(const RadosObject& object) const {
+    if (!removeAllIfExists(object)) {
+        throw RadosEntityNotFoundException("Object " + object.str() + " does not exist", Here());
+    }
+}
+
+bool RadosCluster::removeAllIfExists(const RadosObject& object) const {
+
+    RadosAttributes attr;
+    if (!readAttributes(object, attr)) {
+        return false;
+    }
 
     /// @note: an object written through a single-object handle has no "parts" attribute
     size_t parts = 1;
-    attributes(object).get("parts", parts);
+    attr.get("parts", parts);
 
     /// @note: the first part holds the attributes which describe the others, so it goes last.
     ///   A removal which failed half way can then be repeated.
     for (size_t i = parts; i-- > 1;) {
-        try {
-            remove(RadosObject(object, i));
-        }
-        catch (eckit::RadosEntityNotFoundException& e) {
-            LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl;
-        }
+        removeIfExists(RadosObject(object, i));
     }
-    remove(object);
+
+    return removeIfExists(object);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -68,23 +68,11 @@ bool RadosObject::exists() const {
 }
 
 void RadosObject::ensureDestroyed() const {
-    try {
-
-        eckit::RadosCluster::instance().remove(*this);
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
-        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
-    }
+    eckit::RadosCluster::instance().removeIfExists(*this);
 }
 
 void RadosObject::ensureAllDestroyed() const {
-    try {
-
-        eckit::RadosCluster::instance().removeAll(*this);
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
-        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
-    }
+    eckit::RadosCluster::instance().removeAllIfExists(*this);
 }
 
 eckit::DataHandle* RadosObject::dataHandle() const {

@@ -18,10 +18,14 @@ RadosException::RadosException(const std::string& w) : Exception(w) {}
 
 RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l) : Exception(w, l) {}
 
-RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w) : RadosException(w) {}
+RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l, bool quiet) :
+    Exception(w, l, quiet) {}
+
+RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w) :
+    RadosException(w, eckit::CodeLocation(), true) {}
 
 RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w, const eckit::CodeLocation& l) :
-    RadosException(w, l) {}
+    RadosException(w, l, true) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

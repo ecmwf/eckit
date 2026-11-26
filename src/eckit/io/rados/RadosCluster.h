@@ -28,6 +28,11 @@ int call_rados(int code, const char* msg, const char* file, int line, const char
 
 #define RADOS_CALL(a) eckit::call_rados(a, #a, __FILE__, __LINE__, __func__)
 
+/// Same as call_rados, but reports ENOENT by returning false instead of throwing
+bool call_rados_found(int code, const char* msg, const char* file, int line, const char* func);
+
+#define RADOS_CALL_FOUND(a) eckit::call_rados_found(a, #a, __FILE__, __LINE__, __func__)
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class RadosObject;
@@ -54,6 +59,8 @@ public:
     void createPool(const std::string& pool) const;
     void ensurePool(const std::string& pool) const;
     void destroyPool(const std::string& pool) const;
+    /// @returns false if the pool did not exist
+    bool destroyPoolIfExists(const std::string& pool) const;
 
     void attributes(const RadosObject& object, const RadosAttributes& attr) const;
 
@@ -62,6 +69,8 @@ public:
     bool exists(const RadosObject& object) const;
     Length size(const RadosObject& object) const;
     void remove(const RadosObject& object) const;
+    /// @returns false if the object did not exist
+    bool removeIfExists(const RadosObject& object) const;
     void truncate(const RadosObject& object, const Length& length = 0) const;
     time_t lastModified(const RadosObject& object) const;
 
@@ -75,6 +84,8 @@ public:
     // For multi-object items
 
     void removeAll(const RadosObject& object) const;
+    /// @returns false if the object did not exist
+    bool removeAllIfExists(const RadosObject& object) const;
 
     static const RadosCluster& instance();
 
@@ -94,6 +105,9 @@ private:
 
     void reset();
 
+    /// @returns false if the object does not exist
+    bool readAttributes(const RadosObject& object, RadosAttributes& attr) const;
+
 public:
 
     static void error(int code, const char* msg, const char* file, int line, const char* func);
@@ -110,6 +124,8 @@ public:
     ~RadosAIO();
 
     void waitForComplete() const;
+    /// @returns false if the operation failed because its target does not exist
+    bool waitForCompleteIfFound() const;
 
     /// Waits for every completion and empties the list, also if some of them failed.
     /// Rethrows the first failure once all completions have been waited for.

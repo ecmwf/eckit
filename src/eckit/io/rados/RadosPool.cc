@@ -47,12 +47,7 @@ void RadosPool::destroy() const {
 }
 
 void RadosPool::ensureDestroyed() const {
-    try {
-        destroy();
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
-        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
-    }
+    RadosCluster::instance().destroyPoolIfExists(pool_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosNamespace.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/MemoryStream.h"
 #include "eckit/utils/Tokenizer.h"
@@ -80,13 +81,7 @@ void RadosKeyValue::ensureCreated() const {
 }
 
 void RadosKeyValue::ensureDestroyed() const {
-    try {
-
-        eckit::RadosCluster::instance().remove(*this);
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
-        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
-    }
+    eckit::RadosCluster::instance().removeIfExists(eckit::RadosObject{ns_.pool().name(), ns_.name(), oid_});
 }
 
 /// @note: librados cannot query the size of a value, so the value is fetched
@@ -122,10 +117,7 @@ bool RadosKeyValue::has(const std::string& key) const {
                                          ));
 
     /// @note: a key-value which does not exist has no keys
-    try {
-        comp.waitForComplete();
-    }
-    catch (eckit::RadosEntityNotFoundException& e) {
+    if (!comp.waitForCompleteIfFound()) {
         return false;
     }
 

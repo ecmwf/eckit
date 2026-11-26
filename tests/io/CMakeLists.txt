@@ -56,6 +56,13 @@ endforeach()
 #
 # The Ceph user has no default. It is taken from the ECKIT_RADOS_TEST_USER cmake variable or, if that is
 # not set, from the ECKIT_RADOS_CLUSTER_USER environment variable at the time the tests run.
+#
+# The eckit RADOS headers include the librados ones, which eckit does not pass on to what links to it.
+set( _rados_test_libs )
+if( eckit_HAVE_RADOS )
+    list( APPEND _rados_test_libs Ceph::RADOS )
+endif()
+
 set( _rados_test_defs )
 if( eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
     list( APPEND _rados_test_defs eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
@@ -77,7 +84,7 @@ ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   eckit_HAVE_RADOS
                   LABELS      rados
-                  LIBS        eckit
+                  LIBS        eckit ${_rados_test_libs}
                   DEFINITIONS ${_rados_test_defs}
                   ENVIRONMENT ${_rados_test_env} )
 
@@ -85,7 +92,7 @@ ecbuild_add_test( TARGET      eckit_test_rados_kv
                   SOURCES     test_rados_kv.cc
                   CONDITION   eckit_HAVE_RADOS
                   LABELS      rados
-                  LIBS        eckit
+                  LIBS        eckit ${_rados_test_libs}
                   DEFINITIONS ${_rados_test_defs}
                   ENVIRONMENT ${_rados_test_env} )
 
@@ -94,7 +101,7 @@ ecbuild_add_test( TARGET      eckit_rados-performance
                   CONDITION   HAVE_EXTRA_TESTS AND eckit_HAVE_RADOS
                   LABELS      rados
                   TEST_DEPENDS get_eckit_io_test_data
-                  LIBS        eckit
+                  LIBS        eckit ${_rados_test_libs}
                   DEFINITIONS ${_rados_test_defs}
                   ENVIRONMENT ${_rados_test_env} )
 

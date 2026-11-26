@@ -12,6 +12,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosName.h"
+#include "eckit/log/CodeLocation.h"
 
 namespace eckit {
 

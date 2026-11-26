@@ -11,6 +11,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit::rados {

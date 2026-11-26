@@ -6,12 +6,11 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <exception>
-#include <map>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -22,6 +21,7 @@
 #include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosMultiObject.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Log.h"
 
 

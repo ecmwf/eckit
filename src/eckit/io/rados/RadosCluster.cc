@@ -26,6 +26,7 @@
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosObject.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

@@ -3,6 +3,11 @@
 
 #include "eckit/io/rados/RadosException.h"
 
+#include <string>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

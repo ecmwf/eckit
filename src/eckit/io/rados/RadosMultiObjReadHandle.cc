@@ -7,11 +7,9 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <limits>
 #include <ostream>
 #include <string>
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
@@ -21,6 +19,7 @@
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/io/rados/RadosObject.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

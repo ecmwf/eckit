@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"

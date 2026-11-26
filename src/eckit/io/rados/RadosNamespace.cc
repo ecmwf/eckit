@@ -51,8 +51,9 @@ std::vector<eckit::RadosObject> RadosNamespace::listObjects() const {
 
     std::vector<eckit::RadosObject> res;
 
-    for (const auto& i : eckit::RadosCluster::instance().listObjects(pool_.name(), ns_))
+    for (const auto& i : eckit::RadosCluster::instance().listObjects(pool_.name(), ns_)) {
         res.emplace_back(pool_.name(), ns_, i);
+    }
 
     return res;
 }

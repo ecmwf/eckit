@@ -81,6 +81,32 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+
+/// Ends an extended attributes iteration, also when leaving through an exception.
+struct XattrsIterGuard {
+    rados_xattrs_iter_t iter_{nullptr};
+    ~XattrsIterGuard() {
+        if (iter_) {
+            rados_getxattrs_end(iter_);
+        }
+    }
+};
+
+/// Closes an object listing, also when leaving through an exception.
+struct ListCtxGuard {
+    rados_list_ctx_t ctx_{nullptr};
+    ~ListCtxGuard() {
+        if (ctx_) {
+            rados_nobjects_list_close(ctx_);
+        }
+    }
+};
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
 RadosAIO::RadosAIO() {
     LOG_DEBUG_LIB(LibEcKit) << "RadosAIO => rados_aio_create_completion()" << std::endl;
     RADOS_CALL(rados_aio_create_completion(NULL, NULL, NULL, &comp_));
@@ -181,9 +207,16 @@ RadosCluster::RadosCluster() : cluster_(0) {
     /* Initialize the cluster handle with the "ceph" cluster name and the "client.admin" user */
     RADOS_CALL(rados_create2(&cluster_, radosClusterName.c_str(), radosClusterUser.c_str(), flags));
 
-    RADOS_CALL(rados_conf_read_file(cluster_, radosClusterConfPath.fullName().path().c_str()));
+    /// @note: the destructor does not run if the constructor fails
+    try {
+        RADOS_CALL(rados_conf_read_file(cluster_, radosClusterConfPath.fullName().path().c_str()));
 
-    RADOS_CALL(rados_connect(cluster_));
+        RADOS_CALL(rados_connect(cluster_));
+    }
+    catch (...) {
+        rados_shutdown(cluster_);
+        throw;
+    }
 }
 
 RadosCluster::~RadosCluster() {
@@ -298,8 +331,8 @@ void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
     RadosAttributes attr;
 
-    rados_xattrs_iter_t iter = nullptr;
-    RADOS_CALL(rados_getxattrs(ioCtx(object), object.name().c_str(), &iter));
+    XattrsIterGuard iter;
+    RADOS_CALL(rados_getxattrs(ioCtx(object), object.name().c_str(), &iter.iter_));
 
 
     for (;;) {
@@ -307,7 +340,7 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
         const char* val  = nullptr;
         size_t len       = 0;
 
-        RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
+        RADOS_CALL(rados_getxattrs_next(iter.iter_, &name, &val, &len));
         if (!name) {
             break;
         }
@@ -325,8 +358,6 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
         attr.set(name, std::string(val, val + len));
     }
-
-    rados_getxattrs_end(iter);
 
     return attr;
 }
@@ -402,14 +433,14 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
 
     std::vector<std::string> res;
 
-    rados_ioctx_t ioctx = ioCtx(pool, nspace);
-    rados_list_ctx_t listctx;
-    RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
+    ListCtxGuard list;
+    RADOS_CALL(rados_nobjects_list_open(ioCtx(pool, nspace), &list.ctx_));
 
-    const char* entry;
+    /// @note: the end of the listing is reported as ENOENT
+    const char* entry = nullptr;
     while (true) {
         try {
-            RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, NULL));
+            RADOS_CALL(rados_nobjects_list_next(list.ctx_, &entry, NULL, NULL));
             res.emplace_back(entry);
         }
         catch (eckit::RadosEntityNotFoundException& e) {
@@ -417,33 +448,30 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
         }
     }
 
-    rados_nobjects_list_close(listctx);
-
     return res;
 }
 
+/// @note: librados cannot list namespaces, so this goes through every object of the pool
 std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) const {
     std::set<std::string> res;
 
     /// @note: not cached, as it must never be used for operations on objects
     RadosIOCtx all(cluster_, pool, "", true);
 
-    rados_list_ctx_t listctx = nullptr;
-    RADOS_CALL(rados_nobjects_list_open(all.io_, &listctx));
+    ListCtxGuard list;
+    RADOS_CALL(rados_nobjects_list_open(all.io_, &list.ctx_));
 
     const char* entry  = nullptr;
     const char* nspace = nullptr;
     while (true) {
         try {
-            RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, &nspace));
+            RADOS_CALL(rados_nobjects_list_next(list.ctx_, &entry, NULL, &nspace));
             res.insert(std::string(nspace));
         }
         catch (eckit::RadosEntityNotFoundException& e) {
             break;
         }
     }
-
-    rados_nobjects_list_close(listctx);
 
     return {res.begin(), res.end()};
 }

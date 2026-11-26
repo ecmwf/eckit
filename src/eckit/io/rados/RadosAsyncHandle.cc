@@ -70,10 +70,7 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 }
 
 void RadosAsyncHandle::flush() {
-    for (const auto& comp : comps_) {
-        comp->waitForComplete();
-    }
-    comps_.clear();
+    RadosAIO::waitForAll(comps_);
 }
 
 void RadosAsyncHandle::close() {

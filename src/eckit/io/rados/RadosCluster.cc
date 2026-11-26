@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <exception>
+#include <memory>
 #include <mutex>
 #include <ostream>
 #include <set>
@@ -101,6 +103,24 @@ RadosAIO::~RadosAIO() {
 void RadosAIO::waitForComplete() const {
     RADOS_CALL(rados_aio_wait_for_complete(comp_));
     RADOS_CALL(rados_aio_get_return_value(comp_));
+}
+
+void RadosAIO::waitForAll(std::vector<std::unique_ptr<RadosAIO>>& comps) {
+    std::exception_ptr first;
+    for (const auto& comp : comps) {
+        try {
+            comp->waitForComplete();
+        }
+        catch (...) {
+            if (!first) {
+                first = std::current_exception();
+            }
+        }
+    }
+    comps.clear();
+    if (first) {
+        std::rethrow_exception(first);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <ctime>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -106,6 +107,10 @@ public:
     ~RadosAIO();
 
     void waitForComplete() const;
+
+    /// Waits for every completion and empties the list, also if some of them failed.
+    /// Rethrows the first failure once all completions have been waited for.
+    static void waitForAll(std::vector<std::unique_ptr<RadosAIO>>& comps);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

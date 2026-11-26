@@ -53,10 +53,7 @@ void RadosAsyncKeyValue::remove(const std::string& key) {
 }
 
 void RadosAsyncKeyValue::flush() {
-    for (const auto& comp : comps_) {
-        comp->waitForComplete();
-    }
-    comps_.clear();
+    RadosAIO::waitForAll(comps_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

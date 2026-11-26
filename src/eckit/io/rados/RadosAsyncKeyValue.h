@@ -26,25 +26,39 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// A key-value whose modifications are submitted without waiting for them.
+/// They are only known to have been applied, or to have failed, once flush() returns.
 class RadosAsyncKeyValue : public RadosKeyValue {
 
 public:  // methods
 
+    /// @param maxAioBuffSize number of pending modifications above which the next one flushes first
     explicit RadosAsyncKeyValue(const eckit::URI& uri, size_t maxAioBuffSize = 1024 * 1024);
 
     RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid,
                        size_t maxAioBuffSize = 1024 * 1024);
 
-    void ensureCreated();
+    ~RadosAsyncKeyValue() override;
 
-    long put(const std::string& key, const void* buf, const long& len);
-    void remove(const std::string& key);
+    RadosAsyncKeyValue(const RadosAsyncKeyValue&)            = delete;
+    RadosAsyncKeyValue& operator=(const RadosAsyncKeyValue&) = delete;
+    RadosAsyncKeyValue(RadosAsyncKeyValue&&)                 = default;
+    RadosAsyncKeyValue& operator=(RadosAsyncKeyValue&&)      = default;
 
-    void flush();
+    void ensureCreated() const override;
+
+    long put(const std::string& key, const void* buf, const long& len) const override;
+    void remove(const std::string& key) const override;
+
+    void flush() const;
+
+private:  // methods
+
+    void track(std::unique_ptr<eckit::RadosAIO> comp) const;
 
 private:  // members
 
-    std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
+    mutable std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
 
     size_t maxAioBuffSize_;
 };

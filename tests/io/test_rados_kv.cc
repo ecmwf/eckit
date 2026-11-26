@@ -16,6 +16,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/rados/RadosAsyncKeyValue.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 #ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
@@ -135,6 +136,43 @@ CASE("Rados KeyValue") {
 
         // destroy kv
         EXPECT(kv.exists());
+        kv.ensureDestroyed();
+        EXPECT_NOT(kv.exists());
+    }
+
+    SECTION("RadosAsyncKeyValue operations") {
+
+        const std::string val = "abcdefghijklmnopqrstuvwxyz";
+
+        {
+            // at most 2 pending modifications
+            RadosAsyncKeyValue kv(pool.name(), nspace, "async-kv", 2);
+
+            kv.ensureCreated();
+            for (const std::string key : {"a", "b", "c", "d", "e"}) {
+                EXPECT(kv.put(key, val.data(), val.size()) == long(val.size()));
+            }
+            kv.flush();
+
+            EXPECT(kv.exists());
+            EXPECT(kv.keys().size() == 5);
+            EXPECT(kv.size("e") == Length(val.size()));
+
+            // through the base class the modifications are still asynchronous
+            const RadosKeyValue& base = kv;
+            base.remove("a");
+            base.remove("b");
+            kv.flush();
+            EXPECT(kv.keys().size() == 3);
+
+            // left pending: the destructor waits for it
+            kv.remove("c");
+        }
+
+        RadosKeyValue kv(pool.name(), nspace, "async-kv");
+        EXPECT(kv.keys().size() == 2);
+        EXPECT_NOT(kv.has("c"));
+
         kv.ensureDestroyed();
         EXPECT_NOT(kv.exists());
     }

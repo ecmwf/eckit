@@ -32,14 +32,6 @@ void RadosAsyncHandle::print(std::ostream& out) const {
     out << "RadosAsyncHandle[" << object_.str() << "]";
 }
 
-size_t RadosAsyncHandle::totalCompsBuffSize() const {
-    size_t buff_size = 0;
-    for (const auto& comp : comps_) {
-        buff_size += comp->len_;
-    }
-    return buff_size;
-}
-
 long RadosAsyncHandle::write(const void* buffer, long length) {
 
     ASSERT(length);
@@ -49,7 +41,10 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
     ASSERT(length <= RadosCluster::instance().maxWriteSize());
     ASSERT((offset_ + length) <= RadosCluster::instance().maxObjectSize());
 
-    ASSERT(totalCompsBuffSize() < maxAioBuffSize_);
+    /// @note: bound the amount of data held by in-flight writes
+    if (pendingBytes_ >= maxAioBuffSize_) {
+        flush();
+    }
 
     /// @note: only track the completion once the operation has been submitted. Waiting on a
     ///   completion which was never submitted would block forever.
@@ -67,6 +62,7 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
     }
 
     comps_.push_back(std::move(comp));
+    pendingBytes_ += length;
 
     offset_ += length;
 
@@ -74,6 +70,7 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 }
 
 void RadosAsyncHandle::flush() {
+    pendingBytes_ = 0;
     RadosAIO::waitForAll(comps_);
 }
 

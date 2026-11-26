@@ -45,8 +45,9 @@ public:
     eckit::DataHandle* asyncDataHandle(size_t maxAioBuffSize = 1024 * 1024) const;
     eckit::DataHandle* rangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
     eckit::DataHandle* multipartWriteHandle(const eckit::Length& maxPartSize = 0) const;
-    eckit::DataHandle* asyncMultipartWriteHandle(const eckit::Length& maxPartSize = 0, size_t maxAioBuffSize = 1024,
-                                                 size_t maxHandleBuffSize = 1024) const;
+    eckit::DataHandle* asyncMultipartWriteHandle(const eckit::Length& maxPartSize = 0,
+                                                 size_t maxAioBuffSize            = 1024 * 1024,
+                                                 size_t maxHandleBuffSize         = 1024) const;
     eckit::DataHandle* multipartRangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
 
 private:

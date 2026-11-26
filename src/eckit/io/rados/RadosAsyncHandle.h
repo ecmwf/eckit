@@ -40,14 +40,11 @@ public:  // methods
 
     void print(std::ostream& out) const override;
 
-private:  // methods
-
-    size_t totalCompsBuffSize() const;
-
 private:  // members
 
     std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
-    size_t maxAioBuffSize_;
+    size_t maxAioBuffSize_;  ///< bytes of in-flight writes above which write() flushes first
+    size_t pendingBytes_{0};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

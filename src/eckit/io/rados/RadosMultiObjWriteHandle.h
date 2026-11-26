@@ -34,7 +34,7 @@ class RadosMultiObjWriteHandle : public eckit::DataHandle {
 public:  // methods
 
     RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0,
-                             size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024);
+                             size_t maxAioBuffSize = 1024 * 1024, size_t maxHandleBuffSize = 1024);
 
     std::string title() const override;
 

@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cstring>
+#include <memory>
 #include <string>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
@@ -160,6 +162,50 @@ CASE("Test Rados Handles") {
         EXPECT(RadosCluster::instance().size(obj) == Length(8 * data.size()));
 
         obj.ensureDestroyed();
+    }
+
+    SECTION("RadosAsyncHandle flushes when the pending data limit is reached") {
+
+        const std::string data(4096, 'y');
+
+        RadosObject obj(pool.name(), nspace, "async-limit");
+
+        RadosAsyncHandle h(obj, 1024);
+        h.openForWrite(0);
+        for (int i = 0; i < 4; ++i) {
+            h.write(data.data(), data.size());
+        }
+        h.close();
+
+        EXPECT(RadosCluster::instance().size(obj) == Length(4 * data.size()));
+
+        obj.ensureDestroyed();
+    }
+
+    SECTION("Asynchronous RadosMultiObjWriteHandle accepts several writes per part") {
+
+        const std::string data(4096, 'z');
+
+        RadosObject obj(pool.name(), nspace, "async-multi");
+
+        std::unique_ptr<DataHandle> h(obj.asyncMultipartWriteHandle(10000));
+        h->openForWrite(0);
+        for (int i = 0; i < 5; ++i) {
+            h->write(data.data(), data.size());
+        }
+        h->close();
+
+        Buffer mem(5 * data.size());
+        RadosMultiObjReadHandle g(obj);
+
+        EXPECT(g.openForRead() == Length(5 * data.size()));
+        long read = g.read(mem, mem.size());
+        g.close();
+
+        EXPECT(read == long(5 * data.size()));
+        EXPECT(std::string(static_cast<const char*>(mem.data()), mem.size()) == std::string(5 * data.size(), 'z'));
+
+        RadosCluster::instance().removeAll(obj);
     }
 
     SECTION("RadosAsyncHandle close reports a failed write") {

@@ -61,6 +61,18 @@ std::string RadosKeyValue::str() const {
     return ns_.pool().name() + '/' + ns_.name() + '/' + oid_;
 }
 
+namespace {
+
+/// @note: keys are text. librados takes the key to resume a listing from as a C string, so a key
+///   with a NUL byte could be stored but not listed.
+void checkKey(const std::string& key) {
+    if (key.find('\0') != std::string::npos) {
+        throw eckit::UserError("Invalid RADOS key: it must not contain a NUL byte", Here());
+    }
+}
+
+}  // namespace
+
 bool RadosKeyValue::exists() const {
     return eckit::RadosCluster::instance().exists(*this);
 }
@@ -102,6 +114,8 @@ eckit::Length RadosKeyValue::size(const std::string& key) const {
 
 bool RadosKeyValue::has(const std::string& key) const {
 
+    checkKey(key);
+
     eckit::RadosReadOp op{};
 
     eckit::RadosIter iter{};
@@ -134,6 +148,8 @@ bool RadosKeyValue::has(const std::string& key) const {
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key, const void* buf, const long& buflen,
                                                          long& res) const {
+
+    checkKey(key);
 
     eckit::RadosWriteOp op{};
 
@@ -170,6 +186,8 @@ long RadosKeyValue::put(const std::string& key, const void* buf, const long& len
 
 /// @note: returns a RadosIter holding the value data, and sets val to point to the data in it
 std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, char*& val, size_t& len) const {
+
+    checkKey(key);
 
     eckit::RadosReadOp op{};
 
@@ -252,6 +270,8 @@ eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& value, con
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) const {
 
+    checkKey(key);
+
     eckit::RadosWriteOp op{};
 
     const char* key_c = key.c_str();
@@ -332,6 +352,15 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
             break;
         }
         startAfter = res.back();
+
+        /// @note: such a key, written by another client, cannot be passed as the place to resume
+        ///   from: the listing would restart from an earlier key and never end.
+        if (more && startAfter.find('\0') != std::string::npos) {
+            throw eckit::UserError("Cannot list the keys of KeyValue " + str() +
+                                       ": it holds a key with a NUL byte and more than " +
+                                       std::to_string(keysPerQuery) + " keys",
+                                   Here());
+        }
     }
 
     return res;

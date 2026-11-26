@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include <rados/librados.h>
+
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -11,6 +14,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosAsyncKeyValue.h"
+#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 #ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
@@ -140,6 +144,47 @@ CASE("Rados KeyValue") {
         EXPECT(kv.exists());
         kv.ensureDestroyed();
         EXPECT_NOT(kv.exists());
+    }
+
+    SECTION("Keys are text") {
+
+        const std::string nul("a\0b", 3);
+        const char one = '1';
+
+        RadosKeyValue kv(pool.name(), nspace, "text-keys");
+        kv.ensureCreated();
+
+        EXPECT_THROWS_AS(kv.put(nul, &one, 1), eckit::UserError);
+        EXPECT_THROWS_AS(kv.has(nul), eckit::UserError);
+        EXPECT_THROWS_AS(kv.size(nul), eckit::UserError);
+        EXPECT_THROWS_AS(kv.remove(nul), eckit::UserError);
+        char out;
+        EXPECT_THROWS_AS(kv.get(nul, &out, 1), eckit::UserError);
+        EXPECT(kv.keys().empty());
+
+        // keys with a NUL byte written by another client
+        {
+            const std::vector<std::string> foreign = {std::string("a\0b", 3), std::string("a\0c", 3), "zz"};
+            std::vector<const char*> keys;
+            std::vector<const char*> vals;
+            std::vector<size_t> key_lens;
+            std::vector<size_t> val_lens;
+            for (const auto& k : foreign) {
+                keys.push_back(k.data());
+                key_lens.push_back(k.size());
+                vals.push_back(&one);
+                val_lens.push_back(1);
+            }
+            RadosWriteOp op;
+            rados_write_op_omap_set2(op.op_, keys.data(), vals.data(), key_lens.data(), val_lens.data(), keys.size());
+            RADOS_CALL(rados_write_op_operate(op.op_, RadosCluster::instance().ioCtx(kv), kv.name().c_str(), NULL, 0));
+        }
+
+        // they are listed when everything fits in one request, and reported, rather than looped on, otherwise
+        EXPECT(kv.keys().size() == 3);
+        EXPECT_THROWS_AS(kv.keys(1), eckit::UserError);
+
+        kv.ensureDestroyed();
     }
 
     SECTION("RadosAsyncKeyValue operations") {

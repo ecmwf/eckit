@@ -90,9 +90,12 @@ long RadosHandle::read(void* buffer, long length) {
 
 long RadosHandle::write(const void* buffer, long length) {
 
-    ASSERT(length);
     ASSERT(opened_);
     ASSERT(write_);
+
+    if (length == 0) {
+        return 0;
+    }
 
     ASSERT(length <= RadosCluster::instance().maxWriteSize());
     ASSERT((offset_ + length) <= RadosCluster::instance().maxObjectSize());

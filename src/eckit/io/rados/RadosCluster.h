@@ -35,7 +35,7 @@ class RadosKeyValue;
 class RadosAttributes;
 class RadosIOCtx;
 
-using NamespaceCtxCache = std::map<std::string, RadosIOCtx*>;
+using NamespaceCtxCache = std::map<std::string, std::unique_ptr<RadosIOCtx>>;
 using PoolCtxCache      = std::map<std::string, NamespaceCtxCache>;
 
 class RadosCluster {
@@ -87,6 +87,9 @@ private:
 
     rados_t cluster_;
     mutable PoolCtxCache ctx_;
+
+    /// Contexts of destroyed pools. References to them may still be held, so they live as long as the cluster.
+    mutable std::vector<std::unique_ptr<RadosIOCtx>> retired_;
     mutable std::mutex ctxMutex_;
 
     void reset();

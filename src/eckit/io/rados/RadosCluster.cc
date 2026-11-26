@@ -18,6 +18,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/config/LibEcKit.h"
@@ -191,14 +192,8 @@ RadosCluster::~RadosCluster() {
 
     std::lock_guard lock(ctxMutex_);
 
-    for (auto& [pool, nsCache] : ctx_) {
-        for (auto& [nspace, radosIOCtx] : nsCache) {
-            delete radosIOCtx;
-        }
-        nsCache.clear();
-    }
-
     ctx_.clear();
+    retired_.clear();
 
     LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => rados_shutdown(cluster_)" << std::endl;
 
@@ -233,19 +228,17 @@ rados_ioctx_t& RadosCluster::ioCtx(const std::string& pool, const std::string& n
     std::lock_guard lock(ctxMutex_);
 
     auto j = ctx_.find(pool);
-    if (j == ctx_.end()) {
-        ctx_[pool] = NamespaceCtxCache{};
-        j          = ctx_.find(pool);
+    if (j != ctx_.end()) {
+        auto k = j->second.find(nspace);
+        if (k != j->second.end()) {
+            return k->second->io_;
+        }
     }
 
-    auto k = (*j).second.find(nspace);
+    /// @note: created before the cache is touched, so that a failure leaves no entry behind
+    auto ctx = std::make_unique<RadosIOCtx>(cluster_, pool, nspace);
 
-    if (k == (*j).second.end()) {
-        (*j).second[nspace] = new RadosIOCtx(cluster_, pool, nspace);
-        k                   = (*j).second.find(nspace);
-    }
-
-    return (*k).second->io_;
+    return (ctx_[pool][nspace] = std::move(ctx))->io_;
 }
 
 rados_ioctx_t& RadosCluster::ioCtx(const RadosObject& object) const {
@@ -280,21 +273,14 @@ void RadosCluster::destroyPool(const std::string& pool) const {
 
     std::lock_guard lock(ctxMutex_);
 
-    for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
-
-        if ((*j).first != pool) {
-            continue;
+    /// @note: the contexts are dropped from the cache but not destroyed, since references to
+    ///   them handed out by ioCtx() may still be in use.
+    auto j = ctx_.find(pool);
+    if (j != ctx_.end()) {
+        for (auto& [nspace, ctx] : j->second) {
+            retired_.push_back(std::move(ctx));
         }
-
-        for (auto& k : (*j).second) {
-            delete k.second;
-        }
-
-        (*j).second.clear();
-
         ctx_.erase(j);
-
-        break;
     }
 
     RADOS_CALL(rados_pool_delete(cluster_, pool.c_str()));

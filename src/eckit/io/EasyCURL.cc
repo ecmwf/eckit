@@ -360,6 +360,7 @@ public:
     virtual unsigned long long contentLength(bool& present) = 0;
     virtual size_t read(void* ptr, size_t size)             = 0;
     virtual void ensureHeaders()                            = 0;
+    virtual void ensureComplete()                           = 0;
 
     std::string url_;
     CURLHandle* ch_;
@@ -394,6 +395,9 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
 
     if (auto j = HTTP_CODES.find(code_); j != HTTP_CODES.end()) {
         if (j->second.redirect_) {
+            // libcurl sets the redirect URL when the transfer completes, later than the headers (if streaming)
+            ensureComplete();
+
             char* url = nullptr;
             _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
             ASSERT(url);
@@ -445,6 +449,8 @@ public:
     size_t read(void* ptr, size_t size) override { NOTIMP; }
 
     void ensureHeaders() override {}
+
+    void ensureComplete() override {}
 
     void print(std::ostream&) const override;
 };
@@ -562,6 +568,10 @@ public:
                 break;
             }
         }
+    }
+
+    void ensureComplete() override {
+        while (waitForData() != 0) {}
     }
 
     void print(std::ostream&) const override;

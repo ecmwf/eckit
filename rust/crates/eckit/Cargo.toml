@@ -55,3 +55,19 @@ required-features = ["geo"]
 [[test]]
 name = "geo_search"
 required-features = ["geo"]
+
+[[example]]
+name = "grids"
+required-features = ["geo"]
+
+[[example]]
+name = "areas"
+required-features = ["geo"]
+
+[[example]]
+name = "projection"
+required-features = ["geo"]
+
+[[example]]
+name = "search"
+required-features = ["geo"]

@@ -49,6 +49,7 @@ mod ffi {
 
     unsafe extern "C++" {
         include!("EckitBridge.h");
+        include!("eckit_exceptions.h");
 
         // ==================== Runtime ====================
 

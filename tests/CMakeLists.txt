@@ -13,6 +13,7 @@ add_subdirectory( log )
 add_subdirectory( maths )
 add_subdirectory( memory )
 add_subdirectory( mpi )
+add_subdirectory( net )
 add_subdirectory( option )
 add_subdirectory( parser )
 add_subdirectory( runtime )
@@ -26,6 +27,10 @@ add_subdirectory( value )
 
 if( eckit_HAVE_ECKIT_SQL )
     add_subdirectory( sql )
+endif()
+
+if( eckit_HAVE_ECKIT_CACHE )
+    add_subdirectory( cache )
 endif()
 
 if( eckit_HAVE_ECKIT_CODEC )

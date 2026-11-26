@@ -17,6 +17,7 @@ namespace eckit {
 
 
 class Url;
+class ConcurrencyLimiter;
 
 class HttpServer : public HtmlResource {
 public:
@@ -24,6 +25,7 @@ public:
     // -- Contructors
 
     HttpServer(int port, bool visible = false);
+    HttpServer(int port, bool visible, ConcurrencyLimiter& limiter, bool preferProcess);
 
     // -- Destructor
 

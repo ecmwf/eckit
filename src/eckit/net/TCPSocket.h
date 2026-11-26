@@ -6,6 +6,8 @@
 
 #include <netinet/in.h>
 
+#include <chrono>
+
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/net/SocketOptions.h"
@@ -58,6 +60,17 @@ public:  // methods
     long read(void* buf, long length) const;
 
     long rawRead(void*, long);  // Non-blocking version
+
+    enum class InputStatus {
+        Ready,
+        Closed,
+        Timeout
+    };
+
+    /// Poll for input, up to a timeout.
+    /// Returns Ready if there is remaining unread data, Closed if the peer closes the connection or Timeout after the
+    /// time limit. Throws on socket errors.
+    InputStatus waitForInput(std::chrono::milliseconds timeout) const;
 
     bool isConnected() const { return socket_ != -1; }
 

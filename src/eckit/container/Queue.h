@@ -13,6 +13,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 

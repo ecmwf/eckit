@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "RadosTestUtils.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
@@ -16,11 +19,8 @@
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
-#include "eckit/io/rados/RadosObject.h"
-#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
 #include "eckit/io/rados/RadosNamespace.h"
-#endif
-#include "RadosTestUtils.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
@@ -294,6 +294,49 @@ CASE("Test Rados Handles") {
         g.close();
 
         obj.ensureAllDestroyed();
+    }
+
+    SECTION("The empty namespace is the default namespace") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject inDefault(pool.name(), "", "eckit-test-default-ns");
+        RadosObject inNamed(pool.name(), nspace, "eckit-test-named-ns");
+
+        for (const auto& obj : {inDefault, inNamed}) {
+            RadosHandle h(obj);
+            h.openForWrite(0);
+            h.write(buf, sizeof(buf));
+            h.close();
+        }
+
+        EXPECT(inDefault.exists());
+        EXPECT_NOT(RadosObject(pool.name(), nspace, "eckit-test-default-ns").exists());
+
+        auto names = [](const std::vector<RadosObject>& objects) {
+            std::vector<std::string> res;
+            for (const auto& o : objects) {
+                res.push_back(o.name());
+            }
+            return res;
+        };
+
+        // each namespace only lists its own objects
+        auto inDefaultNs = names(RadosNamespace(pool.name(), "").listObjects());
+        EXPECT(std::find(inDefaultNs.begin(), inDefaultNs.end(), "eckit-test-default-ns") != inDefaultNs.end());
+        EXPECT(std::find(inDefaultNs.begin(), inDefaultNs.end(), "eckit-test-named-ns") == inDefaultNs.end());
+
+        auto inNamedNs = names(RadosNamespace(pool.name(), nspace).listObjects());
+        EXPECT(std::find(inNamedNs.begin(), inNamedNs.end(), "eckit-test-named-ns") != inNamedNs.end());
+        EXPECT(std::find(inNamedNs.begin(), inNamedNs.end(), "eckit-test-default-ns") == inNamedNs.end());
+
+        auto namespaces = pool.listNamespaces();
+        EXPECT(std::find(namespaces.begin(), namespaces.end(), "") != namespaces.end());
+        EXPECT(std::find(namespaces.begin(), namespaces.end(), nspace) != namespaces.end());
+
+        inDefault.ensureDestroyed();
+        inNamed.ensureDestroyed();
+        EXPECT_NOT(inDefault.exists());
     }
 
     SECTION("removeAll removes every part, also when some are already gone") {

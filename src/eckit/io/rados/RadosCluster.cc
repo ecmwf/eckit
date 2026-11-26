@@ -59,24 +59,16 @@ public:
 
     rados_ioctx_t io_;
 
-    RadosIOCtx(rados_t cluster, const std::string& pool, const std::string& nspace) {
+    /// @note: the empty namespace is the default namespace of the pool. A context on all the
+    ///   namespaces is only valid for listing, never for operations on objects.
+    RadosIOCtx(rados_t cluster, const std::string& pool, const std::string& nspace, bool allNamespaces = false) {
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_create(" << pool << ")" << std::endl;
         RADOS_CALL(rados_ioctx_create(cluster, pool.c_str(), &io_));
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
 
-        std::string nspace_name = nspace;
-        if (nspace == "") {
-            nspace_name = "LIBRADOS_ALL_NSPACES";
-        }
-
-        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
-        if (nspace == "") {
-            rados_ioctx_set_namespace(io_, LIBRADOS_ALL_NSPACES);
-        }
-        else {
-            rados_ioctx_set_namespace(io_, nspace.c_str());
-        }
-        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_set_namespace("
+                                << (allNamespaces ? "LIBRADOS_ALL_NSPACES" : nspace) << ")" << std::endl;
+        rados_ioctx_set_namespace(io_, allNamespaces ? LIBRADOS_ALL_NSPACES : nspace.c_str());
     }
 
     ~RadosIOCtx() {
@@ -369,7 +361,7 @@ bool RadosCluster::exists(const RadosObject& object) const {
 /// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
 ///   define RadosCluster::exists() only for arguments of that base class.
 bool RadosCluster::exists(const RadosKeyValue& object) const {
-    return exists(RadosObject{object.uri()});
+    return exists(RadosObject{object.nspace().pool().name(), object.nspace().name(), object.name()});
 }
 
 Length RadosCluster::size(const RadosObject& object) const {
@@ -386,7 +378,7 @@ void RadosCluster::remove(const RadosObject& object) const {
 /// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
 ///   define RadosCluster::remove() only for arguments of that base class.
 void RadosCluster::remove(const RadosKeyValue& object) const {
-    remove(RadosObject{object.uri()});
+    remove(RadosObject{object.nspace().pool().name(), object.nspace().name(), object.name()});
 }
 
 void RadosCluster::truncate(const RadosObject& object, const Length& length) const {
@@ -419,6 +411,7 @@ std::vector<std::string> RadosCluster::listPools() const {
 }
 
 /// @todo: this lists all regular objects as well as omaps with no distinction
+/// @note: an empty namespace lists the objects of the default namespace
 std::vector<std::string> RadosCluster::listObjects(const std::string& pool, const std::string& nspace) const {
 
     std::vector<std::string> res;
@@ -446,9 +439,11 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
 std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) const {
     std::set<std::string> res;
 
-    rados_ioctx_t ioctx      = ioCtx(pool, "");
+    /// @note: not cached, as it must never be used for operations on objects
+    RadosIOCtx all(cluster_, pool, "", true);
+
     rados_list_ctx_t listctx = nullptr;
-    RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
+    RADOS_CALL(rados_nobjects_list_open(all.io_, &listctx));
 
     const char* entry  = nullptr;
     const char* nspace = nullptr;

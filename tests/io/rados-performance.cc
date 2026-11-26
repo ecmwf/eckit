@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/rados/RadosCluster.h"
@@ -40,7 +41,7 @@ CASE("Test rados performance") {
     dh->close();
 
 #ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
-    std::string pool_name = "mars";
+    std::string pool_name = "test_performance";
     std::string nspace    = "default";
     RadosPool pool(pool_name);
     pool.ensureDestroyed();
@@ -49,7 +50,9 @@ CASE("Test rados performance") {
     std::string pool_name;
     std::string nspace = "performance";
     pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
-    EXPECT(pool_name.length() > 0);
+    if (pool_name.empty()) {
+        throw eckit::UserError("The RADOS tests need the name of an existing pool in ECKIT_RADOS_TEST_POOL", Here());
+    }
     RadosPool pool(pool_name);
 #endif
 
@@ -73,7 +76,7 @@ CASE("Test rados performance") {
     timer.stop();
     std::cout << " - read rate " << Bytes(size, timer) << std::endl;
 
-    obj.ensureDestroyed();
+    obj.ensureAllDestroyed();
 
 #ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     pool.destroy();
@@ -97,7 +100,7 @@ int main(int argc, char* argv[]) {
     }
 
 #ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
-    eckit::test::cleanupRados("mars", "default");
+    eckit::test::cleanupRados("test_performance", "default");
 #else
     eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "performance");
 #endif

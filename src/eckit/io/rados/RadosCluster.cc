@@ -348,13 +348,17 @@ bool RadosCluster::destroyPoolIfExists(const std::string& pool) const {
     return RADOS_CALL_FOUND(rados_pool_delete(cluster_, pool.c_str()));
 }
 
+/// @note: all the attributes are set in one operation, so that a reader never sees part of them
 void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& attr) const {
-    const char* oid = object.name().c_str();
-    auto attributes = attr.attrs();
-    for (const auto& [key, value] : attributes) {
-        LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes => [" << key << "] [" << value << "]";
-        RADOS_CALL(rados_setxattr(ioCtx(object), oid, key.c_str(), value.c_str(), value.size()));
+
+    RadosWriteOp op;
+
+    for (const auto& [key, value] : attr.attrs()) {
+        LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes => [" << key << "] [" << value << "]" << std::endl;
+        rados_write_op_setxattr(op.op_, key.c_str(), value.c_str(), value.size());
     }
+
+    RADOS_CALL(rados_write_op_operate(op.op_, ioCtx(object), object.name().c_str(), NULL, 0));
 }
 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {

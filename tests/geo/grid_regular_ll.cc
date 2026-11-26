@@ -157,6 +157,33 @@ CASE("rotated") {
             EXPECT(points_equal(points[i], points_ref[i], EPS));
         }
     }
+
+
+    SECTION("global, and the area and rotation of other longitudes (as normalised on encoding)") {
+        auto grd = [](const std::string& str) {
+            return std::unique_ptr<const Grid>(GridFactory::make_from_string(str));
+        };
+
+        auto global = grd("{grid: [10, 10], rotation: [-43, 10]}");
+        EXPECT(global->spec_str() == R"({"grid":[10,10],"projection":{"south_pole":[10,-43],"type":"rotation"}})");
+        EXPECT(global->x().size() == 36);
+        EXPECT(global->y().size() == 19);
+
+        // the same points, whichever the longitudes of the area (the rotated frame's) and of the south pole are
+        auto a = grd("{area: [10, -10, -10, 10], grid: [1, 1], rotation: [-43, 10]}");
+        EXPECT(a->size() == 21 * 21);
+
+        const auto pa = a->to_points();
+        for (const auto* spec : {"{area: [10, 350, -10, 370], grid: [1, 1], rotation: [-43, 10]}",
+                                 "{area: [10, -10, -10, 10], grid: [1, 1], rotation: [-43, 370]}",
+                                 "{area: [10, 350, -10, 370], grid: [1, 1], rotation: [-43, -350]}"}) {
+            const auto pb = grd(spec)->to_points();
+            EXPECT(pb.size() == pa.size());
+            for (size_t i = 0; i < pa.size(); ++i) {
+                EXPECT(points_equal(std::get<PointLonLat>(pa[i]), std::get<PointLonLat>(pb[i])));
+            }
+        }
+    }
 }
 
 

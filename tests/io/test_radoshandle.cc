@@ -146,6 +146,47 @@ CASE("Test Rados Handles") {
         RadosCluster::instance().removeAll(obj);
     }
 
+    SECTION("removeAll removes every part, also when some are already gone") {
+
+        const std::string data(100, 'p');
+
+        RadosObject obj(pool.name(), nspace, "remove-all");
+
+        std::unique_ptr<DataHandle> h(obj.multipartWriteHandle(16));
+        h->openForWrite(0);
+        h->write(data.data(), data.size());
+        h->close();
+
+        EXPECT(RadosObject(obj, 6).exists());
+        EXPECT_NOT(RadosObject(obj, 7).exists());
+
+        RadosObject(obj, 3).ensureDestroyed();
+
+        obj.ensureAllDestroyed();
+
+        for (size_t i = 0; i < 7; ++i) {
+            EXPECT_NOT(RadosObject(obj, i).exists());
+        }
+
+        // must not throw for a missing object
+        obj.ensureAllDestroyed();
+    }
+
+    SECTION("removeAll removes an object without parts") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "remove-single");
+
+        RadosHandle h(obj);
+        h.openForWrite(0);
+        h.write(buf, sizeof(buf));
+        h.close();
+
+        obj.ensureAllDestroyed();
+        EXPECT_NOT(obj.exists());
+    }
+
     SECTION("RadosAsyncHandle close waits for pending writes") {
 
         const std::string data(64 * 1024, 'x');

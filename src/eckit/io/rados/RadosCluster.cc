@@ -468,13 +468,22 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
 }
 
 void RadosCluster::removeAll(const RadosObject& object) const {
-    RadosAttributes attr = attributes(object);
 
-    size_t parts = 0;
-    ASSERT(attr.get("parts", parts));
-    for (size_t i = 0; i < parts; ++i) {
-        remove(RadosObject(object, i));
+    /// @note: an object written through a single-object handle has no "parts" attribute
+    size_t parts = 1;
+    attributes(object).get("parts", parts);
+
+    /// @note: the first part holds the attributes which describe the others, so it goes last.
+    ///   A removal which failed half way can then be repeated.
+    for (size_t i = parts; i-- > 1;) {
+        try {
+            remove(RadosObject(object, i));
+        }
+        catch (eckit::RadosEntityNotFoundException& e) {
+            LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl;
+        }
     }
+    remove(object);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

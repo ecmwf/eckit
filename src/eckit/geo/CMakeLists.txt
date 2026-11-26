@@ -36,6 +36,8 @@ list(APPEND eckit_geo_srcs
     Search.h
     Shape.cc
     Shape.h
+    TangentPlane.cc
+    TangentPlane.h
     Trace.cc
     Trace.h
     area/BoundingBox.cc

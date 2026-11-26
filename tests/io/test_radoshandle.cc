@@ -6,6 +6,8 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
@@ -140,6 +142,36 @@ CASE("Test Rados Handles") {
         EXPECT(std::memcmp(buf, mem.data(), read) == 0);
 
         RadosCluster::instance().removeAll(obj);
+    }
+
+    SECTION("RadosAsyncHandle close waits for pending writes") {
+
+        const std::string data(64 * 1024, 'x');
+
+        RadosObject obj(pool.name(), nspace, "async-close");
+
+        RadosAsyncHandle h(obj);
+        h.openForWrite(0);
+        for (int i = 0; i < 8; ++i) {
+            h.write(data.data(), data.size());
+        }
+        h.close();
+
+        EXPECT(RadosCluster::instance().size(obj) == Length(8 * data.size()));
+
+        obj.ensureDestroyed();
+    }
+
+    SECTION("RadosAsyncHandle close reports a failed write") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj("eckit-test-no-such-pool", nspace, "async-fail");
+
+        RadosAsyncHandle h(obj);
+        h.openForWrite(0);
+        EXPECT_THROWS(h.write(buf, sizeof(buf)));
+        h.close();
     }
 
 #ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS

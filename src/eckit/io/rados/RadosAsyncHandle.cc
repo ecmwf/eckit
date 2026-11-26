@@ -51,18 +51,22 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 
     ASSERT(totalCompsBuffSize() < maxAioBuffSize_);
 
-    auto& handle = comps_.emplace_back(std::make_unique<eckit::RadosAIO>());
-    handle->len_ = length;
+    /// @note: only track the completion once the operation has been submitted. Waiting on a
+    ///   completion which was never submitted would block forever.
+    auto comp  = std::make_unique<eckit::RadosAIO>();
+    comp->len_ = length;
 
     if (first_write_) {
-        RADOS_CALL(rados_aio_write_full(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
-                                        comps_.back()->comp_, reinterpret_cast<const char*>(buffer), length));
+        RADOS_CALL(rados_aio_write_full(RadosCluster::instance().ioCtx(object_), object_.name().c_str(), comp->comp_,
+                                        reinterpret_cast<const char*>(buffer), length));
         first_write_ = false;
     }
     else {
-        RADOS_CALL(rados_aio_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
-                                   comps_.back()->comp_, reinterpret_cast<const char*>(buffer), length, offset_));
+        RADOS_CALL(rados_aio_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(), comp->comp_,
+                                   reinterpret_cast<const char*>(buffer), length, offset_));
     }
+
+    comps_.push_back(std::move(comp));
 
     offset_ += length;
 
@@ -74,8 +78,15 @@ void RadosAsyncHandle::flush() {
 }
 
 void RadosAsyncHandle::close() {
+    ASSERT(opened_);
+    try {
+        flush();
+    }
+    catch (...) {
+        RadosHandle::close();
+        throw;
+    }
     RadosHandle::close();
-    comps_.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

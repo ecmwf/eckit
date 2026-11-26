@@ -74,6 +74,9 @@ void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
 
     ASSERT(!opened_);
 
+    /// @note: parts of a previous, longer version of the object would otherwise be left behind
+    object_.ensureAllDestroyed();
+
     written_  = 0;
     position_ = 0;
     part_     = 0;

@@ -269,6 +269,33 @@ CASE("Test Rados Handles") {
         EXPECT_NOT(obj.exists());
     }
 
+    SECTION("RadosMultiObjWriteHandle replaces an object which had more parts") {
+
+        const std::string data(100, 'r');
+
+        RadosObject obj(pool.name(), nspace, "rewrite");
+
+        std::unique_ptr<DataHandle> h(obj.multipartWriteHandle(16));
+        h->openForWrite(0);
+        h->write(data.data(), data.size());
+        h->close();
+        EXPECT(RadosObject(obj, 6).exists());
+
+        h->openForWrite(0);
+        h->write(data.data(), 20);
+        h->close();
+        EXPECT(RadosObject(obj, 1).exists());
+        for (size_t i = 2; i < 7; ++i) {
+            EXPECT_NOT(RadosObject(obj, i).exists());
+        }
+
+        RadosMultiObjReadHandle g(obj);
+        EXPECT(g.openForRead() == Length(20));
+        g.close();
+
+        obj.ensureAllDestroyed();
+    }
+
     SECTION("removeAll removes every part, also when some are already gone") {
 
         const std::string data(100, 'p');

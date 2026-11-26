@@ -32,7 +32,9 @@ RadosPool::RadosPool(const eckit::URI& uri) {
     std::vector<std::string> bits;
     parse(uri.name(), bits);
 
-    ASSERT(bits.size() == 1);
+    if (bits.size() != 1) {
+        throw eckit::UserError("Invalid RADOS URI '" + uri.asString() + "', expected rados:<pool>", Here());
+    }
 
     pool_ = bits[0];
 }

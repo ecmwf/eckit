@@ -38,7 +38,10 @@ RadosKeyValue::RadosKeyValue(const eckit::URI& uri) {
     std::vector<std::string> bits;
     parse(uri.name(), bits);
 
-    ASSERT(bits.size() == 3);
+    if (bits.size() != 3) {
+        throw eckit::UserError("Invalid RADOS URI '" + uri.asString() + "', expected rados:<pool>/<namespace>/<name>",
+                               Here());
+    }
 
     ns_  = eckit::RadosNamespace{bits[0], bits[1]};
     oid_ = bits[2];

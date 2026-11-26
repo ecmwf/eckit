@@ -31,7 +31,9 @@ RadosNamespace::RadosNamespace(const eckit::URI& uri) {
     std::vector<std::string> bits;
     parse(uri.name(), bits);
 
-    ASSERT(bits.size() == 2);
+    if (bits.size() != 2) {
+        throw eckit::UserError("Invalid RADOS URI '" + uri.asString() + "', expected rados:<pool>/<namespace>", Here());
+    }
 
     pool_ = eckit::RadosPool(bits[0]);
     ns_   = bits[1];

@@ -15,6 +15,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosAsyncKeyValue.h"
 #include "eckit/io/rados/RadosException.h"
@@ -122,6 +123,10 @@ CASE("Rados KeyValue") {
         EXPECT_NOT(missing.exists());
         EXPECT_NOT(missing.has(key));
         EXPECT_THROWS_AS(missing.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
+
+        // URIs
+        EXPECT(RadosKeyValue(kv.uri()).str() == kv.str());
+        EXPECT_THROWS_AS(RadosKeyValue(URI("rados:pool/name")), eckit::UserError);
 
         // remove
         kv.remove(key);

@@ -100,6 +100,7 @@ CASE("Test Rados Handles") {
 
         // a shorter rewrite leaves nothing of the previous content
         h.openForWrite(0);
+        EXPECT(h.write(buf, 0) == 0);
         h.write(buf, 4);
         h.close();
         EXPECT(h.size() == Length(4));
@@ -460,6 +461,12 @@ CASE("Test Rados Handles") {
 
         obj.ensureDestroyed();
         EXPECT_NOT(uri.exists());
+
+        // malformed URIs are reported as such
+        EXPECT_THROWS_AS(RadosObject(URI("rados:pool/name")), eckit::UserError);
+        EXPECT_THROWS_AS(RadosObject(URI("rados:pool/ns/name/more")), eckit::UserError);
+        EXPECT_THROWS_AS(RadosNamespace(URI("rados:pool")), eckit::UserError);
+        EXPECT_THROWS_AS(RadosPool(URI("rados:pool/ns")), eckit::UserError);
     }
 
     SECTION("removeAll removes every part, also when some are already gone") {

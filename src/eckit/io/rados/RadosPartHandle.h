@@ -39,6 +39,7 @@ public:  // methods
     eckit::Length estimate() override;
     eckit::Offset position() override;
     eckit::Offset seek(const eckit::Offset& offset) override;
+    void rewind() override;
     bool canSeek() const override;
 
     std::string title() const override;

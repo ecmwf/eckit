@@ -429,7 +429,38 @@ CASE("Test Rados Handles") {
             EXPECT(g->read(out, sizeof(out)) == 5);
             EXPECT(std::string(out, 5) == data.substr(48, 5));
             EXPECT(g->read(out, sizeof(out)) == 0);
+
+            // rewinding goes back to the start of the range
+            g->rewind();
+            EXPECT(g->position() == Offset(0));
+            EXPECT(g->read(out, 10) == 10);
+            EXPECT(std::string(out, 10) == data.substr(13, 10));
             g->close();
+
+            // so does opening the handle again
+            EXPECT(g->openForRead() == Length(40));
+            EXPECT(g->position() == Offset(0));
+            EXPECT(g->read(out, sizeof(out)) == 40);
+            EXPECT(std::string(out, 40) == data.substr(13, 40));
+            g->close();
+        }
+
+        // a read handle opened again sees an object which was replaced in between
+        {
+            RadosMultiObjReadHandle g(multi);
+            EXPECT(g.openForRead() == Length(100));
+            g.close();
+
+            std::unique_ptr<DataHandle> h(multi.multipartWriteHandle(8));
+            h->openForWrite(0);
+            h->write(data.data(), 20);
+            h->close();
+
+            EXPECT(g.size() == Length(20));
+            EXPECT(g.openForRead() == Length(20));
+            EXPECT(g.read(out, sizeof(out)) == 20);
+            EXPECT(std::string(out, 20) == data.substr(0, 20));
+            g.close();
         }
 
         multi.ensureAllDestroyed();

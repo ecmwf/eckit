@@ -37,6 +37,7 @@ void RadosPartHandle::print(std::ostream& s) const {
 Length RadosPartHandle::openForRead() {
     ASSERT(!open_);
     open_ = true;
+    pos_  = 0;
     return size();
 }
 
@@ -87,6 +88,10 @@ Offset RadosPartHandle::position() {
 Offset RadosPartHandle::seek(const Offset& offset) {
     pos_ = eckit::Length(offset);
     return offset;
+}
+
+void RadosPartHandle::rewind() {
+    pos_ = 0;
 }
 
 bool RadosPartHandle::canSeek() const {

@@ -20,6 +20,7 @@
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/MemoryStream.h"
 #include "eckit/utils/Tokenizer.h"
@@ -40,10 +41,13 @@ RadosKeyValue::RadosKeyValue(const eckit::URI& uri) {
 
     ns_  = eckit::RadosNamespace{bits[0], bits[1]};
     oid_ = bits[2];
+    RadosPool::checkName("key-value", oid_);
 }
 
 RadosKeyValue::RadosKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid) :
-    ns_(pool, nspace), oid_(oid) {}
+    ns_(pool, nspace), oid_(oid) {
+    RadosPool::checkName("key-value", oid_);
+}
 
 eckit::URI RadosKeyValue::uri() const {
     if (ns_.name().empty()) {

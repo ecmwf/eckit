@@ -506,6 +506,21 @@ CASE("Test Rados Handles") {
         EXPECT_THROWS_AS(RadosNamespace(pool.name(), "").uri(), eckit::UserError);
         EXPECT(RadosObject(pool.name(), "", "name").str() == pool.name() + "//name");
 
+        // names which a URI would turn into another name, or which librados would cut short, are refused
+        for (const std::string bad : {std::string("entry#1"), std::string("entry?1"), std::string("x/../y"),
+                                      std::string("."), std::string(".."), std::string("a\0b", 3)}) {
+            EXPECT_THROWS_AS(RadosObject(pool.name(), nspace, bad), eckit::UserError);
+            EXPECT_THROWS_AS(RadosNamespace(pool.name(), bad), eckit::UserError);
+            EXPECT_THROWS_AS(RadosPool{bad}, eckit::UserError);
+        }
+        EXPECT_THROWS_AS(RadosObject(URI("rados:pool/ns/..")), eckit::UserError);
+
+        // other punctuation is fine and survives the URI
+        for (const std::string good : {"a b", "a:b", "a%20b", "a.b", "a;b", "..."}) {
+            RadosObject o(pool.name(), nspace, good);
+            EXPECT(RadosObject(URI(o.uri().asString())).str() == o.str());
+        }
+
         // malformed URIs are reported as such
         EXPECT_THROWS_AS(RadosObject(URI("rados:pool/name")), eckit::UserError);
         EXPECT_THROWS_AS(RadosObject(URI("rados:pool/ns/name/more")), eckit::UserError);

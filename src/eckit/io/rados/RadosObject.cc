@@ -24,6 +24,7 @@
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosPartHandle.h"
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
@@ -54,10 +55,13 @@ RadosObject::RadosObject(const eckit::URI& uri) {
 
     ns_  = eckit::RadosNamespace{bits[0], bits[1]};
     oid_ = bits[2];
+    RadosPool::checkName("object", oid_);
 }
 
 RadosObject::RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid) :
-    ns_(pool, nspace), oid_(oid) {}
+    ns_(pool, nspace), oid_(oid) {
+    RadosPool::checkName("object", oid_);
+}
 
 eckit::URI RadosObject::uri() const {
     if (ns_.name().empty()) {

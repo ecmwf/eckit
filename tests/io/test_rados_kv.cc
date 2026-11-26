@@ -121,6 +121,7 @@ CASE("Rados KeyValue") {
         EXPECT(RadosKeyValue(kv.uri()).str() == kv.str());
         EXPECT_THROWS_AS(RadosKeyValue(URI("rados:pool/name")), eckit::UserError);
         EXPECT_THROWS_AS(RadosKeyValue(pool.name(), "", "name").uri(), eckit::UserError);
+        EXPECT_THROWS_AS(RadosKeyValue(pool.name(), nspace, "kv#1"), eckit::UserError);
 
         // remove
         kv.remove(key);

@@ -31,9 +31,12 @@ RadosNamespace::RadosNamespace(const eckit::URI& uri) {
 
     pool_ = eckit::RadosPool(bits[0]);
     ns_   = bits[1];
+    RadosPool::checkName("namespace", ns_);
 }
 
-RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_({pool}), ns_(nspace) {}
+RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_({pool}), ns_(nspace) {
+    RadosPool::checkName("namespace", ns_);
+}
 
 eckit::URI RadosNamespace::uri() const {
     if (ns_.empty()) {

@@ -3,6 +3,7 @@
 
 #include "eckit/io/rados/RadosPool.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +20,22 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void RadosPool::checkName(const std::string& what, const std::string& name) {
+
+    static const std::string forbidden("/#?\0", 4);
+
+    if (name == "." || name == ".." || name.find_first_of(forbidden) != std::string::npos) {
+
+        /// @note: a NUL byte would end the message early
+        std::string printable = name;
+        std::replace(printable.begin(), printable.end(), '\0', ' ');
+
+        throw eckit::UserError("Invalid RADOS " + what + " name '" + printable +
+                                   "': it must not contain '/', '#', '?' or a NUL byte, nor be '.' or '..'",
+                               Here());
+    }
+}
+
 RadosPool::RadosPool(const eckit::URI& uri) {
     Tokenizer parse("/");
 
@@ -30,9 +47,12 @@ RadosPool::RadosPool(const eckit::URI& uri) {
     }
 
     pool_ = bits[0];
+    checkName("pool", pool_);
 }
 
-RadosPool::RadosPool(std::string pool) : pool_{std::move(pool)} {}
+RadosPool::RadosPool(std::string pool) : pool_{std::move(pool)} {
+    checkName("pool", pool_);
+}
 
 void RadosPool::destroy() const {
     /// @note: deleting a pool removes all its objects

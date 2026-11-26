@@ -1,20 +1,40 @@
-On linux:
-=========
+Ceph/RADOS support
+==================
 
-cd /usr/local/apps/ceph/14.2.1-001
-tar cf ~/rados-include.tar include/
+Build
+-----
 
-On mac:
-=======
+Needs the librados C client (rados/librados.h and librados), e.g. the librados-dev or
+librados-devel package.
 
-brew tap zeichenanonym/ceph-client
-brew install ceph-client
+    cmake -DENABLE_RADOS=ON <path to eckit>
 
-cd /usr/local/Cellar/ceph-client/mimic-13.2.2
-tar xf ~/rados-include.tar
+For an installation in a non standard location:
 
+    cmake -DENABLE_RADOS=ON -DRADOS_ROOT=<prefix of the Ceph client> <path to eckit>
 
-cmake:
-======
-cmake  -DENABLE_RADOS=ON  -DRADOS_PATH=/usr/local/Cellar/ceph-client/mimic-13.2.2 ~/git/eckit/
-cmake  -DENABLE_RADOS=ON  -DRADOS_PATH=/usr/local/apps/ceph/14.2.1-001 ~/git/eckit/
+Configuration
+-------------
+
+Resource (environment variable)                     Default
+radosClusterName ($ECKIT_RADOS_CLUSTER_NAME)        ceph
+radosClusterUser ($ECKIT_RADOS_CLUSTER_USER)        none, must be set, e.g. client.<name>
+radosClusterConf ($ECKIT_RADOS_CLUSTER_CONF)        ~/.ceph/ceph.conf
+radosMaxWriteSize                                   90 MiB  (osd_max_write_size)
+radosMaxObjectSize                                  124 MiB (osd_max_object_size)
+
+Tests
+-----
+
+The tests carry the "rados" label and need a running cluster:
+
+    ctest -L rados
+
+They work in an existing pool, each in a namespace of its own:
+
+    cmake -DENABLE_RADOS=ON -DECKIT_RADOS_TEST_POOL=<pool> -DECKIT_RADOS_TEST_USER=client.<name> ...
+
+Without these cmake variables the tests read ECKIT_RADOS_TEST_POOL and ECKIT_RADOS_CLUSTER_USER from
+the environment. With -DENABLE_RADOS_TESTS_MANAGE_POOLS=ON the tests create and destroy pools named
+test_handle, test_kv and test_performance instead, which needs a user allowed to do so and
+mon_allow_pool_delete on the cluster.

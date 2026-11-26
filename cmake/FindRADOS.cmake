@@ -10,7 +10,7 @@
 #  RADOS_FOUND        - True if Rados was found
 #
 # This module also defines the following IMPORTED target:
-#  Ceph::rados
+#  Ceph::RADOS
 
 # Find the header path by looking for the subdirectory file
 find_path(RADOS_INCLUDE_DIR
@@ -35,7 +35,7 @@ if(RADOS_FOUND)
     set(RADOS_LIBRARIES ${RADOS_LIBRARY})
     set(RADOS_INCLUDE_DIRS ${RADOS_INCLUDE_DIR})
 
-    # Create an modern generic imported target
+    # Create an imported target
     if(NOT TARGET Ceph::RADOS)
         add_library(Ceph::RADOS UNKNOWN IMPORTED)
         set_target_properties(Ceph::RADOS PROPERTIES

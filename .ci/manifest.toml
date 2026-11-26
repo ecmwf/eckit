@@ -198,6 +198,38 @@ triggers = ["upstream-change", "rebuild-request"]
 # container-credentials = true
 # triggers = ["upstream-change", "rebuild-request"]
 
+[packages.eckit-python]
+compiler-inputs = ["cxx-compiler"]
+
+[[packages.eckit-python.deps]]
+package = "eckit"
+
+[matrix.python]
+packages = ["eckit-python"]
+triggers = ["upstream-change", "rebuild-request"]
+
+[matrix.python.defaults]
+job-script = "./.ci/python.sh.j2"
+build-type = "RelWithDebInfo"
+# runs-on = "arc-runner-normal"
+runs-on = "ubuntu-latest"
+cxx-compiler = "g++-13"
+c-compiler = "gcc-13"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
+platform = "ubuntu-24.04"
+
+[[matrix.python.include]]
+python-version = "3.11"
+
+[[matrix.python.include]]
+python-version = "3.12"
+
+[[matrix.python.include]]
+python-version = "3.13"
+
+[[matrix.python.include]]
+python-version = "3.14"
+
 [packages.eckit-rust]
 compiler-inputs = ["cxx-compiler", "rust-compiler"]
 

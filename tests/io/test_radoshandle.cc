@@ -114,8 +114,16 @@ CASE("Test Rados Handles") {
 
         RadosObject obj(pool.name(), nspace, "seek");
 
-        // seek before the first write is honoured
         RadosHandle h(obj);
+
+        // previous, longer content
+        h.openForWrite(0);
+        h.write(buf, 26);
+        h.write(buf, 26);
+        h.close();
+        EXPECT(h.size() == Length(52));
+
+        // seek before the first write is honoured, and nothing of the previous content is left
         h.openForWrite(0);
         EXPECT(h.seek(4) == Offset(4));
         h.write(buf, 26);
@@ -524,6 +532,46 @@ CASE("Test Rados Handles") {
         h.close();
 
         EXPECT(RadosCluster::instance().size(obj) == Length(8 * data.size()));
+
+        obj.ensureDestroyed();
+    }
+
+    SECTION("RadosAsyncHandle openForWrite empties an existing object") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "async-truncate");
+
+        RadosAsyncHandle h(obj);
+        h.openForWrite(0);
+        h.write(buf, 26);
+        h.close();
+        EXPECT(h.size() == Length(26));
+
+        // nothing written: the object exists and is empty
+        h.openForWrite(0);
+        h.close();
+        EXPECT(obj.exists());
+        EXPECT(h.size() == Length(0));
+
+        // a first write at an offset leaves nothing of the previous content
+        h.openForWrite(0);
+        h.write(buf, 26);
+        h.close();
+        h.openForWrite(0);
+        EXPECT(h.seek(2) == Offset(2));
+        h.write(buf, 4);
+        h.write(buf, 4);
+        h.close();
+        EXPECT(h.size() == Length(10));
+
+        char out[16] = {};
+        h.openForRead();
+        EXPECT(h.read(out, sizeof(out)) == 10);
+        h.close();
+        EXPECT(std::string(out + 2, 8) == "abcdabcd");
+        EXPECT(out[0] == 0);
+        EXPECT(out[1] == 0);
 
         obj.ensureDestroyed();
     }

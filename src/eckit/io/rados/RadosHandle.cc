@@ -64,12 +64,28 @@ void RadosHandle::openForWrite(const Length& length) {
 
     ASSERT(!opened_);
 
-    /// @note: creates the object if it does not exist, and empties it otherwise
-    RadosCluster::instance().truncate(object_);
+    /// @note: fails here, rather than on the first write, if the pool does not exist
+    RadosCluster::instance().ioCtx(object_);
 
     open();
 
-    write_ = true;
+    write_    = true;
+    truncate_ = true;
+}
+
+void RadosHandle::firstWrite(RadosWriteOp& op, const void* buffer, long length) const {
+
+    const char* buf = reinterpret_cast<const char*>(buffer);
+
+    if (offset_ == 0) {
+        /// @note: replaces the whole content, creating the object if needed
+        rados_write_op_write_full(op.op_, buf, length);
+        return;
+    }
+
+    rados_write_op_create(op.op_, LIBRADOS_CREATE_IDEMPOTENT, NULL);
+    rados_write_op_truncate(op.op_, 0);
+    rados_write_op_write(op.op_, buf, length, offset_);
 }
 
 long RadosHandle::read(void* buffer, long length) {
@@ -100,8 +116,17 @@ long RadosHandle::write(const void* buffer, long length) {
     ASSERT(length <= RadosCluster::instance().maxWriteSize());
     ASSERT((offset_ + length) <= RadosCluster::instance().maxObjectSize());
 
-    RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
-                           reinterpret_cast<const char*>(buffer), length, offset_));
+    if (truncate_) {
+        RadosWriteOp op;
+        firstWrite(op, buffer, length);
+        RADOS_CALL(
+            rados_write_op_operate(op.op_, RadosCluster::instance().ioCtx(object_), object_.name().c_str(), NULL, 0));
+        truncate_ = false;
+    }
+    else {
+        RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                               reinterpret_cast<const char*>(buffer), length, offset_));
+    }
 
     offset_ += length;
 
@@ -122,6 +147,12 @@ void RadosHandle::rewind() {
 void RadosHandle::close() {
     ASSERT(opened_);
     opened_ = false;
+
+    /// @note: nothing was written, so the object is left existing and empty
+    if (write_ && truncate_) {
+        truncate_ = false;
+        RadosCluster::instance().truncate(object_);
+    }
 }
 
 Offset RadosHandle::position() {

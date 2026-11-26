@@ -56,7 +56,14 @@ protected:  // members
     bool opened_;
     bool write_;
 
+    /// The object still has to be emptied. This is done together with the first write, or on
+    /// close if nothing was written, rather than in a round trip of its own when opening.
+    bool truncate_{false};
+
     void open();
+
+    /// Sets up the operation which empties the object and writes to it at the current offset.
+    void firstWrite(RadosWriteOp& op, const void* buffer, long length) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

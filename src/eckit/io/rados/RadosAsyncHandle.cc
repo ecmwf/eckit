@@ -54,8 +54,17 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
     auto comp  = std::make_unique<eckit::RadosAIO>();
     comp->len_ = length;
 
-    RADOS_CALL(rados_aio_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(), comp->comp_,
-                               reinterpret_cast<const char*>(buffer), length, offset_));
+    if (truncate_) {
+        RadosWriteOp op;
+        firstWrite(op, buffer, length);
+        RADOS_CALL(rados_aio_write_op_operate(op.op_, RadosCluster::instance().ioCtx(object_), comp->comp_,
+                                              object_.name().c_str(), NULL, 0));
+        truncate_ = false;
+    }
+    else {
+        RADOS_CALL(rados_aio_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(), comp->comp_,
+                                   reinterpret_cast<const char*>(buffer), length, offset_));
+    }
 
     comps_.push_back(std::move(comp));
     pendingBytes_ += length;

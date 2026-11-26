@@ -32,8 +32,10 @@ public:
     std::string str() const;
 
     bool exists() const { return pool_.exists(); };
+    /// @note: objects whose name cannot be addressed (see RadosPool::checkName) are left out
     std::vector<eckit::RadosObject> listObjects() const;
 
+    /// Removes the objects which listObjects() returns
     void destroy() const;
 
 private:  // methods

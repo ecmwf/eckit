@@ -20,11 +20,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void RadosPool::checkName(const std::string& what, const std::string& name) {
+bool RadosPool::validName(const std::string& name) {
 
     static const std::string forbidden("/#?\0", 4);
 
-    if (name == "." || name == ".." || name.find_first_of(forbidden) != std::string::npos) {
+    return name != "." && name != ".." && name.find_first_of(forbidden) == std::string::npos;
+}
+
+void RadosPool::checkName(const std::string& what, const std::string& name) {
+
+    if (!validName(name)) {
 
         /// @note: a NUL byte would end the message early
         std::string printable = name;

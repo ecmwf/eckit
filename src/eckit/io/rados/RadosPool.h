@@ -28,6 +28,9 @@ public:
     /// @throws UserError
     static void checkName(const std::string& what, const std::string& name);
 
+    /// @returns whether checkName() accepts the name
+    static bool validName(const std::string& name);
+
     explicit RadosPool(const eckit::URI& uri);
     explicit RadosPool(std::string pool);
 

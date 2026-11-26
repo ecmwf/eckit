@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include <rados/librados.h>
+
 #include <algorithm>
 #include <cstring>
 #include <memory>
@@ -519,6 +521,26 @@ CASE("Test Rados Handles") {
         for (const std::string good : {"a b", "a:b", "a%20b", "a.b", "a;b", "..."}) {
             RadosObject o(pool.name(), nspace, good);
             EXPECT(RadosObject(URI(o.uri().asString())).str() == o.str());
+        }
+
+        // an object with such a name, written by another tool, is left out of a listing
+        {
+            const std::string foreign = "written#elsewhere";
+            RadosObject visible(pool.name(), nspace, "visible");
+            rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(visible);
+
+            RADOS_CALL(rados_write_full(ctx, foreign.c_str(), buf, sizeof(buf)));
+            RADOS_CALL(rados_write_full(ctx, visible.name().c_str(), buf, sizeof(buf)));
+
+            std::vector<std::string> listed;
+            for (const auto& o : RadosNamespace(pool.name(), nspace).listObjects()) {
+                listed.push_back(o.name());
+            }
+            EXPECT(std::find(listed.begin(), listed.end(), "visible") != listed.end());
+            EXPECT(std::find(listed.begin(), listed.end(), foreign) == listed.end());
+
+            visible.ensureDestroyed();
+            RADOS_CALL(rados_remove(ctx, foreign.c_str()));
         }
 
         // malformed URIs are reported as such

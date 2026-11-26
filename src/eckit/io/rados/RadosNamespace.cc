@@ -6,12 +6,14 @@
 #include <string>
 #include <vector>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosPool.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -55,6 +57,14 @@ std::vector<eckit::RadosObject> RadosNamespace::listObjects() const {
     std::vector<eckit::RadosObject> res;
 
     for (const auto& i : eckit::RadosCluster::instance().listObjects(pool_.name(), ns_)) {
+
+        /// @note: an object written by another tool can have a name which cannot be addressed here
+        if (!RadosPool::validName(i)) {
+            LOG_DEBUG_LIB(LibEcKit) << "RadosNamespace::listObjects skipping object with unsupported name '" << i
+                                    << "' in " << str() << std::endl;
+            continue;
+        }
+
         res.emplace_back(pool_.name(), ns_, i);
     }
 

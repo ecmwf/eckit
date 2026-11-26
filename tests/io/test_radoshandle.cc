@@ -10,6 +10,7 @@
 #include "RadosTestUtils.h"
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
@@ -424,6 +425,41 @@ CASE("Test Rados Handles") {
 
         multi.ensureAllDestroyed();
         single.ensureAllDestroyed();
+    }
+
+    SECTION("rados URIs") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "uri-object");
+
+        URI uri = obj.uri();
+        EXPECT(uri.scheme() == "rados");
+        EXPECT(uri.asString() == "rados:" + pool.name() + "/" + nspace + "/uri-object");
+        EXPECT(RadosObject(uri).str() == obj.str());
+        EXPECT(RadosObject(URI(uri.asString())).str() == obj.str());
+
+        EXPECT_NOT(uri.exists());
+
+        std::unique_ptr<DataHandle> h(uri.newWriteHandle());
+        h->openForWrite(0);
+        h->write(buf, sizeof(buf));
+        h->close();
+
+        EXPECT(uri.exists());
+
+        char out[64] = {};
+        std::unique_ptr<DataHandle> g(uri.newReadHandle());
+        EXPECT(g->openForRead() == Length(sizeof(buf)));
+        EXPECT(g->read(out, sizeof(out)) == long(sizeof(buf)));
+        g->close();
+        EXPECT(std::string(out) == buf);
+
+        EXPECT(RadosNamespace(obj.nspace().uri()).str() == obj.nspace().str());
+        EXPECT(RadosPool(pool.uri()).name() == pool.name());
+
+        obj.ensureDestroyed();
+        EXPECT_NOT(uri.exists());
     }
 
     SECTION("removeAll removes every part, also when some are already gone") {

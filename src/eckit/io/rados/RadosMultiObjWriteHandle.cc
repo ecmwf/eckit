@@ -19,6 +19,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/log/Log.h"
@@ -93,27 +94,15 @@ void RadosMultiObjWriteHandle::closeParts(bool keepCurrent) {
         partOpen_ = false;
     }
 
-    /// @note: close every handle, also if one of them fails, and report the first failure
-    std::exception_ptr first;
-    for (const auto& handle : handles_) {
-        try {
-            handle->close();
-        }
-        catch (...) {
-            if (!first) {
-                first = std::current_exception();
-            }
-        }
-    }
-    handles_.clear();
+    /// @note: the handles are given up whether closing them succeeds or not
+    std::vector<std::unique_ptr<DataHandle>> closing;
+    closing.swap(handles_);
 
     if (current) {
         handles_.push_back(std::move(current));
     }
 
-    if (first) {
-        std::rethrow_exception(first);
-    }
+    forAllThenRethrowFirst(closing, [](const std::unique_ptr<DataHandle>& handle) { handle->close(); });
 }
 
 long RadosMultiObjWriteHandle::write(const void* buffer, long length) {

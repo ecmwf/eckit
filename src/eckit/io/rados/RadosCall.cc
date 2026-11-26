@@ -7,7 +7,6 @@
 
 #include <cerrno>
 #include <cstring>
-#include <exception>
 #include <memory>
 #include <ostream>
 #include <sstream>
@@ -81,21 +80,12 @@ void RadosAIO::waitForComplete() const {
 }
 
 void RadosAIO::waitForAll(std::vector<std::unique_ptr<RadosAIO>>& comps) {
-    std::exception_ptr first;
-    for (const auto& comp : comps) {
-        try {
-            comp->waitForComplete();
-        }
-        catch (...) {
-            if (!first) {
-                first = std::current_exception();
-            }
-        }
-    }
-    comps.clear();
-    if (first) {
-        std::rethrow_exception(first);
-    }
+
+    /// @note: what was pending is no longer so, whether the wait succeeds or not
+    std::vector<std::unique_ptr<RadosAIO>> waited;
+    waited.swap(comps);
+
+    forAllThenRethrowFirst(waited, [](const std::unique_ptr<RadosAIO>& comp) { comp->waitForComplete(); });
 }
 
 //----------------------------------------------------------------------------------------------------------------------

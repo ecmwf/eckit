@@ -12,6 +12,7 @@
 
 #include <rados/librados.h>
 
+#include <exception>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -34,6 +35,26 @@ bool call_rados_found(int code, const char* call, const CodeLocation& loc);
 #define RADOS_CALL(a) eckit::call_rados(a, #a, Here())
 #define RADOS_CALL_FOUND(a) eckit::call_rados_found(a, #a, Here())
 
+/// Calls f on every element, also after it has thrown for one, then rethrows the first exception.
+/// For operations which must all be attempted, e.g. closing or waiting for a set of things.
+template <class Range, class F>
+void forAllThenRethrowFirst(Range&& range, F&& f) {
+    std::exception_ptr first;
+    for (auto&& element : range) {
+        try {
+            f(element);
+        }
+        catch (...) {
+            if (!first) {
+                first = std::current_exception();
+            }
+        }
+    }
+    if (first) {
+        std::rethrow_exception(first);
+    }
+}
+
 /// librados rejects a read of more bytes than this
 constexpr long radosMaxReadSize = std::numeric_limits<int>::max();
 
@@ -54,7 +75,7 @@ public:
     void waitForComplete() const;
 
     /// Waits for every completion and empties the list, also if some of them failed.
-    /// Rethrows the first failure once all completions have been waited for.
+    /// @throws the first failure, once all completions have been waited for
     static void waitForAll(std::vector<std::unique_ptr<RadosAIO>>& comps);
 
     rados_completion_t comp_{nullptr};

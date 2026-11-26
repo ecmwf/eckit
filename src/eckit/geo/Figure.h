@@ -86,28 +86,6 @@ public:
         const double qp_;
     };
 
-    /**
-     * @brief Principal radii of curvature at a geodetic latitude [radian], on an ellipsoid of semi-major axis a and
-     * eccentricity e (a sphere of radius a if e = 0): lengths [L] per angle [radian], along and normal to the meridian
-     * @ref Map Projections: A Working Manual, John P. Snyder (1987)
-     */
-    class Curvature {
-    public:
-
-        Curvature(double a, double e);
-
-        /// Meridional radius of curvature, M (to the north)
-        double meridional(double phi) const;
-
-        /// Prime vertical radius of curvature, N (to the east, the radius of the parallel is N cos(phi))
-        double prime_vertical(double phi) const;
-
-    private:
-
-        const double a_;
-        const double e2_;
-    };
-
     // -- Constructors
 
     Figure() noexcept     = default;
@@ -153,9 +131,15 @@ public:
     double eccentricity() const;
     double flattening() const;
 
+    /// Meridional radius of curvature, M, at a geodetic latitude [degree]: length [L] per angle [radian] to the north
+    double meridional_radius(double lat) const;
+
+    /// Prime vertical radius of curvature, N, at a geodetic latitude [degree]: length [L] per angle [radian] normal to
+    /// the meridian (to the east, N cos(lat) along the parallel)
+    double prime_vertical_radius(double lat) const;
+
     Conformal conformal() const { return Conformal(eccentricity()); }
     Authalic authalic() const { return Authalic(eccentricity()); }
-    Curvature curvature() const { return {a(), eccentricity()}; }
 
     virtual bool is_default() const;
 

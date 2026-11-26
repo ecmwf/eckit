@@ -337,15 +337,14 @@ CASE("Two-unit Sphere") {
 }
 
 
-CASE("Figure::Curvature") {
+CASE("Figure: radii of curvature") {
     constexpr double eps = 1e-12;
 
     SECTION("sphere: one radius") {
-        const auto c = figure::Sphere(2.).curvature();
+        const figure::Sphere sphere(2.);
         for (double lat : {-90., -30., 0., 45., 90.}) {
-            const auto phi = lat * util::DEGREE_TO_RADIAN;
-            EXPECT(types::is_approximately_equal(c.meridional(phi), 2., eps));
-            EXPECT(types::is_approximately_equal(c.prime_vertical(phi), 2., eps));
+            EXPECT(types::is_approximately_equal(sphere.meridional_radius(lat), 2., eps));
+            EXPECT(types::is_approximately_equal(sphere.prime_vertical_radius(lat), 2., eps));
         }
     }
 
@@ -353,39 +352,31 @@ CASE("Figure::Curvature") {
         constexpr double a = 1.;
         constexpr double b = 0.5;
 
-        const auto c = figure::OblateSpheroid(a, b).curvature();
-        EXPECT(types::is_approximately_equal(c.meridional(0.), b * b / a, eps));
-        EXPECT(types::is_approximately_equal(c.prime_vertical(0.), a, eps));
+        const figure::OblateSpheroid spheroid(a, b);
+        EXPECT(types::is_approximately_equal(spheroid.meridional_radius(0.), b * b / a, eps));
+        EXPECT(types::is_approximately_equal(spheroid.prime_vertical_radius(0.), a, eps));
 
-        for (double phi : {-M_PI_2, M_PI_2}) {
-            EXPECT(types::is_approximately_equal(c.meridional(phi), a * a / b, eps));
-            EXPECT(types::is_approximately_equal(c.prime_vertical(phi), a * a / b, eps));
+        for (double lat : {-90., 90.}) {
+            EXPECT(types::is_approximately_equal(spheroid.meridional_radius(lat), a * a / b, eps));
+            EXPECT(types::is_approximately_equal(spheroid.prime_vertical_radius(lat), a * a / b, eps));
         }
     }
 
     SECTION("oblate spheroid: lengths of short arcs, along the meridian and the parallel") {
         F wgs84(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));
-        const auto c = wgs84->curvature();
 
         const projection::LonLatToXYZ to_xyz(wgs84->a(), wgs84->b());
         constexpr double h = 1e-4;  // [degree]
-        const auto dphi    = 2. * h * util::DEGREE_TO_RADIAN;
+        const auto dh      = 2. * h * util::DEGREE_TO_RADIAN;
 
         for (double lat : {-60., 0., 30., 75.}) {
-            const auto phi = lat * util::DEGREE_TO_RADIAN;
-
             const auto meridian = PointXYZ::distance(to_xyz.fwd({10., lat - h}), to_xyz.fwd({10., lat + h}));
-            EXPECT(types::is_approximately_equal(meridian / dphi / c.meridional(phi), 1., 1e-8));
+            EXPECT(types::is_approximately_equal(meridian / dh / wgs84->meridional_radius(lat), 1., 1e-8));
 
             const auto parallel = PointXYZ::distance(to_xyz.fwd({10. - h, lat}), to_xyz.fwd({10. + h, lat}));
-            EXPECT(types::is_approximately_equal(parallel / dphi / (c.prime_vertical(phi) * std::cos(phi)), 1., 1e-8));
+            const auto radius   = wgs84->prime_vertical_radius(lat) * std::cos(lat * util::DEGREE_TO_RADIAN);
+            EXPECT(types::is_approximately_equal(parallel / dh / radius, 1., 1e-8));
         }
-    }
-
-    SECTION("invalid") {
-        EXPECT_THROWS_AS(Figure::Curvature(0., 0.), exception::FigureError);
-        EXPECT_THROWS_AS(Figure::Curvature(1., 1.), exception::FigureError);
-        EXPECT_THROWS_AS(Figure::Curvature(1., -0.1), exception::FigureError);
     }
 }
 

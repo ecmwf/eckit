@@ -197,22 +197,16 @@ double Figure::Authalic::phi(double q) const {
 }
 
 
-Figure::Curvature::Curvature(double a, double e) : a_(a), e2_(e * e) {
-    if (!(0. < a_ && 0. <= e && e < 1.)) {
-        throw exception::FigureError("Curvature: requires a > 0 and 0 <= e < 1", Here());
-    }
+double Figure::meridional_radius(double lat) const {
+    const auto e = eccentricity();
+    const auto s = e * std::sin(lat * util::DEGREE_TO_RADIAN);
+    return a() * (1. - e * e) / std::pow(1. - s * s, 1.5);
 }
 
 
-double Figure::Curvature::meridional(double phi) const {
-    const auto s = std::sin(phi);
-    return a_ * (1. - e2_) / std::pow(1. - e2_ * s * s, 1.5);
-}
-
-
-double Figure::Curvature::prime_vertical(double phi) const {
-    const auto s = std::sin(phi);
-    return a_ / std::sqrt(1. - e2_ * s * s);
+double Figure::prime_vertical_radius(double lat) const {
+    const auto s = eccentricity() * std::sin(lat * util::DEGREE_TO_RADIAN);
+    return a() / std::sqrt(1. - s * s);
 }
 
 

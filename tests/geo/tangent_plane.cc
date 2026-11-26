@@ -112,7 +112,6 @@ CASE("sphere: offsets of nearby points") {
 
 CASE("oblate spheroid: normal to the surface, offsets by the radii of curvature") {
     std::unique_ptr<Figure> wgs84(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));
-    const auto curvature = wgs84->curvature();
 
     const projection::LonLatToXYZ to_xyz(wgs84->a(), wgs84->b());
 
@@ -132,11 +131,11 @@ CASE("oblate spheroid: normal to the surface, offsets by the radii of curvature"
         expect_orthonormal(plane, normal);
 
         const auto e = plane(to_xyz.fwd({lon + h, lat}));
-        EXPECT_APPROX(e.X() / (curvature.prime_vertical(phi) * std::cos(phi) * dh), 1., 1e-8);
+        EXPECT_APPROX(e.X() / (wgs84->prime_vertical_radius(lat) * std::cos(phi) * dh), 1., 1e-8);
 
         const auto n = plane(to_xyz.fwd({lon, lat + h}));
-        EXPECT_APPROX(n.X() / (curvature.meridional(phi) * dh), 0., 1e-8);
-        EXPECT_APPROX(n.Y() / (curvature.meridional(phi) * dh), 1., 1e-8);
+        EXPECT_APPROX(n.X() / (wgs84->meridional_radius(lat) * dh), 0., 1e-8);
+        EXPECT_APPROX(n.Y() / (wgs84->meridional_radius(lat) * dh), 1., 1e-8);
     }
 }
 

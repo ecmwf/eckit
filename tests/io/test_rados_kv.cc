@@ -3,235 +3,227 @@
 
 #include <rados/librados.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 #include <vector>
 
-#include <algorithm>
-
-#include "eckit/config/Resource.h"
+#include "RadosTestUtils.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosAsyncKeyValue.h"
 #include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
-#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
-#include "eckit/io/rados/RadosNamespace.h"
-#endif
-#include "RadosTestUtils.h"
-#include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("Rados KeyValue") {
+namespace {
 
-#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
-    std::string pool_name = "test_kv";
-    std::string nspace    = "default";
-    RadosPool pool(pool_name);
-    pool.ensureDestroyed();
-    pool.ensureCreated();
-#else
-    std::string pool_name;
-    std::string nspace = "test_kv";
-    pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
-    if (pool_name.empty()) {
-        throw eckit::UserError("The RADOS tests need the name of an existing pool in ECKIT_RADOS_TEST_POOL", Here());
-    }
-    RadosPool pool(pool_name);
-#endif
+std::string text(const std::optional<std::vector<char>>& value) {
+    ASSERT(value);
+    return {value->begin(), value->end()};
+}
 
-    SECTION("RadosKeyValue operations") {
+bool contains(const std::vector<std::string>& keys, const std::string& key) {
+    return std::find(keys.begin(), keys.end(), key) != keys.end();
+}
 
-        std::string key = "key";
-        std::string val = "abcdefghijklmnopqrstuvwxyz";
+}  // namespace
 
-        std::string key2 = "key2";
-        std::string val2 = "zyxwvutsrqponmlkjihgfedcba";
+//----------------------------------------------------------------------------------------------------------------------
 
-        RadosKeyValue kv(pool.name(), nspace, "foobar");
+CASE("RadosKeyValue") {
 
-        // create
+    RadosTestSpace space("test_kv");
+
+    RadosKeyValue kv(space.pool().name(), space.nspace(), "kv");
+
+    SECTION("is created and destroyed") {
         EXPECT_NOT(kv.exists());
         kv.ensureCreated();
         EXPECT(kv.exists());
-
-        // put
-        long res;
-        res = kv.put(key, val.c_str(), val.size());
-        EXPECT(res == val.size());
-        res = kv.put(key2, val2.c_str(), val2.size());
-        EXPECT(res == val2.size());
-
-        std::string empty_key = "empty";
-        res                   = kv.put(empty_key, nullptr, 0);
-        EXPECT(res == 0);
-
-        // get
-        char read_val[100] = "";
-        res                = kv.get(key, read_val, sizeof(read_val));
-        EXPECT(res == val.size());
-        EXPECT(std::string(read_val) == val);
-
-        char empty_val = '\0';
-        res            = kv.get(empty_key, &empty_val, sizeof(empty_val));
-        EXPECT(res == 0);
-
-        std::vector<char> empty_stream_data;
-        eckit::MemoryStream empty_stream = kv.getMemoryStream(empty_stream_data, empty_key, "test kv");
-        EXPECT(empty_stream.read(&empty_val, sizeof(empty_val)) == 0);
-        EXPECT(empty_stream_data.empty());
-
-        // list keys
-        std::vector<std::string> keys = kv.keys();
-        EXPECT(keys.size() == 3);
-        EXPECT(std::find(keys.begin(), keys.end(), key) != keys.end());
-        EXPECT(std::find(keys.begin(), keys.end(), key2) != keys.end());
-        EXPECT(std::find(keys.begin(), keys.end(), empty_key) != keys.end());
-
-        // has
-        EXPECT(kv.has(key));
-        EXPECT(kv.has(key2));
-        EXPECT(kv.has(empty_key));
-        EXPECT_NOT(kv.has("key3"));
-
-        // size
-        EXPECT(kv.size(key) == Length(val.size()));
-        EXPECT(kv.size(empty_key) == Length(0));
-        EXPECT_THROWS_AS(kv.size("key3"), eckit::NotFound);
-
-        // get into a buffer which is too small
-        char small[4];
-        EXPECT_THROWS_AS(kv.get(key, small, sizeof(small)), eckit::BadValue);
-
-        // list keys over several pages
-        keys = kv.keys(2);
-        EXPECT(keys.size() == 3);
-        keys = kv.keys(1);
-        EXPECT(keys.size() == 3);
-
-        // a key-value which does not exist has no keys
-        RadosKeyValue missing(pool.name(), nspace, "no-such-kv");
-        EXPECT_NOT(missing.exists());
-        EXPECT_NOT(missing.has(key));
-        EXPECT_THROWS_AS(missing.get(key, read_val, sizeof(read_val)), eckit::NotFound);
-
-        // URIs
-        EXPECT(RadosKeyValue(kv.uri()).str() == kv.str());
-        EXPECT_THROWS_AS(RadosKeyValue(URI("rados:pool/name")), eckit::UserError);
-        EXPECT_THROWS_AS(RadosKeyValue(pool.name(), "", "name").uri(), eckit::UserError);
-        EXPECT_THROWS_AS(RadosKeyValue(pool.name(), nspace, "kv#1"), eckit::UserError);
-
-        // remove
-        kv.remove(key);
-        kv.remove(key2);
-        kv.remove(empty_key);
-
-        // get non-existing key
-        EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::NotFound);
-
-        // list keys for empty kv
-        keys.clear();
-        keys = kv.keys();
-        EXPECT(keys.size() == 0);
-
-        // destroy kv
+        kv.ensureCreated();
         EXPECT(kv.exists());
+
         kv.ensureDestroyed();
         EXPECT_NOT(kv.exists());
+        kv.ensureDestroyed();
     }
 
-    SECTION("Keys are text") {
+    SECTION("stores, returns and removes values") {
+
+        const std::string val  = "abcdefghijklmnopqrstuvwxyz";
+        const std::string val2 = "zyxwvutsrqponmlkjihgfedcba";
+
+        // put creates the key-value
+        kv.put("key", val.data(), val.size());
+        kv.put("key2", val2.data(), val2.size());
+        kv.put("empty", nullptr, 0);
+        EXPECT(kv.exists());
+
+        EXPECT(text(kv.get("key")) == val);
+        EXPECT(text(kv.get("key2")) == val2);
+        EXPECT(text(kv.get("empty")).empty());
+        EXPECT_NOT(kv.get("key3"));
+
+        EXPECT(kv.has("key"));
+        EXPECT(kv.has("empty"));
+        EXPECT_NOT(kv.has("key3"));
+
+        // a value is replaced
+        kv.put("key", val2.data(), val2.size());
+        EXPECT(text(kv.get("key")) == val2);
+
+        // values are any bytes
+        const std::string binary("a\0b\0", 4);
+        kv.put("binary", binary.data(), binary.size());
+        EXPECT(text(kv.get("binary")) == binary);
+
+        kv.remove("key");
+        EXPECT_NOT(kv.has("key"));
+        EXPECT_NOT(kv.get("key"));
+
+        // removing a key which is not there is not an error
+        kv.remove("key");
+    }
+
+    SECTION("lists its keys, also over several queries") {
+
+        EXPECT(kv.keys().empty());
+
+        for (const std::string key : {"a", "b", "c", "d", "e"}) {
+            kv.put(key, key.data(), key.size());
+        }
+
+        for (int keysPerQuery : {1000, 5, 2, 1}) {
+            const auto keys = kv.keys(keysPerQuery);
+            EXPECT(keys.size() == 5);
+            for (const std::string key : {"a", "b", "c", "d", "e"}) {
+                EXPECT(contains(keys, key));
+            }
+        }
+
+        for (const std::string key : {"a", "b", "c", "d", "e"}) {
+            kv.remove(key);
+        }
+        EXPECT(kv.keys().empty());
+        EXPECT(kv.exists());
+    }
+
+    SECTION("has nothing if it does not exist") {
+        EXPECT_NOT(kv.exists());
+        EXPECT_NOT(kv.has("key"));
+        EXPECT_NOT(kv.get("key"));
+        EXPECT(kv.keys().empty());
+    }
+
+    SECTION("has a URI") {
+        EXPECT(RadosKeyValue(kv.uri()).str() == kv.str());
+        EXPECT(kv.object().str() == kv.str());
+        EXPECT_THROWS_AS(RadosKeyValue(URI("rados:pool/name")), eckit::UserError);
+        EXPECT_THROWS_AS(RadosKeyValue(space.pool().name(), "", "name").uri(), eckit::UserError);
+        EXPECT_THROWS_AS(RadosKeyValue(space.pool().name(), space.nspace(), "kv#1"), eckit::UserError);
+    }
+
+    SECTION("refuses keys which are not text") {
 
         const std::string nul("a\0b", 3);
         const char one = '1';
 
-        RadosKeyValue kv(pool.name(), nspace, "text-keys");
         kv.ensureCreated();
 
         EXPECT_THROWS_AS(kv.put(nul, &one, 1), eckit::UserError);
         EXPECT_THROWS_AS(kv.has(nul), eckit::UserError);
-        EXPECT_THROWS_AS(kv.size(nul), eckit::UserError);
+        EXPECT_THROWS_AS(kv.get(nul), eckit::UserError);
         EXPECT_THROWS_AS(kv.remove(nul), eckit::UserError);
-        char out;
-        EXPECT_THROWS_AS(kv.get(nul, &out, 1), eckit::UserError);
         EXPECT(kv.keys().empty());
 
-        // keys with a NUL byte written by another client
+        // such keys written by another client
         {
             const std::vector<std::string> foreign = {std::string("a\0b", 3), std::string("a\0c", 3), "zz"};
             std::vector<const char*> keys;
             std::vector<const char*> vals;
-            std::vector<size_t> key_lens;
-            std::vector<size_t> val_lens;
+            std::vector<size_t> keyLens;
+            std::vector<size_t> valLens;
             for (const auto& k : foreign) {
                 keys.push_back(k.data());
-                key_lens.push_back(k.size());
+                keyLens.push_back(k.size());
                 vals.push_back(&one);
-                val_lens.push_back(1);
+                valLens.push_back(1);
             }
             RadosWriteOp op;
-            rados_write_op_omap_set2(op.op_, keys.data(), vals.data(), key_lens.data(), val_lens.data(), keys.size());
+            rados_write_op_omap_set2(op.op_, keys.data(), vals.data(), keyLens.data(), valLens.data(), keys.size());
             RADOS_CALL(rados_write_op_operate(op.op_, RadosCluster::instance().ioCtx(kv.object()), kv.name().c_str(),
-                                              NULL, 0));
+                                              nullptr, 0));
         }
 
-        // they are listed when everything fits in one request, and reported, rather than looped on, otherwise
+        // are listed when everything fits in one query, and reported, rather than looped on, otherwise
         EXPECT(kv.keys().size() == 3);
         EXPECT_THROWS_AS(kv.keys(1), eckit::UserError);
+    }
+}
 
-        kv.ensureDestroyed();
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("RadosAsyncKeyValue") {
+
+    RadosTestSpace space("test_kv");
+
+    const std::string val = "abcdefghijklmnopqrstuvwxyz";
+
+    SECTION("applies its modifications by the time flush returns") {
+
+        // at most 2 modifications not waited for
+        RadosAsyncKeyValue kv(space.pool().name(), space.nspace(), "async-kv", 2);
+
+        kv.ensureCreated();
+        for (const std::string key : {"a", "b", "c", "d", "e"}) {
+            kv.put(key, val.data(), val.size());
+        }
+        kv.flush();
+
+        EXPECT(kv.exists());
+        EXPECT(kv.keys().size() == 5);
+        EXPECT(text(kv.get("e")) == val);
+
+        kv.remove("a");
+        kv.remove("b");
+        kv.flush();
+        EXPECT(kv.keys().size() == 3);
+
+        // nothing to wait for
+        kv.flush();
     }
 
-    SECTION("RadosAsyncKeyValue operations") {
+    SECTION("is asynchronous through the base class as well") {
 
-        const std::string val = "abcdefghijklmnopqrstuvwxyz";
+        RadosAsyncKeyValue async(space.pool().name(), space.nspace(), "async-kv");
+        RadosKeyValue& kv = async;
 
+        kv.put("a", val.data(), val.size());
+        kv.put("b", val.data(), val.size());
+        kv.remove("a");
+        async.flush();
+
+        EXPECT(kv.keys().size() == 1);
+        EXPECT(kv.has("b"));
+    }
+
+    SECTION("waits for what was not flushed when destroyed") {
         {
-            // at most 2 pending modifications
-            RadosAsyncKeyValue kv(pool.name(), nspace, "async-kv", 2);
-
-            kv.ensureCreated();
-            for (const std::string key : {"a", "b", "c", "d", "e"}) {
-                EXPECT(kv.put(key, val.data(), val.size()) == long(val.size()));
+            RadosAsyncKeyValue kv(space.pool().name(), space.nspace(), "async-kv");
+            for (const std::string key : {"a", "b", "c"}) {
+                kv.put(key, val.data(), val.size());
             }
-            kv.flush();
-
-            EXPECT(kv.exists());
-            EXPECT(kv.keys().size() == 5);
-            EXPECT(kv.size("e") == Length(val.size()));
-
-            // through the base class the modifications are still asynchronous
-            const RadosKeyValue& base = kv;
-            base.remove("a");
-            base.remove("b");
-            kv.flush();
-            EXPECT(kv.keys().size() == 3);
-
-            // left pending: the destructor waits for it
-            kv.remove("c");
         }
 
-        RadosKeyValue kv(pool.name(), nspace, "async-kv");
-        EXPECT(kv.keys().size() == 2);
-        EXPECT_NOT(kv.has("c"));
-
-        kv.ensureDestroyed();
-        EXPECT_NOT(kv.exists());
+        RadosKeyValue kv(space.pool().name(), space.nspace(), "async-kv");
+        EXPECT(kv.keys().size() == 3);
     }
-
-#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
-    pool.destroy();
-#else
-    RadosNamespace ns(pool_name, nspace);
-    ns.destroy();
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -239,19 +231,5 @@ CASE("Rados KeyValue") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    int ret = -1;
-    try {
-        ret = eckit::testing::run_tests(argc, argv);
-    }
-    catch (...) {
-        eckit::Log::error() << "RADOS key/value tests terminated with an exception" << std::endl;
-    }
-
-#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
-    eckit::test::cleanupRados("test_kv", "default");
-#else
-    eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "test_kv");
-#endif
-
-    return ret;
+    return eckit::testing::run_tests(argc, argv);
 }

@@ -3,7 +3,7 @@
 
 /// @author Nicolau Manubens
 /// @author Metin Çakırcalı
-/// @date June 2024
+/// @date   June 2024
 
 #pragma once
 
@@ -13,49 +13,46 @@
 #include <vector>
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/rados/RadosCall.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 
 namespace eckit {
+
+class RadosAIO;
+
+constexpr size_t radosDefaultMaxPendingOps = 1024;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// A key-value whose modifications are submitted without waiting for them.
 /// They are only known to have been applied, or to have failed, once flush() returns.
+/// What was not flushed is waited for when the object is destroyed, where a failure can only be logged.
 class RadosAsyncKeyValue : public RadosKeyValue {
 
 public:  // methods
 
-    /// @param maxAioBuffSize number of pending modifications above which the next one flushes first
-    explicit RadosAsyncKeyValue(const eckit::URI& uri, size_t maxAioBuffSize = 1024 * 1024);
+    /// @param maxPendingOps number of modifications not yet waited for, above which the next one flushes first
+    explicit RadosAsyncKeyValue(const eckit::URI& uri, size_t maxPendingOps = radosDefaultMaxPendingOps);
 
-    RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid,
-                       size_t maxAioBuffSize = 1024 * 1024);
+    RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& name,
+                       size_t maxPendingOps = radosDefaultMaxPendingOps);
 
     ~RadosAsyncKeyValue() override;
 
     RadosAsyncKeyValue(const RadosAsyncKeyValue&)            = delete;
     RadosAsyncKeyValue& operator=(const RadosAsyncKeyValue&) = delete;
-    RadosAsyncKeyValue(RadosAsyncKeyValue&&)                 = default;
-    RadosAsyncKeyValue& operator=(RadosAsyncKeyValue&&)      = default;
 
-    void ensureCreated() const override;
+    /// Waits for the modifications made so far.
+    /// @throws the first failure among them, once all have been waited for
+    void flush();
 
-    long put(const std::string& key, const void* buf, const long& len) const override;
-    void remove(const std::string& key) const override;
+protected:  // methods
 
-    void flush() const;
-
-private:  // methods
-
-    void track(std::unique_ptr<eckit::RadosAIO> comp) const;
+    void submit(RadosWriteOp& op) override;
 
 private:  // members
 
-    mutable std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
-
-    size_t maxAioBuffSize_;
+    std::vector<std::unique_ptr<eckit::RadosAIO>> pending_;
+    size_t maxPendingOps_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -80,21 +80,15 @@ if( eckit_HAVE_RADOS AND NOT eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
     endif()
 endif()
 
-ecbuild_add_test( TARGET      eckit_test_radoshandle
-                  SOURCES     test_radoshandle.cc
-                  CONDITION   eckit_HAVE_RADOS
-                  LABELS      rados
-                  LIBS        eckit ${_rados_test_libs}
-                  DEFINITIONS ${_rados_test_defs}
-                  ENVIRONMENT ${_rados_test_env} )
-
-ecbuild_add_test( TARGET      eckit_test_rados_kv
-                  SOURCES     test_rados_kv.cc
-                  CONDITION   eckit_HAVE_RADOS
-                  LABELS      rados
-                  LIBS        eckit ${_rados_test_libs}
-                  DEFINITIONS ${_rados_test_defs}
-                  ENVIRONMENT ${_rados_test_env} )
+foreach( _test radoshandle rados_kv )
+    ecbuild_add_test( TARGET      eckit_test_${_test}
+                      SOURCES     test_${_test}.cc
+                      CONDITION   eckit_HAVE_RADOS
+                      LABELS      rados
+                      LIBS        eckit ${_rados_test_libs}
+                      DEFINITIONS ${_rados_test_defs}
+                      ENVIRONMENT ${_rados_test_env} )
+endforeach()
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc

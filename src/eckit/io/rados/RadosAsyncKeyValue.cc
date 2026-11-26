@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
@@ -23,12 +22,12 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RadosAsyncKeyValue::RadosAsyncKeyValue(const eckit::URI& uri, size_t maxAioBuffSize) :
-    RadosKeyValue(uri), maxAioBuffSize_(maxAioBuffSize) {}
+RadosAsyncKeyValue::RadosAsyncKeyValue(const eckit::URI& uri, size_t maxPendingOps) :
+    RadosKeyValue(uri), maxPendingOps_(maxPendingOps) {}
 
-RadosAsyncKeyValue::RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid,
-                                       size_t maxAioBuffSize) :
-    RadosKeyValue(pool, nspace, oid), maxAioBuffSize_(maxAioBuffSize) {}
+RadosAsyncKeyValue::RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& name,
+                                       size_t maxPendingOps) :
+    RadosKeyValue(pool, nspace, name), maxPendingOps_(maxPendingOps) {}
 
 RadosAsyncKeyValue::~RadosAsyncKeyValue() {
     /// @note: modifications which were not flushed would otherwise fail unnoticed
@@ -40,35 +39,24 @@ RadosAsyncKeyValue::~RadosAsyncKeyValue() {
     }
 }
 
-void RadosAsyncKeyValue::track(std::unique_ptr<eckit::RadosAIO> comp) const {
-    comps_.push_back(std::move(comp));
-}
+void RadosAsyncKeyValue::submit(RadosWriteOp& op) {
 
-void RadosAsyncKeyValue::ensureCreated() const {
-    if (comps_.size() >= maxAioBuffSize_) {
+    if (pending_.size() >= maxPendingOps_) {
         flush();
     }
-    track(RadosKeyValue::ensureCreatedAsync());
+
+    /// @note: only kept once the operation has been submitted. Waiting on a completion which was
+    ///   never submitted would block forever.
+    auto comp = std::make_unique<eckit::RadosAIO>();
+
+    RADOS_CALL(rados_aio_write_op_operate(op.op_, RadosCluster::instance().ioCtx(object()), comp->comp_, name().c_str(),
+                                          nullptr, 0));
+
+    pending_.push_back(std::move(comp));
 }
 
-long RadosAsyncKeyValue::put(const std::string& key, const void* buf, const long& len) const {
-    if (comps_.size() >= maxAioBuffSize_) {
-        flush();
-    }
-    long res = 0;
-    track(RadosKeyValue::putAsync(key, buf, len, res));
-    return res;
-}
-
-void RadosAsyncKeyValue::remove(const std::string& key) const {
-    if (comps_.size() >= maxAioBuffSize_) {
-        flush();
-    }
-    track(RadosKeyValue::removeAsync(key));
-}
-
-void RadosAsyncKeyValue::flush() const {
-    RadosAIO::waitForAll(comps_);
+void RadosAsyncKeyValue::flush() {
+    RadosAIO::waitForAll(pending_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

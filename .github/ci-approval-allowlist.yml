@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
+---
+exempt:
+  - workflow: label-public-pr.yml
+  - workflow: notify-pull-request.yml
+  - workflow: pr-label-downstream-ci.yml
+  - workflow: old_CI.yml
+    reason: "legacy, retiring; gates downstream-ci with an if: rather than needs:"
+credentials:
+  - workflow: publish-crates.yml
+    jobs: [publish]
+    reason: "runs only on tags and manual dispatch; the crates.io token cannot be split from the build"

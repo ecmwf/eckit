@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -41,9 +34,9 @@ public:
         key_type(const char* s) : key_type(std::string{s}) {}
     };
 
-    using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
-                                    std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
-                                    std::vector<double>, std::vector<std::string>, custom_ptr,
+    using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<bool>,
+                                    std::vector<int>, std::vector<long>, std::vector<long long>, std::vector<size_t>,
+                                    std::vector<float>, std::vector<double>, std::vector<std::string>, custom_ptr,
                                     const char* /* converted to std::string */>;
 
     using container_type = std::map<key_type, value_type>;
@@ -84,6 +77,7 @@ public:
     void set(const std::string& name, size_t);
     void set(const std::string& name, float);
     void set(const std::string& name, double);
+    void set(const std::string& name, const std::vector<bool>&);
     void set(const std::string& name, const std::vector<int>&);
     void set(const std::string& name, const std::vector<long>&);
     void set(const std::string& name, const std::vector<long long>&);
@@ -109,6 +103,7 @@ public:
     bool get(const std::string& name, size_t&) const override;
     bool get(const std::string& name, float&) const override;
     bool get(const std::string& name, double&) const override;
+    bool get(const std::string& name, std::vector<bool>&) const override;
     bool get(const std::string& name, std::vector<int>&) const override;
     bool get(const std::string& name, std::vector<long>&) const override;
     bool get(const std::string& name, std::vector<long long>&) const override;

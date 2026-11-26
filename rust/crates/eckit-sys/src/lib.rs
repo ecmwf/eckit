@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! FFI bindings to ECMWF eckit C++ library.
 //!
 //! This crate builds eckit and provides:
@@ -7,8 +10,23 @@
 
 use bindman::track_cpp_api;
 
-// Auto-generated exception Error enum + From<cxx::Exception> impl
-include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
+// Auto-generated exception Error enum + From<cxx::Exception> impl.
+//
+// Wrapped in a private module purely so the lint allow has something to attach
+// to — attributes on `include!` are ignored. `Error` is re-exported at the
+// crate root, so `eckit_sys::Error` and its variants, `try_from_cxx` and trait
+// impls are all reachable exactly as before.
+#[allow(clippy::too_many_lines)]
+mod exceptions {
+    include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
+}
+
+pub use exceptions::Error;
+
+// `eckit::geo` lives in its own cxx bridge: cxx does not support `#[cfg]` on
+// individual bridge items, so an optional area needs a separate module.
+#[cfg(feature = "eckit-geo")]
+pub mod geo;
 
 #[track_cpp_api(
     ("eckit/config/LocalConfiguration.h", class = "LocalConfiguration"),
@@ -31,13 +49,15 @@ mod ffi {
 
     unsafe extern "C++" {
         include!("EckitBridge.h");
+        include!("eckit_exceptions.h");
 
         // ==================== Runtime ====================
 
         type RustMain;
 
         /// Initialise eckit runtime with the Rust log bridge.
-        /// Safe to call multiple times — only the first call has effect.
+        /// Safe to call multiple times, from any thread; only the first call
+        /// has effect.
         #[Self = "RustMain"]
         fn initialise();
 
@@ -82,7 +102,7 @@ mod ffi {
             index: usize,
         ) -> Result<UniquePtr<ConfigWrapper>>;
 
-        // Sub-configurations (root-level list — no-arg getSubConfigurations())
+        // Sub-configurations (root-level list, no-arg getSubConfigurations())
         fn root_sub_count(self: &ConfigWrapper) -> Result<usize>;
         fn root_sub_at(self: &ConfigWrapper, index: usize) -> Result<UniquePtr<ConfigWrapper>>;
 
@@ -131,7 +151,7 @@ mod ffi {
         #[Self = "DataHandleWrapper"]
         fn from_multi(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
-        /// Create a TeeHandle from multiple file paths — writes all targets in parallel.
+        /// Create a TeeHandle from multiple file paths; writes all targets in parallel.
         #[Self = "DataHandleWrapper"]
         fn tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
@@ -139,6 +159,11 @@ mod ffi {
         /// `std::io::Read` source wrapped in a [`ReaderBox`].
         #[Self = "DataHandleWrapper"]
         fn from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
+
+        /// Create a DataHandle that forwards `write()` calls to a Rust
+        /// `std::io::Write` sink wrapped in a [`WriterBox`].
+        #[Self = "DataHandleWrapper"]
+        fn from_writer(writer: Box<WriterBox>) -> Result<UniquePtr<DataHandleWrapper>>;
 
         // ==================== Message + Reader ====================
 
@@ -173,8 +198,9 @@ mod ffi {
         fn write_char(self: Pin<&mut StreamWrapper>, c: u8) -> Result<()>;
         fn write_bool(self: Pin<&mut StreamWrapper>, v: bool) -> Result<()>;
         fn write_int(self: Pin<&mut StreamWrapper>, v: i32) -> Result<()>;
-        fn write_long(self: Pin<&mut StreamWrapper>, v: i64) -> Result<()>;
-        fn write_unsigned_long(self: Pin<&mut StreamWrapper>, v: u64) -> Result<()>;
+        fn write_long_long(self: Pin<&mut StreamWrapper>, v: i64) -> Result<()>;
+        fn write_unsigned_long(self: Pin<&mut StreamWrapper>, v: u32) -> Result<()>;
+        fn write_unsigned_long_long(self: Pin<&mut StreamWrapper>, v: u64) -> Result<()>;
         fn write_double(self: Pin<&mut StreamWrapper>, v: f64) -> Result<()>;
         fn write_string(self: Pin<&mut StreamWrapper>, v: &str) -> Result<()>;
         fn write_blob(self: Pin<&mut StreamWrapper>, data: &[u8]) -> Result<()>;
@@ -183,10 +209,18 @@ mod ffi {
         fn read_char(self: Pin<&mut StreamWrapper>) -> Result<u8>;
         fn read_bool(self: Pin<&mut StreamWrapper>) -> Result<bool>;
         fn read_int(self: Pin<&mut StreamWrapper>) -> Result<i32>;
-        fn read_long(self: Pin<&mut StreamWrapper>) -> Result<i64>;
-        fn read_unsigned_long(self: Pin<&mut StreamWrapper>) -> Result<u64>;
+        fn read_long_long(self: Pin<&mut StreamWrapper>) -> Result<i64>;
+        fn read_unsigned_long(self: Pin<&mut StreamWrapper>) -> Result<u32>;
+        fn read_unsigned_long_long(self: Pin<&mut StreamWrapper>) -> Result<u64>;
         fn read_double(self: Pin<&mut StreamWrapper>) -> Result<f64>;
         fn read_string(self: Pin<&mut StreamWrapper>) -> Result<String>;
+
+        // Object framing
+        fn start_object(self: Pin<&mut StreamWrapper>) -> Result<()>;
+        fn end_object(self: Pin<&mut StreamWrapper>) -> Result<()>;
+        /// Advance to the next start-of-object tag, skipping end-of-object
+        /// tags. Returns `false` at end of stream.
+        fn next_object(self: Pin<&mut StreamWrapper>) -> Result<bool>;
 
         // Raw byte read from socket
         fn read_bytes(self: Pin<&mut StreamWrapper>, buf: &mut [u8]) -> Result<i64>;
@@ -195,7 +229,7 @@ mod ffi {
         ///
         /// Only TCP streams support this; memory streams throw. After the
         /// call the source stream is left in an unspecified state and must
-        /// be dropped — only the returned `DataHandleWrapper` holds the
+        /// be dropped; only the returned `DataHandleWrapper` holds the
         /// connection.
         fn into_data_handle(self: Pin<&mut StreamWrapper>) -> Result<UniquePtr<DataHandleWrapper>>;
 
@@ -220,7 +254,7 @@ mod ffi {
 
     extern "Rust" {
         /// Called from C++ RustLogTarget to emit log messages via Rust's log crate.
-        /// `target` is the tracing/log target — "eckit" for global channels,
+        /// `target` is the tracing/log target: "eckit" for global channels,
         /// the library name (e.g. "metkit", "mir") for per-library debug channels.
         fn rust_log(level: LogLevel, target: &str, msg: &str);
 
@@ -243,6 +277,26 @@ mod ffi {
         ///
         /// Returns the new absolute position, or `-1` on error.
         fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64;
+
+        /// Opaque Rust box holding a `dyn Write + Send` sink.
+        ///
+        /// Constructed via [`make_writer_box`]; the C++ `RustWriterHandle`
+        /// holds it by `rust::Box<WriterBox>` and forwards `write()` and
+        /// `close()` calls through [`invoke_writer_write`] /
+        /// [`invoke_writer_flush`].
+        type WriterBox;
+
+        /// Called by the C++ `RustWriterHandle::write` shim to forward the
+        /// next chunk to the wrapped Rust `Write` sink.
+        ///
+        /// Returns the chunk length on success, or `-1` on error.
+        fn invoke_writer_write(writer: &mut WriterBox, buf: &[u8]) -> i64;
+
+        /// Called by the C++ `RustWriterHandle::close` shim to flush the
+        /// wrapped Rust sink.
+        ///
+        /// Returns `0` on success, or `-1` on error.
+        fn invoke_writer_flush(writer: &mut WriterBox) -> i64;
     }
 }
 
@@ -302,7 +356,43 @@ fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64 {
         .map_or(-1, |n| i64::try_from(n).unwrap_or(i64::MAX))
 }
 
-/// Called from C++ `RustLogTarget::write()` — routes to Rust `log` crate.
+// ==================== Write → DataHandle adapter ====================
+
+/// Opaque wrapper holding a `Box<dyn Write + Send>`.
+///
+/// The C++ `RustWriterHandle` (declared in `DataHandleWrapper.h` as `struct
+/// WriterBox`) carries this by `rust::Box<WriterBox>` and forwards each C++
+/// `write(const void*, long)` call via `invoke_writer_write`.
+pub struct WriterBox(Box<dyn std::io::Write + Send>);
+
+/// Wrap a Rust `Write` sink for `ffi::from_writer`.
+pub fn make_writer_box<W>(writer: W) -> Box<WriterBox>
+where
+    W: std::io::Write + Send + 'static,
+{
+    Box::new(WriterBox(Box::new(writer)))
+}
+
+/// Called from C++ `RustWriterHandle::write` to forward the next chunk to
+/// the wrapped Rust sink. The whole chunk is consumed. Returns the chunk
+/// length, or `-1` on error — including a panicking sink, since the C++
+/// caller treats any failed write as fatal to the transfer (partial
+/// progress is never retried, the resulting exception aborts it).
+fn invoke_writer_write(writer: &mut WriterBox, buf: &[u8]) -> i64 {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| writer.0.write_all(buf)))
+        .map_or(-1, |result| {
+            result.map_or(-1, |()| i64::try_from(buf.len()).unwrap_or(i64::MAX))
+        })
+}
+
+/// Called from C++ `RustWriterHandle::close` to flush the wrapped sink.
+/// Returns `0` on success, or `-1` on error, including a panicking sink.
+fn invoke_writer_flush(writer: &mut WriterBox) -> i64 {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| writer.0.flush()))
+        .map_or(-1, |result| result.map_or(-1, |()| 0))
+}
+
+/// Called from C++ `RustLogTarget::write()`; routes to Rust `log` crate.
 fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
     match level {
         ffi::LogLevel::Error => log::error!(target: target, "{msg}"),
@@ -315,7 +405,8 @@ fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
 
 /// Initialize eckit runtime with Rust log bridge.
 ///
-/// Must be called before any eckit API usage. Safe to call multiple times.
+/// Must be called before any eckit API usage. Safe to call multiple times,
+/// from any thread.
 ///
 /// This creates a `RustMain` C++ object that overrides eckit's log target
 /// factory methods, ensuring every thread gets log output routed through

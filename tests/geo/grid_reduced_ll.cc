@@ -1,18 +1,12 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/spec/Custom.h"
@@ -26,7 +20,7 @@ CASE("points (global)") {
     spec::Custom spec{{"type", "reduced_ll"}, {"pl", std::vector<long>{20, 24, 24, 20}}};
     std::unique_ptr<const Grid> grid(GridFactory::build(spec));
 
-    EXPECT_EQUAL(grid->size(), 88);
+    EXPECT(grid->size() == 88);
 
     const std::vector<PointLonLat> ref{
         {0., 90.},    {18., 90.},   {36., 90.},   {54., 90.},   {72., 90.},    //

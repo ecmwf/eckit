@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ### test data files
 list( APPEND test_data_files
 t.grib
@@ -13,6 +16,11 @@ ecbuild_add_test( TARGET  eckit_test_easycurl
                   SOURCES test_easycurl.cc
                   CONDITION HAVE_EXTRA_TESTS AND eckit_HAVE_CURL
                   LIBS    eckit )
+
+ecbuild_add_test( TARGET    eckit_test_easycurl_redirect
+                  SOURCES   test_easycurl_redirect.cc
+                  CONDITION eckit_HAVE_CURL
+                  LIBS      eckit )
 
 file(
   COPY mock/MockREST.py mock/MockREST.launcher.sh

@@ -1,22 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/Sphere.h"
-
-
-namespace eckit::geo::area {
-class BoundingBox;
-}
 
 
 namespace eckit::geo::figure {
@@ -37,15 +26,10 @@ public:
     double a() const override { return DATUM::radius; }
     double b() const override { return DATUM::radius; }
 
-    /// Surface area [L^2]
-    double area() const override { return _area(); }
-
-    /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) const override { return _area(bbox); }
+    bool is_default() const override { return DATUM::default_figure; }
 
     // -- Class methods
 
-    /// Sphere radius
     inline static double radius() { return DATUM::radius; }
 
     /// Great-circle central angle between two points [radian]
@@ -65,12 +49,6 @@ public:
     inline static double distance(const PointXYZ& A, const PointXYZ& B) {
         return Sphere::distance(DATUM::radius, A, B);
     }
-
-    /// Surface area [L^2]
-    inline static double _area() { return Sphere::area(DATUM::radius); }
-
-    /// Surface area between parallels and meridians [L^2]
-    inline static double _area(const area::BoundingBox& bbox) { return Sphere::area(DATUM::radius, bbox); }
 
     /// Convert spherical to Cartesian coordinates
     inline static PointXYZ _convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {

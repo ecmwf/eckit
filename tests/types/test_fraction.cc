@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 #include <limits>
@@ -300,6 +293,17 @@ CASE("Fraction inverse") {
     Fraction zero(0);
     LOG << "Test (" << zero << ")**-1 (throw BadValue)" << std::endl;
     EXPECT_THROWS_AS(zero.inverse(), BadValue);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("Fraction from NaN") {
+    // NaN only known at runtime, guards against std::isnan being optimised away (e.g. IntelLLVM finite-math-only)
+    volatile double vNaN = std::numeric_limits<double>::quiet_NaN();
+    const double nan     = vNaN;
+
+    EXPECT_THROWS_AS(Fraction{nan}, AssertionFailed);
+    EXPECT_THROWS_AS(Fraction{"nan"}, AssertionFailed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

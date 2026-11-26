@@ -1,0 +1,74 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+
+#include <cstddef>
+#include <memory>
+#include <vector>
+
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/testing/Test.h"
+
+
+namespace eckit::geo::test {
+
+
+CASE("swisslv95") {
+    area::BoundingBox bounds(47.81, 5.95, 45.81, 10.5);  // from epsg.io
+    const std::vector<size_t> expected_shape{294, 429};
+
+    std::unique_ptr<const Grid> grid(
+        GridFactory::build(spec::Custom{                                                        //
+                                        {"type", "swisslv95"},                                  //
+                                        {"x", std::vector<double>{2439000., 2867000., 1000.}},  //
+                                        {"y", std::vector<double>{1040500., 1333500., 1000.}}}));
+
+    EXPECT(grid->boundingBox().contains(bounds));
+    EXPECT(grid->shape() == expected_shape);
+
+    // alias (infer extents)
+    std::unique_ptr<const Grid> grid_2(GridFactory::build(spec::Custom{{"grid", "swisslv95"}}));
+    std::unique_ptr<const Grid> grid_3(GridFactory::make_from_string("swisslv95"));
+
+    EXPECT(*grid_2 == *grid);
+    EXPECT(*grid_3 == *grid);
+}
+
+
+CASE("type") {
+    std::unique_ptr<const Grid> from_gridspec(
+        GridFactory::make_from_string("{type: swisslv95, x: [2480000, 2840000, 20000], y: [1080000, 1300000, 20000]}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "regular_xy");
+    EXPECT(*from_spec == *from_gridspec);
+
+    // the type is the projection's name (see projection.yaml)
+    EXPECT(from_gridspec->spec_str() ==
+           R"({"order":"i+j+","projection":"swisslv95","x":[2480000,2840000,20000],"y":[1080000,1300000,20000]})");
+}
+
+
+CASE("projection by name") {
+    std::unique_ptr<const Projection> by_name(ProjectionFactory::make_from_string("{projection: swisslv95}"));
+    std::unique_ptr<const Projection> by_spec(
+        ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"source", "EPSG:2056"}}));
+
+    EXPECT(by_name->spec_str() == R"({"projection":"swisslv95"})");
+    EXPECT(*by_name == *by_spec);
+
+    EXPECT_THROWS_AS(std::unique_ptr<const Projection>(ProjectionFactory::make_from_string("{projection: unknown}")),
+                     exception::ProjectionError);
+}
+
+
+}  // namespace eckit::geo::test
+
+
+int main(int argc, char** argv) {
+    return eckit::testing::run_tests(argc, argv);
+}

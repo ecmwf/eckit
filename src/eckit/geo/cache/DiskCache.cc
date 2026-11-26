@@ -1,16 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/cache/DiskCache.h"
+
+#include <vector>
 
 #include "eckit/geo/util/mutex.h"
 
@@ -18,10 +12,20 @@
 namespace eckit::geo::cache {
 
 
-void DiskCache::rmdir(const PathName& p) const {
-    // control concurrent access
-    static util::recursive_mutex MUTEX;
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
+
+
+void DiskCache::rmdir(const PathName& p) const {
+    lock_type lock;
 
     if (!p.exists()) {
         return;

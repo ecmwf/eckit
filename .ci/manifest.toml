@@ -1,21 +1,17 @@
-# Single source of truth for eckit's CI under ecmwf/ci-infrastructure.
-#
-# Alongside this manifest:
-#   - .github/workflows/ci.yml               push/PR build that publishes the artifact
-#   - .github/workflows/cross-repo-trigger.yml
-#                                            GENERATED entry point for upstream fan-out
-#                                            and consumer-driven rebuilds
-#   - .github/workflows/trigger-downstream.yml
-#                                            GENERATED fan-out to our own consumers
-#   - .github/workflows/old_CI.yml           the legacy ecmwf/downstream-ci pipeline,
-#                                            still running unchanged during migration
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
+# Header written into the workflows that ci-infrastructure-generate renders
+# from this file, so that regeneration keeps them REUSE-compliant.
+[generated]
+header = """
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+"""
 
 [package]
 name = "eckit"
-prefix = "eckit"
 repo = "ecmwf/eckit"
-# Public, so upstreams call our cross-repo-trigger.yml directly via `uses:`
-# rather than dispatching it to keep logs out of a public run.
 visibility = "public"
 compiler-inputs = ["cxx-compiler"]
 
@@ -23,84 +19,241 @@ compiler-inputs = ["cxx-compiler"]
 repo = "ecmwf/ecbuild"
 package = "ecbuild"
 ref = "develop"
-# ecbuild installs a compiler-independent CMake toolchain: one artifact serves
-# every compiler, so no compiler field enters its name.
 compiler-inputs = []
 
 [[deps]]
 repo = "ecmwf/stack-dependencies"
-package = "stack-deps"
+package = ["libaec", "lz4"]
 ref = "master"
-# Supplies libaec (FEATURE AEC), and qhull/PROJ should those features ever be
-# switched on. Compiled C++, so the compiler is part of its identity.
 compiler-inputs = ["cxx-compiler"]
 
-# Both legs share platform ubuntu-24.04 so they reuse the ecbuild and stack-deps
-# artifacts built under that same slug. runs-on/container are scheduling only and
-# never enter an artifact name.
+[matrix.build.defaults]
+job-script = "./.ci/build.sh.j2"
+build-type = "RelWithDebInfo"
+# ARC runners off: GitHub-hosted until they are back.
+# runs-on = "arc-runner-very-large"
+runs-on = "ubuntu-latest"
+ctest-args = '-j "$(nproc)"'
+c-flags = "-fno-fast-math"
+cxx-flags = "-fno-fast-math"
+
 [[matrix.build.include]]
 cxx-compiler = "clang++-18"
-build-type = "Release"
-runs-on = "arc-runner-very-large"
-container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-clang18-gfortran13:latest"
+c-compiler = "clang-18"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
 cxx-compiler = "g++-13"
-build-type = "Release"
-runs-on = "arc-runner-very-large"
-container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-clang18-gfortran13:latest"
+c-compiler = "gcc-13"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
+
+[[matrix.build.include]]
+cxx-compiler = "g++-13"
+c-compiler = "gcc-13"
+options = "mpi"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13-openmpi:latest"
+platform = "ubuntu-24.04"
+
+# ARC runners off: legs on other platforms disabled until they are back.
+# [[matrix.build.include]]
+# cxx-compiler = "g++-15"
+# c-compiler = "gcc-15"
+# container = "eccr.ecmwf.int/public-ci-images/ubuntu26.04-gcc15-gfortran15"
+# platform = "ubuntu-26.04"
+
+# [[matrix.build.include]]
+# cxx-compiler = "g++-8"
+# c-compiler = "gcc-8"
+# container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8"
+# platform = "rocky-8"
+
+# [[matrix.build.include]]
+# cxx-compiler = "g++-11"
+# c-compiler = "gcc-11"
+# container = "eccr.ecmwf.int/public-ci-images/rocky9-gcc11-gfortran11"
+# platform = "rocky-9"
+
+# [[matrix.build.include]]
+# cxx-compiler = "g++-14"
+# c-compiler = "gcc-14"
+# container = "eccr.ecmwf.int/public-ci-images/rocky10-gcc14-gfortran14"
+# platform = "rocky-10"
+
+# [[matrix.build.include]]
+# cxx-compiler = "g++-10"
+# c-compiler = "gcc-10"
+# container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10"
+# platform = "debian-11"
+
+# [[matrix.build.include]]
+# cxx-compiler = "g++-12"
+# c-compiler = "gcc-12"
+# container = "eccr.ecmwf.int/public-ci-images/debian12-gcc12-gfortran12"
+# platform = "debian-12"
+
+# [[matrix.build.include]]
+# cxx-compiler = "g++-14"
+# c-compiler = "gcc-14"
+# container = "eccr.ecmwf.int/public-ci-images/debian13-gcc14-gfortran14"
+# platform = "debian-13"
 
 [matrix.build]
 triggers = ["upstream-change", "rebuild-request"]
-action = "./.github/actions/build-eckit"
-forwarded-inputs = ["cxx-compiler", "build-type"]
-forwarded-deps-outputs = ["cmake-prefix-path"]
-needs = ["ecbuild/build", "stack-deps/build"]
 
-# --- HPC build --------------------------------------------------------------
-# eckit built inside a SLURM job, linking the atos-hpc-gnu ecbuild and stack-deps
-# artifacts. `needs` names the HPC kinds, never the runner ones: the two lanes
-# are separate artifact universes distinguished by platform, and a runner rebuild
-# must not be what re-runs this.
-#
-# The compiler fields are discriminators for artifact identity and dep matching,
-# not the binaries the recipe invokes — the job loads whatever prgenv/gnu
-# provides. They only have to agree with what the upstreams published under.
-#
-# runs-on/container/site are scheduling only and never enter the artifact name.
-# The container carries the cluster ssh identity (keys, the hpc-batch alias,
-# known_hosts) without which troika cannot submit; it is private, hence
-# container-credentials.
-[[matrix.build-hpc.include]]
+# HPC off along with the ARC runners (hpc-submit): lanes disabled until they are back.
+# [matrix.build-hpc.defaults]
+# job-script = "./.ci/build.sh.j2"
+# cxx-compiler = "g++-8"
+# build-type = "RelWithDebInfo"
+# runs-on = "hpc-submit"
+# container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
+# site = "hpc-batch"
+# platform = "hpc-atos-gnu"
+# # gcc/old, not a version number: as of now gives you 8.5.0
+# # `module avail gcc` lists no 8.5.0 to pin directly.
+# modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load ninja"]
+# c-compiler-binary = "gcc"
+# cxx-compiler-binary = "g++"
+# time = "00:40:00"
+# c-flags = "-fno-fast-math"
+# cxx-flags = "-fno-fast-math"
+
+# [[matrix.build-hpc.include]]
+# options = ""
+
+# [[matrix.build-hpc.include]]
+# cxx-compiler = "g++-15"
+# platform = "hpc-atos-gnu"
+# modules = ["load prgenv/gnu", "unload gcc", "load gcc/15.2.0", "load cmake", "load ninja"]
+# c-compiler-binary = "gcc"
+# cxx-compiler-binary = "g++"
+
+# [[matrix.build-hpc.include]]
+# cxx-compiler = "icpc-2023.2.0"
+# platform = "hpc-atos-intel"
+# modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja"]
+# c-compiler-binary = "icc"
+# cxx-compiler-binary = "icpc"
+
+# [[matrix.build-hpc.include]]
+# cxx-compiler = "icpx-2025.3.1"
+# platform = "hpc-atos-intel"
+# modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "load cmake", "load ninja"]
+# c-compiler-binary = "icx"
+# cxx-compiler-binary = "icpx"
+
+# [[matrix.build-hpc.include]]
+# cxx-compiler = "nvc++-26.1"
+# platform = "hpc-atos-nvidia"
+# modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/26.1", "load cmake", "load ninja"]
+# c-compiler-binary = "nvc"
+# cxx-compiler-binary = "nvc++"
+# sccache = false
+# c-flags = ""
+# cxx-flags = ""
+
+# [[matrix.build-hpc.include]]
+# options = "mpi"
+# modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load ninja", "load openmpi"]
+
+# [[matrix.build-hpc.include]]
+# options = "mpi"
+# cxx-compiler = "g++-15"
+# platform = "hpc-atos-gnu"
+# modules = ["load prgenv/gnu", "unload gcc", "load gcc/15.2.0", "load cmake", "load ninja", "load hpcx-openmpi/2.21.3"]
+# c-compiler-binary = "gcc"
+# cxx-compiler-binary = "g++"
+
+# [[matrix.build-hpc.include]]
+# options = "mpi"
+# cxx-compiler = "nvc++-26.1"
+# platform = "hpc-atos-nvidia"
+# modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/26.1", "load cmake", "load ninja", "use /usr/local/apps/nvidia/26.1/Linux_x86_64/26.1/comm_libs/13.1/hpcx/hpcx-2.25.1/modulefiles", "load hpcx-ompi"]
+# c-compiler-binary = "nvc"
+# cxx-compiler-binary = "nvc++"
+# sccache = false
+# c-flags = ""
+# cxx-flags = ""
+
+# [[matrix.build-hpc.include]]
+# options = "mpi"
+# cxx-compiler = "icpc-2023.2.0"
+# platform = "hpc-atos-intel"
+# modules = ["load prgenv/intel", "unload intel", "load intel/2023.2.0", "load cmake", "load ninja", "load hpcx-openmpi/2.21.3"]
+# c-compiler-binary = "icc"
+# cxx-compiler-binary = "icpc"
+
+# [[matrix.build-hpc.include]]
+# options = "mpi"
+# cxx-compiler = "icpx-2025.3.1"
+# platform = "hpc-atos-intel"
+# modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "load cmake", "load ninja", "load hpcx-openmpi/2.21.3"]
+# c-compiler-binary = "icx"
+# cxx-compiler-binary = "icpx"
+
+# [matrix.build-hpc]
+# execution = "hpc-atos"
+# container-credentials = true
+# triggers = ["upstream-change", "rebuild-request"]
+
+[packages.eckit-rust]
+compiler-inputs = ["cxx-compiler", "rust-compiler"]
+
+[[packages.eckit-rust.deps]]
+package = "eckit"
+options-input = "options"
+
+[matrix.rust]
+packages = ["eckit-rust"]
+publishes = false
+
+[matrix.rust.defaults]
+job-script = "./.ci/rust.sh.j2"
+build-type = "RelWithDebInfo"
+# runs-on = "arc-runner-normal"
+runs-on = "ubuntu-latest"
 cxx-compiler = "g++-13"
-build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
-site = "hpc-batch"
-platform = "atos-hpc-gnu"
+c-compiler = "gcc-13"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13-boost-qt6-rust1.90"
+platform = "ubuntu-24.04"
 
-[matrix.build-hpc]
-execution = "hpc"
-container-credentials = true
-job-script = "./.ci/hpc/build.sh"
-triggers = ["upstream-change", "rebuild-request"]
-forwarded-deps-outputs = ["cmake-prefix-path"]
-needs = ["ecbuild/build-hpc", "stack-deps/build-hpc"]
+[[matrix.rust.include]]
+rust-compiler = "rust-1.90"
 
-# --- downstream CI fan-out ---------------------------------------------------
-# eccodes consumes eckit only on its ENABLE_ECKIT_GEO leg; that scoping lives in
-# eccodes' own manifest, via a `when` predicate on its [[deps]] entry for us.
-# ROLLOUT NOTE: pinned to the sync branch on purpose, and TEMPORARY.
-# `ref` is what the orchestrator pins its `uses:` to, and `uses:` cannot take an
-# expression, so it selects which WORKFLOW DEFINITION runs. Pointing it at the
-# sync branch is what lets the full downstream CI be exercised before the
-# rollout merges: the orchestrator lives on the default branch (workflow_run
-# only ever runs the default-branch copy) while the consumer logic it calls
-# comes from the sync branch. Source checkout and artifact refs are handled
-# independently at runtime by pick-ref and resolve_deps' sync-branch override.
-# FLIP TO develop AND REGENERATE WHEN THE ROLLOUT MERGES.
+# Publishing the crates, only from publish-crates.yml: no patches and the default features, as a
+# crates.io user gets them, so eckit-sys builds its C++ from the release tag.
+[packages.eckit-crates]
+compiler-inputs = ["cxx-compiler", "rust-compiler"]
+
+[matrix.rust-publish]
+ci = false
+packages = ["eckit-crates"]
+publishes = false
+
+[[matrix.rust-publish.include]]
+job-script = "./.ci/rust-publish.sh.j2"
+# runs-on = "arc-runner-very-large"
+runs-on = "ubuntu-latest"
+cxx-compiler = "g++-13"
+c-compiler = "gcc-13"
+rust-compiler = "rust-1.90"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13-boost-qt6-rust1.90"
+platform = "ubuntu-24.04"
+
 [[trigger-downstream]]
 repo = "ecmwf/eccodes"
-ref = "sync-branch-ci-rollout"
+ref = "develop"
+
+[[trigger-downstream]]
+repo = "ecmwf/fckit"
+ref = "develop"
+
+[[trigger-downstream]]
+repo = "ecmwf/atlas"
+ref = "develop"
+
+[[trigger-downstream]]
+repo = "ecmwf/odc"
+ref = "develop"

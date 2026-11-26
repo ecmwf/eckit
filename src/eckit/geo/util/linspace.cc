@@ -1,16 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <algorithm>
+#include <cstddef>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/cache/MemoryCache.h"
@@ -42,6 +36,7 @@ const std::vector<double>& linspace(double start, double stop, size_t num) {
     std::vector<double> l(num);
     std::generate_n(l.begin(), num,
                     [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+    l.back() = stop;  // no rounding past the end (e.g. a pole)
 
     return (cache[key] = std::move(l));
 }

@@ -1,14 +1,7 @@
-# (C) Copyright 2011- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 ########################################################################################################################
-
-
 cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
@@ -20,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ########################################################################################################################
 ### dependencies and options
+
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
                     DEFAULT ON
@@ -202,11 +196,21 @@ if( eckit_HAVE_CONVEX_HULL )
     target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
 endif()
 
+### eckit::cache
+
+ecbuild_add_option( FEATURE ECKIT_CACHE
+                    DEFAULT ON
+                    DESCRIPTION "eckit::cache cache files and in-process caches library" )
+
+set( eckit_CACHE_THROW_ON_MISS OFF CACHE BOOL "eckit::cache throw on cache miss default" )
+set( eckit_CACHE_SHARED_MEMORY_WAIT 60 CACHE STRING "eckit::cache maximum wait for shared memory being loaded [s] default" )
+set( eckit_CACHE_FILE_KEPT 60 CACHE STRING "eckit::cache time recently used cache files are kept [s] default" )
+
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
+                    CONDITION eckit_HAVE_ECKIT_CACHE AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_CACHING
@@ -218,11 +222,6 @@ ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     DEFAULT OFF
                     CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
-
-ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
-                    DEFAULT OFF
-                    CONDITION eckit_HAVE_ECKIT_GEO
-                    DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
 ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     DEFAULT ON
@@ -239,6 +238,11 @@ endif()
 # (keep paths as strings to avoid normalisation/expansion)
 set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
+
+# in-memory cache capacities, as "in-process[,shared]" (bytes)
+math( EXPR _one_GiB "1024 * 1024 * 1024" )
+set( eckit_GEO_CACHE_SEARCH_CAPACITY "${_one_GiB},0" CACHE STRING "eckit::geo cache search capacity default" )
+set( eckit_GEO_CACHE_CROP_CAPACITY "0" CACHE STRING "eckit::geo cache crop capacity default" )
 
 ### LAPACK
 
@@ -361,6 +365,7 @@ endif()
 # sources
 
 include(cmake/compiler_warnings.cmake) # optionally handle compiler specific warnings
+include(cmake/compiler_flags.cmake)    # handle compiler specific fixes
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
@@ -383,7 +388,7 @@ endif()
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
                        SOURCES AUTHORS README.md NOTICE LICENSE
-                       INSTALL ChangeLog COPYING )
+                       INSTALL ChangeLog REUSE.toml LICENSES/Apache-2.0.txt )
 
 ############################################################################################
 # finalize

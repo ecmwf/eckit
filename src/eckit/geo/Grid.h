@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -20,6 +12,8 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
@@ -27,13 +21,16 @@
 #include "eckit/memory/Builder.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}
+class Range;
+class Search;
+}  // namespace geo
 }  // namespace eckit
 
 
@@ -100,7 +97,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Grid() = default;
+    virtual ~Grid();
 
     // -- Operators
 
@@ -115,7 +112,7 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    [[nodiscard]] const Spec& spec() const;
+    [[nodiscard]] const Spec& spec() const { return custom_spec(); }
     [[nodiscard]] std::string spec_str() const { return spec().str(); }
 
     [[nodiscard]] const spec::Spec& catalog() const;
@@ -123,6 +120,10 @@ public:
 
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
+
+    /// Name and staggering arrangement, for the grids that are identified by them (eg. ORCA, FESOM, ICON)
+    virtual std::string name() const { return {}; }
+    virtual std::string arrangement() const { return {}; }
 
     virtual bool empty() const;
     virtual size_t size() const;
@@ -134,10 +135,23 @@ public:
     [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
+
+    /// Coordinate names of the grid, eg. ("x", "y") or ("longitude", "latitude") (see point_coordinates)
+    const std::vector<std::string>& point_coordinates() const;
+
+    /// Coordinates (one vector per coordinate), on their figure, as geodetic (lon, lat)
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    [[nodiscard]] virtual std::vector<double> distinct_latitudes() const;
-    [[nodiscard]] virtual std::vector<double> distinct_longitudes() const;
+    /// Coordinates (one vector per coordinate), on their figure, as geocentric cartesian (x, y, z)
+    [[nodiscard]] virtual std::vector<std::vector<double>> to_xyz() const;
+
+    /// Convert the grid to an unstructured grid (coordinates are cached, exchangeable by uid)
+    [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
+
+    /// Shared (cache::SearchCache), valid for the grid lifetime
+    const Search& search() const;
+
+    virtual size_t truncation() const;
 
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
@@ -146,12 +160,33 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
+    /// Figure of the grid points (lon, lat), as the projection's
+    virtual const Figure& figure() const { return projection().figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
+    /// The grid cropped to the area, of the same type if supported (e.g. regular_ll by a bounding box), otherwise
+    /// unstructured (see make_grid_cropped_unstructured_ll)
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    /// The points in the area (see crop), as an unstructured grid (its coordinates cached, exchangeable by uid)
+    [[nodiscard]] Grid* make_grid_cropped_unstructured_ll(const Area&) const;
+
+    double dx() const;
+    double dy() const;
+    virtual size_t nx() const;
+    virtual size_t ny() const;
+    virtual const Range& x() const;
+    virtual const Range& y() const;
+
+    double dlon() const;
+    double dlat() const;
+    size_t nlon() const;
+    size_t nlat() const;
+    virtual const Range& lon() const;
+    virtual const Range& lat() const;
 
     // -- Class methods
 
@@ -162,7 +197,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(Projection* = nullptr);
+    explicit Grid(BoundingBox* = nullptr, const Projection* = nullptr);
 
     // -- Methods
 
@@ -170,8 +205,10 @@ protected:
 
     void reset_uid(uid_type = {});
 
-    void projection(Projection* ptr) { projection_.reset(ptr); }
+    void projection(const Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
+
+    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
 
 private:
 
@@ -182,6 +219,15 @@ private:
     mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;
+
+    mutable std::shared_ptr<const Search> search_;
+
+    struct Once;
+    const std::unique_ptr<Once> once_;
+
+    // -- Methods
+
+    const spec::Custom& custom_spec() const;
 
     // -- Friends
 
@@ -197,7 +243,9 @@ struct GridSpecByName {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+    static void replace(const key_t& key, const spec::Custom&);
 };
 
 
@@ -208,7 +256,9 @@ struct GridSpecByUID {
 
     static generator_t& instance();
     static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void regist(const key_t& key, const spec::Custom&);
     static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+    static void replace(const key_t& key, const spec::Custom&);
 };
 
 
@@ -221,31 +271,20 @@ using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
 
 
 template <typename T>
-bool GridRegisterName(const std::string& name_or_pattern) {
-    new eckit::spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
-    return true;
-}
+struct GridRegisterName {
+    explicit GridRegisterName(const std::string& name_or_pattern) {
+        new spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+    }
+};
 
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] static const Grid* build(const Grid::Spec& spec) { return instance().make_from_spec_(spec); }
-
-    // This is 'const' as Grid should always be immutable
+    [[nodiscard]] static const Grid* build(const Grid::Spec&);
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
-    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec& spec) { return instance().make_spec_(spec); }
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static GridFactory& instance();
-
-    // This is 'const' as Grid should always be immutable
-    [[nodiscard]] const Grid* make_from_spec_(const Grid::Spec&) const;
-
-    [[nodiscard]] Grid::Spec* make_spec_(const Grid::Spec&) const;
-    std::ostream& list_(std::ostream&) const;
+    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec&);
+    static std::ostream& list(std::ostream&);
 };
 
 

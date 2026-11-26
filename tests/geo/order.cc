@@ -1,15 +1,8 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <map>
 #include <numeric>
 #include <string>
@@ -70,14 +63,52 @@ CASE("order=scan") {
                     (iScansNegatively ? (1 << 7) : 0);
         EXPECT(mode == scanningMode);
     }
+
+    // the empty order is the default
+    EXPECT(Scan{""}.order() == Scan::order_default());
+    EXPECT(Scan{""}.order() == "i+j-");
+}
+
+
+CASE("order=scan, reorder") {
+    using order::Scan;
+    constexpr size_t ni = 3;
+    constexpr size_t nj = 2;
+
+    // points, by their index in the default order (i+j-)
+    for (const auto& [order, points] : std::map<std::string, Scan::renumber_type>{
+             {"i+j-", {0, 1, 2, 3, 4, 5}},
+             {"i+j+", {3, 4, 5, 0, 1, 2}},
+             {"i-j-", {2, 1, 0, 5, 4, 3}},
+             {"i-j+", {5, 4, 3, 2, 1, 0}},
+             {"j-i+", {0, 3, 1, 4, 2, 5}},
+             {"j+i+", {3, 0, 4, 1, 5, 2}},
+             {"j-i-", {2, 5, 1, 4, 0, 3}},
+             {"j+i-", {5, 2, 4, 1, 3, 0}},
+             {"i+-j-", {0, 1, 2, 5, 4, 3}},
+             {"j-+i+", {0, 3, 4, 1, 2, 5}},
+         }) {
+        EXPECT(Scan{order}.reorder(Scan::order_default(), ni, nj) == points);
+    }
+
+    const std::vector<std::string> orders{"i+j+", "i+j-", "i-j+", "i-j-", "i-+j+", "i-+j-", "i+-j+", "i+-j-",
+                                          "j+i+", "j+i-", "j-i+", "j-i-", "j-+i+", "j-+i-", "j+-i+", "j+-i-"};
+
+    for (const auto& a : orders) {
+        for (const auto& b : orders) {
+            const auto ab = Scan{a}.reorder(b, ni, nj);
+            const auto ba = Scan{b}.reorder(a, ni, nj);
+
+            for (size_t k = 0; k < ab.size(); ++k) {
+                EXPECT(ba[ab[k]] == k);
+            }
+        }
+    }
 }
 
 
 CASE("healpix") {
     using order::HEALPix;
-
-    auto is_power_of_two = [](size_t n) { return (n & (n - 1)) == 0; };
-
 
     SECTION("order=ring/nested") {
         size_t Nside = 4;

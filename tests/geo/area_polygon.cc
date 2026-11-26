@@ -1,22 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <vector>
 
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {
@@ -177,11 +171,11 @@ CASE("Polygon") {
                                  test_t{{{1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}, {1, 0}}, 4}}) {
             Polygon poly1(test.points);
             poly1.simplify();
-            EXPECT_EQUAL(poly1.size(), test.size);
+            EXPECT(poly1.size() == test.size);
 
             Polygon poly2(test.points.begin(), test.points.end());
             poly2.simplify();
-            EXPECT_EQUAL(poly2.size(), test.size);
+            EXPECT(poly2.size() == test.size);
         }
     }
 

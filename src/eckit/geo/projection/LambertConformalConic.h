@@ -1,17 +1,13 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <string>
+
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 
@@ -30,8 +26,8 @@ public:
 
     explicit LambertConformalConic(const Spec&);
 
-    explicit LambertConformalConic(double lat_1, double lon_0 = 0., double lat_0 = 0., double lat_2 = 0.,
-                                   Figure* = nullptr);
+    /// As PROJ (lcc), with lat_2 = lat_1 for one standard parallel
+    explicit LambertConformalConic(double lat_1, double lat_2, double lon_0 = 0., double lat_0 = 0., Figure* = nullptr);
 
     // -- Methods
 
@@ -67,9 +63,12 @@ private:
     /// Second standard parallel
     const double lat_2_;
 
+    const Figure::Conformal conformal_;
+
+    /// Cone constant, scaled semi-major axis and radius of the parallel of origin, Snyder (15-1 to 15-3)
     double n_;
-    double f_;
-    double rho0_bare_;
+    double aF_;
+    double rho0_;
 };
 
 

@@ -1,26 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/figure/Sphere.h"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/GreatCircle.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXYZ.h"
-#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
@@ -108,28 +98,6 @@ double Sphere::distance(double radius, const PointLonLat& P1, const PointLonLat&
 
 double Sphere::distance(double radius, const PointXYZ& P1, const PointXYZ& P2) {
     return radius * centralAngle(radius, P1, P2);
-}
-
-
-double Sphere::area(double radius) {
-    ASSERT(radius > 0.);
-    return 4. * M_PI * radius * radius;
-}
-
-
-double Sphere::area(double radius, const area::BoundingBox& bbox) {
-    ASSERT(radius > 0.);
-
-    // Set longitude and latitude fractions
-    auto lonf = bbox.periodic() ? 1. : (bbox.east() - bbox.west()) / PointLonLat::FULL_ANGLE;
-    ASSERT(0. <= lonf && lonf <= 1.);
-
-    auto sn   = std::sin(util::DEGREE_TO_RADIAN * bbox.north());
-    auto ss   = std::sin(util::DEGREE_TO_RADIAN * bbox.south());
-    auto latf = 0.5 * (sn - ss);
-
-    // Calculate area
-    return area(radius) * latf * lonf;
 }
 
 

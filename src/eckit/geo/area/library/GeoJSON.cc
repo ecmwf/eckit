@@ -1,23 +1,18 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/area/library/GeoJSON.h"
 
+#include <ostream>
+
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
+#include "eckit/value/Content.h"
 
 
 namespace eckit::geo::area::library {

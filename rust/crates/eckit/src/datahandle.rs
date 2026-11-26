@@ -1,11 +1,14 @@
-//! `DataHandle` wrapper — abstract I/O with typestate for read/write mode.
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
+//! `DataHandle` wrapper: abstract I/O with typestate for read/write mode.
 //!
 //! The handle is modal: opened for read OR write, never both.
 //! The typestate pattern encodes this at compile time:
 //!
-//! - `DataHandle<Closed>` — not yet opened, call `open_for_read()` or `open_for_write()`
-//! - `DataHandle<Reading>` — opened for read, implements `Read + Seek`
-//! - `DataHandle<Writing>` — opened for write, implements `Write`
+//! - `DataHandle<Closed>` - not yet opened, call `open_for_read()` or `open_for_write()`
+//! - `DataHandle<Reading>` - opened for read, implements `Read + Seek`
+//! - `DataHandle<Writing>` - opened for write, implements `Write`
 
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::marker::PhantomData;
@@ -19,7 +22,7 @@ mod sealed {
     pub trait Sealed {}
 }
 
-/// Trait for handle states. Sealed — cannot be implemented outside this crate.
+/// Trait for handle states. Sealed; cannot be implemented outside this crate.
 pub trait HandleState: sealed::Sealed {
     /// Whether the handle needs closing on drop.
     const NEEDS_CLOSE: bool;
@@ -64,7 +67,7 @@ impl DataHandle<Closed> {
     ///
     /// Public so sister crates (metkit, fdb, gribjump, …) can wrap the
     /// `DataHandle`s their C++ APIs return. The wrapper must not be opened
-    /// yet — the `Closed` typestate assumes it, and `Drop` will not close a
+    /// yet; the `Closed` typestate assumes it, and `Drop` will not close a
     /// handle in this state.
     #[must_use]
     pub const fn from_raw(inner: eckit_sys::UniquePtr<eckit_sys::DataHandleWrapper>) -> Self {
@@ -107,7 +110,7 @@ impl DataHandle<Closed> {
         Ok(Self::from_raw(inner))
     }
 
-    /// Create a `TeeHandle` from multiple file paths — writes to all targets in parallel.
+    /// Create a `TeeHandle` from multiple file paths; writes to all targets in parallel.
     ///
     /// One write call fans out to every destination. Mirrors C++ `eckit::TeeHandle`.
     pub fn tee(paths: &[impl AsRef<Path>]) -> Result<Self> {
@@ -121,12 +124,27 @@ impl DataHandle<Closed> {
     /// The C++ side calls back into the Rust source on each `read()` and
     /// `seek()`; no intermediate buffer or temp file is staged. Opening
     /// for read rewinds the source to the start. The resulting handle is
-    /// read-only — it cannot be written to.
+    /// read-only; it cannot be written to.
     pub fn from_reader<R>(reader: R) -> Result<Self>
     where
         R: std::io::Read + std::io::Seek + Send + 'static,
     {
         let inner = eckit_sys::DataHandleWrapper::from_reader(eckit_sys::make_reader_box(reader))
+            .map_err(eckit_sys::Error::from)?;
+        Ok(Self::from_raw(inner))
+    }
+
+    /// Wrap a Rust `std::io::Write` sink as a `DataHandle`.
+    ///
+    /// The C++ side calls back into the Rust sink on each `write()`; no
+    /// intermediate buffer or temp file is staged. Closing the handle
+    /// flushes the sink, and dropping it drops the sink. The resulting
+    /// handle is write-only; it cannot be read or seeked.
+    pub fn from_writer<W>(writer: W) -> Result<Self>
+    where
+        W: std::io::Write + Send + 'static,
+    {
+        let inner = eckit_sys::DataHandleWrapper::from_writer(eckit_sys::make_writer_box(writer))
             .map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }
@@ -190,7 +208,14 @@ impl<S: HandleState> DataHandle<S> {
     }
 
     /// Access the underlying C++ `DataHandleWrapper` for FFI interop.
-    pub(crate) fn inner_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
+    ///
+    /// Public so sister crates (odc, metkit, fdb, gribjump, …) can pass the
+    /// handle to their own C++ APIs taking an `eckit::DataHandle&`.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the handle has already been consumed.
+    pub fn as_sys_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
         Ok(self
             .inner
             .as_mut()
@@ -204,8 +229,8 @@ impl DataHandle<Reading> {
     ///
     /// Mirrors C++ `DataHandle::saveInto()`.
     pub fn save_into(&mut self, target: &mut DataHandle<Writing>) -> Result<i64> {
-        self.inner_mut()?
-            .save_into(target.inner_mut()?)
+        self.as_sys_mut()?
+            .save_into(target.as_sys_mut()?)
             .map_err(eckit_sys::Error::from)
     }
 
@@ -230,7 +255,7 @@ impl DataHandle<Writing> {
     ///
     /// Surfaces underlying close/flush errors to the caller (the `Drop`
     /// impl silently swallows them). Prefer calling `close()` explicitly
-    /// when you care about commit/flush failures — e.g. write targets
+    /// when you care about commit/flush failures, e.g. write targets
     /// where a buffered tail of bytes might not yet be persisted.
     pub fn close(mut self) -> Result<DataHandle<Closed>> {
         if let Some(ref mut inner) = self.inner {
@@ -248,7 +273,7 @@ impl DataHandle<Writing> {
 impl Read for DataHandle<Reading> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let n = self
-            .inner_mut()
+            .as_sys_mut()
             .map_err(to_io_error)?
             .read(buf)
             .map_err(to_io_error)?;
@@ -289,7 +314,7 @@ impl Seek for DataHandle<Reading> {
         };
 
         let actual = self
-            .inner_mut()
+            .as_sys_mut()
             .map_err(to_io_error)?
             .seek(i64::try_from(new_pos).map_err(|e| std::io::Error::other(e.to_string()))?)
             .map_err(to_io_error)?;
@@ -310,7 +335,7 @@ impl Seek for DataHandle<Reading> {
 impl Write for DataHandle<Writing> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let n = self
-            .inner_mut()
+            .as_sys_mut()
             .map_err(to_io_error)?
             .write(buf)
             .map_err(to_io_error)?;
@@ -321,7 +346,7 @@ impl Write for DataHandle<Writing> {
     /// flush implementation throw `NotImplemented`, which surfaces here
     /// as `ErrorKind::Unsupported`.
     fn flush(&mut self) -> std::io::Result<()> {
-        self.inner_mut()
+        self.as_sys_mut()
             .map_err(to_io_error)?
             .flush()
             .map_err(to_io_error)

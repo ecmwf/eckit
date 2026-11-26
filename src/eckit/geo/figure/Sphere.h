@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo::figure {
@@ -32,12 +25,6 @@ public:
     double a() const override { return R_; }
     double b() const override { return R_; }
 
-    /// Surface area [L^2]
-    double area() const override { return area(R_); }
-
-    /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) const override { return area(R_, bbox); }
-
     // -- Class methods
 
     /// Great-circle central angle between two points [radian]
@@ -51,12 +38,6 @@ public:
 
     /// Great-circle distance between two points (Cartesian coordinates)
     static double distance(double radius, const PointXYZ&, const PointXYZ&);
-
-    /// Surface area [L^2]
-    static double area(double radius);
-
-    /// Surface area between parallels and meridians [L^2]
-    static double area(double radius, const area::BoundingBox&);
 
     /// Great-circle intermediate latitude provided two circle points and intermediate longitude [degree]
     static double greatCircleLatitudeGivenLongitude(const PointLonLat&, const PointLonLat&, double lon);

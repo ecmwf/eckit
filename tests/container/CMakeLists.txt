@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ecbuild_add_test( TARGET   eckit_test_container_sharedmemarray
                   SOURCES  test_sharedmemarray.cc
                   LIBS     eckit ${RT_LIBRARIES} )
@@ -16,6 +19,10 @@ ecbuild_add_test( TARGET   eckit_test_container_trie
 
 ecbuild_add_test( TARGET   eckit_test_container_queue
                   SOURCES  test_queue.cc
+                  LIBS     eckit )
+
+ecbuild_add_test( TARGET   eckit_test_container_queueofqueues
+                  SOURCES  test_queueofqueues.cc
                   LIBS     eckit )
 
 ecbuild_add_test( TARGET   eckit_test_container_densemap

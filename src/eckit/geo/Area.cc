@@ -1,25 +1,21 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Area.h"
 
+#include <map>
+#include <memory>
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/share/Area.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo {
@@ -28,12 +24,16 @@ namespace eckit::geo {
 namespace {
 
 
-util::recursive_mutex MUTEX;
-
-
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
+
+
+std::map<std::string, std::unique_ptr<Area::Spec>>& libraries() {
+    static std::map<std::string, std::unique_ptr<Area::Spec>> LIBRARIES;
+    return LIBRARIES;
+}
 
 
 }  // namespace
@@ -53,6 +53,33 @@ const Area::Spec& Area::spec() const {
     }
 
     return *spec_;
+}
+
+
+std::string Area::uid() const {
+    return MD5{spec_str()}.digest();
+}
+
+
+void Area::fill_grid_spec(spec::Custom& custom) const {
+    if (is_default()) {
+        return;
+    }
+
+    spec::Custom area_spec;
+    fill_spec(area_spec);
+
+    if (area_spec.only(className())) {
+        custom.set(area_spec);
+        return;
+    }
+
+    custom.set(className(), area_spec);
+}
+
+
+bool Area::is_default() const {
+    return *this == area_default();
 }
 
 
@@ -78,23 +105,17 @@ const Area& Area::area_default() {
 
 const Area* AreaFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Area::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
 }
 
 
-AreaFactory& AreaFactory::instance() {
-    static AreaFactory obj;
-    return obj;
-}
-
-
-const Area* AreaFactory::make_from_spec_(const spec::Spec& spec) const {
+const Area* AreaFactory::build(const spec::Spec& spec) {
     lock_type lock;
 
-    std::unique_ptr<Area::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Area::Spec> cfg(make_spec(spec));
 
     if (std::string type; cfg->get("type", type)) {
-        return AreaFactoryType::instance().get(type).create(*cfg);
+        return Factory<Area>::instance().get(type).create(*cfg);
     }
 
     list(Log::error() << "Area: cannot build area without 'type', choices are: ");
@@ -102,7 +123,7 @@ const Area* AreaFactory::make_from_spec_(const spec::Spec& spec) const {
 }
 
 
-Area::Spec* AreaFactory::make_spec_(const Area::Spec& spec) const {
+Area::Spec* AreaFactory::make_spec(const Area::Spec& spec) {
     lock_type lock;
     share::Area::instance();
 
@@ -116,14 +137,6 @@ Area::Spec* AreaFactory::make_spec_(const Area::Spec& spec) const {
 
     cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
 
-    // if (cfg->has("north") || cfg->has("east") || cfg->has("south") || cfg->has("west")) {
-    //     // back->set("type", "reduced_gg");
-    // }
-
-    // if (std::vector<double> area; cfg->get("area", area) && area.size() == 4) {
-    //     back->set("type", "regular_ll");
-    // }
-
     if (!back->empty()) {
         cfg->push_back(back.release());
     }
@@ -132,23 +145,37 @@ Area::Spec* AreaFactory::make_spec_(const Area::Spec& spec) const {
 }
 
 
-void AreaFactory::add_library_(const std::string& lib, Area::Spec* spec) {
+void AreaFactory::add_library(const std::string& lib, Area::Spec* spec) {
     lock_type lock;
-    share::Area::instance();
 
-    libraries_.emplace(lib, spec);
+    libraries()[lib].reset(spec);
 }
 
 
-std::ostream& AreaFactory::list_(std::ostream& out) const {
+spec::Custom* AreaFactory::library(const std::string& lib) {
+    lock_type lock;
+    share::Area::instance();
+
+    auto it = libraries().find(lib);
+    if (it == libraries().end()) {
+        throw exception::AreaError("AreaFactory: unknown area library '" + lib + "'", Here());
+    }
+
+    const auto* custom = dynamic_cast<const spec::Custom*>(it->second.get());
+    ASSERT(custom != nullptr);
+    return new spec::Custom(custom->container());
+}
+
+
+std::ostream& AreaFactory::list(std::ostream& out) {
     lock_type lock;
     share::Area::instance();
 
     out << AreaSpecByName::instance() << std::endl;
-    out << AreaFactoryType::instance() << std::endl;
+    out << Factory<Area>::instance() << std::endl;
 
     out << "Libraries:" << std::endl;
-    for (const auto& [name, spec] : libraries_) {
+    for (const auto& [name, spec] : libraries()) {
         out << "  " << name << ": " << *spec << std::endl;
     }
 

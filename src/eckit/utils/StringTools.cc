@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <cctype>
@@ -120,15 +113,17 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
     return result;
 }
 
+// std::toupper/tolower of a negative char (a non-ASCII byte, where char is signed) is undefined, so as unsigned char
+
 std::string StringTools::upper(const std::string& v) {
     std::string r = v;
-    std::transform(r.begin(), r.end(), r.begin(), static_cast<int (*)(int)>(toupper));
+    std::transform(r.begin(), r.end(), r.begin(), [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
     return r;
 }
 
 std::string StringTools::lower(const std::string& v) {
     std::string r = v;
-    std::transform(r.begin(), r.end(), r.begin(), static_cast<int (*)(int)>(tolower));
+    std::transform(r.begin(), r.end(), r.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     return r;
 }
 

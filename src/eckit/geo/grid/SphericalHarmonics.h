@@ -1,16 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
+
+#include <cstddef>
+#include <string>
 
 #include "eckit/geo/Grid.h"
 
@@ -25,17 +20,20 @@ public:
 
     explicit SphericalHarmonics(const Spec&);
     explicit SphericalHarmonics(size_t T);
+    explicit SphericalHarmonics(int T);
 
     // -- Methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
-    size_t truncation() const { return truncation_; }
+    size_t truncation() const override { return truncation_; }
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
+
+    std::string name() const override { return "T" + std::to_string(truncation_); }
 
     const std::string& type() const override;
     std::vector<size_t> shape() const override;

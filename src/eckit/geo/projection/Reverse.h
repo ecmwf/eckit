@@ -1,53 +1,59 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "eckit/geo/Point.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
-/**
- * @brief Reverse class
- * @details Used to reverse the forward and inverse methods of a projection.
- */
-template <class P>
-class Reverse : public P {
+/// Projection with forward and inverse methods swapped, sharing its figure (the spec "reverse": true toggled, unless
+/// the identity)
+class Reverse final : public Projection {
 public:
 
     // -- Constructors
 
-    using P::P;
+    /// Takes ownership
+    explicit Reverse(const Projection*);
 
     // -- Overridden methods
 
-    inline Point fwd(const Point& p) const override { return P::inv(p); }
-    inline Point inv(const Point& p) const override { return P::fwd(p); }
+    using Projection::fwd;
+    using Projection::inv;
+
+    Point fwd(const Point&) const override;
+    Point inv(const Point&) const override;
+
+    const std::string& type() const override;
+    void fill_spec(spec::Custom&) const override;
+
+    bool reverse() const override;
+    bool identity() const override;
+
+protected:
+
+    // -- Overridden methods
+
+    std::vector<std::vector<double>> fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                const std::vector<double>& v3) const override;
+    std::vector<std::vector<double>> inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                const std::vector<double>& v3) const override;
 
 private:
 
-    // -- Overridden methods
+    // -- Members
 
-    void fill_spec(spec::Custom& custom) const override {
-        P::fill_spec(custom);
-
-        // spec is only set of non-default projection, or default projection with non-default parameters
-        if (!custom.empty()) {
-            custom.set("type", "reverse-" + custom.get_string("type"));
-        }
-    }
+    const std::unique_ptr<const Projection> projection_;
 };
+
 
 }  // namespace eckit::geo::projection

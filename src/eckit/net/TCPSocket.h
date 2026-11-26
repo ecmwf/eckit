@@ -1,17 +1,12 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef eckit_net_TCPSocket_h
 #define eckit_net_TCPSocket_h
 
 #include <netinet/in.h>
+
+#include <chrono>
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
@@ -65,6 +60,17 @@ public:  // methods
     long read(void* buf, long length) const;
 
     long rawRead(void*, long);  // Non-blocking version
+
+    enum class InputStatus {
+        Ready,
+        Closed,
+        Timeout
+    };
+
+    /// Poll for input, up to a timeout.
+    /// Returns Ready if there is remaining unread data, Closed if the peer closes the connection or Timeout after the
+    /// time limit. Throws on socket errors.
+    InputStatus waitForInput(std::chrono::milliseconds timeout) const;
 
     bool isConnected() const { return socket_ != -1; }
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 
 if( NOT ENABLE_WARNINGS )
   list( APPEND suppress_warnings
@@ -9,3 +12,8 @@ endif()
 ecbuild_add_test( TARGET      eckit_test_thread_mutex
                   SOURCES     test_mutex.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET  eckit_test_thread_concurrency_limiter
+                  SOURCES test_concurrency_limiter.cc
+                  LIBS    eckit
+)

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 #include <limits>
@@ -252,6 +245,24 @@ CASE("test_comparisons_involving_nan") {
     EXPECT(!is_equal(-dMin, sNaN));
 
     maths::FloatingPointExceptions::enable_floating_point_exceptions();
+}
+
+CASE("test_comparisons_involving_runtime_nan") {
+    Log::info() << "test_comparisons_involving_runtime_nan" << std::endl;
+
+    // NaN only known at runtime, guards against std::isnan being optimised away (e.g. IntelLLVM finite-math-only)
+    volatile float vNaN = qNaN;
+    const float nan     = vNaN;
+
+    EXPECT(!is_equal(nan, nan));
+    EXPECT(!is_equal(nan, 0.0f));
+    EXPECT(!is_equal(0.0f, nan));
+    EXPECT(!is_equal(nan, 1.0f));
+    EXPECT(!is_equal(1.0f, nan));
+    EXPECT(!is_equal(nan, dMax));
+    EXPECT(!is_equal(dMax, nan));
+    EXPECT(!is_equal(nan, 1.0f, dMax));
+    EXPECT(!is_equal(1.0f, nan, dMax));
 }
 
 CASE("test_comparisons_opposite_side_of_zero") {

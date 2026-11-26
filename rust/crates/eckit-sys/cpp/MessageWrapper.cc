@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit Message + Reader bridge — implementation.
 
 #include "eckit_exceptions.h"
@@ -48,12 +51,10 @@ std::unique_ptr<MessageWrapper> MessageWrapper::clone() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ReaderWrapper::ReaderWrapper(DataHandleWrapper& handle) :
-    reader_(std::make_unique<eckit::message::Reader>(handle.inner(), true)) {}
+ReaderWrapper::ReaderWrapper(DataHandleWrapper& handle) : reader_(handle.inner(), true) {}
 
 std::unique_ptr<MessageWrapper> ReaderWrapper::next() {
-    auto msg = reader_->next();
-    return std::make_unique<MessageWrapper>(std::move(msg));
+    return std::make_unique<MessageWrapper>(reader_.next());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

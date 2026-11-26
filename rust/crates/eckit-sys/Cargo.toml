@@ -1,11 +1,14 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 [package]
 name = "eckit-sys"
-version = "2.2.0"
+version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-readme.workspace = true
+readme = "README.md"
 keywords.workspace = true
 categories.workspace = true
 description = "FFI bindings to ECMWF eckit C++ library"
@@ -65,7 +68,6 @@ hip = []   # HIP GPU linear algebra operations
 geo-codec-grids = ["eckit-codec", "lz4", "eckit-geo"]  # ORCA/FESOM/ICON grid types (requires codec + LZ4)
 geo-caching = []               # eckit::geo default caching behaviour
 geo-bitreproducible = []       # eckit::geo bit reproducibility tests
-geo-projection-proj-default = []  # eckit::geo default to PROJ-based projections
 geo-area-shapefile = []        # Shapefile support (CMake default: ON)
 
 # Advanced (CMake default: OFF)

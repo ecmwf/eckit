@@ -1,21 +1,15 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
+#include <memory>
+
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/range/GaussianLatitude.h"
-#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -34,24 +28,45 @@ size_t check_N(size_t N) {
 }
 
 
+range::RegularLongitude make_x(size_t ni, const area::BoundingBox& bbox, bool positive) {
+    constexpr auto FULL = PointLonLat::FULL_ANGLE;
+    const auto inc      = FULL / static_cast<double>(ni);
+
+    const range::RegularLongitude global(positive ? inc : -inc, positive ? 0. : FULL, positive ? FULL : 0.);
+    std::unique_ptr<range::RegularLongitude> x(
+        global.make_cropped_range(positive ? bbox.west() : bbox.east(), positive ? bbox.east() : bbox.west()));
+
+    return *x;
+}
+
+
+range::GaussianLatitude make_y(size_t N, const area::BoundingBox& bbox, bool positive) {
+    std::unique_ptr<range::GaussianLatitude> y(
+        range::GaussianLatitude(N, positive)
+            .make_cropped_range(positive ? bbox.south() : bbox.north(), positive ? bbox.north() : bbox.south()));
+
+    return *y;
+}
+
+
 }  // namespace
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}) {}
+    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni", 0), BoundingBox(spec), order::Scan{spec},
+                    ProjectionFactory::build(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s) :
-    Regular(s),
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, const Projection* p) :
+    RegularGaussian(N, 0, bbox, s, p) {}
+
+
+RegularGaussian::RegularGaussian(size_t N, size_t ni, BoundingBox bbox, order::Scan s, const Projection* p) :
+    Regular(s, p),
     N_(check_N(N)),
-    x_(*range::RegularLongitude(
-            (s.is_scan_i_positive() ? 1. : -1.) * PointLonLat::FULL_ANGLE / static_cast<double>(4 * N), 0.,
-            PointLonLat::FULL_ANGLE)
-            .make_cropped_range(s.is_scan_i_positive() ? bbox.west() : bbox.east(),
-                                s.is_scan_i_positive() ? bbox.east() : bbox.west())),
-    y_(*range::GaussianLatitude(N, s.is_scan_j_positive())
-            .make_cropped_range(s.is_scan_j_positive() ? bbox.south() : bbox.north(),
-                                s.is_scan_j_positive() ? bbox.north() : bbox.south())) {
+    ni_(ni == 0 ? 4 * N_ : ni),
+    x_(make_x(ni_, bbox, s.is_scan_i_positive())),
+    y_(make_y(N_, bbox, s.is_scan_j_positive())) {
     ASSERT(!empty());
 }
 
@@ -68,6 +83,10 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
     custom.set("grid", "F" + std::to_string(N_));
+
+    if (ni_ != 4 * N_) {
+        custom.set("ni", ni_);
+    }
 }
 
 
@@ -97,16 +116,12 @@ Grid::BoundingBox* RegularGaussian::calculate_bbox() const {
 }
 
 
-Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
-    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularGaussian(N_, cropped);
-    }
-
-    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
+grid::Regular* RegularGaussian::make_regular_cropped(const BoundingBox& bbox) const {
+    return new RegularGaussian(N_, ni_, bbox, scan());
 }
 
 
-static const auto GRIDNAME = GridRegisterName<RegularGaussian>("f[1-9][0-9]*");
+static const GridRegisterName<RegularGaussian> GRIDNAME("f[1-9][0-9]*");
 
 static const GridRegisterType<RegularGaussian> GRIDTYPE1("regular_gg");
 static const GridRegisterType<RegularGaussian> GRIDTYPE2("rotated_gg");

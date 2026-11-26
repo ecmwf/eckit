@@ -1,17 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -49,6 +43,15 @@ CASE("eckit::geo::util::linspace") {
     EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 1), std::vector<double>{1.}, EPS));
     EXPECT(is_approximately_equal_vector(util::linspace(1, 1, 2), std::vector<double>{1.}, EPS));
     EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 2), std::vector<double>{1., 2.}, EPS));
+
+    // ends exactly, as regular_ll latitudes (e.g. 0.1 degree, not past the south pole)
+    for (const auto& [start, stop, num] : std::vector<std::tuple<double, double, size_t>>{
+             {90., -90., 1801}, {-90., 90., 1801}, {0., 359.9, 3600}, {0., 1., 7}}) {
+        const auto& l = util::linspace(start, stop, num);
+        EXPECT(l.size() == num);
+        EXPECT(l.front() == start);
+        EXPECT(l.back() == stop);
+    }
 }
 
 

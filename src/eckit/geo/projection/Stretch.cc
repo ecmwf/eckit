@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/Stretch.h"
@@ -23,18 +15,18 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<Stretch> PROJECTION("stretch");
+static ProjectionRegisterType<Stretch> PROJECTION("stretch", true);
 
 
-Stretch::Stretch(double c) : c_(c) {
-    if (types::is_approximately_equal(c_, 0.)) {
-        throw exception::ProjectionError("Stretch: stretching_factor != 0", Here());
-    }
-    ASSERT(c_ != 0.);
-}
+Stretch::Stretch(double c, bool reverse) :
+    Projection(nullptr, PointLonLat{}, PointLonLat{}),
+    c_(types::is_approximately_equal(c, 0.)
+           ? throw exception::ProjectionError("Stretch: stretching_factor != 0", Here())
+       : reverse ? 1. / c
+                 : c) {}
 
 
-Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("stretching_factor")) {}
+Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("stretching_factor"), spec.get_bool("reverse", false)) {}
 
 
 const std::string& Stretch::type() const {

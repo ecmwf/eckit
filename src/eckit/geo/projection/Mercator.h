@@ -1,31 +1,29 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <string>
+
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/**
+ * @brief Mercator projection, as PROJ (merc)
+ * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+ */
 class Mercator : public Projection {
 public:
 
     // -- Constructors
 
-    explicit Mercator(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
-
+    explicit Mercator(double lon_0 = 0., double lat_ts = 0., Figure* = nullptr);
     explicit Mercator(const Spec&);
 
     // -- Methods
@@ -50,23 +48,16 @@ private:
 
     // -- Members
 
-    const PointLonLat centre_;  // angle [degree] between Eastward direction and the Equator, range [0, 90], latitude
-                                // [degree] of projection intersecting ellipsoid
-    const PointLonLat first_;
+    /// Central meridian
+    const double lon_0_;
 
-    const double eps_;
-    const size_t max_iter_;
+    /// Latitude of true scale
+    const double lat_ts_;
 
-    double lam0_;
-    double x0_;
-    double y0_;
-    double e_;
-    double m_;
-    double w_;
+    const Figure::Conformal conformal_;
 
-    // -- Methods
-
-    double calculate_phi(double t) const;
+    /// Semi-major axis, scaled at the latitude of true scale
+    const double k_;
 };
 
 

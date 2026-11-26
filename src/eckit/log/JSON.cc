@@ -1,15 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <iomanip>
 #include <string>
+#include <string_view>
 
 #include "eckit/log/JSON.h"
 #include "eckit/log/Seconds.h"
@@ -90,10 +84,10 @@ void JSON::sep() {
     }
 }
 
-static std::ostream& encode(std::ostream& s, const char* p) {
+static std::ostream& encode(std::ostream& s, std::string_view str) {
     s << '"';
-    while (*p) {
-        switch (*p) {
+    for (const char c : str) {
+        switch (c) {
 
             case '\\':
                 s << "\\\\";
@@ -124,10 +118,9 @@ static std::ostream& encode(std::ostream& s, const char* p) {
                 break;
 
             default:
-                s << *p;
+                s << c;
                 break;
         }
-        p++;
     }
 
     s << '"';
@@ -275,6 +268,13 @@ JSON& JSON::operator<<(const std::string& s) {
 }
 
 JSON& JSON::operator<<(const char* s) {
+    null_ = false;
+    sep();
+    encode(out_, s);
+    return *this;
+}
+
+JSON& JSON::operator<<(std::string_view s) {
     null_ = false;
     sep();
     encode(out_, s);

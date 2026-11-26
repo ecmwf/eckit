@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
@@ -27,15 +20,15 @@ namespace eckit::tools {
 
 struct EckitGeoGridCache final : EckitTool {
     EckitGeoGridCache(int argc, char** argv) : EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<std::string>("grid", "grid regular expression (case insensitive)"));
         options_.push_back(new option::SimpleOption<bool>("match", "match instead of search (default: false)"));
         options_.push_back(new option::SimpleOption<bool>("dryrun", "dry run (default: false)"));
     }
 
+    int minimumPositionalArguments() const override { return 1; }
+
     void usage(const std::string& tool) const override {
-        Log::info() << "\n"
-                       "Usage: "
-                    << tool << "[options] ..." << std::endl;
+        Log::info() << "\nUsage: " << tool << " [options] <grid regular expression (case insensitive)|uid> ..."
+                    << std::endl;
     }
 
     void execute(const option::CmdArgs& args) override {

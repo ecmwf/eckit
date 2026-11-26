@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit Stream bridge — implementation.
 
 #include "eckit_exceptions.h"
@@ -22,10 +25,13 @@ void StreamWrapper::write_bool(bool v) {
 void StreamWrapper::write_int(int32_t v) {
     inner() << v;
 }
-void StreamWrapper::write_long(int64_t v) {
+void StreamWrapper::write_long_long(int64_t v) {
     inner() << static_cast<long long>(v);
 }
-void StreamWrapper::write_unsigned_long(uint64_t v) {
+void StreamWrapper::write_unsigned_long(uint32_t v) {
+    inner() << static_cast<unsigned long>(v);
+}
+void StreamWrapper::write_unsigned_long_long(uint64_t v) {
     inner() << static_cast<unsigned long long>(v);
 }
 void StreamWrapper::write_double(double v) {
@@ -53,12 +59,17 @@ int32_t StreamWrapper::read_int() {
     inner() >> v;
     return v;
 }
-int64_t StreamWrapper::read_long() {
+int64_t StreamWrapper::read_long_long() {
     long long v{};
     inner() >> v;
     return static_cast<int64_t>(v);
 }
-uint64_t StreamWrapper::read_unsigned_long() {
+uint32_t StreamWrapper::read_unsigned_long() {
+    unsigned long v{};
+    inner() >> v;
+    return static_cast<uint32_t>(v);
+}
+uint64_t StreamWrapper::read_unsigned_long_long() {
     unsigned long long v{};
     inner() >> v;
     return static_cast<uint64_t>(v);
@@ -74,7 +85,17 @@ rust::String StreamWrapper::read_string() {
     return rust::String(v);
 }
 
-int64_t StreamWrapper::read_bytes(rust::Slice<uint8_t> buf) {
+void StreamWrapper::start_object() {
+    inner().startObject();
+}
+void StreamWrapper::end_object() {
+    inner().endObject();
+}
+bool StreamWrapper::next_object() {
+    return inner().next();
+}
+
+int64_t StreamWrapper::read_bytes(rust::Slice<uint8_t> /*buf*/) {
     throw eckit::SeriousBug("read_bytes not supported on this stream type");
 }
 

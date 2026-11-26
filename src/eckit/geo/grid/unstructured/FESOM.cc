@@ -1,23 +1,22 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/unstructured/FESOM.h"
 
+#include <stdint.h>
 #include <memory>
+#include <vector>
 
 #include "eckit/codec/codec.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -47,7 +46,8 @@ static std::string arrangement_to_string(Arrangement a) {
 
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
-                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement")))) {}
+                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
+                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
 FESOM::FESOM(const uid_type& uid) :
@@ -56,7 +56,7 @@ FESOM::FESOM(const uid_type& uid) :
 
 FESOM::FESOM(const std::string& name, Arrangement a) :
     FESOM(*[](const std::string& grid) {
-        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match(grid).spec(grid));
+        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match_spec(grid, grid));
     }(name + "_" + arrangement_to_string(a))) {}
 
 
@@ -78,16 +78,13 @@ Grid::uid_type FESOM::calculate_uid() const {
 
     if (arrangement_from_string(arrangement()) == Arrangement::FESOM_C) {
         // download internally controls concurrent reads/writes
-        static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "fesom" /
-                                        std::to_string(cache::Download::version()));
+        static const cache::Download download;
 
-        // bootstrap uid
-        std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());
+        std::unique_ptr<Spec> spec(GridSpecByUID::instance().get_spec(uid()));
 
-        // get coordinates from arrangement: N
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
 
-        // get element indices (0-based) from arrangement: C (this one)
+        // element indices are 0-based
         auto url  = LibEcKitGeo::url(spec->get_string("url_connectivity"));
         auto path = download.to_cached_path(url, spec->get_string("name", ""), ".ek");
         ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
@@ -116,7 +113,7 @@ Grid::uid_type FESOM::calculate_uid() const {
 
 
 Grid::Spec* FESOM::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get(str).spec() : GridSpecByName::instance().get(str).spec(str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(str) : GridSpecByName::instance().get_spec(str, str);
 }
 
 

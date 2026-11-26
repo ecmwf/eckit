@@ -1,18 +1,12 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
+#include <vector>
 
-#include "eckit/geo/eckit_geo_config.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/AlbersEqualArea.h"
 #include "eckit/spec/Custom.h"
@@ -23,7 +17,6 @@ namespace eckit::geo::test {
 
 
 CASE("AlbersEqualArea") {
-#if eckit_HAVE_PROJ
     constexpr auto eps = 10. * PointXY::EPS;  // FIXME improve floating-point errors
 
     projection::AlbersEqualArea proj1(-96., 23., 29.5, 45.5, new figure::Sphere(6378206.4));
@@ -61,11 +54,56 @@ CASE("AlbersEqualArea") {
             auto bbbb  = std::get<PointXY>(proj2->fwd(b));
             auto bbbbb = std::get<PointLonLat>(proj2->inv(bbbb));
 
-            // EXPECT(points_equal(bb, bbbb, eps));
+            EXPECT(points_equal(bb, bbbb, 1e-6));
             EXPECT(points_equal(b, bbbbb));
         }
     }
-#endif
+
+
+    SECTION("longitudes either side of the central meridian") {
+        for (const auto& p : std::vector<PointLonLat>{{0., 30.}, {-170., 40.}, {100., 50.}, {-300., 35.}}) {
+            const auto q = proj1.fwd(p);
+            EXPECT(points_equal(proj1.fwd(PointLonLat{p.lon() + 360., p.lat()}), q, 1e-6));
+            EXPECT(points_equal(proj1.inv(q), p));
+
+            if (proj2) {
+                EXPECT(points_equal(std::get<PointXY>(proj2->fwd(p)), q, 1e-6));
+            }
+        }
+    }
+}
+
+
+CASE("AlbersEqualArea: ellipsoid") {
+    // Snyder (1987), Map Projections: A Working Manual, p. 292, Clarke 1866 ellipsoid
+    std::unique_ptr<const Projection> aea(ProjectionFactory::make_from_string(
+        "{type: aea, lon_0: -96, lat_0: 23, lat_1: 29.5, lat_2: 45.5, figure: {a: 6378206.4, b: 6356583.8}}"));
+
+    EXPECT(aea->proj_str() == "+proj=aea +lat_0=23 +lat_1=29.5 +lat_2=45.5 +lon_0=-96 +a=6378206.4 +b=6356583.8");
+
+    const PointLonLat p{-75., 35.};
+    const auto q = std::get<PointXY>(aea->fwd(p));
+    EXPECT(points_equal(q, PointXY{1885472.7, 1535925.0}, 0.1));
+    EXPECT(points_equal(aea->inv(q), p));
+
+    // a tangent cone (one standard parallel), southern
+    std::unique_ptr<const Projection> south(ProjectionFactory::make_from_string(
+        "{type: aea, lon_0: 132, lat_0: 0, lat_1: -18, lat_2: -18, figure: grs80}"));
+
+    for (const auto& r : std::vector<PointLonLat>{{132., 0.}, {112., -10.}, {154., -43.}, {120., -30.}}) {
+        EXPECT(points_equal(south->inv(south->fwd(r)), r));
+    }
+
+    if (ProjectionFactory::has_type("proj")) {
+        for (const auto* proj : {aea.get(), south.get()}) {
+            std::unique_ptr<const Projection> by_proj(
+                ProjectionFactory::build(spec::Custom{{"type", "proj"}, {"target", proj->proj_str()}}));
+
+            for (const auto& r : std::vector<PointLonLat>{{-75., 35.}, {-120., 50.}, {112., -10.}, {154., -43.}}) {
+                EXPECT(points_equal(by_proj->fwd(r), proj->fwd(r), 1e-3));
+            }
+        }
+    }
 }
 
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit Message + Reader bridge — iterate GRIB messages over a DataHandle.
 #pragma once
 
@@ -50,7 +53,7 @@ public:
 /// Wraps `eckit::message::Reader` for Rust FFI.
 /// Reads messages from a `DataHandle`.
 class ReaderWrapper {
-    std::unique_ptr<eckit::message::Reader> reader_;
+    eckit::message::Reader reader_;
 
 public:
 

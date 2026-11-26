@@ -1,21 +1,30 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! Safe Rust wrapper for ECMWF's eckit C++ library.
 //!
 //! Provides:
-//! - [`Config`] — YAML configuration loading and access
-//! - [`DataHandle`] — abstract I/O (`impl Read + Seek`)
-//! - [`Message`] / [`MessageReader`] — GRIB message abstraction
-//! - [`Error`] — auto-generated exception types from eckit
-//! - [`init`] — runtime initialization with Rust log bridge
+//! - [`Config`] - YAML configuration loading and access
+//! - [`DataHandle`] - abstract I/O (`impl Read + Seek`)
+//! - [`Message`] / [`MessageReader`] - GRIB message abstraction
+//! - [`geo::Grid`] / [`geo::Spec`] - geospatial grids and their gridSpec, with
+//!   [`geo::Area`], [`geo::Projection`], [`geo::Figure`] and [`geo::Search`] (`geo` feature)
+//! - [`Error`] - auto-generated exception types from eckit
+//! - [`init`] - runtime initialization with Rust log bridge
 
 pub mod config;
 pub mod datahandle;
 pub mod error;
+#[cfg(feature = "geo")]
+pub mod geo;
 pub mod message;
 pub mod stream;
 
 pub use config::{Config, ConfigGet, ConfigSet, SubConfigs};
 pub use datahandle::{Closed, DataHandle, HandleState, Reading, Writing};
 pub use error::{Error, Result};
+#[cfg(feature = "geo")]
+pub use geo::{Area, BoundingBox, Figure, Grid, Projection, Search, Spec, SpecGet};
 pub use message::{Message, MessageGet, MessageReader};
 pub use stream::{MemoryStream, Stream, StreamRead, StreamWrite, TcpStream};
 

@@ -1,28 +1,22 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/cache/LatitudeLongitude.h"
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "eckit/codec/codec.h"
 #include "eckit/config/Resource.h"
+#include "eckit/container/CacheManager.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/os/AutoUmask.h"
 #include "eckit/spec/Spec.h"
 
 
@@ -32,7 +26,10 @@ namespace eckit::geo::cache {
 namespace {
 
 
-util::recursive_mutex MUTEX;
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
 
 
 using Cache = cache::RecordCacheT<LatitudeLongitude, LatitudeLongitude::uid_type>;
@@ -46,7 +43,7 @@ struct Loader final : Cache::Loader {
             throw exception::GridError("LatitudeLongitude: unknown uid='" + uid + "'", Here());
         }
 
-        std::unique_ptr<const Grid::Spec> spec(GridSpecByUID::instance().get(uid).spec());
+        std::unique_ptr<const Grid::Spec> spec(GridSpecByUID::instance().get_spec(uid));
         ASSERT(spec);
 
         if (spec->has("cached_path")) {
@@ -55,9 +52,7 @@ struct Loader final : Cache::Loader {
         }
 
         if (spec->has("url")) {
-            static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "latlon" /
-                                            std::to_string(cache::Download::version()));
-
+            static const Download download;
             record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }
@@ -84,13 +79,13 @@ LatitudeLongitude::LatitudeLongitude(const std::vector<double>& lat, const std::
 
 
 const LatitudeLongitude& LatitudeLongitude::get(const uid_type& uid) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
     return cache().get(uid);
 }
 
 
 const LatitudeLongitude& LatitudeLongitude::set(const uid_type& uid, LatitudeLongitude&& ll) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
     return cache().set(uid, std::move(ll));
 }
 
@@ -109,9 +104,9 @@ void LatitudeLongitude::read(const PathName& p) {
 
 void LatitudeLongitude::write(const PathName& p) const {
     codec::RecordWriter record;
-    if (static const std::string cmp =
-            LibResource<std::string, LibEcKitGeo>("eckit-codec-compression;$ECKIT_CODEC_COMPRESSION", "lz4");
-        cmp.empty()) {
+    static const std::string cmp =
+        LibResource<std::string, LibEcKitGeo>("eckit-codec-compression;$ECKIT_CODEC_COMPRESSION", "lz4");
+    if (cmp.empty()) {
         record.compression(false);
     }
     else {
@@ -125,24 +120,38 @@ void LatitudeLongitude::write(const PathName& p) const {
 
 
 PathName LatitudeLongitude::to_cached_path() const {
-    auto uid  = grid::Unstructured::uid_from_latlons(latitude(), longitude());
-    auto path = PathName(LibEcKitGeo::cacheDir()) / "latlon" / (uid + ".ek");
+    // the cache file (as Download, not in memory), created exclusively across processes (eckit::CacheManager: the
+    // creation is locked, written to a process-specific file then renamed, so other processes never read a partial
+    // file)
+    struct Traits {
+        using value_type = PathName;
+        using Locker     = CacheManagerFileFlock;
 
-    if (auto dir = path.dirName(); !dir.exists()) {
-        try {
-            // use umask = 0 so mkdir creates the directory with the correct permissions
-            AutoUmask umask(0);
-            dir.mkdir(0777);
+        static const char* name() { return "latlon"; }
+        static int version() { return version::LATLON; }
+        static const char* extension() { return ".ek"; }
+
+        static void save(const CacheManagerBase&, const value_type&, const PathName&) {}  // by the creator
+        static void load(const CacheManagerBase&, value_type& path, const PathName& cached) { path = cached; }
+    };
+
+    using LatLonCache = CacheManager<Traits>;
+    static const LatLonCache CACHE(Traits::name(), LibEcKitGeo::cacheDir(), false, 0);
+
+    struct Creator final : LatLonCache::CacheContentCreator {
+        explicit Creator(const LatitudeLongitude& ll) : ll_(ll) {}
+        void create(const PathName& path, PathName&, bool& saved) override {
+            ll_.write(path);
+            saved = true;
         }
-        catch (FailedSystemCall&) {
-            // possibly failing later is more meaningful
-        }
-    }
+        const LatitudeLongitude& ll_;
+    } creator(*this);
 
-    if (!path.exists()) {
-        write(path);
-    }
+    // the file lock is per process
+    lock_type lock;
 
+    PathName path;
+    CACHE.getOrCreate(grid::Unstructured::uid_from_latlons(latitude(), longitude()), creator, path);
     return path;
 }
 

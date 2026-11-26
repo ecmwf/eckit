@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <algorithm>
@@ -47,6 +39,10 @@ void test_t() {
         a = b = {"1", "2", "3"};
         c     = {"7", "8", "9", "10"};
     }
+    else if constexpr (std::is_same_v<T, std::vector<bool>>) {
+        a = b = {false, false, true};
+        c     = {true, false, true};
+    }
     else if constexpr (std::is_same_v<T, std::string>) {
         a = b = "1";
         c     = "7";
@@ -85,6 +81,7 @@ CASE("Custom::value_type") {
     test_t<size_t>();
     test_t<float>();
     test_t<double>();
+    test_t<std::vector<bool>>();
     test_t<std::vector<int>>();
     test_t<std::vector<long>>();
     test_t<std::vector<long long>>();
@@ -151,6 +148,16 @@ b:
 }
 
 
+CASE("Custom::make_from_value, booleans") {
+    std::unique_ptr<Custom> custom(
+        Custom::make_from_value(YAMLParser::decodeString("{a: true, b: false, c: [true, false]}")));
+
+    EXPECT(custom->str() == R"({"a":true,"b":false,"c":[true,false]})");
+    EXPECT(custom->get_bool("a"));
+    EXPECT_NOT(custom->get_bool("b"));
+}
+
+
 CASE("Custom::operator==") {
     Custom a({{"foo", "bar"}, {"boo", "far"}});
     Custom b({{"bOo", "far"}, {"Foo", "bar"}});
@@ -168,6 +175,13 @@ CASE("Custom::operator==") {
     EXPECT(d != a);
     EXPECT_NOT(a != d);
     EXPECT_NOT(d == a);
+
+    Custom e({{"mask", std::vector<bool>{true, false, true}}});
+    Custom f({{"mask", std::vector<bool>{true, false, true}}});
+    Custom g({{"mask", std::vector<bool>{false, true, false}}});
+
+    EXPECT(e == f);
+    EXPECT(e != g);
 }
 
 
@@ -183,24 +197,24 @@ CASE("Spec <- Custom") {
 
         int a = 0;
         EXPECT(spec->get("a", a));
-        EXPECT_EQUAL(a, -123);
+        EXPECT(a == -123);
 
         std::string b;
         EXPECT(spec->get("b", b));
-        EXPECT_EQUAL(b, "B");
+        EXPECT(b == "B");
 
         size_t c = 0;
         EXPECT(spec->get("c", c));
-        EXPECT_EQUAL(c, 123UL);
+        EXPECT(c == 123UL);
 
         std::string b2;
         EXPECT(spec->get("B", b2));
-        EXPECT_EQUAL(b2, b);
+        EXPECT(b2 == b);
 
         int d = 0;
         dynamic_cast<Custom*>(spec.get())->set("B", 321);
         EXPECT(spec->get("b", d));
-        EXPECT_EQUAL(d, 321);
+        EXPECT(d == 321);
     }
 
 
@@ -230,10 +244,10 @@ CASE("Spec <- Custom") {
                 EXPECT(a.get(key, value_as_long) && value_as_long == static_cast<long>(one));
                 EXPECT(a.get(key, value_as_size_t) && value_as_size_t == static_cast<size_t>(one));
 
-                EXPECT(a.get_string(key) == std::to_string(1));
+                EXPECT(a.get_string(key) == "1");
             }
             else {
-                EXPECT(a.get_string(key) == std::to_string(1.));
+                EXPECT(a.get_string(key) == "1");
             }
         }
     }
@@ -281,7 +295,7 @@ CASE("Spec <- Custom") {
         EXPECT(c.has("foo"));
         EXPECT_THROWS_AS(c.get_int("foo"), exception::SpecError);  // cannot access as int
         EXPECT(types::is_approximately_equal(c.get_double("foo"), two));
-        EXPECT(c.get_string("foo") == std::to_string(two));
+        EXPECT(c.get_string("foo") == "2");
 
         c.set("bar", one);
         EXPECT(c.get_int("bar") == one);
@@ -323,8 +337,13 @@ CASE("Spec <- Custom") {
 
 
     SECTION("conversion (5)") {
-        std::unique_ptr<Spec> custom(
-            Custom::make_from_value(YAMLParser::decodeString("{long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
+        std::unique_ptr<Spec> custom(Custom::make_from_value(YAMLParser::decodeString(
+            "{bool_list: [true, false, true], long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
+
+        const std::vector<bool> expected_bool_list{true, false, true};
+        std::vector<bool> bool_list;
+        EXPECT(custom->get("bool_list", bool_list));
+        EXPECT(bool_list == expected_bool_list);
 
         const std::vector<long> expected_long_list{1, 2, 3};
         auto long_list = custom->get_double_vector("long_list");
@@ -341,13 +360,29 @@ CASE("Spec <- Custom") {
     }
 
 
+    SECTION("conversion (6)") {
+        const std::vector<bool> expected_bool_list{true, false, true};
+
+        Custom custom;
+        custom.set("bool_list", expected_bool_list);
+
+        const Spec& spec = custom;
+        std::vector<bool> bool_list;
+        EXPECT(spec.get("bool_list", bool_list));
+        EXPECT(bool_list == expected_bool_list);
+
+        std::vector<int> int_list;
+        EXPECT(!spec.get("bool_list", int_list));
+    }
+
+
     SECTION("json") {
         // test order
         std::unique_ptr<Spec> a(new Custom({{"c", "c"}, {"a", "a"}, {"b", 1}}));
 
         const std::string a_str = a->str();
         const std::string a_ref = R"({"a":"a","b":1,"c":"c"})";
-        EXPECT_EQUAL(a_str, a_ref);
+        EXPECT(a_str == a_ref);
 
         // test types
         std::unique_ptr<Spec> b(new Custom({{"string", "string"},
@@ -358,6 +393,7 @@ CASE("Spec <- Custom") {
                                             {"size_t", static_cast<std::size_t>(4)},
                                             {"float", static_cast<float>(5)},
                                             {"double", static_cast<double>(6)},
+                                            {"vector<bool>", std::vector<bool>{true, false}},
                                             {"vector<int>", std::vector<int>{1, 1}},
                                             {"vector<long>", std::vector<long>{2, 2}},
                                             {"vector<long long>", std::vector<long long>{3, 3}},
@@ -368,8 +404,8 @@ CASE("Spec <- Custom") {
 
         const std::string b_str = b->str();
         const std::string b_ref =
-            R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
-        EXPECT_EQUAL(b_str, b_ref);
+            R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<bool>":[true,false],"vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
+        EXPECT(b_str == b_ref);
     }
 }
 

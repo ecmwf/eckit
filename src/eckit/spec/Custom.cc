@@ -1,19 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/spec/Custom.h"
 
 #include <algorithm>
 #include <cctype>
+#include <limits>
 #include <sstream>
+#include <type_traits>
 
 #include "eckit/log/JSON.h"
 #include "eckit/spec/Exceptions.h"
@@ -30,6 +25,22 @@ namespace {
 constexpr int STREAM_PRECISION = 15;
 
 
+template <typename T>
+std::string to_string(const T& value) {
+    static_assert(std::is_arithmetic_v<T>);
+
+    if constexpr (std::is_floating_point_v<T>) {
+        std::ostringstream str;
+        str.precision(std::numeric_limits<T>::digits10);
+        str << value;
+        return str.str();
+    }
+    else {
+        return std::to_string(value);
+    }
+}
+
+
 template <typename From, typename To>
 bool get_t_s(const From& from, To& to) {
     to = static_cast<To>(from);
@@ -39,7 +50,7 @@ bool get_t_s(const From& from, To& to) {
 
 template <typename From>
 bool get_t_s(const From& from, std::string& to) {
-    to = std::to_string(from);
+    to = to_string(from);
     return true;
 }
 
@@ -65,7 +76,7 @@ template <typename From>
 bool get_t_v(const std::vector<From>& from, std::vector<std::string>& to) {
     to.clear();
     for (const auto& f : from) {
-        to.emplace_back(std::to_string(f));
+        to.emplace_back(to_string(f));
     }
     return true;
 }
@@ -131,6 +142,16 @@ bool get_t_v_real(const Custom::container_type& map, const std::string& name, To
 }
 
 
+template <typename To>
+bool get_t_v_boolean(const Custom::container_type& map, const std::string& name, To& value) {
+    if (auto it = map.find(name); it != map.cend()) {
+        const auto& v = it->second;
+        return std::holds_alternative<std::vector<bool>>(v) ? get_t_v(std::get<std::vector<bool>>(v), value) : false;
+    }
+    return false;
+}
+
+
 template <typename T>
 Custom::value_type from_value_t(const Value& value) {
     T to;
@@ -182,7 +203,8 @@ Custom* Custom::make_from_value(const Value& value) {
     ASSERT(value.isMap());
 
     auto scalar = [](const Value& value) -> value_type {
-        return value.isNumber()   ? value_type(static_cast<int>(value))
+        return value.isBool()     ? value_type(static_cast<bool>(value))
+               : value.isNumber() ? value_type(static_cast<int>(value))
                : value.isDouble() ? value_type(static_cast<double>(value))
                : value.isString() ? static_cast<std::string>(value)
                                   : throw BadValue(value, Here());
@@ -191,6 +213,10 @@ Custom* Custom::make_from_value(const Value& value) {
     auto vector = [](const Value& value) -> value_type {
         const auto list(value.as<ValueList>());
         ASSERT(!list.empty());
+
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isBool(); })) {
+            return std::vector<bool>(list.begin(), list.end());
+        }
 
         if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isNumber(); })) {
             return std::vector<int>(list.begin(), list.end());
@@ -235,6 +261,7 @@ bool Custom::operator==(const Custom& other) const {
         const auto& name = _a.first;
         auto _b          = other.map_.find(name);
         return _b != other.map_.end() && (custom_value_equal(*this, other, name, long{}) ||
+                                          custom_value_equal(*this, other, name, std::vector<bool>{}) ||
                                           custom_value_equal(*this, other, name, std::vector<long>{}) ||
                                           custom_value_equal(*this, other, name, double{}) ||
                                           custom_value_equal(*this, other, name, std::vector<double>{}) ||
@@ -284,6 +311,11 @@ void Custom::set(const std::string& name, double value) {
 }
 
 
+void Custom::set(const std::string& name, const std::vector<bool>& value) {
+    map_[name] = value;
+}
+
+
 void Custom::set(const std::string& name, const std::vector<int>& value) {
     map_[name] = value;
 }
@@ -324,7 +356,9 @@ void Custom::set(const std::string& name, const Value& value) {
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
 
-    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
+    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isBool(); })
+                   ? from_value_t<std::vector<bool>>(value)
+               : value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
                    ? from_value_t<std::vector<double>>(value)
                : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); })
                    ? from_value_t<std::vector<number_type>>(value)
@@ -454,6 +488,11 @@ bool Custom::get(const std::string& name, float& value) const {
 
 bool Custom::get(const std::string& name, double& value) const {
     return get_t_s_real(map_, name, value);
+}
+
+
+bool Custom::get(const std::string& name, std::vector<bool>& value) const {
+    return get_t_v_boolean(map_, name, value);
 }
 
 

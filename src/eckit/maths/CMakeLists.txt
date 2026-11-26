@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 list(APPEND eckit_maths_private_libs "${LAPACK_LIBRARIES}" "${BLAS_LIBRARIES}")
 list(APPEND eckit_maths_sources
     Eigen.h

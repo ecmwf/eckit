@@ -1,19 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/geo/order/HEALPix.h"
 #include "eckit/testing/Test.h"
 
 
@@ -76,7 +71,7 @@ CASE("HEALPix") {
         };
 
         auto points = grid->to_points();
-        EXPECT_EQUAL(points.size(), expected_points_ring.size());
+        EXPECT(points.size() == expected_points_ring.size());
 
         for (int i = 0; i < points.size(); ++i) {
             EXPECT(points_equal(std::get<PointLonLat>(points[i]), expected_points_ring[i]));

@@ -1,7 +1,15 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # aio system calls are know to fail on the Cray
 # see https://sourceware.org/bugzilla/show_bug.cgi?id=11787
 
 option( ENABLE_ECKIT-352 "Control if ECKIT-352 tests should be enabled" ON )
+
+set( _localpathname_test_environment )
+if( NOT "$ENV{ECKIT_TEST_NFS_MOUNT}" STREQUAL "" )
+    list( APPEND _localpathname_test_environment "ECKIT_TEST_NFS_MOUNT=$ENV{ECKIT_TEST_NFS_MOUNT}" )
+endif()
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_aiohandle
                   CONDITION   NOT DEFINED ENV{CRAYOS_VERSION} AND ${HAVE_AIO}
@@ -20,6 +28,7 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_atomic_file_update
 ecbuild_add_test( TARGET      eckit_test_filesystem_localpathname
                   SOURCES     test_localpathname.cc
                   LIBS        eckit
+                  ENVIRONMENT "${_localpathname_test_environment}"
                   CONDITION   ENABLE_ECKIT-352 )
 
 
@@ -46,6 +55,10 @@ ecbuild_add_test( TARGET      eckit_test_pathname
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_filespace_strategies
                   SOURCES     test_filespace_strategies.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_filesystem_nfsmountinfo
+                  SOURCES     test_nfsmountinfo.cc
                   LIBS        eckit )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmp/foo)

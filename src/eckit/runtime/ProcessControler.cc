@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <sys/wait.h>
 #include <unistd.h>
@@ -14,6 +7,7 @@
 
 #include "eckit/eckit.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
@@ -184,20 +178,26 @@ void ProcessControler::wait() {
         return;
     }
 
-    Log::info() << "ProcessControler::wait " << pid_ << " " << child_ << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "ProcessControler::wait " << pid_ << " " << child_ << std::endl;
     if (pid_ != -1 && !child_) {
-        pid_t pid = ::waitpid(pid_, &status, 0);
+        pid_t child = pid_;  // the ChildReaper may change pid_ concurrently
+        pid_t pid   = ::waitpid(child, &status, 0);
 
-        if (pid != pid_) {
-            Log::error() << "Wait pid returns " << errno << ' ' << pid << std::endl;
-            Log::error() << Log::syserr << std::endl;
-        }
-        else {
+        if (pid == child) {
 
             printStatus(pid, status);
 
             pid_    = -1;
             status_ = status;
+        }
+        else if (pid == -1 && errno == ECHILD) {
+            // Already reaped by the ChildReaper thread, which has logged the exit and recorded the status in end()
+            LOG_DEBUG_LIB(LibEcKit) << "ProcessControler::wait " << child << " already reaped" << std::endl;
+            pid_ = -1;
+        }
+        else {
+            Log::error() << "Wait pid returns " << errno << " (" << strerror(errno) << ") " << pid << std::endl;
+            Log::error() << Log::syserr << std::endl;
         }
     }
 }

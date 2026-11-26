@@ -1,21 +1,15 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to itr by virtue of its status as an intergovernmental organisation nor
- * does itr submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/unstructured/ICON.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
 
 
@@ -50,6 +44,27 @@ CASE("spec") {
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid1 == *grid3);
     EXPECT(*grid1 == grid4);
+}
+
+
+CASE("name") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
+
+    EXPECT(grid->name() == GRID);
+    EXPECT(grid->arrangement() == "C");
+}
+
+
+CASE("type") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
+
+    EXPECT(grid->type() == "ICON");
+
+    std::unique_ptr<const Grid> from_gridspec(GridFactory::make_from_string("{grid: icon-ch2}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "ICON");
+    EXPECT(*from_spec == *from_gridspec);
 }
 
 

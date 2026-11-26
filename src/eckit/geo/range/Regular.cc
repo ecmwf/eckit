@@ -1,21 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/range/Regular.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
@@ -24,15 +17,35 @@
 namespace eckit::geo::range {
 
 
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
+
+
 namespace detail {
 
 
+/// A multiple of inc, the nearest to target (up or down)
 Fraction adjust(const Fraction& target, const Fraction& inc, bool up) {
     auto r = target / inc;
     auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
 
     return n * inc;
-};
+}
+
+
+/// The offset of the values from the multiples of inc (as the reference), in [0, |inc|)
+Fraction shift(const Fraction& ref, const Fraction& inc) {
+    auto s = (ref / inc).decimalPart() * inc;
+    return s < 0 ? s + Fraction::abs(inc) : s;
+}
 
 
 size_t N(Fraction inc, Fraction a, Fraction b) {
@@ -40,8 +53,14 @@ size_t N(Fraction inc, Fraction a, Fraction b) {
 }
 
 
-struct RegularXY final : Regular::Implementation {
+struct Plain final : Regular::Implementation {
     using Implementation::Implementation;
+    explicit Plain(const Implementation& other) : Implementation(other) {}
+};
+
+
+struct Cropped final : Regular {
+    explicit Cropped(Implementation* impl) : Regular(impl) {}
 };
 
 
@@ -65,12 +84,18 @@ struct RegularLatitude final : Regular::Implementation {
 
 struct RegularLongitude final : Regular::Implementation {
     RegularLongitude(Fraction inc, Fraction a, Fraction b, Fraction ref) : Implementation(inc, a, b, ref) {
-        if (size_ == 1) {
-            return;
-        }
-
+        // (a single value has no increment, so isn't periodic)
         if (Fraction::abs(b_ - a_ + inc_) >= PERIOD) {
-            b_        = a_ + adjust(PERIOD, inc_, a_ < b_) - inc_;
+            const auto inc  = Fraction::abs(inc_);
+            const auto span = adjust(PERIOD, inc, true) - inc;
+
+            if (a_ < b_) {
+                b_ = a_ + span;
+            }
+            else {
+                a_ = b_ + span;
+            }
+
             size_     = N(inc_, a_, b_);
             periodic_ = true;
         }
@@ -111,39 +136,47 @@ const Fraction RegularLongitude::PERIOD{360, 1};
 Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref) : inc_(inc), a_(a), b_(b) {
     if (types::is_approximately_equal<double>(inc_, 0.) ||
         types::is_approximately_lesser_or_equal<double>((b_ - a_) * inc_, 0.)) {
-        size_ = 1;
-        inc_  = {};
-        b_    = a_;
-        return;
+        // no increment, or b not in its direction: a, as given
+        b_ = a_;
     }
-
-    shift_ = (ref / inc).decimalPart() * inc;
-    if (shift_ < 0) {
-        shift_ += Fraction::abs(inc);  // [0, |inc|)
+    else {
+        // the values, multiples of inc from the reference, within [a, b]
+        shift_ = detail::shift(ref, inc_);
+        a_     = shift_ + detail::adjust(a_ - shift_, inc_, true);
+        b_     = shift_ + detail::adjust(b_ - shift_, inc_, false);
+        ASSERT(a_ == b_ || (a < b) == (a_ < b_));
     }
-    a_ = shift_ + detail::adjust(a_ - shift_, inc_, true);
-    b_ = shift_ + detail::adjust(b_ - shift_, inc_, false);
-    ASSERT((a < b) == (a_ < b_));
 
     size_ = detail::N(inc_, a_, b_);
     ASSERT(size_ > 0);
+
+    // a single value has no increment (eg. a grid of a single point, row or column)
+    if (size_ == 1) {
+        inc_   = {};
+        shift_ = {};
+    }
 }
 
 
 Regular* Regular::Implementation::make_cropped_range(double crop_a, double crop_b) const {
+    // a single value (without increment), as is
+    if (size_ == 1) {
+        return new detail::Cropped(new detail::Plain{*this});
+    }
+
     const bool up = a_ <= b_;
     ASSERT(up ? crop_a <= crop_b : crop_a > crop_b);
 
-    detail::RegularXY other(inc_, Fraction{crop_a}, Fraction{crop_b}, a_);
-    auto _min = std::max(min(), other.min());
-    auto _max = std::min(max(), other.max());
+    detail::Plain other(inc_, Fraction{crop_a}, Fraction{crop_b}, a_);
+    const auto _min = std::max(min(), other.min());
+    const auto _max = std::min(max(), other.max());
 
-    return new range::RegularXY{inc_, up ? _min : _max, up ? _max : _min, a_};
+    return new detail::Cropped(new detail::Plain{inc_, up ? _min : _max, up ? _max : _min, a_});
 }
 
 
 bool Regular::Implementation::periodic() const {
-    NOTIMP;
+    return false;
 }
 
 
@@ -168,8 +201,7 @@ Fraction Regular::Implementation::max() const {
 
 
 const std::vector<double>& Regular::values() const {
-    static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     return util::linspace(a(), b(), size());
 }
@@ -207,19 +239,6 @@ RegularLongitude* RegularLongitude::make_empty_range(Fraction a, Fraction b) {
 
 RegularLongitude* RegularLongitude::make_cropped_range(double crop_a, double crop_b) const {
     auto* ptr = dynamic_cast<RegularLongitude*>(Regular::make_cropped_range(crop_a, crop_b));
-    ASSERT(ptr != nullptr);
-    return ptr;
-}
-
-
-RegularXY::RegularXY(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
-    Regular(new detail::RegularXY(inc, _a, _b, ref)) {
-    ASSERT(types::is_approximately_equal(a(), b()) ? size() == 1 : size() > 1);
-}
-
-
-RegularXY* RegularXY::make_cropped_range(double crop_a, double crop_b) const {
-    auto* ptr = dynamic_cast<RegularXY*>(Regular::make_cropped_range(crop_a, crop_b));
     ASSERT(ptr != nullptr);
     return ptr;
 }

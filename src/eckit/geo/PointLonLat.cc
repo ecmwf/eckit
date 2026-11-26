@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/PointLonLat.h"
@@ -31,7 +23,12 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, va
     const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
     auto diff = a - minimum;
-    return 0. <= diff && diff < FULL_ANGLE ? a : (modulus(diff) + minimum);
+    if (0. <= diff && diff < FULL_ANGLE) {
+        return a;
+    }
+
+    auto mod = modulus(diff);
+    return (mod < FULL_ANGLE ? mod : 0.) + minimum;
 }
 
 
@@ -39,7 +36,12 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
     const auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
 
     auto diff = a - maximum;
-    return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);
+    if (-FULL_ANGLE < diff && diff <= 0.) {
+        return a;
+    }
+
+    auto mod = modulus(diff);
+    return (-FULL_ANGLE < mod ? mod : 0.) + maximum;
 }
 
 
@@ -116,7 +118,7 @@ PointLonLat PointLonLat::componentsMax(const PointLonLat& p, const PointLonLat& 
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
     const auto c = PointLonLat::make(a.lon(), a.lat(), 0., eps);
-    const auto d = PointLonLat::make(b.lon(), b.lat(), 0., eps);
+    const auto d = PointLonLat::make(b.lon(), b.lat(), c.lon() - PointLonLat::FLAT_ANGLE, eps);
     return types::is_approximately_equal(c.lon(), d.lon(), eps) && types::is_approximately_equal(c.lat(), d.lat(), eps);
 }
 

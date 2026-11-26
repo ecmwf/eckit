@@ -1,3 +1,10 @@
 ---
 
-projection_names: []
+projection_names:
+    - swisslv95:  # https://epsg.io/2056
+          type: proj
+          source: "EPSG:2056"
+
+    - swisslv03:  # https://epsg.io/21781
+          type: proj
+          source: "EPSG:21781"

@@ -1,19 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Iterator.h"
 
+#include <ostream>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 
 
 namespace eckit::geo {
@@ -22,10 +17,8 @@ namespace eckit::geo {
 namespace {
 
 
-util::recursive_mutex MUTEX;
-
-
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 
@@ -33,17 +26,11 @@ class lock_type {
 }  // namespace
 
 
-IteratorFactory& IteratorFactory::instance() {
-    static IteratorFactory INSTANCE;
-    return INSTANCE;
-}
-
-
-Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
+Iterator* IteratorFactory::build(const Iterator::Spec& spec) {
     lock_type lock;
 
     if (std::string type; spec.get("type", type)) {
-        return IteratorFactoryType::instance().get(type).create(spec);
+        return Factory<Iterator>::instance().get(type).create(spec);
     }
 
     list(Log::error() << "Iterator: cannot build iterator without 'type', choices are: ");
@@ -51,10 +38,10 @@ Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
 }
 
 
-std::ostream& IteratorFactory::list_(std::ostream& out) const {
+std::ostream& IteratorFactory::list(std::ostream& out) {
     lock_type lock;
 
-    out << IteratorFactoryType::instance() << std::endl;
+    out << Factory<Iterator>::instance() << std::endl;
 
     return out;
 }

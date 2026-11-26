@@ -1,25 +1,17 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
 #include <map>
+#include <memory>
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/area/Library.h"
-
-#include "shapefil.h"
 
 
 namespace eckit::geo {
@@ -30,6 +22,11 @@ class Area;
 namespace eckit::geo::area::library {
 
 
+/**
+ * @brief Shapefile areas (by entity index, or name), as area type shapefile
+ * @details Spec: shapefile from 'url' (downloaded and cached) or 'file' (.shp, or .zip with one .shp), optionally
+ * 'dbf', and the entity by 'index', or 'name' in field 'name_field'.
+ */
 class Shapefile : public Library {
 public:
 
@@ -65,12 +62,21 @@ public:
 
 private:
 
+    // -- Types
+
+    struct Implementation;
+
     // -- Members
+
+    std::string url_;
+    std::string library_;
+    const PathName file_;
+    const PathName dbf_;
 
     const PathName shpPath_;
     const PathName dbfPath_;
 
-    SHPInfo* shp_;
+    std::unique_ptr<Implementation> impl_;
 
     std::string name_;
     int nEntities_;
@@ -80,6 +86,10 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+
+    // -- Methods
+
+    [[nodiscard]] Area* make_area(size_t, const std::string& name) const;
 };
 
 

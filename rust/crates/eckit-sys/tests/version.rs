@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! Guard against drift between the crate version and the repo's `VERSION`
 //! file (cargo cannot read it dynamically).
 
@@ -11,6 +14,6 @@ fn crate_version_matches_repo_version_file() {
     assert_eq!(
         version.trim(),
         env!("CARGO_PKG_VERSION"),
-        "rust/crates/eckit-sys/Cargo.toml version and VERSION file are out of sync"
+        "rust/Cargo.toml workspace version and VERSION file are out of sync"
     );
 }

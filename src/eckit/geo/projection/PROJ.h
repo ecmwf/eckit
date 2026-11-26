@@ -1,20 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -27,7 +23,12 @@ public:
     // -- Constructors
 
     PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
+    explicit PROJ(const std::string& target, double lon_minimum = 0.) : PROJ(proj_default(), target, lon_minimum) {}
     explicit PROJ(const Spec&);
+
+    // -- Destructor
+
+    ~PROJ() override;
 
     // -- Methods
 
@@ -38,14 +39,37 @@ public:
 
     const std::string& type() const override;
 
+    using Projection::fwd;
+    using Projection::inv;
+
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
     // -- Class methods
 
-    static std::string proj_str(const spec::Custom&);
+    static bool projdb_is_available();
+
+    /// Register the projection type "proj" (once), if the PROJ database is available
+    static void register_type();
+    static void projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths = {});
+    static void projdb_reset();
+
+protected:
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
+
+    std::vector<std::vector<double>> fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                const std::vector<double>& v3) const override;
+    std::vector<std::vector<double>> inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                const std::vector<double>& v3) const override;
 
 private:
+
+    // -- Constructors
+
+    PROJ(const Spec&, bool reverse);
 
     // -- Types
 
@@ -53,14 +77,10 @@ private:
 
     // -- Members
 
-    std::unique_ptr<Implementation> implementation_;
+    std::unique_ptr<const Implementation> implementation_;
 
     const std::string source_;
     const std::string target_;
-
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

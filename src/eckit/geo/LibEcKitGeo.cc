@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/LibEcKitGeo.h"
 
+#include <algorithm>
 #include <regex>
 
 #include "eckit/config/Resource.h"
@@ -20,6 +13,10 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/utils/StringTools.h"
+
+#if eckit_HAVE_PROJ
+#include "eckit/geo/projection/PROJ.h"
+#endif
 
 
 namespace eckit {
@@ -132,6 +129,34 @@ std::string LibEcKitGeo::cacheDir() {
 }
 
 
+std::string LibEcKitGeo::searchLoader() {
+    static const std::string loader{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-search-loader;$ECKIT_GEO_SEARCH_LOADER", "mapped-memory")};
+    return loader;
+}
+
+
+bool LibEcKitGeo::searchFastBuild() {
+    static const bool yes{
+        LibResource<bool, LibEcKitGeo>("eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD", true)};
+    return yes;
+}
+
+
+std::string LibEcKitGeo::searchCacheCapacity() {
+    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-cache-search-capacity;$ECKIT_GEO_CACHE_SEARCH_CAPACITY", eckit_GEO_CACHE_SEARCH_CAPACITY)};
+    return capacity;
+}
+
+
+std::string LibEcKitGeo::cropCacheCapacity() {
+    static const std::string capacity{LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-cache-crop-capacity;$ECKIT_GEO_CACHE_CROP_CAPACITY", eckit_GEO_CACHE_CROP_CAPACITY)};
+    return capacity;
+}
+
+
 void LibEcKitGeo::purgeCacheDir() {
     purge_path_recursive(cacheDir());
 }
@@ -153,10 +178,15 @@ void LibEcKitGeo::purgeCacheProjection() {
 
 
 std::string LibEcKitGeo::url(const std::string& url_path) {
-    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
-
     static const std::string url_prefix(LibResource<std::string, LibEcKitGeo>(
         "eckit-geo-share-url-prefix;$ECKIT_GEO_SHARE_URL_PREFIX", eckit_GEO_SHARE_URL_PREFIX));
+    return url(url_path, url_prefix);
+}
+
+
+std::string LibEcKitGeo::url(const std::string& url_path, const std::string& url_prefix) {
+    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
+
     auto sep =
         !url_prefix.empty() && url_prefix.back() != '/' && !url_path.empty() && url_path.front() != '/' ? "/" : "";
 
@@ -164,11 +194,27 @@ std::string LibEcKitGeo::url(const std::string& url_path) {
 }
 
 
-bool LibEcKitGeo::proj() {
-    static const bool yes{
-        LibResource<bool, LibEcKitGeo>("eckit-geo-projection-proj;$ECKIT_GEO_PROJECTION_PROJ",
-                                       (eckit_HAVE_PROJ != 0) && (eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT != 0))};
-    return yes;
+bool LibEcKitGeo::projdb_is_available() {
+#if eckit_HAVE_PROJ
+    return geo::projection::PROJ::projdb_is_available();
+#else
+    return false;
+#endif
+}
+
+
+void LibEcKitGeo::projdb_set_search_paths([[maybe_unused]] const std::string& db_path,
+                                          [[maybe_unused]] const std::vector<std::string>& search_paths) {
+#if eckit_HAVE_PROJ
+    geo::projection::PROJ::projdb_set_search_paths(db_path, search_paths);
+#endif
+}
+
+
+void LibEcKitGeo::projdb_reset() {
+#if eckit_HAVE_PROJ
+    geo::projection::PROJ::projdb_reset();
+#endif
 }
 
 

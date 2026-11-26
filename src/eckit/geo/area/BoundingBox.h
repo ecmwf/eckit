@@ -1,23 +1,15 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <array>
 #include <memory>
+#include <string>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo {
@@ -26,9 +18,6 @@ class BoundingBox;
 bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
 }  // namespace area
 class Projection;
-namespace projection {
-class Rotation;
-}
 }  // namespace eckit::geo
 
 
@@ -107,9 +96,16 @@ public:
                                                                      value_type e);
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_spec(const Spec&);
 
+    /// Precision of bounding boxes of projections, to microdegrees and decimeters
+    static constexpr value_type PRECISION_LL = 0.5e-6;
+    static constexpr value_type PRECISION_XY = 0.5e-1;
+
+    /// Of the (x, y) rectangle [min, max], projected between (lon, lat) and (x, y) in either direction
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointXY min, PointXY max, const Projection&);
+
+    /// Of the (lon, lat) rectangle [min, max], projected from (lon, lat) to (lon, lat)
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointLonLat min, PointLonLat max,
-                                                                           const projection::Rotation&);
+                                                                           const Projection&);
 
     // -- Members
 

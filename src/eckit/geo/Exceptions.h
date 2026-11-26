@@ -1,16 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
+
+#include <string>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/spec/Exceptions.h"
@@ -32,14 +26,22 @@ public:
 namespace eckit::geo::exception {
 
 
-using SeriousBug = ::eckit::SeriousBug;
-using SpecError  = ::eckit::spec::exception::SpecError;
+using NotImplemented = ::eckit::NotImplemented;
+using SeriousBug     = ::eckit::SeriousBug;
+using SpecError      = ::eckit::spec::exception::SpecError;
 
 
 class AreaError : public geo::Exception {
 public:
 
     explicit AreaError(const std::string&, const CodeLocation&);
+};
+
+
+class DownloadError : public geo::Exception {
+public:
+
+    explicit DownloadError(const std::string&, const CodeLocation&);
 };
 
 

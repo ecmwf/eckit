@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "LocalPathName.h"
 
@@ -15,10 +8,25 @@
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
+
+#if defined(__linux__)
+#include <sys/sysmacros.h>  // for major() and minor() macros
+#include <sys/vfs.h>
+#elif defined(__APPLE__) || defined(__FreeBSD__)
+#include <sys/param.h>
+// order matters here
+#include <sys/mount.h>
+#endif
+
 #include <unistd.h>
 #include <utime.h>
+
+#include <cerrno>
 #include <climits>
+#include <cstdint>
 #include <cstdlib>
+#include <ios>
+#include <string>
 
 #include <cstring>  // for strlen
 #include <deque>
@@ -28,6 +36,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
@@ -44,14 +53,15 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Tokenizer.h"
+#if defined(__linux__)
+#include "eckit/filesystem/detail/FileSystemType.h"
+#endif
 
 namespace eckit {
 
@@ -899,6 +909,39 @@ void LocalPathName::fileSystemSize(FileSystemSize& fs) const {
     long unavail = (d.f_bfree - d.f_bavail);
     fs.available = (unsigned long long)d.f_bavail * (unsigned long long)d.f_bsize;
     fs.total     = (unsigned long long)(d.f_blocks - unavail) * (unsigned long long)d.f_bsize;
+}
+
+std::string LocalPathName::fileSystemType() const {
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
+    struct statfs d;
+    // n.b. statfs is interruptible; retry rather than reporting a spurious failure.
+    while (::statfs(path_.c_str(), &d) != 0) {
+        if (errno == EINTR) {
+            continue;
+        }
+        throw FailedSystemCall("statfs " + path_, Here(), errno);
+    }
+#if defined(__linux__)
+    // truncate as f_type may be signed
+    const auto magic = static_cast<uint32_t>(d.f_type);
+    if (const char* name = filesystem::detail::file_system_type_name(magic)) {
+        return name;
+    }
+    std::ostringstream oss;
+    oss << "unknown(0x" << std::hex << magic << ")";
+    return oss.str();
+#else
+    return d.f_fstypename;
+#endif
+#else
+    throw NotImplemented("LocalPathName::fileSystemType", Here());
+#endif
+}
+
+std::string LocalPathName::device() const {
+    Stat::Struct stat;
+    SYSCALL2(Stat::stat(path_.c_str(), &stat), *this);
+    return std::to_string(major(stat.st_dev)) + ':' + std::to_string(minor(stat.st_dev));
 }
 
 

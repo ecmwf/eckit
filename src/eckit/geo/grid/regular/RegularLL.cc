@@ -1,27 +1,21 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/regular/RegularLL.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <memory>
-#include <utility>
+#include <regex>
 #include <vector>
 
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/order/Scan.h"
-#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
@@ -76,11 +70,12 @@ RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec}) {}
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec},
+              ProjectionFactory::build(spec)) {}
 
 
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s) :
-    Regular(s),
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, const Projection* p) :
+    Regular(s, p),
     x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},
     y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(), s.is_scan_j_positive() ? bbox.south() : bbox.north(),
@@ -102,10 +97,11 @@ Grid::Spec* RegularLL::spec(const std::string& name) {
 void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
-    custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
+    custom.set("grid", std::vector<double>{std::abs(dx()), std::abs(dy())});
 
-    if (const auto& bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
-        auto [n, w, s, e] = bbox.deconstruct();
+    // NOTE: the spec describes the grid in its own (possibly rotated) frame, unlike boundingBox()
+    if (std::unique_ptr<const BoundingBox> bbox(calculate_bbox_xy()); *bbox != BoundingBox::bounding_box_default()) {
+        auto [n, w, s, e] = bbox->deconstruct();
         custom.set("area", std::vector<double>{n, w, s, e});
     }
 
@@ -123,7 +119,7 @@ const std::string& RegularLL::type() const {
 
 Point RegularLL::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};  // First longitude and first latitude
+    return PointLonLat{x().values().front(), y().values().front()};
 }
 
 
@@ -133,31 +129,8 @@ Point RegularLL::last_point() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() const {
-    const auto N = size();
-
-    std::pair<std::vector<double>, std::vector<double>> latlon;
-    auto& lat = latlon.first;
-    auto& lon = latlon.second;
-    lat.reserve(N);
-    lon.reserve(N);
-
-    for (auto point : *this) {
-        const auto& p = std::get<PointLonLat>(point);
-        lat.emplace_back(p.lat());
-        lon.emplace_back(p.lon());
-    }
-
-    return latlon;
-}
-
-
-Grid* RegularLL::make_grid_cropped(const Area& crop) const {
-    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularLL({dlon(), dlat()}, cropped);
-    }
-
-    throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());
+grid::Regular* RegularLL::make_regular_cropped(const BoundingBox& bbox) const {
+    return new RegularLL({std::abs(dx()), std::abs(dy())}, bbox, reference(), scan());
 }
 
 
@@ -168,6 +141,19 @@ RegularLL::Reference RegularLL::reference_default() {
 
 
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
+    const auto& p  = projection();
+    const auto& ll = geo::point_coordinates<PointLonLat>();
+
+    if (p.is_default() || p.source_point_coordinates() != ll || p.target_point_coordinates() != ll) {
+        return calculate_bbox_xy();
+    }
+
+    return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()}, p)
+        .release();
+}
+
+
+Grid::BoundingBox* RegularLL::calculate_bbox_xy() const {
     auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
     auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
     auto w = x_.min();
@@ -184,7 +170,7 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
 }
 
 
-struct ArakawaC : public RegularLL {
+struct ArakawaC : RegularLL {
     explicit ArakawaC(const Spec& spec) :
         RegularLL(*std::unique_ptr<Spec>([](const Spec& spec) {
             auto a = [](const std::string& str) {
@@ -224,7 +210,7 @@ struct ArakawaC : public RegularLL {
 };
 
 
-struct ArakawaCUnifiedModel : public ArakawaC {
+struct ArakawaCUnifiedModel : ArakawaC {
     explicit ArakawaCUnifiedModel(const Spec& spec) :
         ArakawaC(*std::unique_ptr<Spec>([](const Spec& spec) {
             auto extended = std::make_unique<spec::Layered>(spec);
@@ -238,7 +224,7 @@ struct ArakawaCUnifiedModel : public ArakawaC {
 };
 
 
-static const auto GRIDNAME = GridRegisterName<RegularLL>(REGULAR_LL_PATTERN);
+static const GridRegisterName<RegularLL> GRIDNAME(REGULAR_LL_PATTERN);
 
 static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");

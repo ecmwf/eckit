@@ -1,0 +1,7 @@
+YAML Ain't Markup Language (YAML) Version 1.2, 3rd Edition, Patched at 2009-10-01
+
+Copyright 2001-2009 Oren Ben-Kiki, Clark Evans, Ingy dot Net
+
+This document may be freely copied, provided it is not modified.
+
+Source: https://yaml.org/spec/1.2-old/spec.html

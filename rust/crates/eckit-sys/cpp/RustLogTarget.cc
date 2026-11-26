@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit log bridge — implementation.
 
 // trycatch handler — must come before the cxx-generated header so the
@@ -6,6 +9,8 @@
 
 #include "RustLogTarget.h"
 #include "eckit-sys/src/lib.rs.h"  // cxx-generated — provides LogLevel values
+
+#include <mutex>
 
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
@@ -97,12 +102,15 @@ eckit::LogTarget* RustMain::createMetricsLogTarget() const {
 //----------------------------------------------------------------------------------------------------------------------
 
 void RustMain::initialise() {
-    if (!eckit::Main::ready()) {
-        const char* name                         = progname();
-        static const char* argv[]                = {name ? name : "eckit-rs", nullptr};
-        [[maybe_unused]] static auto* main_inst_ = new RustMain(1, const_cast<char**>(argv));
-        install_per_library_targets();
-    }
+    static std::once_flag once;
+    std::call_once(once, [] {
+        if (!eckit::Main::ready()) {
+            const char* name                         = progname();
+            static const char* argv[]                = {name ? name : "eckit-rs", nullptr};
+            [[maybe_unused]] static auto* main_inst_ = new RustMain(1, const_cast<char**>(argv));
+            install_per_library_targets();
+        }
+    });
 }
 
 //----------------------------------------------------------------------------------------------------------------------

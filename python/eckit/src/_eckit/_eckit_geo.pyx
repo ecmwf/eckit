@@ -1,20 +1,45 @@
-# (C) Copyright 1996- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-#
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 
 cimport eckit_geo
-from libcpp.utility cimport pair
+from libcpp cimport bool
+from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 cimport eckit
 
 eckit.eckit_main_initialise()
+
+
+cdef extern from *:
+    """
+    #include "eckit/eckit_config.h"
+    #include "eckit/geo/eckit_geo_config.h"
+
+    #if eckit_HAVE_CURL
+    inline bool eckit_geo_has_download() { return true; }
+    #else
+    inline bool eckit_geo_has_download() { return false; }
+    #endif
+
+    #if eckit_HAVE_GEO_AREA_SHAPEFILE
+    inline bool eckit_geo_has_shapefile() { return true; }
+    #else
+    inline bool eckit_geo_has_shapefile() { return false; }
+    #endif
+    """
+    bool eckit_geo_has_download()
+    bool eckit_geo_has_shapefile()
+
+
+def features() -> set:
+    """Optional features compiled in ("download", "shapefile")"""
+    available = {
+        "download": eckit_geo_has_download(),
+        "shapefile": eckit_geo_has_shapefile(),
+    }
+    return {name for name, have in available.items() if have}
 
 
 def version() -> str:
@@ -25,143 +50,60 @@ def git_sha1() -> str:
     return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
 
 
+def cache_dir() -> str:
+    """Cache directory (resolved once, eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH)"""
+    return eckit_geo.LibEcKitGeo.cacheDir()
+
+
 def cache_dir_purge() -> None:
     eckit_geo.LibEcKitGeo.purgeCacheDir()
 
 
-cdef class Area:
-    cdef const eckit_geo.Area* _area
-
-    def __dealloc__(self):
-        if self._area != NULL:
-            del self._area
-
-    def __cinit__(self, spec = None, **kwargs):
-        self._area = NULL
-        assert bool(spec) != bool(kwargs)
-
-        if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
-
-        try:
-            assert isinstance(spec, str)
-            self._area = eckit_geo.AreaFactory.make_from_string(spec)
-
-        except RuntimeError as e:
-            # opportunity to do something interesting
-            raise
-
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, Grid):
-            return NotImplemented
-        return self.spec_str == other.spec_str
-
-    @property
-    def spec_str(self) -> str:
-        return self._area.spec_str()
-
-    @property
-    def spec(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.spec_str)
-
-    @property
-    def type(self) -> str:
-        return self._area.type()
+def projdb_is_available() -> bool:
+    """
+    If PROJ has a usable database.
+    """
+    return eckit_geo.LibEcKitGeo.projdb_is_available()
 
 
-cdef class Grid:
-    cdef const eckit_geo.Grid* _grid
+def projdb_set_search_paths(db_path, search_paths=()) -> None:
+    """
+    Point eckit's PROJ context at a proj.db and its auxiliary search paths.
 
-    def __dealloc__(self):
-        if self._grid != NULL:
-            del self._grid
+    Affects only eckit's libproj instance (per-context PROJ API); never leaks
+    into other PROJ users in the process (pyproj, GDAL, ...). Call before any
+    PROJ-backed projection is created, then re-check projdb_is_available().
+    """
+    cdef vector[string] _search_paths
+    cdef string _db_path
+    for p in search_paths:
+        _search_paths.push_back(p.encode("utf-8") if isinstance(p, str) else p)
+    _db_path = db_path.encode("utf-8") if isinstance(db_path, str) else db_path
+    eckit_geo.LibEcKitGeo.projdb_set_search_paths(_db_path, _search_paths)
 
-    def __cinit__(self, spec = None, **kwargs):
-        self._grid = NULL
-        assert bool(spec) != bool(kwargs)
 
-        if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+def projdb_reset() -> None:
+    """
+    Recreate eckit's PROJ context, (re-)resolves proj.db from env PROJ_DATA/PROJ_LIB
+    and the compiled-in defaults, dropping any search paths set).
+    """
+    eckit_geo.LibEcKitGeo.projdb_reset()
 
-        try:
-            assert isinstance(spec, str)
-            self._grid = eckit_geo.GridFactory.make_from_string(spec)
 
-        except RuntimeError as e:
-            # opportunity to do something interesting
-            raise
+def _spec_str(spec) -> str:
+    from yaml import dump
 
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, Grid):
-            return NotImplemented
-        return self.spec_str == other.spec_str
+    def _safe_str(value):
+        if isinstance(value, str):
+            return value
+        if isinstance(value, (bytes, bytearray)):
+            return value.decode("utf-8")
+        if isinstance(value, dict):
+            return {_safe_str(k): _safe_str(v) for k, v in value.items()}
+        if hasattr(value, "tolist"):
+            return _safe_str(value.tolist())
+        if isinstance(value, (list, tuple, set, frozenset, range)):
+            return [_safe_str(v) for v in value]
+        return value
 
-    def to_latlons(self):
-        cdef pair[vector[double], vector[double]] latlons = self._grid.to_latlons()
-        return list(latlons.first), list(latlons.second)
-
-    def distinct_latitudes(self):
-        return self._grid.distinct_latitudes()
-
-    def distinct_longitudes(self):
-        return self._grid.distinct_longitudes()
-
-    def bounding_box(self) -> tuple:
-        cdef const eckit_geo.BoundingBox* bbox = &self._grid.boundingBox()
-        cdef double north = bbox.north()
-        cdef double west = bbox.west()
-        cdef double south = bbox.south()
-        cdef double east = bbox.east()
-        return north, west, south, east
-
-    def grid_box_areas(self):
-        try:
-            import mir
-        except ModuleNotFoundError:
-            return None
-
-        return mir.grid_box_areas(self)
-
-    @property
-    def spec_str(self) -> str:
-        return self._grid.spec_str()
-
-    @property
-    def spec(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.spec_str)
-
-    @property
-    def catalog_str(self) -> str:
-        return self._grid.catalog_str()
-
-    @property
-    def catalog(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.catalog_str)
-
-    @property
-    def type(self) -> str:
-        return self._grid.type()
-
-    @property
-    def uid(self) -> str:
-        return self._grid.uid()
-
-    @property
-    def order(self) -> str:
-        return self._grid.order()
-
-    @property
-    def shape(self) -> tuple:
-        cdef vector[size_t] shape_vec = self._grid.shape()
-        return tuple(shape_vec)
-
-    def size(self) -> int:
-        return self._grid.size()
-
-    def __len__(self) -> int:
-        return self.size()
+    return dump(_safe_str(spec), default_flow_style=True, width=float("inf")).strip()

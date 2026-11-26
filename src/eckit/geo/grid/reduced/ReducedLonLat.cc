@@ -1,23 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 
 #include <algorithm>
-#include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
 
@@ -58,10 +51,12 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
 }  // namespace
 
 
-ReducedLonLat::ReducedLonLat(const Spec& spec) : ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}) {}
+ReducedLonLat::ReducedLonLat(const Spec& spec) :
+    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
 
 
-ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox) : pl_(pl), longitude_(pl.size()) {
+ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
+    Reduced(nullptr, p), pl_(pl), longitude_(pl.size()) {
     if (pl_.empty()) {
         throw exception::GridError("ReducedLonLat: 'pl' must not be empty", Here());
     }
@@ -98,7 +93,7 @@ size_t ReducedLonLat::size() const {
 }
 
 
-size_t ReducedLonLat::nx(size_t j) const {
+size_t ReducedLonLat::nxj(size_t j) const {
     if (!longitude_.at(j)) {
         longitude_[j].reset(make_lon_range(into_unsigned(pl_.at(j)), boundingBox()));
         ASSERT(longitude_[j]);
@@ -108,18 +103,13 @@ size_t ReducedLonLat::nx(size_t j) const {
 }
 
 
-size_t ReducedLonLat::ny() const {
-    return latitude_->size();
-}
-
-
 const std::vector<double>& ReducedLonLat::latitudes() const {
     return latitude_->values();
 }
 
 
 const std::vector<double>& ReducedLonLat::longitudes(size_t j) const {
-    if (nx(j) > 0) {
+    if (nxj(j) > 0) {
         ASSERT(longitude_[j]);
         return longitude_[j]->values();
     }

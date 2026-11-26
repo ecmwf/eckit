@@ -1,26 +1,17 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
-#include <map>
-#include <memory>
+#include <iosfwd>
 #include <string>
 
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::area {
@@ -60,8 +51,19 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
+    /// Identifies the area (for equality), independently of how it is specified
+    virtual std::string uid() const;
+
+    /// Spec on its own
     virtual void fill_spec(spec::Custom&) const = 0;
-    virtual const std::string& type() const     = 0;
+
+    /// Spec as part of a grid's: nothing for the default area, "area": [n, w, s, e] for a bounding box, "area": {...}
+    /// otherwise
+    void fill_grid_spec(spec::Custom&) const;
+
+    virtual const std::string& type() const = 0;
+
+    bool is_default() const;
 
     virtual bool intersects(area::BoundingBox&) const;
     virtual bool contains(const Point&) const;
@@ -81,48 +83,30 @@ private:
 
     // -- Friends
 
-    friend class Grid;
-
-    // -- Friends
-
-    friend bool operator==(const Area& a, const Area& b) { return a.spec_str() == b.spec_str(); }
+    friend bool operator==(const Area& a, const Area& b) { return a.uid() == b.uid(); }
     friend bool operator!=(const Area& a, const Area& b) { return !(a == b); }
 };
 
 
-using AreaFactoryType = Factory<Area>;
-using AreaSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+// a type of its own, so names aren't shared with other registries (e.g. grids')
+struct AreaSpecGenerator : spec::SpecGeneratorT1<const std::string&> {};
+
+using AreaSpecByName = spec::GeneratorT<AreaSpecGenerator>;
 
 
 template <typename T>
 using AreaRegisterType = ConcreteBuilderT1<Area, T>;
 
-template <typename T>
-using AreaRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
-
 
 struct AreaFactory {
-    [[nodiscard]] static const Area* build(const Area::Spec& spec) { return instance().make_from_spec_(spec); }
-
+    [[nodiscard]] static const Area* build(const Area::Spec&);
     [[nodiscard]] static const Area* make_from_string(const std::string&);
-    [[nodiscard]] static Area::Spec* make_spec(const Area::Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Area::Spec* make_spec(const Area::Spec&);
 
-    static void add_library(const std::string& lib, Area::Spec* spec) { return instance().add_library_(lib, spec); }
+    static void add_library(const std::string& lib, Area::Spec*);
+    [[nodiscard]] static spec::Custom* library(const std::string& lib);
 
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static AreaFactory& instance();
-
-    [[nodiscard]] const Area* make_from_spec_(const Area::Spec&) const;
-    [[nodiscard]] Area::Spec* make_spec_(const Area::Spec&) const;
-
-    void add_library_(const std::string& lib, Area::Spec* spec);
-
-    std::ostream& list_(std::ostream&) const;
-
-    std::map<std::string, std::unique_ptr<Area::Spec>> libraries_;
+    static std::ostream& list(std::ostream&);
 };
 
 

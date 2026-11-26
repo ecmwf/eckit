@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # EcKit
 
 <div align="center">
@@ -8,6 +13,7 @@
 
 [![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
+[![REUSE status](https://api.reuse.software/badge/github.com/ecmwf/eckit)](https://api.reuse.software/info/github.com/ecmwf/eckit)
 [![Project Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/graduated_badge.svg)](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity#graduated)
 
 </div>
@@ -50,6 +56,14 @@ It features facilities to easily handle, in a cross-platform way:
 * advanced container classes
 * space partition trees
 * file-mapped arrays
+
+## Rust interface
+
+EcKit can be used from Rust. The `eckit` crate provides a safe API on top of
+the C++ library, and `eckit-sys` provides the low-level bindings that other
+ECMWF packages build on. Both live in [rust/](rust/) and are documented
+in the [Rust Interface](docs/content/rust/index.rst) section of the
+documentation.
 
 ## Requirements
 

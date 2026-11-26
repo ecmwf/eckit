@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -67,10 +60,13 @@ public:  // methods
 
     // properties
 
+    /// Region number with the serving memory server packed into bits 14 and above. @see FamDescriptor
     fam::index_t regionId() const;
 
+    /// Byte offset within this object's memory server, so it is unique only together with regionId().
     fam::index_t offset() const;
 
+    /// The object's full address; the only form safe to store or publish.
     FamDescriptor descriptor() const { return {regionId(), offset()}; }
 
     fam::size_t size() const;

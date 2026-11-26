@@ -1,17 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
@@ -34,8 +33,8 @@ CASE("gridspec") {
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
         auto n1 = grid1->size();
 
-        EXPECT_EQUAL(n1, 88);
-        EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"O2"})");
+        EXPECT(n1 == 88);
+        EXPECT(grid1->spec_str() == R"({"grid":"O2"})");
 
         spec::Custom nhemisphere(spec.container());
         nhemisphere.set("south", 0);
@@ -43,8 +42,8 @@ CASE("gridspec") {
         std::unique_ptr<const Grid> grid2(GridFactory::build(nhemisphere));
         auto n2 = grid2->size();
 
-        EXPECT_EQUAL(n2, n1 / 2);
-        EXPECT_EQUAL(grid2->spec_str(), R"({"area":[90,0,19.8757191474409,360],"grid":"O2"})");
+        EXPECT(n2 == n1 / 2);
+        EXPECT(grid2->spec_str() == R"({"area":[90,0,19.8757191474409,360],"grid":"O2"})");
 
         spec::Custom shemisphere(spec.container());
         shemisphere.set("north", 0);
@@ -52,9 +51,32 @@ CASE("gridspec") {
         std::unique_ptr<const Grid> grid3(GridFactory::build(shemisphere));
         auto n3 = grid3->size();
 
-        EXPECT_EQUAL(n3, n2);
-        EXPECT_EQUAL(grid3->spec_str(), R"({"area":[-19.8757191474409,0,-90,360],"grid":"O2"})");
+        EXPECT(n3 == n2);
+        EXPECT(grid3->spec_str() == R"({"area":[-19.8757191474409,0,-90,360],"grid":"O2"})");
     }
+}
+
+
+CASE("name") {
+    struct test_t {
+        const std::string spec;
+        const std::string name;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{grid: o2}", "O2"},
+             {"{N: 2}", "O2"},
+             {"{pl: [20, 24, 24, 20]}", "O2"},
+             {"{grid: n32}", "N32"},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec));
+
+        EXPECT(grid->name() == test.name);
+        EXPECT(grid->arrangement().empty());
+    }
+
+    EXPECT(ReducedGaussian(3).octahedral());
+    EXPECT(ReducedGaussian(3).name() == "O3");
 }
 
 
@@ -119,19 +141,19 @@ CASE("crop") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(a));
     auto n1 = grid1->size();
 
-    EXPECT_EQUAL(n1, 88);
+    EXPECT(n1 == 88);
 
     a.set("south", 0.);
     std::unique_ptr<const Grid> grid2(GridFactory::build(a));
     auto n2 = grid2->size();
 
-    EXPECT_EQUAL(n2, n1 / 2);
+    EXPECT(n2 == n1 / 2);
 
     spec::Custom b{{{"grid", "o2"}, {"west", -180}}};
     std::unique_ptr<const Grid> grid3(GridFactory::build(b));
     auto n3 = grid3->size();
 
-    EXPECT_EQUAL(n3, n1);
+    EXPECT(n3 == n1);
 
     EXPECT(grid3->boundingBox().periodic());
     EXPECT(grid3->boundingBox().spec_str() == R"({"area":[90,-180,-90,180]})");
@@ -140,7 +162,7 @@ CASE("crop") {
     std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.e-6)));
 
     auto n4 = grid4->size();
-    EXPECT_EQUAL(n4, n3 / 4);
+    EXPECT(n4 == n3 / 4);
 
     const std::vector<PointLonLat> ref{
         {-180., 59.444408289}, {-162., 59.444408289}, {-144., 59.444408289}, {-126., 59.444408289},
@@ -168,7 +190,7 @@ CASE("crop") {
     for (const auto& it : *grid4) {
         EXPECT(points_equal(ref[i++], it));
     }
-    EXPECT_EQUAL(i, n4);
+    EXPECT(i == n4);
 }
 
 

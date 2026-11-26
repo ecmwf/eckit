@@ -1,19 +1,13 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <map>
 #include <numeric>
+#include <type_traits>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
@@ -33,6 +27,14 @@ public:
 protected:
 
     MemoryCache();
+
+    MemoryCache(const MemoryCache&) = delete;
+    MemoryCache(MemoryCache&&)      = delete;
+
+    virtual ~MemoryCache();
+
+    MemoryCache& operator=(const MemoryCache&) = delete;
+    MemoryCache& operator=(MemoryCache&&)      = delete;
 
 private:
 
@@ -92,7 +94,10 @@ public:
                                });
     }
 
-    void purge() final { container_.clear(); }
+    void purge() final {
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
+        container_.clear();
+    }
 
 private:
 

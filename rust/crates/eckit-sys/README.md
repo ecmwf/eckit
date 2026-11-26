@@ -1,10 +1,17 @@
+<!--
+SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # eckit-sys
 
 Low-level Rust bindings to ECMWF's [eckit](https://github.com/ecmwf/eckit) C++
 library.
 
-This crate provides raw FFI bindings using [cxx](https://cxx.rs/). For a safe,
-ergonomic API, use the higher-level `eckit` crate (forthcoming).
+This crate provides raw FFI bindings using [cxx](https://cxx.rs/). For a safe
+API, use the higher-level [`eckit`](https://crates.io/crates/eckit) crate. The
+design of both crates is described in the Rust Interface section of the eckit
+documentation (`docs/content/rust` in the repository).
 
 ## Cargo build features
 
@@ -59,7 +66,6 @@ These flags control what the underlying C++ eckit library is compiled with.
   `eckit-geo`, `lz4`).
 - `geo-caching` - Default eckit::geo caching behaviour.
 - `geo-bitreproducible` - Bit-reproducibility tests.
-- `geo-projection-proj-default` - Default to PROJ-based projections.
 - `geo-area-shapefile` - Shapefile support.
 
 ### Other (off by default)
@@ -78,6 +84,10 @@ These flags control what the underlying C++ eckit library is compiled with.
 - `CMAKE_PREFIX_PATH` - Additional CMake search paths.
 - `DOCS_RS` - When set, the build script becomes a no-op (for docs.rs).
 
-## License
+## Copyright and License
 
-Apache-2.0
+Copyright 1996- European Centre for Medium-Range Weather Forecasts (ECMWF).
+
+This software is licensed under the terms of the [Apache License, Version 2.0](LICENSE) which can also be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+In applying this licence, ECMWF does not waive the privileges and immunities granted to it by virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.

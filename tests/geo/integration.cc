@@ -1,21 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to itr by virtue of its status as an intergovernmental organisation nor
- * does itr submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 
@@ -140,7 +133,6 @@ CASE("gridSpec") {
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));
-            // EXPECT(grid->spec_str() == t.spec);
             Log::info() << "grid->spec_str() = '" << grid->spec_str() << "'" << std::endl;
             EXPECT(grid->shape() == t.shape);
         }
@@ -149,7 +141,7 @@ CASE("gridSpec") {
 
     SECTION("gridSpec (ORCA)") {
         std::vector<test_type> tests{
-            {R"({"grid":"ORCA2_T"})", {182, 149}},  // eORCA025_T [1740494] is too large as an integration test
+            {R"({"grid":"ORCA2_T"})", {149, 182}},  // eORCA025_T [1740494] is too large as an integration test
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));

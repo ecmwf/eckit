@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/projection/Composer.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -88,13 +81,47 @@ Point Composer::inv(const Point& p) const {
 }
 
 
-Projection* Composer::compose_back(Projection* p, const Spec& spec) {
-    return new Composer{p, ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec)};
+Composer::Composer(std::initializer_list<const Projection*> list) : deque(list) {
+    update_point_types();
 }
 
 
-Projection* Composer::compose_front(const Spec& spec, Projection* p) {
-    return new Composer{ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec), p};
+void Composer::clear() {
+    deque::clear();
+    update_point_types();
+}
+
+
+void Composer::emplace_back(const Projection* p) {
+    deque::emplace_back(p);
+    update_point_types();
+}
+
+
+void Composer::emplace_front(const Projection* p) {
+    deque::emplace_front(p);
+    update_point_types();
+}
+
+
+void Composer::update_point_types() {
+    if (empty()) {
+        point_types(PointLonLat{}, PointXY{});
+        return;
+    }
+
+    ASSERT(front() != nullptr && back() != nullptr);
+    point_types_from(*front(), *back());
+}
+
+
+Projection* Composer::compose_back(const Projection* p, const Spec& spec) {
+    return new Composer{p, ProjectionFactory::build(spec)};
+}
+
+
+Projection* Composer::compose_front(const Spec& spec, const Projection* p) {
+    return new Composer{ProjectionFactory::build(spec), p};
 }
 
 

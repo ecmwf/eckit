@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/Unstructured.h"
 
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/cache/Grid.h"
@@ -42,10 +35,8 @@ Unstructured::Unstructured(const Spec& spec) :
     Unstructured(spec.has("uid")
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
-                 spec.get_string("name", [&spec]() {
-                     std::string grid;
-                     return spec.get("grid", grid) && is_uid(grid) ? "" : grid;
-                 }())) {}
+                 spec.get_string("name", spec.get_string("cache_as", "")), bounding_box_from_spec(spec),
+                 ProjectionFactory::build(spec)) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
@@ -53,49 +44,31 @@ Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vec
     Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name) {
+Unstructured::Unstructured(const uid_type& uid, const std::string& name, BoundingBox* bbox, const Projection* p) :
+    Grid(bbox, p) {
     ASSERT(is_uid(uid));
     reset_uid(uid);
     name_ = name;
 
-    using custom_map_t = spec::Custom::container_type;
-
-    struct Generator final : GridSpecByUID::concrete_generator_t, GridSpecByName::concrete_generator_t {
-        Generator(const custom_map_t& _custom) : custom(_custom) {}
-        spec::Spec* spec() const override { return new spec::Custom(custom); }
-        spec::Spec* spec(const std::string&) const override { return new spec::Custom(custom); }
-        custom_map_t custom;
-    };
-
-    custom_map_t custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
+    spec::Custom::container_type custom_map{{"cached_path", record().to_cached_path()}, {"type", type()}, {"uid", uid}};
     if (!name.empty()) {
         custom_map["name"] = name;
     }
 
+    const spec::Custom custom(custom_map);
 
-    // register uid and name in memory
-    if (GridSpecByUID::instance().exists(uid)) {
-        GridSpecByUID::instance().unregist(uid);
-    }
-    GridSpecByUID::regist(uid, new Generator(custom_map));
-    ASSERT(GridSpecByUID::instance().exists(uid));
-
+    GridSpecByUID::replace(uid, custom);
     if (!name.empty()) {
-        if (GridSpecByName::instance().exists(name)) {
-            GridSpecByName::instance().unregist(name);
-        }
-        GridSpecByName::regist(name, new Generator(custom_map));
-        ASSERT(GridSpecByName::instance().exists(name));
+        GridSpecByName::replace(name, custom);
     }
 
-
-    // register on disk
-    cache::Grid::save(uid, spec::Custom{custom_map});
+    cache::Grid::save(uid, custom);
 }
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement) :
-    name_(name), arrangement_(arrangement) {
+Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement,
+                           BoundingBox* bbox, const Projection* p) :
+    Grid(bbox, p), name_(name), arrangement_(arrangement) {
     reset_uid(uid);
 }
 
@@ -116,13 +89,7 @@ Grid::iterator Unstructured::cend() const {
 
 
 Grid::BoundingBox* Unstructured::calculate_bbox() const {
-    if (const std::string BOUNDING_BOX = "bounding_box"; catalog().has(BOUNDING_BOX)) {
-        const auto bbox = catalog().get_double_vector(BOUNDING_BOX);
-        ASSERT(bbox.size() == 4);
-
-        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
-    }
-
+    // NOTE: a grid declaring its own bounding box (eg. a regional ICON) gets it from its spec, at construction
     return new BoundingBox;
 }
 
@@ -166,19 +133,22 @@ Grid::uid_type Unstructured::uid_from_latlons(const std::vector<double>& lat, co
 
 
 void Unstructured::fill_spec(spec::Custom& custom) const {
+    Grid::fill_spec(custom);
+
     if (!name_.empty()) {
         auto grid = name_ + (name_.empty() || arrangement_.empty() ? "" : "_" + arrangement_);
         custom.set("grid", grid);
 
-        if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                               GridSpecByName::instance().match(grid).spec(grid)->get_string("uid") != _uid) {
+        if (auto _uid = uid();
+            !GridSpecByName::instance().exists(grid) ||
+            std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
             custom.set("uid", _uid);
         }
         return;
     }
 
     // NOTE: every unstructured grid is known by uid
-    std::unique_ptr<spec::Custom> ptr(dynamic_cast<spec::Custom*>(GridSpecByUID::instance().get(uid()).spec()));
+    std::unique_ptr<spec::Custom> ptr(dynamic_cast<spec::Custom*>(GridSpecByUID::instance().get_spec(uid())));
     ASSERT(ptr);
 
     auto custom_map = ptr->container();

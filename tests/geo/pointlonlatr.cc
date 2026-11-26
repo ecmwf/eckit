@@ -1,19 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <utility>
 #include <vector>
 
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointLonLatR.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -62,7 +54,7 @@ CASE("PointLonLatR normalisation") {
     auto p2 = PointLonLatR::make(p.lonr(), p.latr());
     auto p3 = PointLonLatR(1. + 42. * PointLonLatR::FULL_ANGLE, PointLonLatR::RIGHT_ANGLE);
 
-    EXPECT_EQUAL(p2.lonr(), 0.);
+    EXPECT(p2.lonr() == 0.);
     EXPECT(points_equal(p, p2));
     EXPECT(points_equal(p, p3));
 
@@ -70,7 +62,7 @@ CASE("PointLonLatR normalisation") {
     auto q2 = q.antipode();
     auto q3 = q2.antipode();
 
-    EXPECT_EQUAL(q2.lonr(), 0.);
+    EXPECT(q2.lonr() == 0.);
     EXPECT(points_equal(q2, p));
     EXPECT(points_equal(q3, q));
 }
@@ -93,6 +85,13 @@ CASE("PointLonLatR comparison") {
 
     EXPECT(points_equal(NORTH_POLE_R, {-42, PointLonLatR::RIGHT_ANGLE}));
     EXPECT(points_equal(SOUTH_POLE_R, {42., -PointLonLatR::RIGHT_ANGLE}));
+
+    for (const auto& [lonr1, lonr2] : std::vector<std::pair<double, double>>{
+             {0., -1e-16}, {0., PointLonLatR::FULL_ANGLE - 1e-12}, {PointLonLatR::FULL_ANGLE - 1e-12, -1e-12}}) {
+        EXPECT(points_equal(PointLonLatR{lonr1, 0.5}, PointLonLatR{lonr2, 0.5}));
+    }
+
+    EXPECT(!points_equal(PointLonLatR{0., 0.5}, PointLonLatR{-1e-6, 0.5}));
 }
 
 
@@ -107,6 +106,9 @@ CASE("PointLonLatR normalise angles") {
         2. + PointLonLatR::FULL_ANGLE * 11,
         PointLonLatR::normalise_angle_to_minimum(2. + PointLonLatR::FULL_ANGLE * 11, PointLonLatR::FULL_ANGLE * 11),
         PointLonLatR::EPS));
+
+    EXPECT(0. == PointLonLatR::normalise_angle_to_minimum(-1e-16, 0.));
+    EXPECT(0. == PointLonLatR::normalise_angle_to_maximum(1e-16, 0.));
 }
 
 

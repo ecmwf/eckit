@@ -1,18 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <cstddef>
+#include <vector>
+
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 
 
@@ -37,19 +33,22 @@ public:
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
-    // Methods
+    // -- Methods
 
     virtual const std::vector<double>& latitudes() const        = 0;
     virtual const std::vector<double>& longitudes(size_t) const = 0;
 
 protected:
 
+    // -- Constructors
+
+    using Grid::Grid;
+
     // -- Methods
 
     const std::vector<size_t>& nxacc() const;
 
-    virtual size_t nx(size_t) const = 0;
-    virtual size_t ny() const       = 0;
+    virtual size_t nxj(size_t) const = 0;
 
 private:
 

@@ -1,23 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <cstddef>
+#include <iosfwd>
 #include <iterator>
+#include <string>
 
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -94,26 +87,13 @@ private:
 };
 
 
-using IteratorFactoryType = Factory<Iterator>;
-
-
 template <typename T>
 using IteratorRegisterType = ConcreteBuilderT1<Iterator, T>;
 
 
 struct IteratorFactory {
-    [[nodiscard]] static Iterator* build(const Iterator::Spec& spec) { return instance().build_(spec); }
-    [[nodiscard]] static Iterator::Spec* make_spec(const Iterator::Spec& spec) { return instance().make_spec_(spec); }
-
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static IteratorFactory& instance();
-
-    [[nodiscard]] Iterator* build_(const Iterator::Spec&) const;
-    [[nodiscard]] Iterator::Spec* make_spec_(const Iterator::Spec&) const;
-    std::ostream& list_(std::ostream&) const;
+    [[nodiscard]] static Iterator* build(const Iterator::Spec&);
+    static std::ostream& list(std::ostream&);
 };
 
 

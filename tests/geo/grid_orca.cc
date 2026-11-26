@@ -1,21 +1,16 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to itr by virtue of its status as an intergovernmental organisation nor
- * does itr submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
 
 
@@ -24,7 +19,7 @@ namespace eckit::geo::test {
 
 const std::string GRID   = "ORCA2_T";
 const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
-const std::vector<long> SHAPE{182, 149};
+const std::vector<long> SHAPE{149, 182};
 
 
 CASE("spec") {
@@ -49,7 +44,6 @@ CASE("spec") {
     grid::ORCA grid3(UID);
 
     const std::string expected_spec_str = R"({"grid":")" + GRID + R"("})";
-    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID);
     EXPECT(grid3.calculate_uid() == UID);
@@ -64,6 +58,29 @@ CASE("spec") {
     std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", UID}})));
 
     EXPECT(*grid4 == *grid5);
+}
+
+
+CASE("name") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
+
+    EXPECT(grid->name() == "ORCA2");
+    EXPECT(grid->arrangement() == "T");
+}
+
+
+CASE("type") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
+
+    EXPECT(grid->type() == "ORCA");
+
+    std::unique_ptr<const Grid> from_gridspec(GridFactory::make_from_string("{grid: eORCA1_T}"));
+    std::unique_ptr<const Grid> from_spec(GridFactory::make_from_string(from_gridspec->spec_str()));
+
+    EXPECT(from_gridspec->type() == "ORCA");
+    EXPECT(from_gridspec->spec_str() == R"({"grid":"eORCA1_T"})");
+    EXPECT(from_gridspec->size() == 120184);
+    EXPECT(*from_spec == *from_gridspec);
 }
 
 

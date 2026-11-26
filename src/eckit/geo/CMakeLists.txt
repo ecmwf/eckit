@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
@@ -47,17 +50,27 @@ list(APPEND eckit_geo_srcs
     area/Polygon.h
     area/library/GeoJSON.cc
     area/library/GeoJSON.h
+    cache/Crop.cc
+    cache/Crop.h
+    cache/CropCache.cc
+    cache/CropCache.h
     cache/DiskCache.cc
     cache/DiskCache.h
     cache/Download.cc
     cache/Download.h
     cache/Grid.cc
     cache/Grid.h
+    cache/InMemoryCache.h
     cache/LatitudeLongitude.cc
     cache/LatitudeLongitude.h
     cache/MemoryCache.cc
     cache/MemoryCache.h
+    cache/MemoryUsage.cc
+    cache/MemoryUsage.h
     cache/RecordCache.h
+    cache/SearchCache.cc
+    cache/SearchCache.h
+    cache/Version.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -66,6 +79,8 @@ list(APPEND eckit_geo_srcs
     figure/Sphere.cc
     figure/Sphere.h
     figure/SphereT.h
+    figure/Sun.cc
+    figure/Sun.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
     grid/ORCA.cc
@@ -122,10 +137,9 @@ list(APPEND eckit_geo_srcs
     projection/LonLatToXYZ.h
     projection/Mercator.cc
     projection/Mercator.h
-    projection/None.cc
-    projection/None.h
     projection/PolarStereographic.cc
     projection/PolarStereographic.h
+    projection/Reverse.cc
     projection/Reverse.h
     projection/Rotation.cc
     projection/Rotation.h
@@ -137,16 +151,20 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
-    search/Tree.cc
-    search/Tree.h
-    search/TreeMapped.cc
-    search/TreeMapped.h
-    search/TreeMappedAnonymousMemory.cc
-    search/TreeMappedAnonymousMemory.h
-    search/TreeMappedFile.cc
-    search/TreeMappedFile.h
-    search/TreeMemory.cc
-    search/TreeMemory.h
+    range/RegularXY.cc
+    range/RegularXY.h
+    search/FileIO.cc
+    search/FileIO.h
+    search/KDTree.cc
+    search/KDTree.h
+    search/LoadedFile.cc
+    search/LoadedFile.h
+    search/MappedFile.cc
+    search/MappedFile.h
+    search/Memory.cc
+    search/Memory.h
+    search/SharedMemory.cc
+    search/SharedMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc
@@ -165,7 +183,6 @@ list(APPEND eckit_geo_srcs
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
     util/reverse.cc
-    util/sincos.h
 )
 
 set(eckit_geo_include_dirs
@@ -174,6 +191,7 @@ set(eckit_geo_include_dirs
 )
 
 set(eckit_geo_libs eckit_codec eckit_maths eckit_spec)
+set(eckit_geo_private_libs)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID
     "~eckit/share/eckit/geo/grid.yaml"
@@ -187,18 +205,28 @@ set(eckit_GEO_SHARE_GRID
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
-    list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
-    list(APPEND eckit_geo_libs PROJ::proj)
+    list(APPEND eckit_geo_srcs
+        projection/PROJ.cc
+        projection/PROJ.h
+    )
+    list(APPEND eckit_geo_private_libs PROJ::proj)
+endif()
+
+if(eckit_HAVE_ZIP)
+    list(APPEND eckit_geo_srcs
+        cache/Unzip.cc
+        cache/Unzip.h
+    )
+    list(APPEND eckit_geo_private_libs libzip::zip)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
     list(APPEND eckit_geo_srcs
         area/library/Shapefile.cc
         area/library/Shapefile.h
-        cache/Unzip.cc
-        cache/Unzip.h
     )
-    list(APPEND eckit_geo_libs shapelib::shp libzip::zip)
+    list(APPEND eckit_geo_private_libs shapelib::shp)
+    list(APPEND eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/shapefile.yaml")
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")
@@ -219,6 +247,7 @@ ecbuild_add_library(
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
     PUBLIC_LIBS        ${eckit_geo_libs}
+    PRIVATE_LIBS       ${eckit_geo_private_libs}
     PUBLIC_INCLUDES    ${eckit_geo_include_dirs}
     SOURCES            ${eckit_geo_srcs}
 )

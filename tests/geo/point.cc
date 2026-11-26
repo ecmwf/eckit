@@ -1,29 +1,21 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXY.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("Point comparison") {
+CASE("points_equal") {
     auto r(PointLonLat::make(-10., -91.));
     EXPECT(points_equal(r, r.antipode().antipode()));
 
@@ -44,6 +36,38 @@ CASE("Point comparison") {
          std::vector<std::pair<Point, Point>>{{p2, p3}, {p2, pll}, {p3, p2}, {p3, pll}, {pll, p2}, {pll, p3}}) {
         EXPECT_THROWS_AS(points_equal(ab.first, ab.second), AssertionFailed);
     }
+}
+
+
+CASE("point_coordinates") {
+    using names = std::vector<std::string>;
+
+    EXPECT((point_coordinates<PointXY>() == names{"x", "y"}));
+    EXPECT((point_coordinates<PointXYZ>() == names{"x", "y", "z"}));
+    EXPECT((point_coordinates<PointLonLat>() == names{"longitude", "latitude"}));
+    EXPECT((point_coordinates<PointLonLatR>() == names{"longitude_r", "latitude_r"}));
+
+    // one name per coordinate
+    EXPECT(point_coordinates<PointXY>().size() == PointXY::DIMS);
+    EXPECT(point_coordinates<PointXYZ>().size() == PointXYZ::DIMS);
+    EXPECT(point_coordinates<PointLonLat>().size() == PointLonLat::DIMS);
+    EXPECT(point_coordinates<PointLonLatR>().size() == PointLonLatR::DIMS);
+
+    // as the point type, the same names
+    EXPECT(&point_coordinates(Point{PointXY{1., 2.}}) == &point_coordinates<PointXY>());
+    EXPECT(&point_coordinates(Point{PointXYZ{1., 2., 3.}}) == &point_coordinates<PointXYZ>());
+    EXPECT(&point_coordinates(Point{PointLonLat{4., 5.}}) == &point_coordinates<PointLonLat>());
+    EXPECT(&point_coordinates(Point{PointLonLatR{4., 5.}}) == &point_coordinates<PointLonLatR>());
+
+    EXPECT_THROWS_AS(point_coordinates(Point{}), BadValue);
+
+    // by the Point alternative index (not the empty point)
+    for (const Point& p : {Point{PointXY{}}, Point{PointXYZ{}}, Point{PointLonLat{}}, Point{PointLonLatR{}}}) {
+        EXPECT(&point_coordinates(p.index()) == &point_coordinates(p));
+    }
+
+    EXPECT_THROWS_AS(point_coordinates(Point{}.index()), BadValue);
+    EXPECT_THROWS_AS(point_coordinates(std::variant_size_v<Point>), BadValue);
 }
 
 

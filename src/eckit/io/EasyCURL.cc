@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 // Disable warnings: warning #550-D: variable "__d0" was set but never used [set_but_not_used] in FD_ZERO(&r);
 #if defined(__NVCOMPILER)
@@ -367,6 +360,7 @@ public:
     virtual unsigned long long contentLength(bool& present) = 0;
     virtual size_t read(void* ptr, size_t size)             = 0;
     virtual void ensureHeaders()                            = 0;
+    virtual void ensureComplete()                           = 0;
 
     std::string url_;
     CURLHandle* ch_;
@@ -401,6 +395,9 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
 
     if (auto j = HTTP_CODES.find(code_); j != HTTP_CODES.end()) {
         if (j->second.redirect_) {
+            // libcurl sets the redirect URL when the transfer completes, later than the headers (if streaming)
+            ensureComplete();
+
             char* url = nullptr;
             _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
             ASSERT(url);
@@ -452,6 +449,8 @@ public:
     size_t read(void* ptr, size_t size) override { NOTIMP; }
 
     void ensureHeaders() override {}
+
+    void ensureComplete() override {}
 
     void print(std::ostream&) const override;
 };
@@ -569,6 +568,10 @@ public:
                 break;
             }
         }
+    }
+
+    void ensureComplete() override {
+        while (waitForData() != 0) {}
     }
 
     void print(std::ostream&) const override;

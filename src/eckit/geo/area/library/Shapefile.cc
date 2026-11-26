@@ -1,24 +1,20 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/area/library/Shapefile.h"
 
 #include <algorithm>
-#include <memory>
 #include <ostream>
+#include <utility>
 #include <vector>
 
+#include "shapefil.h"
+
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/Unzip.h"
@@ -26,9 +22,17 @@
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::area::library {
+
+
+// keeps <shapefil.h> out of the installed header
+struct Shapefile::Implementation {
+    SHPInfo* shp = nullptr;
+};
 
 
 namespace {
@@ -78,29 +82,96 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 }
 
 
+PathName download(const std::string& url) {
+    static const cache::Download download;
+
+    const auto u = LibEcKitGeo::url(url);
+    return download.to_cached_path(u, cache::Download::url_file_basename(u, false),
+                                   cache::Download::url_file_extension(u));
+}
+
+
+/// Polygons of a shapefile entity, specified by the shapefile (multiple rings have no polygon spec)
+class Entity final : public Polygon {
+public:
+
+    Entity(container_type&& rings, const spec::Custom& spec) : Polygon(std::move(rings)), spec_(spec.container()) {}
+    Entity(const Entity& other) : Polygon(other), spec_(other.spec_.container()) {}
+    explicit Entity(const Area::Spec& spec) : Entity(*std::unique_ptr<Entity>(make_from_spec(spec))) {}
+
+    const std::string& type() const override {
+        static const std::string type{"shapefile"};
+        return type;
+    }
+
+    [[nodiscard]] static Entity* make_from_spec(const Area::Spec& spec) {
+        if (!spec.has("name") && !spec.has("index")) {
+            throw exception::AreaError("Shapefile: 'name' (with 'name_field') or 'index' expected", Here());
+        }
+
+        // a registered library (see shapefile.yaml) provides the shapefile, overridable by the spec
+        std::unique_ptr<spec::Layered> layered;
+        if (spec.has("library")) {
+            layered = std::make_unique<spec::Layered>(spec);
+            layered->push_back(AreaFactory::library(spec.get_string("library")));
+        }
+
+        const Shapefile shapefile(layered ? *layered : spec);
+        auto* area = spec.has("name") ? shapefile.make_area_from_name(spec.get_string("name"))
+                                      : shapefile.make_area(spec.get_unsigned("index"));
+
+        auto* entity = dynamic_cast<Entity*>(area);
+        ASSERT(entity != nullptr);
+        return entity;
+    }
+
+private:
+
+    void fill_spec(spec::Custom& custom) const override { custom.set(spec_); }
+
+    const spec::Custom spec_;
+};
+
+
+const AreaRegisterType<Entity> AREATYPE("shapefile");
+
+
 }  // namespace
 
 
 Shapefile::Shapefile(const spec::Spec& spec) :
-    Shapefile(path_shp(spec.get_string(spec.has("shp") ? "shp" : "file")),
-              spec.has("dbf") ? spec.get_string("dbf") : "",
-              spec.has("name_field") ? spec.get_string("name_field") : "") {}
+    Shapefile(spec.has("url") ? download(spec.get_string("url"))
+                              : PathName{spec.get_string(spec.has("shp") ? "shp" : "file")},
+              spec.get_string("dbf", ""), spec.get_string("name_field", "")) {
+    if (spec.has("url")) {
+        url_ = spec.get_string("url");
+    }
+
+    if (spec.has("library")) {
+        library_ = spec.get_string("library");
+    }
+}
 
 
 Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
 
 
 Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
-    shpPath_(path_shp(shp)), dbfPath_(path_dbf(dbf, shpPath_)), nEntities_(0) {
+    file_(shp.realName()),
+    dbf_(dbf),
+    shpPath_(path_shp(shp)),
+    dbfPath_(path_dbf(dbf, shpPath_)),
+    impl_(std::make_unique<Implementation>()),
+    nEntities_(0) {
     Log::debug<LibEcKitGeo>() << "eckit::geo::area::library::Shapefile(shp='" << shpPath_.realName() << "',dbf='"
                               << dbfPath_.realName() << "',name='" << name << "')" << std::endl;
 
-    if ((shp_ = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
+    if ((impl_->shp = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
         throw CantOpenFile(shpPath_ + " (as .shp)", Here());
     }
 
     int type = 0;
-    SHPGetInfo(shp_, &nEntities_, &type, nullptr, nullptr);
+    SHPGetInfo(impl_->shp, &nEntities_, &type, nullptr, nullptr);
 
     if (type != SHPT_ARC && type != SHPT_POLYGON) {
         throw ReadError("Shapefile: unsupported shape type", Here());
@@ -112,7 +183,6 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
             throw CantOpenFile(shpPath_ + " (as .dbf)", Here());
         }
 
-        // find named field index
         std::map<std::string, int> to_index;
 
         char fieldName[12];
@@ -122,9 +192,11 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
                 if (name == fieldName) {
                     name_ = name;
 
-                    // map entities names (they have to be unique)
+                    // map entities names (ambiguous if not unique)
                     for (int e = 0; e < nEntities_; ++e) {
-                        ASSERT(to_entity.emplace(DBFReadStringAttribute(dbf, e, i), e).second);
+                        if (auto [it, unique] = to_entity.emplace(DBFReadStringAttribute(dbf, e, i), e); !unique) {
+                            it->second = -1;
+                        }
                     }
 
                     break;
@@ -142,25 +214,21 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
 
 
 Shapefile::~Shapefile() {
-    SHPClose(shp_);
+    SHPClose(impl_->shp);
 }
 
 
 Shapefile* Shapefile::make_from_url(const std::string& url) {
-    static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "shapefile" /
-                                    std::to_string(cache::Download::version()));
-
-    return new Shapefile(download.to_cached_path(url, cache::Download::url_file_basename(url, false),
-                                                 cache::Download::url_file_extension(url)));
+    return new Shapefile(spec::Custom{{"url", url}});
 }
 
 
 void Shapefile::fill_spec(spec::Custom& custom) const {
     custom.set("type", "shapefile");
     custom.set("shp", shpPath_);
-    custom.set("shp", dbfPath_);
+    custom.set("dbf", dbfPath_);
     if (!name_.empty()) {
-        custom.set("field", name_);
+        custom.set("name_field", name_);
     }
 }
 
@@ -189,18 +257,41 @@ std::ostream& Shapefile::list(std::ostream& out) const {
 
 
 Area* Shapefile::make_area_from_name(const std::string& name) const {
-    ASSERT(!name_.empty() && !name.empty());
+    if (name_.empty()) {
+        throw exception::AreaError("Shapefile: areas by 'name' require 'name_field'", Here());
+    }
 
-    return make_area(to_entity.at(name));
+    auto it = to_entity.find(name);
+    if (it == to_entity.end()) {
+        throw exception::AreaError("Shapefile: '" + name + "' not found (in field '" + name_ + "')", Here());
+    }
+
+    if (it->second < 0) {
+        throw exception::AreaError("Shapefile: '" + name + "' not unique (in field '" + name_ + "')", Here());
+    }
+
+    return make_area(static_cast<size_t>(it->second), name);
 }
 
 
 Area* Shapefile::make_area(size_t entity) const {
+    auto it = std::find_if(to_entity.begin(), to_entity.end(),
+                           [entity](const auto& kv) { return static_cast<size_t>(kv.second) == entity; });
+    return make_area(entity, it != to_entity.end() ? it->first : "");
+}
+
+
+Area* Shapefile::make_area(size_t entity, const std::string& name) const {
+    if (entity >= size()) {
+        throw exception::AreaError(
+            "Shapefile: index " + std::to_string(entity) + " out of range [0, " + std::to_string(size()) + ")", Here());
+    }
+
     struct Object : std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> {
         explicit Object(SHPObject* ptr) : unique_ptr{ptr, SHPDestroyObject} { ASSERT(operator bool()); }
     };
 
-    Object obj(SHPReadObject(shp_, static_cast<int>(entity)));
+    Object obj(SHPReadObject(impl_->shp, static_cast<int>(entity)));
     ASSERT(obj);
     ASSERT(obj->nSHPType == SHPT_ARC || obj->nSHPType == SHPT_POLYGON);
 
@@ -230,20 +321,32 @@ Area* Shapefile::make_area(size_t entity) const {
         }
     }
 
-    return new area::Polygon(parts);
-}
-
-
-#if 0
-class AreaLibrary {
-public:
-    void add_library(const std::string& lib, const Value& value) {
-        std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(value));
-
-        emplace(lib, ShapefileURL{LibEcKitGeo::url(spec->get_string("url"))});
+    // the entity, by name if possible
+    spec::Custom spec{{"type", "shapefile"}};
+    if (!library_.empty()) {
+        spec.set("library", library_);
     }
-};
-#endif
+    else if (url_.empty()) {
+        spec.set("file", file_.asString());
+    }
+    else {
+        spec.set("url", url_);
+    }
+
+    if (library_.empty() && !dbf_.asString().empty()) {
+        spec.set("dbf", dbf_.asString());
+    }
+
+    if (!name.empty()) {
+        spec.set("name_field", name_);
+        spec.set("name", name);
+    }
+    else {
+        spec.set("index", entity);
+    }
+
+    return new Entity(std::move(parts), spec);
+}
 
 
 }  // namespace eckit::geo::area::library

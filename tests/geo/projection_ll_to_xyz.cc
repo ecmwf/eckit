@@ -1,19 +1,15 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <cmath>
 #include <memory>
+#include <ostream>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -37,7 +33,7 @@ CASE("projection: ll-to-xyz") {
 
 
     // spherical projections
-    P to_xyz_1(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
+    P to_xyz_1(Factory<Projection>::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
     P to_xyz_2(new projection::LonLatToXYZ(1., 1.));
 
     EXPECT(*to_xyz_1 == *to_xyz_2);
@@ -45,7 +41,7 @@ CASE("projection: ll-to-xyz") {
 
 
     // oblate spheroid projections
-    P to_xyz_3(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
+    P to_xyz_3(Factory<Projection>::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
     P to_xyz_4(new projection::LonLatToXYZ(1., 0.5));
 
     EXPECT(*to_xyz_3 == *to_xyz_4);
@@ -56,14 +52,10 @@ CASE("projection: ll-to-xyz") {
 
 
     SECTION("spec") {
-        Log::info() << to_xyz_1->spec_str() << std::endl;
-        Log::info() << to_xyz_2->spec_str() << std::endl;
-        Log::info() << to_xyz_3->spec_str() << std::endl;
-        Log::info() << to_xyz_4->spec_str() << std::endl;
-        EXPECT(to_xyz_1->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_2->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_1->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_2->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_3->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_4->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
     }
 
 

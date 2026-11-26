@@ -1,33 +1,28 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <deque>
+#include <initializer_list>
+#include <string>
 #include <vector>
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
-class Composer : public Projection, private std::deque<Projection*> {
+class Composer : public Projection, private std::deque<const Projection*> {
 public:
 
     // -- Constructors
 
-    using deque::deque;
     explicit Composer() = default;
+    Composer(std::initializer_list<const Projection*>);
 
     Composer(const Composer&) = delete;
     Composer(Composer&&)      = delete;
@@ -47,9 +42,9 @@ public:
 
     // -- Methods
 
-    using deque::clear;
-    using deque::emplace_back;
-    using deque::emplace_front;
+    void clear();
+    void emplace_back(const Projection*);
+    void emplace_front(const Projection*);
 
     using deque::empty;
     using deque::size;
@@ -66,10 +61,15 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Projection* compose_back(Projection*, const Spec&);
-    [[nodiscard]] static Projection* compose_front(const Spec&, Projection*);
+    [[nodiscard]] static Projection* compose_back(const Projection*, const Spec&);
+    [[nodiscard]] static Projection* compose_front(const Spec&, const Projection*);
 
 private:
+
+    // -- Methods
+
+    /// Source/target point types from the first/last projections
+    void update_point_types();
 
     // -- Overridden methods
 

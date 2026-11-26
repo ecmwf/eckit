@@ -1,24 +1,13 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
-#include <iosfwd>
+#include <set>
 #include <string>
 
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 
 
 namespace eckit {
@@ -26,7 +15,6 @@ namespace geo {
 namespace area {
 class BoundingBox;
 }
-class Projection;
 }  // namespace geo
 namespace spec {
 class Custom;
@@ -48,6 +36,55 @@ public:
 
     using builder_t = BuilderT0<Figure>;
     using Spec      = spec::Spec;
+
+    /**
+     * @brief Functions of the latitude [radian] for conformal projections, on an ellipsoid of eccentricity e (a sphere
+     * if e = 0), as PROJ (pj_msfn, pj_tsfn and pj_phi2)
+     * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+     */
+    class Conformal {
+    public:
+
+        explicit Conformal(double e) : e_(e) {}
+
+        /// Snyder (14-15)
+        double m(double phi) const;
+
+        /// Snyder (15-9)
+        double t(double phi) const;
+
+        /// The latitude of t, Snyder (7-9)
+        double phi(double t) const;
+
+    private:
+
+        const double e_;
+    };
+
+    /**
+     * @brief Functions of the latitude [radian] for equal-area projections, on an ellipsoid of eccentricity e (a sphere
+     * if e = 0), as PROJ (pj_qsfn and pj_authlat)
+     * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+     */
+    class Authalic {
+    public:
+
+        explicit Authalic(double e);
+
+        /// Snyder (3-12)
+        double q(double sinphi) const;
+
+        /// The latitude of q, Snyder (3-16)
+        double phi(double q) const;
+
+        /// q at the poles
+        double qp() const { return qp_; }
+
+    private:
+
+        const double e_;
+        const double qp_;
+    };
 
     // -- Constructors
 
@@ -75,48 +112,51 @@ public:
     virtual double b() const;
 
     /// Surface area [L^2]
-    virtual double area() const;
+    double area() const;
 
     /// Surface area between parallels and meridians [L^2]
-    virtual double area(const area::BoundingBox&) const;
+    double area(const area::BoundingBox&) const;
 
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
     std::string proj_str() const;
 
+    /// Spec on its own
+    virtual void fill_spec(spec::Custom&) const;
+
+    /// Spec as part of a projection's: nothing for the default figure
+    void fill_projection_spec(spec::Custom&) const;
+
     bool spherical() const;
     double eccentricity() const;
     double flattening() const;
 
+    Conformal conformal() const { return Conformal(eccentricity()); }
+    Authalic authalic() const { return Authalic(eccentricity()); }
+
+    virtual bool is_default() const;
+
 private:
-
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const;
 
     // -- Friends
 
-    friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
+    friend bool operator==(const Figure& a, const Figure& b);
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
-
-    friend class Projection;
 };
 
 
 struct FigureFactory {
-    [[nodiscard]] static Figure* build(const Figure::Spec& spec) { return instance().make_from_spec_(spec); }
+    /// Build the spec's figure, or the default one if the spec doesn't describe any
+    [[nodiscard]] static Figure* build(const Figure::Spec&);
     [[nodiscard]] static Figure* make_from_string(const std::string&);
+    [[nodiscard]] static const Figure* make_default();
 
-private:
-
-    static FigureFactory& instance();
-
-    [[nodiscard]] Figure* make_from_spec_(const Figure::Spec&) const;
+    static const std::set<std::string>& keys();
 };
 
 
 template <typename T>
-using FigureBuilder = ConcreteBuilderT0<Figure, T>;
+using FigureRegisterType = ConcreteBuilderT0<Figure, T>;
 
 
 }  // namespace eckit::geo

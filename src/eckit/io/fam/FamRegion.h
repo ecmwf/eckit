@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -25,6 +18,7 @@
 
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -42,6 +36,9 @@ public:  // methods
 
     // properties
 
+    /// Bare region number, as carried by the *region* descriptor.
+    /// This region's objects report a different id — theirs packs in the memory server serving them — so this must
+    /// never be used to address an object. @see FamDescriptor
     fam::index_t index() const;
 
     fam::size_t size() const;
@@ -58,8 +55,10 @@ public:  // methods
 
     // object methods
 
+    /// Wraps an already-allocated object at @p descriptor, reusing this region's session.
+    /// The descriptor addresses the object on its own memory server, which need not match index().
     /// @note this avoids invoking fam, as in lookupObject.
-    FamObject proxyObject(fam::index_t offset) const;
+    FamObject proxyObject(const FamDescriptor& descriptor) const;
 
     FamObject lookupObject(const std::string& object_name) const;
 

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Manuel Fuentes
@@ -242,6 +235,17 @@ public:  // methods
     const std::string& path() const;
 
     void fileSystemSize(FileSystemSize&) const;
+
+    /// Name of the filesystem backing this path, e.g. "nfs", "ext", "xfs", "lustre".
+    /// On Linux an unrecognised superblock magic is reported as "unknown(0x...)".
+    /// @throws FailedSystemCall if the filesystem cannot be interrogated
+    /// @throws NotImplemented if filesystem interrogation is unsupported
+    std::string fileSystemType() const;
+
+    /// Device of the filesystem holding this path, as "major:minor"
+    /// @throws FailedSystemCall if the path cannot be stat'ed
+    std::string device() const;
+
     DataHandle* fileHandle(bool overwrite) const;
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;

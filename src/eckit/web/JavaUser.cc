@@ -1,15 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/web/JavaUser.h"
+
+#include <memory>
+#include <stdexcept>
+
+#include "eckit/log/Log.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/web/JavaAgent.h"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -24,7 +23,14 @@ JavaUser::JavaUser(net::TCPSocket& socket) : net::NetUser(socket) {}
 JavaUser::~JavaUser() {}
 
 void JavaUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
+    Log::status() << "Waiting for agent from " << protocol_.remoteHost() << std::endl;
     JavaAgent::serve(s, in, out);
+}
+
+void JavaUser::refuse(eckit::Stream& s, std::istream&, std::ostream&, const std::string& reason) {
+    // Consume the agent, then send the error where the client expects the clearance
+    std::unique_ptr<JavaAgent> a(Reanimator<JavaAgent>::reanimate(s));
+    s << std::runtime_error(reason);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

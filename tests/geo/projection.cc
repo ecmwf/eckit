@@ -1,40 +1,106 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
 #include <memory>
+#include <string>
+#include <variant>
+#include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/geo/projection/Reverse.h"
+#include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/projection/Stretch.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("projection: none") {
-    Point p = PointLonLat{1, 1};
-    std::unique_ptr<Projection> projection(ProjectionFactoryType::instance().get("none").create(spec::Custom{}));
+CASE("projection: default") {
+    const auto& projection = Projection::projection_default();
+    std::unique_ptr<const Projection> made(ProjectionFactory::make_default());
 
-    EXPECT(points_equal(p, projection->inv(p)));
-    EXPECT(points_equal(p, projection->fwd(p)));
+    EXPECT(projection.type() == "eqc");
+    EXPECT(projection.spec_str() == "{}");
+    EXPECT(projection.is_default());
+    EXPECT_NOT(projection.identity());
+    EXPECT(*made == projection);
+
+    // a type not of a projection (e.g. a grid's), the default
+    std::unique_ptr<const Projection> none(ProjectionFactory::make_from_string("{type: none}"));
+    EXPECT(none->is_default());
+}
+
+
+CASE("projection: identity") {
+    const PointLonLat p{10., 20.};
+
+    const projection::Rotation rotation;
+    const projection::Reverse reverse(new projection::Rotation);
+    const projection::Reverse reverse_reverse(new projection::Reverse(new projection::Rotation));
+
+    for (const Projection* identity : std::vector<const Projection*>{&rotation, &reverse, &reverse_reverse}) {
+        EXPECT(identity->identity());
+        EXPECT_NOT(identity->reverse());
+        EXPECT(identity->spec_str() == "{}");
+        EXPECT(points_equal(identity->fwd(p), p));
+        EXPECT(points_equal(identity->inv(p), p));
+    }
+
+    // not the identity
+    const projection::Rotation rotated(PointLonLat{10., -40.});
+    const projection::Reverse reverse_rotated(new projection::Rotation(PointLonLat{10., -40.}));
+
+    EXPECT_NOT(rotated.identity());
+    EXPECT_NOT(reverse_rotated.identity());
+    EXPECT_NOT(projection::LonLatToXYZ(new figure::UnitSphere).identity());
+
+    // by the factory, as the default (of the same spec)
+    for (const auto& spec : std::vector<std::string>{
+             "{type: rotation}",
+             "{type: rotation, reverse: true}",
+             "{type: rotation, south_pole: [10, -90], rotation_angle: 10}",
+             "{rotation: [-90, 0]}",
+         }) {
+        std::unique_ptr<const Projection> projection(ProjectionFactory::make_from_string(spec));
+        EXPECT(projection->type() == "eqc");
+        EXPECT(projection->is_default());
+        EXPECT_NOT(projection->identity());
+    }
+}
+
+
+CASE("projection: unknown type") {
+    using P = std::unique_ptr<const Projection>;
+
+    EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{projection: {type: not_a_projection}}")),
+                     exception::ProjectionError);
+
+    // named projections of PROJ, without PROJ
+    if (!ProjectionFactory::has_type("proj")) {
+        EXPECT_THROWS_AS(P(ProjectionFactory::make_from_string("{projection: swisslv95}")), exception::ProjectionError);
+        EXPECT_THROWS_AS(std::unique_ptr<const Grid>(GridFactory::make_from_string("swisslv95")),
+                         exception::ProjectionError);
+    }
 }
 
 
 CASE("projection: reverse") {
     projection::LonLatToXYZ ab(new figure::UnitSphere);
-    projection::Reverse<projection::LonLatToXYZ> ba(new figure::UnitSphere);
+    projection::Reverse ba(new projection::LonLatToXYZ(new figure::UnitSphere));
 
     PointLonLat p = NORTH_POLE;
     PointXYZ q{0., 0., 1.};
@@ -46,8 +112,376 @@ CASE("projection: reverse") {
     EXPECT(points_equal(p, ba.fwd(q)));
     EXPECT(points_equal(q, ba.inv(p)));
 
-    ASSERT(ab.spec().get_string("type") == "ll-to-xyz");
-    EXPECT(ba.spec().get_string("type") == "reverse-ll-to-xyz");
+    EXPECT_NOT(ab.reverse());
+    EXPECT(ba.reverse());
+
+    EXPECT(ab.spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+    EXPECT(ba.spec_str() == R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})");
+}
+
+
+CASE("projection: stretch, reverse (by the inverse factor)") {
+    std::unique_ptr<const Projection> stretch(
+        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 2}"));
+    std::unique_ptr<const Projection> stretch_reverse(
+        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 2, reverse: true}"));
+    std::unique_ptr<const Projection> stretch_inverse(
+        ProjectionFactory::make_from_string("{type: stretch, stretching_factor: 0.5}"));
+
+    EXPECT(dynamic_cast<const projection::Stretch*>(stretch_reverse.get()) != nullptr);
+    EXPECT(!stretch_reverse->reverse());
+    EXPECT(*stretch_reverse == *stretch_inverse);
+
+    for (const auto& a : std::vector<PointLonLat>{{10., 20.}, {-30., -60.}}) {
+        const auto b = stretch->fwd(a);
+        EXPECT(points_equal(stretch_reverse->fwd(b), a));
+        EXPECT(points_equal(stretch_reverse->inv(a), b));
+    }
+
+    // reversed (by projection::Reverse), as not reversed
+    const projection::Reverse stretch_twice(ProjectionFactory::build(stretch_reverse->spec()));
+    EXPECT(stretch_twice.reverse());
+    EXPECT(points_equal(stretch_twice.fwd(PointLonLat{10., 20.}), stretch->fwd(PointLonLat{10., 20.})));
+
+    EXPECT_THROWS_AS(projection::Stretch(0., true), exception::ProjectionError);
+}
+
+
+CASE("projection: reverse, from spec") {
+    struct test_t {
+        std::string spec;     // reversed by appending "reverse: true"
+        std::string plain;    // spec after construction
+        std::string reverse;  // spec after construction, reversed
+    };
+
+    const PointLonLat p{10., 20.};
+
+    for (const auto& test : std::vector<test_t>{
+             {"{type: ll-to-xyz, R: 1}", R"({"figure":{"r":1},"type":"ll-to-xyz"})",
+              R"({"figure":{"r":1},"reverse":true,"type":"ll-to-xyz"})"},
+             {"{type: eqc, lat_ts: 60, figure: wgs84}", R"({"figure":"wgs84","lat_ts":60,"type":"eqc"})",
+              R"({"figure":"wgs84","lat_ts":60,"reverse":true,"type":"eqc"})"},
+             {"{type: eqc}", "{}", R"({"reverse":true})"},
+         }) {
+        SECTION(test.spec) {
+            std::unique_ptr<const Projection> plain(ProjectionFactory::make_from_string(test.spec));
+            std::unique_ptr<const Projection> reverse(
+                ProjectionFactory::make_from_string(test.spec.substr(0, test.spec.size() - 1) + ", reverse: true}"));
+
+            EXPECT(plain->spec_str() == test.plain);
+            EXPECT(reverse->spec_str() == test.reverse);
+            EXPECT_NOT(plain->reverse());
+            EXPECT(reverse->reverse());
+            EXPECT(dynamic_cast<const projection::Reverse*>(reverse.get()) != nullptr);
+
+            // identical, if built from the spec of another
+            for (const auto* projection : {plain.get(), reverse.get()}) {
+                std::unique_ptr<const Projection> same(ProjectionFactory::build(projection->spec()));
+                EXPECT(*same == *projection);
+                EXPECT(same->reverse() == projection->reverse());
+            }
+
+            // reversed: fwd as inv, and inv as fwd
+            const auto q = plain->fwd(p);
+            EXPECT(points_equal(reverse->fwd(q), p));
+            EXPECT(points_equal(reverse->inv(p), q));
+
+            // reversed (again): the plain reversed as the reverse, and the reverse reversed as the plain
+            struct reversed_t {
+                const Projection& projection;
+                const Projection& expected;
+                Point a;  // expected source point
+            };
+
+            for (const auto& r : std::vector<reversed_t>{{*plain, *reverse, q}, {*reverse, *plain, p}}) {
+                const projection::Reverse reversed(ProjectionFactory::build(r.projection.spec()));
+                EXPECT(reversed.spec_str() == r.expected.spec_str());
+                EXPECT(reversed.reverse() == r.expected.reverse());
+
+                std::unique_ptr<const Projection> same(ProjectionFactory::build(reversed.spec()));
+                EXPECT(*same == reversed);
+
+                const auto b = r.expected.fwd(r.a);
+                EXPECT(points_equal(reversed.fwd(r.a), b));
+                EXPECT(points_equal(reversed.inv(b), r.a));
+            }
+
+            // reversed thrice, as reversed once
+            const projection::Reverse thrice(
+                new projection::Reverse(new projection::Reverse(ProjectionFactory::build(plain->spec()))));
+            EXPECT(thrice.spec_str() == reverse->spec_str());
+            EXPECT(thrice.reverse());
+            EXPECT(points_equal(thrice.fwd(q), p));
+            EXPECT(points_equal(thrice.inv(p), q));
+        }
+    }
+}
+
+
+CASE("projection: spec, and as part of a grid's") {
+    // with the grid names loaded (e.g. SMUFF-OPERA-2km, on wgs84), not taken for projection names
+    std::unique_ptr<Grid::Spec> grids(GridFactory::make_spec(spec::Custom{}));
+
+    struct test_t {
+        std::string projection;
+        std::string spec;
+        std::string grid_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{}", "{}", "{}"},
+             {"{figure: earth}", "{}", "{}"},
+             {"{figure: wgs84}", R"({"figure":"wgs84"})", R"({"figure":"wgs84"})"},
+             {"{type: eqc, lat_ts: 60, figure: wgs84}", R"({"figure":"wgs84","lat_ts":60,"type":"eqc"})",
+              R"({"projection":{"figure":"wgs84","lat_ts":60,"type":"eqc"}})"},
+             {"{type: rotation, south_pole: [10, -40]}", R"({"south_pole":[10,-40],"type":"rotation"})",
+              R"({"projection":{"south_pole":[10,-40],"type":"rotation"}})"},
+         }) {
+        std::unique_ptr<const Projection> projection(ProjectionFactory::make_from_string(test.projection));
+        EXPECT(!projection->reverse());
+        EXPECT(projection->spec_str() == test.spec);
+
+        spec::Custom grid_spec;
+        projection->fill_grid_spec(grid_spec);
+        EXPECT(grid_spec.str() == test.grid_spec);
+    }
+}
+
+
+using v = std::vector<double>;
+
+
+bool approx(const v& a, const v& b) {
+    if (a.size() != b.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < a.size(); ++i) {
+        if (!types::is_approximately_equal(a[i], b[i], PointLonLat::EPS)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+/// Project one point, given and returning one value per coordinate
+v single(const std::vector<v>& vs) {
+    v q;
+    for (const auto& c : vs) {
+        ASSERT(c.size() == 1);
+        q.push_back(c.front());
+    }
+    return q;
+}
+
+
+v fwd(const Projection& projection, const v& p) {
+    return single(projection.fwd(v{p.at(0)}, v{p.at(1)}, p.size() > 2 ? v{p[2]} : v{}));
+}
+
+
+v inv(const Projection& projection, const v& q) {
+    return single(projection.inv(v{q.at(0)}, v{q.at(1)}, q.size() > 2 ? v{q[2]} : v{}));
+}
+
+
+bool all_nan(const v& a) {
+    return std::all_of(a.begin(), a.end(), [](double x) { return std::isnan(x); });
+}
+
+
+/// lonlat to xy (identity), failing for negative longitudes
+struct Failing final : Projection {
+    Point fwd(const Point& p) const override {
+        const auto& q = std::get<PointLonLat>(p);
+        if (q.lon() < 0.) {
+            throw BadValue("Failing: negative longitude", Here());
+        }
+        return PointXY{q.lon(), q.lat()};
+    }
+
+    Point inv(const Point& q) const override {
+        const auto& p = std::get<PointXY>(q);
+        return PointLonLat{p.X(), p.Y()};
+    }
+
+    const std::string& type() const override {
+        static const std::string type{"failing"};
+        return type;
+    }
+};
+
+
+/// identity, but declaring lonlat to xy (so not honouring its point types)
+struct Dishonest final : Projection {
+    Dishonest() : Projection(nullptr, PointLonLat{}, PointXY{}) {}
+    Point fwd(const Point& p) const override { return p; }
+    Point inv(const Point& q) const override { return q; }
+
+    const std::string& type() const override {
+        static const std::string type{"dishonest"};
+        return type;
+    }
+};
+
+
+/// a projection of the empty point (not a point type)
+struct Empty final : Projection {
+    Empty() : Projection(nullptr, Point{}, PointXY{}) {}
+    Point fwd(const Point& p) const override { return p; }
+    Point inv(const Point& q) const override { return q; }
+
+    const std::string& type() const override {
+        static const std::string type{"empty"};
+        return type;
+    }
+};
+
+
+CASE("projection: point types") {
+    using names = std::vector<std::string>;
+
+    auto check = [](const Projection& projection, const names& source, const names& target) {
+        EXPECT(projection.source_point_coordinates() == source);
+        EXPECT(projection.target_point_coordinates() == target);
+    };
+
+    const auto& LL  = point_coordinates<PointLonLat>();
+    const auto& XY  = point_coordinates<PointXY>();
+    const auto& XYZ = point_coordinates<PointXYZ>();
+
+    SECTION("empty point") {
+        EXPECT_THROWS_AS(Empty{}, BadValue);
+    }
+
+
+    SECTION("by class") {
+        check(projection::Rotation{PointLonLat{10., -40.}}, LL, LL);
+        check(projection::EquidistantCylindrical{}, LL, XY);
+        check(projection::LonLatToXYZ{new figure::UnitSphere}, LL, XYZ);
+        check(projection::Reverse{new projection::LonLatToXYZ{new figure::UnitSphere}}, XYZ, LL);
+    }
+
+
+    SECTION("composer") {
+        projection::Composer composer;
+        check(composer, LL, XY);  // empty, the default
+
+        composer.emplace_back(new projection::Rotation{PointLonLat{10., -40.}});
+        check(composer, LL, LL);
+
+        composer.emplace_back(new projection::LonLatToXYZ{new figure::UnitSphere});
+        check(composer, LL, XYZ);
+
+        projection::Composer to_lonlat{new projection::Reverse{new projection::LonLatToXYZ{new figure::UnitSphere}},
+                                       new projection::Rotation{PointLonLat{10., -40.}}};
+        check(to_lonlat, XYZ, LL);
+    }
+}
+
+
+CASE("projection: coordinates") {
+    SECTION("lonlat to xyz") {
+        projection::LonLatToXYZ to_xyz(new figure::UnitSphere);
+        const Projection& projection = to_xyz;
+
+        EXPECT(approx(fwd(projection, v{0., 0.}), v{1., 0., 0.}));
+        EXPECT(approx(fwd(projection, v{90., 0.}), v{0., 1., 0.}));
+        EXPECT(approx(inv(projection, v{0., 0., 1.}), v{0., 90.}));
+
+        EXPECT_THROWS_AS(fwd(projection, v{0., 0., 0.}), BadValue);  // a lonlat point has 2 coordinates
+        EXPECT_THROWS_AS(inv(projection, v{1., 0.}), BadValue);      // a xyz point has 3 coordinates
+    }
+
+
+    SECTION("reverse") {
+        projection::Reverse to_lonlat(new projection::LonLatToXYZ(new figure::UnitSphere));
+        const Projection& projection = to_lonlat;
+
+        EXPECT(approx(fwd(projection, v{0., 1., 0.}), v{90., 0.}));
+        EXPECT(approx(inv(projection, v{90., 0.}), v{0., 1., 0.}));
+    }
+
+
+    SECTION("by spec") {
+        std::unique_ptr<const Projection> rotation(
+            ProjectionFactory::build(spec::Custom{{"type", "rotation"}, {"south_pole", v{10., -40.}}}));
+        EXPECT(approx(inv(*rotation, v{0., 0.}), v{10., 50.}));
+        EXPECT(approx(fwd(*rotation, inv(*rotation, v{10., 20.})), v{10., 20.}));
+
+        std::unique_ptr<const Projection> eqc(ProjectionFactory::build(spec::Custom{{"type", "eqc"}, {"lat_ts", 60.}}));
+        EXPECT(approx(fwd(*eqc, v{10., 20.}), v{5., 20.}));
+        EXPECT(approx(inv(*eqc, v{5., 20.}), v{10., 20.}));
+    }
+
+
+    SECTION("failure is NaN") {
+        const Failing projection;
+        const Projection& failing = projection;
+        EXPECT(approx(fwd(failing, v{10., 20.}), v{10., 20.}));
+        EXPECT(all_nan(fwd(failing, v{-10., 20.})));
+    }
+}
+
+
+CASE("projection: vectors") {
+    projection::LonLatToXYZ to_xyz(new figure::UnitSphere);
+    const Projection& projection = to_xyz;
+
+    // three points: (lon, lat) = (0, 0), (90, 0), (0, 90)
+    const v lon{0., 90., 0.};
+    const v lat{0., 0., 90.};
+
+    SECTION("fwd/inv") {
+        const auto xyz = projection.fwd(lon, lat);
+        EXPECT(xyz.size() == 3);
+
+        EXPECT(approx(xyz[0], v{1., 0., 0.}));
+        EXPECT(approx(xyz[1], v{0., 1., 0.}));
+        EXPECT(approx(xyz[2], v{0., 0., 1.}));
+
+        const auto ll = projection.inv(xyz[0], xyz[1], xyz[2]);
+        EXPECT(ll.size() == 2);
+
+        EXPECT(approx(ll[1], lat));
+        EXPECT(approx(ll[0], v{0., 90., ll[0][2]}));  // longitude at the pole is arbitrary
+    }
+
+
+    SECTION("no points") {
+        const auto xyz = projection.fwd(v{}, v{});
+        EXPECT(xyz.size() == 3);
+        EXPECT(xyz[0].empty() && xyz[1].empty() && xyz[2].empty());
+    }
+
+
+    SECTION("number and sizes of vectors") {
+        EXPECT_THROWS_AS(projection.fwd(lon, lat, lat), BadValue);   // lonlat points have 2 coordinates
+        EXPECT_THROWS_AS(projection.inv(lon, lat), BadValue);        // xyz points have 3 coordinates
+        EXPECT_THROWS_AS(projection.fwd(lon, v{0., 0.}), BadValue);  // different sizes
+    }
+
+
+    SECTION("failure is NaN, for the failing points only") {
+        const Failing projection_failing;
+        const Projection& failing = projection_failing;
+
+        const auto xy = failing.fwd(v{10., -10., 30.}, v{20., 20., 40.});
+
+        EXPECT(approx(v{xy[0][0], xy[0][2]}, v{10., 30.}));
+        EXPECT(approx(v{xy[1][0], xy[1][2]}, v{20., 40.}));
+        EXPECT(std::isnan(xy[0][1]) && std::isnan(xy[1][1]));
+    }
+
+
+    SECTION("projection not honouring its point types") {
+        const Dishonest projection_dishonest;  // declares lonlat to xy, returns its input
+        const Projection& dishonest = projection_dishonest;
+
+        // not an eckit::Exception (so not NaN): a broken projection is a programming error, not a failing point
+        EXPECT_THROWS_AS(fwd(dishonest, v{1., 2.}), std::bad_variant_access);
+        EXPECT_THROWS_AS(inv(dishonest, v{1., 2.}), std::bad_variant_access);
+    }
 }
 
 

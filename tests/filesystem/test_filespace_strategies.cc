@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// Tests for FileSpaceStrategies using a mock filesystem registered via
 /// PathNameFactory. No real filesystem state is accessed, so the tests
@@ -111,6 +104,7 @@ public:
 
     // -- Stubs (not called by strategies) --
 
+    std::string fileSystemType() const { throw NotImplemented("FakeFileSystem::fileSystemType", Here()); }
     const char* localPath() const { throw NotImplemented("FakeFileSystem::localPath", Here()); }
     Length size() const { throw NotImplemented("FakeFileSystem::size", Here()); }
     time_t lastAccess() const { throw NotImplemented("FakeFileSystem::lastAccess", Here()); }

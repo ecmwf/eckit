@@ -1,26 +1,23 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <algorithm>
+#include <memory>
+#include <ostream>
 #include <random>
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -106,7 +103,7 @@ CASE("MARS grid") {
 
 
     SECTION("ORCA") {
-        for (const std::string& name : {
+        for (const auto& name : std::vector<std::string>{
                  "ORCA025",
                  "ORCA1",
                  "ORCA12",
@@ -137,12 +134,12 @@ CASE("eckit::geo Grid") {
         grid::regular::RegularLL grid({1., 1.});
 
         Log::info() << "Grid: '" << grid.spec_str() << "'" << std::endl
-                    << "grid.nlon() = " << grid.nlon()                   //
-                    << "\ngrid.nlat() = " << grid.nlat()                 //
+                    << "grid.nx() = " << grid.nx()                       //
+                    << "\ngrid.ny() = " << grid.ny()                     //
                     << "\ngrid.first_point()) = " << grid.first_point()  //
                     << "\ngrid.last_point()) = " << grid.last_point()    //
-                    << "\ngrid.dlon() = " << grid.dlon()                 //
-                    << "\ngrid.dlat() = " << grid.dlat()                 //
+                    << "\ngrid.dx() = " << grid.dx()                     //
+                    << "\ngrid.dy() = " << grid.dy()                     //
                     << std::endl;
     }
 

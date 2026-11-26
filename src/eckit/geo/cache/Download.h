@@ -1,19 +1,13 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <map>
 #include <string>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/cache/DiskCache.h"
 #include "eckit/log/Bytes.h"
 
@@ -26,7 +20,8 @@ public:
 
     // -- Types
 
-    using url_type = std::string;
+    using url_type     = std::string;
+    using headers_type = std::map<std::string, std::string>;  // keys in lowercase
 
     struct info_type {
         Bytes bytes;
@@ -35,11 +30,10 @@ public:
 
     // -- Constructors
 
-    explicit Download(const PathName& root = ".", bool html = false) : DiskCache(root), html_(html) {}
+    explicit Download(const PathName& root = default_root(), bool html = false) : DiskCache(root), html_(html) {}
 
     // -- Methods
 
-    static const int VERSION;
     static const std::string PREFIX;
     static const std::string SUFFIX;
 
@@ -50,7 +44,9 @@ public:
 
     static info_type to_path(const url_type&, const PathName&, bool html = false);
 
-    static int version() { return VERSION; }
+    static std::string validate_response(const url_type&, long code, const headers_type&, bool html = false);
+
+    static PathName default_root();
 
     static std::string url_file_basename(const url_type&, bool ext = true);
     static std::string url_file_extension(const url_type&);

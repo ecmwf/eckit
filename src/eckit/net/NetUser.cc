@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/net/NetUser.h"
@@ -30,6 +23,19 @@ void NetUser::run() {
     InstantTCPStream stream(protocol_);
 
     serve(stream, in, out);
+}
+
+void NetUser::reject(const std::string& reason) {
+    SockBuf buf(protocol_);
+    std::ostream out(&buf);
+    std::istream in(&buf);
+    InstantTCPStream stream(protocol_);
+
+    refuse(stream, in, out, reason);
+}
+
+void NetUser::refuse(Stream&, std::istream&, std::ostream&, const std::string& reason) {
+    Log::warning() << "Refusing connection from " << protocol_.remoteHost() << ": " << reason << std::endl;
 }
 
 }  // namespace eckit::net

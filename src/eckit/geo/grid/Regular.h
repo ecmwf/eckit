@@ -1,19 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <cstddef>
+#include <vector>
+
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Range.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/order/Scan.h"
 
 
@@ -28,17 +23,6 @@ namespace eckit::geo::grid {
 class Regular : public Grid {
 public:
 
-    // -- Methods
-
-    virtual double dx() const = 0;
-    virtual double dy() const = 0;
-
-    virtual size_t nx() const = 0;
-    virtual size_t ny() const = 0;
-
-    virtual const Range& x() const = 0;
-    virtual const Range& y() const = 0;
-
     // -- Overridden methods
 
     iterator cbegin() const final;
@@ -50,6 +34,13 @@ public:
     const order_type& order() const final;
     renumber_type reorder(const order_type& to) const final;
 
+    /// Cropped by a bounding box (unprojected), of the same type and scanning mode if supported, otherwise unstructured
+    [[nodiscard]] Grid* make_grid_cropped(const Area&) const final;
+
+    /// Indices as the cropped grid points (see make_grid_cropped), of the same scanning mode (eg. alternating rows
+    /// start in the same direction, whatever the number of rows cropped out)
+    renumber_type crop(const Area&) const final;
+
     // -- Class methods
 
     static const order::Scan& scan_default();
@@ -58,7 +49,6 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(const Spec&);
     explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
 
     // -- Overridden methods
@@ -66,6 +56,15 @@ protected:
     void fill_spec(spec::Custom&) const override;
 
     // -- Methods
+
+    /// Point of grid coordinates (x, y)
+    virtual Point point(double x, double y) const { return projection().from_grid_xy(x, y); }
+
+    /// Index of the point of the i-th x and j-th y values, in the grid order (scanning mode)
+    size_t index(size_t i, size_t j) const;
+
+    /// Cropped to a bounding box (within the grid's), of the same type and scanning mode; nullptr if not supported
+    [[nodiscard]] virtual Regular* make_regular_cropped(const BoundingBox&) const { return nullptr; }
 
     void scan(const order_type& to);
     void scan(order::Scan);
@@ -76,6 +75,10 @@ private:
     // -- Members
 
     order::Scan scan_;
+
+    // -- Methods
+
+    [[nodiscard]] Regular* regular_cropped(const Area&) const;
 
     // -- Friends
 

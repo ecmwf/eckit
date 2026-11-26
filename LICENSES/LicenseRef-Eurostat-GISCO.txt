@@ -1,0 +1,43 @@
+Eurostat/GISCO geographical data: download and usage provisions
+
+The following text reproduces the specific rules that Eurostat attaches to
+the administrative-unit datasets (countries, communes, postal codes) served
+from https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units,
+as published on 2026-09-14.
+
+In addition to the general copyright and licence policy that applies to the
+Eurostat website, the following specific rules apply to the datasets you are
+downloading. The download and use of these data are subject to you accepting
+the following clauses:
+
+  The Commission agrees to grant the non-exclusive and non-transferable right
+  to use and process the Eurostat/GISCO geographical data downloaded from
+  this page (the 'data').
+
+  The permission to use the data is granted on condition that:
+    - the data will not be used for commercial purposes
+    - the source will be acknowledged. A copyright notice, as specified
+      below, must be visible on any printed or electronic publication using
+      the data downloaded from this page.
+
+Copyright notice
+
+  In any printed or electronic publication, in addition to any other rules
+  that apply to the Eurostat website, the data source must be acknowledged in
+  the legend of the map and in the introductory page of the publication with
+  the following copyright notice:
+
+    EN: (c) EuroGeographics for the administrative boundaries
+    FR: (c) EuroGeographics pour les limites administratives
+    DE: (c) EuroGeographics bezueglich der Verwaltungsgrenzen
+
+  For publications in languages other than English, French or German, the
+  translation of the copyright notice in the language of the publication must
+  be used.
+
+  If you intend to use the data commercially, please contact EuroGeographics
+  for information about their licence agreements.
+
+Dataset: Countries 2024, 1:60 Million, EPSG:4326 (CNTR_RG_60M_2024_4326),
+revision of 2025-03-11, from
+https://gisco-services.ec.europa.eu/distribution/v2/countries/

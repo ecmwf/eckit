@@ -1,19 +1,14 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
+#include <string>
 #include <variant>
+#include <vector>
 
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointLonLatR.h"
@@ -26,10 +21,36 @@ namespace eckit::geo {
 
 using Point = std::variant<std::monostate, PointXY, PointXYZ, PointLonLat, PointLonLatR>;
 
+
+/// Point comparison functions
 bool points_equal(const Point&, const Point&);
 bool points_equal(const Point&, const Point&, double eps);
 
+
 std::ostream& operator<<(std::ostream&, const Point&);
+
+
+/// Coordinate names of point type P, eg. ("longitude", "latitude") (one per coordinate)
+template <typename P>
+const std::vector<std::string>& point_coordinates();
+
+template <>
+const std::vector<std::string>& point_coordinates<PointXY>();
+
+template <>
+const std::vector<std::string>& point_coordinates<PointXYZ>();
+
+template <>
+const std::vector<std::string>& point_coordinates<PointLonLat>();
+
+template <>
+const std::vector<std::string>& point_coordinates<PointLonLatR>();
+
+const std::vector<std::string>& point_coordinates(const Point&);
+
+
+/// Coordinate names of the point type at an index of Point
+const std::vector<std::string>& point_coordinates(size_t index);
 
 
 }  // namespace eckit::geo

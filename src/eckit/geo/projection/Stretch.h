@@ -1,35 +1,32 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <string>
+
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
+/// Latitude stretching by a factor: fwd from unstretched to the stretched sphere, inv the reverse (as by the inverse
+/// factor)
 class Stretch : public Projection {
 public:
 
     // -- Constructors
 
-    explicit Stretch(double c);
+    explicit Stretch(double c, bool reverse = false);
     explicit Stretch(const Spec&);
 
     // -- Methods
 
-    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), 1. / c_)); }
-    inline PointLonLat inv(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), c_)); }
+    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), c_)); }
+    inline PointLonLat inv(const PointLonLat& q) const { return PointLonLat::make(q.lon(), stretch(q.lat(), 1. / c_)); }
 
     // -- Overridden methods
 
@@ -48,7 +45,7 @@ private:
 
     // -- Members
 
-    double c_;
+    const double c_;
 
     // -- Methods
 

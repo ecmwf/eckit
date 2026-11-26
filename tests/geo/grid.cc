@@ -1,22 +1,19 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -24,20 +21,23 @@
 namespace eckit::geo::test {
 
 
-CASE("Grid from grid_spec") {
+CASE("Grid from spec/uid") {
     struct {
         const char* grid;
         const char* canonical;
         size_t size;
     } tests[]{
-        {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},          //
-        {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
-        {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
-        {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
-        {"{grid: h2}", R"({"grid":"H2"})", 48},                    //
-        {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
+        {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},                                  //
+        {"{grid: [10, 10], figure: earth}", R"({"grid":[10,10]})", 684},                   //
+        {"{grid: [10, 10], figure: wgs84}", R"({"figure":"wgs84","grid":[10,10]})", 684},  //
+        {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},                                  //
+        {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},                                //
+        {"{grid: o8}", R"({"grid":"O8"})", 544},                                           //
+        {"{grid: h2}", R"({"grid":"H2"})", 48},                                            //
+        {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},                          //
+        {R"({"grid":"F48","rotation":[30,30]})",
+         R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})", 48 * 2 * 48 * 4},  //
     };
-
 
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
@@ -45,9 +45,36 @@ CASE("Grid from grid_spec") {
         EXPECT(grid->size() == test.size);
         EXPECT(grid->spec_str() == test.canonical);
 
+        std::unique_ptr<const Grid> same(GridFactory::build(spec::Custom{{"uid", grid->uid()}}));
+
+        EXPECT(*same == *grid);
+
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
         EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
+    }
+}
+
+
+CASE("Grid name/arrangement") {
+    struct {
+        const char* grid;
+        const char* name;
+    } tests[]{
+        {"{grid: [10, 10]}", ""},          // unnamed
+        {"{pl: [20, 24, 24, 20]}", "O2"},  //
+        {"{grid: n32}", "N32"},            //
+        {"{grid: o8}", "O8"},              //
+        {"{grid: h2}", "H2"},              //
+        {"{grid: h2n}", "H2"},             //
+        {"{grid: t20}", "T20"},            //
+    };
+
+    for (const auto& test : tests) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
+
+        EXPECT(grid->name() == test.name);
+        EXPECT(grid->arrangement().empty());
     }
 }
 
@@ -61,11 +88,11 @@ CASE("Grid from name") {
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));
 
-        EXPECT_EQUAL(test.size, a->size());
+        EXPECT(test.size == a->size());
 
         std::unique_ptr<const Grid> b(GridFactory::make_from_string(test.name));
 
-        EXPECT_EQUAL(test.size, b->size());
+        EXPECT(test.size == b->size());
     }
 }
 
@@ -106,12 +133,96 @@ CASE("Grid from increments") {
         ASSERT(a);
 
         EXPECT(a->shape() == test.shape);
-        EXPECT_EQUAL(a->size(), prod(test.shape));
+        EXPECT(a->size() == prod(test.shape));
 
         std::unique_ptr<const Grid> b(GridFactory::build(a->spec()));
         ASSERT(b);
 
         EXPECT(*a == *b);
+    }
+}
+
+
+CASE("Grid::point_coordinates") {
+    using names = std::vector<std::string>;
+
+    // as the grid points
+    for (const auto& [spec, expected] : std::vector<std::pair<std::string, names>>{
+             {"{grid: [30, 30]}", {"longitude", "latitude"}},
+             {"{grid: [30, 30], rotation: [-40, -20]}", {"longitude", "latitude"}},
+             {"{grid: o2}", {"longitude", "latitude"}},
+             {"{x: [0, 2, 1], y: [0, 1, 1]}", {"x", "y"}},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        EXPECT(grid->point_coordinates() == expected);
+        EXPECT(&grid->point_coordinates() == &point_coordinates(grid->first_point()));
+    }
+}
+
+
+CASE("Grid::to_xyz") {
+    // points from the projection target, geocentric
+    constexpr auto GEOCENTRIC_GRID =
+        R"({"type": "regular_xy", "grid": [1000000, 1000000], "bounding_box_xy": [-2000000, -2000000, 2000000, 2000000],)"
+        R"( "projection": {"type": "proj", "source": "EPSG:3857", "target": "+proj=geocent +ellps=WGS84"}})";
+
+    // the (lon, lat) grid points, one by one, on the given figure
+    auto expect_on_figure = [](const Grid& grid, double a, double b) {
+        const projection::LonLatToXYZ to_xyz(a, b);
+        const auto [lat, lon] = grid.to_latlons();
+        const auto xyz        = grid.to_xyz();
+
+        EXPECT(xyz.size() == 3);
+        EXPECT(xyz[0].size() == grid.size());
+        for (size_t i = 0; i < grid.size(); ++i) {
+            EXPECT(
+                points_equal(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, to_xyz.fwd(PointLonLat{lon[i], lat[i]}), 1e-6));
+        }
+    };
+
+
+    SECTION("default figure") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(R"({"grid": [30, 30]})"));
+        expect_on_figure(*grid, figure::DatumIFS::a, figure::DatumIFS::b);
+    }
+
+
+    SECTION("grid figure") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(R"({"grid": [30, 30], "figure": "wgs84"})"));
+        expect_on_figure(*grid, figure::DatumWgs84::a, figure::DatumWgs84::b);
+    }
+
+
+    if (!ProjectionFactory::has_type("proj")) {
+        return;
+    }
+
+
+    SECTION("PROJ, on the figure of the grid points") {
+        // EPSG:2056 is on Bessel 1841, its (lon, lat) on WGS 84 (EPSG:4326)
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string("swisslv95"));
+        EXPECT(std::abs(grid->figure().a() - figure::DatumWgs84::a) < 1e-3);
+        EXPECT(&grid->figure() == &grid->projection().figure());
+
+        expect_on_figure(*grid, figure::DatumWgs84::a, figure::DatumWgs84::b);
+    }
+
+
+    SECTION("3D grid points, as they are") {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(GEOCENTRIC_GRID));
+        EXPECT(!grid->empty());
+
+        EXPECT_THROWS_AS((void)grid->to_latlons(), exception::GridError);
+        EXPECT((grid->point_coordinates() == std::vector<std::string>{"x", "y", "z"}));
+
+        const auto xyz = grid->to_xyz();
+        EXPECT(xyz[0].size() == grid->size());
+
+        size_t i = 0;
+        for (const auto& p : *grid) {
+            EXPECT(points_equal(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, std::get<PointXYZ>(p)));
+            ++i;
+        }
     }
 }
 

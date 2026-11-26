@@ -1,21 +1,15 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <cmath>
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXYZ.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -39,6 +33,8 @@ struct DatumTwoUnits {
 
     static constexpr double a = radius;
     static constexpr double b = radius;
+
+    static constexpr bool default_figure = false;
 };
 
 
@@ -55,7 +51,7 @@ CASE("Sphere") {
     auto e = f1->eccentricity();
     EXPECT(types::is_approximately_equal(e, 0.));
 
-    EXPECT(f1->spec_str() == R"({"r":1})");
+    EXPECT(f1->spec_str() == R"({"figure":{"r":1}})");
 }
 
 
@@ -71,7 +67,90 @@ CASE("Oblate spheroid") {
     auto e = f1->eccentricity();
     EXPECT(types::is_strictly_greater(e, 0.));
 
-    EXPECT(f1->spec_str() == R"({"a":1,"b":0.5})");
+    EXPECT(f1->spec_str() == R"({"figure":{"a":1,"b":0.5}})");
+}
+
+
+CASE("Figure: spec, and as part of a projection's") {
+    struct test_t {
+        std::string figure;
+        std::string spec;
+        std::string projection_spec;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{figure: earth}", R"({"figure":"earth"})", "{}"},
+             {"{figure: grib1}", R"({"figure":"grib1"})", "{}"},
+             {"{figure: wgs84}", R"({"figure":"wgs84"})", R"({"figure":"wgs84"})"},
+             {"{R: 1}", R"({"figure":{"r":1}})", R"({"figure":{"r":1}})"},
+         }) {
+        F figure(FigureFactory::make_from_string(test.figure));
+        EXPECT(figure->spec_str() == test.spec);
+
+        spec::Custom projection_spec;
+        figure->fill_projection_spec(projection_spec);
+        EXPECT(projection_spec.str() == test.projection_spec);
+    }
+}
+
+
+CASE("Inline figure") {
+    // figure described inline by a (JSON/YAML) string, as opposed to by name or by a sub-spec
+    F f1(FigureFactory::build(spec::Custom{{"figure", R"({"R":6371229})"}}));
+    F f2(FigureFactory::build(spec::Custom{{"figure", " {R: 6371229.000000}"}}));
+    F f3(FigureFactory::build(spec::Custom{{"figure", "earth"}}));
+
+    EXPECT(*f1 == *f2);
+    EXPECT(*f1 == *f3);
+
+    // figures equivalent to a default figure are default figures
+    EXPECT(f1->is_default());
+    EXPECT(F(FigureFactory::build(spec::Custom{{"figure", R"({"R":6367470})"}}))->is_default());
+    EXPECT(!F(FigureFactory::build(spec::Custom{{"figure", R"({"R":6371200})"}}))->is_default());
+
+    F f4(FigureFactory::build(spec::Custom{{"figure", R"({"a":6378140,"b":6356755})"}}));
+    F f5(new figure::OblateSpheroid(6378140., 6356755.));
+
+    EXPECT(*f4 == *f5);
+    EXPECT(!f4->is_default());
+
+    F f6(FigureFactory::make_from_string(R"({"figure":"{\"a\":1,\"b\":0.5}"})"));
+    F f7(new figure::OblateSpheroid(1., 0.5));
+
+    EXPECT(*f6 == *f7);
+
+    EXPECT_THROWS_AS(F(FigureFactory::build(spec::Custom{{"figure", "not_a_figure"}})), BadParameter);
+}
+
+
+CASE("Figure::proj_str") {
+    struct test_t {
+        spec::Custom spec;
+        std::string proj_str;
+    } tests[] = {
+        {spec::Custom{{"figure", "wgs84"}}, "+ellps=WGS84"},
+        {spec::Custom{{"figure", "grs80"}}, "+ellps=GRS80"},
+        {spec::Custom{{"figure", "earth"}}, "+R=6371229"},
+        {spec::Custom{{"figure", "wgs84_sphere"}}, "+R=6371200"},
+        {spec::Custom{{"figure", "unit-sphere"}}, "+R=1"},
+        {spec::Custom{{"R", 6378206.4}}, "+R=6378206.4"},
+        {spec::Custom{{"r", 6378206.4}}, "+R=6378206.4"},
+        {spec::Custom{{"radius", 6378206.4}}, "+R=6378206.4"},
+        {spec::Custom{{"a", 6378206.4}, {"b", 6356583.8}}, "+a=6378206.4 +b=6356583.8"},
+
+        {spec::Custom{{"a", 6378137.}, {"b", 6356752.314245}}, "+ellps=WGS84"},
+        {spec::Custom{{"a", 6378137.}, {"b", 6356752.31414}}, "+ellps=GRS80"},
+        {spec::Custom{{"figure", R"({"a":6378137,"b":6356752.314245})"}}, "+ellps=WGS84"},
+        {spec::Custom{{"semi_major_axis", 6378137.}, {"semi_minor_axis", 6356752.314245}}, "+ellps=WGS84"},
+
+        {spec::Custom{{"figure", "iau1965"}}, "+a=6378160 +b=6356775"},
+        {spec::Custom{{"semi_major_axis", 6378160.}, {"semi_minor_axis", 6356775.}}, "+a=6378160 +b=6356775"},
+        {spec::Custom{{"a", 6371229.}, {"b", 6371229.}}, "+R=6371229"},
+    };
+
+    for (const auto& test : tests) {
+        EXPECT(F(FigureFactory::build(test.spec))->proj_str() == test.proj_str);
+    }
 }
 
 
@@ -123,11 +202,11 @@ CASE("Unit Sphere") {
 
 
     SECTION("area hemispheres") {
-        auto area_hemisphere_north = s1._area({90., -180., 0., 180.});
-        auto area_hemisphere_south = s1._area({0., -180., -90., 180.});
+        auto area_hemisphere_north = s1.area({90., -180., 0., 180.});
+        auto area_hemisphere_south = s1.area({0., -180., -90., 180.});
 
-        EXPECT(area_hemisphere_north == 0.5 * s1.area());
-        EXPECT(area_hemisphere_north == area_hemisphere_south);
+        EXPECT(types::is_approximately_equal(area_hemisphere_north, 0.5 * s1.area()));
+        EXPECT(types::is_approximately_equal(area_hemisphere_north, area_hemisphere_south));
     }
 
 
@@ -249,9 +328,9 @@ CASE("Two-unit Sphere") {
 
         area::BoundingBox bbox({P2.lat(), P1.lon(), P1.lat(), P2.lon()});
 
-        auto local_1 = s1._area(bbox);
-        auto local_2 = s2._area(bbox);
-        EXPECT(4. * local_1 == local_2);
+        auto local_1 = s1.area(bbox);
+        auto local_2 = s2.area(bbox);
+        EXPECT(types::is_approximately_equal(4. * local_1, local_2));
     }
 }
 

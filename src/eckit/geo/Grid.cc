@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Grid.h"
@@ -16,14 +8,18 @@
 #include <cctype>
 #include <ostream>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
+#include "eckit/geo/Range.h"
+#include "eckit/geo/Search.h"
+#include "eckit/geo/cache/CropCache.h"
+#include "eckit/geo/cache/SearchCache.h"
+#include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/share/Grid.h"
+#include "eckit/geo/share/Projection.h"
+#include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
 
@@ -39,53 +35,84 @@ constexpr size_t DIGEST_LENGTH = 32;
 static_assert(DIGEST_LENGTH == MD5_DIGEST_LENGTH * 2, "MD5 digest length mismatch");
 
 
-util::recursive_mutex MUTEX;
-
-
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+struct SpecByUID final : GridSpecByUID::concrete_generator_t {
+    explicit SpecByUID(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
+    bool match(const spec::Custom& other) const override { return other == *spec_; }
+
+private:
+
+    std::unique_ptr<const spec::Custom> spec_;
+};
+
+
+struct SpecByName final : GridSpecByName::concrete_generator_t {
+    explicit SpecByName(const spec::Custom& spec) : spec_(new spec::Custom(spec.container())) {}
+    spec::Spec* spec(arg1_t) const override { return new spec::Custom(spec_->container()); }
+    bool match(const spec::Custom& other) const override { return other == *spec_; }
+
+private:
+
+    std::unique_ptr<const spec::Custom> spec_;
 };
 
 
 }  // namespace
 
 
-Grid::Grid(Projection* proj) :
-    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
+struct Grid::Once {
+    util::once_flag bbox;
+    util::once_flag projection;
+    util::once_flag catalog;
+    util::once_flag spec;
+    util::once_flag uid;
+    util::once_flag search;
+};
+
+
+Grid::Grid(BoundingBox* bbox, const Projection* proj) :
+    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()), once_(new Once) {}
+
+
+Grid::~Grid() = default;
 
 
 const spec::Spec& Grid::catalog() const {
-    if (!catalog_) {
+    util::call_once(once_->catalog, [this]() {
         auto get_name = [](const spec::Spec& spec) {
             std::string grid;
             return spec.get_string("name", spec.get("grid", grid) && is_uid(grid) ? "" : grid);
         };
 
         if (GridSpecByUID::instance().exists(uid())) {
-            catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
+            catalog_.reset(GridSpecByUID::instance().get_spec(uid()));
         }
         else if (std::string name = get_name(spec()); GridSpecByName::instance().matches(name)) {
-            catalog_.reset(GridSpecByName::instance().match(name).spec(name));
+            catalog_.reset(GridSpecByName::instance().match_spec(name, name));
         }
         else {
             catalog_.reset(new spec::Custom);
         }
 
         ASSERT(catalog_);
-    }
+    });
 
     return *catalog_;
 }
 
 
-const Grid::Spec& Grid::spec() const {
-    if (!spec_) {
-        spec_ = std::make_unique<spec::Custom>();
-        ASSERT(spec_);
-
-        auto& custom = *spec_;
-        fill_spec(custom);
-    }
+const spec::Custom& Grid::custom_spec() const {
+    util::call_once(once_->spec, [this]() {
+        auto spec = std::make_unique<spec::Custom>();
+        fill_spec(*spec);
+        spec_ = std::move(spec);
+    });
 
     return *spec_;
 }
@@ -105,8 +132,13 @@ size_t Grid::size() const {
 }
 
 
-void Grid::cache() const {
-    // By default, there's no cacheable data, so do nothing
+void Grid::cache() const {}
+
+
+const Search& Grid::search() const {
+    // the grid holds its search, so it is not evicted from the cache while the grid exists
+    util::call_once(once_->search, [this]() { search_ = cache::SearchCache::instance().get(*this); });
+    return *search_;
 }
 
 
@@ -117,9 +149,18 @@ bool Grid::is_uid(const std::string& str) {
 
 
 Grid::uid_type Grid::uid() const {
-    if (uid_.empty()) {
+    util::call_once(once_->uid, [this]() {
+        if (!uid_.empty()) {
+            return;
+        }
+
         const_cast<Grid*>(this)->reset_uid(calculate_uid());
-    }
+
+        lock_type lock;
+        if (!GridSpecByUID::instance().exists(uid_)) {
+            GridSpecByUID::regist(uid_, custom_spec());
+        }
+    });
 
     return uid_;
 }
@@ -144,7 +185,7 @@ void Grid::reset_uid(uid_type id) {
 
 Point Grid::first_point() const {
     ASSERT(!empty());
-    return to_points().front();
+    return *cbegin();
 }
 
 
@@ -159,132 +200,241 @@ std::vector<Point> Grid::to_points() const {
 }
 
 
+const std::vector<std::string>& Grid::point_coordinates() const {
+    return geo::point_coordinates(first_point());
+}
+
+
 std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double>> ll;
     ll.first.reserve(size());
     ll.second.reserve(size());
 
-    std::for_each(cbegin(), cend(), [&ll](const auto& p) {
-        auto q = std::get<PointLonLat>(p);
-        ll.first.emplace_back(q.lat());
-        ll.second.emplace_back(q.lon());
-    });
+    for (const auto& p : *this) {
+        if (const auto* q = std::get_if<PointLonLat>(&p); q != nullptr) {
+            ll.first.emplace_back(q->lat());
+            ll.second.emplace_back(q->lon());
+        }
+        else if (const auto* r = std::get_if<PointLonLatR>(&p); r != nullptr) {
+            ll.first.emplace_back(util::RADIAN_TO_DEGREE * r->latr());
+            ll.second.emplace_back(util::RADIAN_TO_DEGREE * r->lonr());
+        }
+        else {
+            throw exception::GridError("Grid::to_latlons: grid points are not (lon, lat)", Here());
+        }
+    }
 
     return ll;
 }
 
 
-std::vector<double> Grid::distinct_latitudes() const {
-    NOTIMP;
+std::vector<std::vector<double>> Grid::to_xyz() const {
+    if (!empty() && std::holds_alternative<PointXYZ>(first_point())) {
+        std::vector<std::vector<double>> xyz(3);
+        for (auto& v : xyz) {
+            v.reserve(size());
+        }
+
+        for (const auto& p : *this) {
+            const auto& q = std::get<PointXYZ>(p);
+            xyz[0].emplace_back(q.X());
+            xyz[1].emplace_back(q.Y());
+            xyz[2].emplace_back(q.Z());
+        }
+
+        return xyz;
+    }
+
+    const auto [lat, lon] = to_latlons();
+    return projection::LonLatToXYZ(figure().a(), figure().b()).fwd(lon, lat);
 }
 
 
-std::vector<double> Grid::distinct_longitudes() const {
-    NOTIMP;
+Grid* Grid::to_unstructured_ll(const std::string& name) const {
+    auto [lat, lon] = to_latlons();
+    return new grid::Unstructured(lon, lat, name);
+}
+
+size_t Grid::truncation() const {
+    throw exception::NotImplemented("Grid: truncation() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Grid::order_type& Grid::order() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid::renumber_type Grid::reorder(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: reorder() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid* Grid::make_grid_reordered(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_reordered() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Area& Grid::area() const {
-    if (!bbox_) {
-        bbox_.reset(calculate_bbox());
-        ASSERT(bbox_);
-    }
+    util::call_once(once_->bbox, [this]() {
+        if (!bbox_) {
+            bbox_.reset(calculate_bbox());
+            ASSERT(bbox_);
+        }
+    });
 
     return *bbox_;
 }
 
 
-Grid::renumber_type Grid::crop(const Area&) const {
-    NOTIMP;
+Grid::renumber_type Grid::crop(const Area& area) const {
+    return cache::CropCache::instance().get(*this, area)->indices;
 }
 
 
 const Projection& Grid::projection() const {
-    if (!projection_) {
-        projection_ = std::make_unique<projection::Reverse<projection::EquidistantCylindrical>>();
-        ASSERT(projection_);
-    }
+    util::call_once(once_->projection, [this]() {
+        if (!projection_) {
+            projection_.reset(ProjectionFactory::make_default());
+        }
+    });
 
     return *projection_;
 }
 
 
-Grid* Grid::make_grid_cropped(const Area&) const {
-    NOTIMP;
+Grid* Grid::make_grid_cropped(const Area& area) const {
+    return make_grid_cropped_unstructured_ll(area);
+}
+
+
+Grid* Grid::make_grid_cropped_unstructured_ll(const Area& area) const {
+    const auto indices = crop(area);
+    if (indices.empty()) {
+        throw exception::GridError("Grid: cannot crop grid (empty intersection)", Here());
+    }
+
+    const auto [lat, lon] = to_latlons();
+
+    std::vector<double> cropped_lat;
+    std::vector<double> cropped_lon;
+    cropped_lat.reserve(indices.size());
+    cropped_lon.reserve(indices.size());
+
+    for (auto i : indices) {
+        cropped_lat.push_back(lat[i]);
+        cropped_lon.push_back(lon[i]);
+    }
+
+    return new grid::Unstructured(cropped_lon, cropped_lat);
+}
+
+
+double Grid::dx() const {
+    return x().increment();
+}
+
+
+double Grid::dy() const {
+    return y().increment();
+}
+
+
+size_t Grid::nx() const {
+    return x().size();
+}
+
+
+size_t Grid::ny() const {
+    return y().size();
+}
+
+
+const Range& Grid::x() const {
+    return lon();
+}
+
+
+const Range& Grid::y() const {
+    return lat();
+}
+
+
+double Grid::dlon() const {
+    return lon().increment();
+}
+
+
+double Grid::dlat() const {
+    return lat().increment();
+}
+
+
+size_t Grid::nlon() const {
+    return x().size();
+}
+
+
+size_t Grid::nlat() const {
+    return y().size();
+}
+
+
+const Range& Grid::lon() const {
+    throw exception::NotImplemented("Grid: lon() is not implemented for type '" + type() + "'", Here());
+}
+
+
+const Range& Grid::lat() const {
+    throw exception::NotImplemented("Grid: lat() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Grid::BoundingBox& Grid::boundingBox() const {
-    if (!bbox_) {
-        bbox_.reset(calculate_bbox());
-        ASSERT(bbox_);
-    }
+    util::call_once(once_->bbox, [this]() {
+        if (!bbox_) {
+            bbox_.reset(calculate_bbox());
+            ASSERT(bbox_);
+        }
+    });
 
     return *bbox_;
 }
 
 
 Grid::BoundingBox* Grid::calculate_bbox() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: calculate_bbox() is not implemented for type '" + type() + "'", Here());
+}
+
+
+Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
+    // NOTE: 'bounding_box' is how a grid catalogue entry spells its own 'area'; loose north/west/south/east keys are
+    // not considered, they can describe the first/last grid point instead
+    if (std::vector<double> bbox; spec.get("bounding_box", bbox)) {
+        ASSERT(bbox.size() == 4);
+        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
+    }
+
+    return spec.has("area") ? BoundingBox::make_from_spec(spec).release() : nullptr;
 }
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    auto custom_set_if_different = [&custom](const std::string& name, const auto& obj, const std::string& default_str) {
-        spec::Custom spec;
-        obj.fill_spec(spec);
-
-        if (default_str != spec.str()) {
-            if (spec.only(name)) {
-                custom.set(spec);
-            }
-            else {
-                custom.set(name, spec);
-            }
-        }
-    };
-
-    static const auto area_default = Area::area_default().spec().str();
-    static const auto proj_default = Projection::projection_default().spec().str();
-
-    custom_set_if_different("area", area(), area_default);
-    custom_set_if_different("projection", projection(), proj_default);
+    area().fill_grid_spec(custom);
+    projection().fill_grid_spec(custom);
 }
 
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Grid::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
 }
 
 
-GridFactory& GridFactory::instance() {
-    share::Grid::instance();  // ensure load of supporting files
-
-    static GridFactory INSTANCE;
-    return INSTANCE;
-}
-
-
-const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
+const Grid* GridFactory::build(const Grid::Spec& spec) {
     lock_type lock;
 
-    std::unique_ptr<Grid::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Grid::Spec> cfg(make_spec(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return Factory<Grid>::instance().get(type).create(*cfg);
@@ -295,11 +445,20 @@ const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
 }
 
 
-Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
+Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     lock_type lock;
+    share::Grid::instance();  // ensure load of supporting files
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
+
+    if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
+        if (!GridSpecByUID::instance().exists(uid)) {
+            throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
+        }
+
+        cfg->push_front(GridSpecByUID::instance().get_spec(uid));
+    }
 
 
     // hardcoded, interpreted options (contributing to spec)
@@ -325,10 +484,11 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "unstructured_ll");
     }
 
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
 
-    if (static const std::string projection{"projection"}, rotation{"rotation"};
-        !cfg->has(projection) && cfg->has(rotation)) {
-        back->set(projection, new spec::Custom({{"type", rotation}, {rotation, cfg->get_double_vector(rotation)}}));
+    if (!cfg->has(PROJECTION) && cfg->has(ROTATION)) {
+        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {ROTATION, cfg->get_double_vector(ROTATION)}}));
     }
 
     if (!back->empty()) {
@@ -336,23 +496,29 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
     }
 
     if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
-        cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
+        cfg->push_back(GridSpecByName::instance().match_spec(grid, grid));
     }
 
-    if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
-        if (!GridSpecByUID::instance().exists(uid)) {
-            throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
-        }
+    // x and y (also of a named grid) are of a regular_xy
+    if (!cfg->has("type") && cfg->has("x") && cfg->has("y")) {
+        cfg->push_back(new spec::Custom{{"type", "regular_xy"}});
+    }
 
-        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
+    // a projection name as type is of a regular_xy, of that projection
+    if (std::string type; cfg->get("type", type) && !Factory<Grid>::instance().exists(type)) {
+        share::Projection::instance();
+        if (ProjectionSpecByName::instance().matches(type)) {
+            cfg->push_front(new spec::Custom{{"type", "regular_xy"}, {"projection", type}});
+        }
     }
 
     return cfg;
 }
 
 
-std::ostream& GridFactory::list_(std::ostream& out) const {
+std::ostream& GridFactory::list(std::ostream& out) {
     lock_type lock;
+    share::Grid::instance();  // ensure load of supporting files
 
     out << GridSpecByUID::instance() << std::endl;
     out << GridSpecByName::instance() << std::endl;
@@ -368,9 +534,29 @@ GridSpecByName::generator_t& GridSpecByName::instance() {
 }
 
 
+void GridSpecByName::regist(const key_t& key, const spec::Custom& spec) {
+    regist(key, new SpecByName(spec));
+}
+
+
+void GridSpecByName::replace(const key_t& key, const spec::Custom& spec) {
+    instance().replace(key, new SpecByName(spec));
+}
+
+
 GridSpecByUID::generator_t& GridSpecByUID::instance() {
     share::Grid::instance();  // ensure load of supporting files
     return generator_t::instance();
+}
+
+
+void GridSpecByUID::regist(const key_t& key, const spec::Custom& spec) {
+    regist(key, new SpecByUID(spec));
+}
+
+
+void GridSpecByUID::replace(const key_t& key, const spec::Custom& spec) {
+    instance().replace(key, new SpecByUID(spec));
 }
 
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 list( APPEND regressions ECKIT-175 ECKIT-221 ECKIT-166 )
 
 foreach( r ${regressions} )

@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/web/JavaAgent.h"
 
@@ -55,6 +48,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
         s << int(0);  // No need for password
     }
     else {
+        Log::status() << "Authenticating for " << *a << std::endl;
         s << int(1);  // Ask for password;
 
         std::string user;
@@ -65,6 +59,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
         s >> password;
 
         if (!Password::check(user, password)) {
+            Log::status() << "Authentication failed for " << user << ", " << *a << std::endl;
             s << int(-1);
             return;
         }
@@ -73,7 +68,9 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
         a->user_ = user;
     }
 
+    Log::status() << "Executing " << *a << std::endl;
     a->execute(s, in, out);
+    Log::status() << "Completed " << *a << std::endl;
 }
 
 template <>

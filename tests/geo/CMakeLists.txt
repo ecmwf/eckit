@@ -1,11 +1,26 @@
-set(_cache_path "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+function(eckit_geo_add_test _source_we)
+    cmake_parse_arguments(_p "" "" "LIBS;ENVIRONMENT" ${ARGN})
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_${_source_we}
+        SOURCES     ${_source_we}.cc
+        LIBS        eckit_geo ${_p_LIBS}
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" ${_p_ENVIRONMENT}
+        ${_p_UNPARSED_ARGUMENTS} )
+endfunction()
 
 foreach(_test
         area_boundingbox
         area_polygon
+        cache
+        download
         figure
         figure_earth
+        figure_sun
         gaussian
         great_circle
         grid
@@ -14,6 +29,8 @@ foreach(_test
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
+        grid_crop
+        grid_regular_xy
         grid_reorder
         grid_to_points
         gridspec
@@ -27,57 +44,39 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
-        projection_albers
+        projection_laea
+        projection_lcc
         projection_ll_to_xyz
         projection_mercator
         projection_plate-caree
         projection_rotation
+        projection_space_view
+        projection_stere
         range
         search
+        search_kdtree
         sh
-        util )
-    ecbuild_add_test(
-        TARGET      eckit_test_geo_${_test}
-        SOURCES     ${_test}.cc
-        LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+        util)
+    eckit_geo_add_test(${_test})
 endforeach()
 
-if(eckit_HAVE_LZ4)
-    foreach(_test
-            grid_fesom
-            grid_icon
-            grid_orca
-            grid_unstructured_ll )
-        ecbuild_add_test(
-            TARGET      eckit_test_geo_${_test}
-            SOURCES     ${_test}.cc
-            LIBS        eckit_geo
-            ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
-    endforeach()
-endif()
+foreach(_test
+        grid_fesom
+        grid_icon
+        grid_orca
+        grid_unstructured_ll)
+    eckit_geo_add_test(${_test} CONDITION eckit_HAVE_LZ4 AND eckit_HAVE_CURL)
+endforeach()
 
-if(eckit_HAVE_ZIP)
-    ecbuild_add_test(
-        TARGET      eckit_test_geo_cache
-        SOURCES     cache.cc ${PROJECT_SOURCE_DIR}/src/eckit/geo/cache/Unzip.cc
-        LIBS        eckit_geo libzip::zip
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+foreach(_test
+        grid_regular_xy_swisslv03
+        grid_regular_xy_swisslv95
+        projection_albers
+        projection_proj)
+    eckit_geo_add_test(${_test} CONDITION eckit_HAVE_PROJ)
+endforeach()
 
-    target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
-endif()
-
-if(eckit_HAVE_PROJ)
-    ecbuild_add_test(
-        TARGET  eckit_test_geo_projection_proj
-        SOURCES projection_proj.cc
-        LIBS    eckit_geo )
-endif()
-
-ecbuild_add_test(
-    TARGET            eckit_test_geo_area_library
-    SOURCES           area_library.cc
-    LIBS              eckit_geo
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+eckit_geo_add_test(unzip ARGS --unzip "${CMAKE_CURRENT_SOURCE_DIR}/test.zip" CONDITION eckit_HAVE_ZIP)
+eckit_geo_add_test(area_library WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(integration)

@@ -1,21 +1,73 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 [package]
 name = "eckit"
-version = "0.1.0"
+version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+readme = "README.md"
+keywords.workspace = true
+categories.workspace = true
 description = "Safe Rust wrapper for ECMWF's eckit C++ library"
 links = "eckit_rs"
 build = "build.rs"
 
 [features]
-default = ["vendored"]
+default = ["vendored", "geo"]
 vendored = ["eckit-sys/vendored"]
 system = ["eckit-sys/system"]
+
+# Geospatial grids (`eckit::geo`)
+geo = ["eckit-sys/eckit-geo"]
 
 [dependencies]
 eckit-sys.workspace = true
 
 [build-dependencies]
 bindman-utils.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[[example]]
+name = "grid_info"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_area"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_figure"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_grid"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_projection"
+required-features = ["geo"]
+
+[[test]]
+name = "geo_search"
+required-features = ["geo"]
+
+[[example]]
+name = "grids"
+required-features = ["geo"]
+
+[[example]]
+name = "areas"
+required-features = ["geo"]
+
+[[example]]
+name = "projection"
+required-features = ["geo"]
+
+[[example]]
+name = "search"
+required-features = ["geo"]

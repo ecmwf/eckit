@@ -1,34 +1,19 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/area/BoundingBox.h"
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
-#include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Earth.h"
-#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Tokenizer.h"
@@ -121,6 +106,23 @@ private:
 };
 
 
+/// Projection inverted, by reference
+class Inverse final : public Projection {
+public:
+
+    explicit Inverse(const Projection& projection) : projection_(projection) {}
+
+    Point fwd(const Point& p) const override { return projection_.inv(p); }
+    Point inv(const Point& q) const override { return projection_.fwd(q); }
+
+    const std::string& type() const override { return projection_.type(); }
+
+private:
+
+    const Projection& projection_;
+};
+
+
 struct Derivate {
     Derivate(const Projection& p, PointXY A, PointXY B, double h, double refLongitude = 0.) :
         projection_(p),
@@ -134,6 +136,51 @@ struct Derivate {
     Derivate(Derivate&&)            = delete;
     void operator=(const Derivate&) = delete;
     void operator=(Derivate&&)      = delete;
+
+    [[nodiscard]] static Derivate* make(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
+                                        double refLongitude = 0.) {
+        struct Degenerate final : Derivate {
+            using Derivate::Derivate;
+            PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
+        };
+
+        struct Forwards final : Derivate {
+            using Derivate::Derivate;
+            PointLonLat d(PointXY P) const override { return (f(P + H()) - f(P)) * invnH(); }
+        };
+
+        struct Backwards final : Derivate {
+            using Derivate::Derivate;
+            PointLonLat d(PointXY P) const override { return (f(P) - f(P - H())) * invnH(); }
+        };
+
+        struct Central final : Derivate {
+            Central(const Projection& p, PointXY A, PointXY B, double h, double refLongitude) :
+                Derivate(p, A, B, h, refLongitude), H2_{H() * 0.5} {}
+            PointLonLat d(PointXY P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
+            const PointXY H2_;
+        };
+
+        ASSERT(0. < h);
+
+        if (A.distance2(B) < h * h) {
+            return new Degenerate(p, A, B, h, refLongitude);
+        }
+
+        if (type == "forwards") {
+            return new Forwards(p, A, B, h, refLongitude);
+        }
+
+        if (type == "backwards") {
+            return new Backwards(p, A, B, h, refLongitude);
+        }
+
+        if (type == "central") {
+            return new Central(p, A, B, h, refLongitude);
+        }
+
+        throw BadValue("Derivate: unknown type '" + type + "', choices are: forwards, backwards, central", Here());
+    }
 
     virtual PointLonLat d(PointXY) const = 0;
 
@@ -150,62 +197,6 @@ private:
     const PointXY H_;
     const double invnH_;
     const double refLongitude_;
-};
-
-
-struct DerivateForwards final : Derivate {
-    using Derivate::Derivate;
-    PointLonLat d(PointXY P) const override { return (f(P + H()) - f(P)) * invnH(); }
-};
-
-
-struct DerivateBackwards final : Derivate {
-    using Derivate::Derivate;
-    PointLonLat d(PointXY P) const override { return (f(P) - f(P - H())) * invnH(); }
-};
-
-
-struct DerivateCentral final : Derivate {
-    DerivateCentral(const Projection& p, PointXY A, PointXY B, double h, double refLongitude) :
-        Derivate(p, A, B, h, refLongitude), H2_{H() * 0.5} {}
-    const PointXY H2_;
-    PointLonLat d(PointXY P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
-};
-
-
-struct DerivateFactory {
-    static const Derivate* build(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
-                                 double refLongitude = 0.) {
-        ASSERT(0. < h);
-
-        if (A.distance2(B) < h * h) {
-            struct DerivateDegenerate final : Derivate {
-                using Derivate::Derivate;
-                PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
-            };
-            return new DerivateDegenerate(p, A, B, h, refLongitude);
-        }
-
-        return type == "forwards"    ? static_cast<Derivate*>(new DerivateForwards(p, A, B, h, refLongitude))
-               : type == "backwards" ? static_cast<Derivate*>(new DerivateBackwards(p, A, B, h, refLongitude))
-               : type == "central"   ? static_cast<Derivate*>(new DerivateCentral(p, A, B, h, refLongitude))
-                                     : throw BadValue("DerivateFactory: unknown method", Here());
-    }
-
-    static void list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static DerivateFactory& instance() {
-        static DerivateFactory obj;
-        return obj;
-    }
-
-    // This is 'const' as Grid should always be immutable
-    const Derivate* build_(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
-                           double refLongitude) const;
-
-    void list_(std::ostream& out) const { out << "forwards, backwards, central" << std::endl; }
 };
 
 
@@ -261,8 +252,8 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.includesNorthPole() || !bounds.includesSouthPole()) {
-            std::unique_ptr<const Derivate> derivate(
-                DerivateFactory::build(derivative_type, projection, A, B, h, centre_lon));
+            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
+            ASSERT(derivate);
 
             double dAdy = derivate->d(A).lat();
             double dBdy = derivate->d(B).lat();
@@ -297,8 +288,8 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.crossesDateLine()) {
-            std::unique_ptr<const Derivate> derivate(
-                DerivateFactory::build(derivative_type, projection, A, B, h, centre_lon));
+            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
+            ASSERT(derivate);
 
             double dAdx = derivate->d(A).lon();
             double dBdx = derivate->d(B).lon();
@@ -394,19 +385,44 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
-    constexpr double precision_ll = 0.5e-6;  // to microdegrees
-    constexpr double precision_xy = 0.5e-1;  // to decimeters
+    const auto& ll = point_coordinates<PointLonLat>();
+    const auto& xy = point_coordinates<PointXY>();
 
-    return make_bounding_box(min, max, projection, precision_ll, precision_xy);
+    // (lon, lat) to (x, y), or the reverse
+    if (projection.source_point_coordinates() == ll && projection.target_point_coordinates() == xy) {
+        return make_bounding_box(min, max, projection, PRECISION_LL, PRECISION_XY);
+    }
+
+    if (projection.source_point_coordinates() == xy && projection.target_point_coordinates() == ll) {
+        return make_bounding_box(min, max, Inverse{projection}, PRECISION_LL, PRECISION_XY);
+    }
+
+    if (projection.source_point_coordinates() == ll || projection.target_point_coordinates() == ll) {
+        throw exception::ProjectionError("BoundingBox: projection between (lon, lat) and (x, y) expected", Here());
+    }
+
+    // not geographic points (e.g. geocentric), all of them are included
+    return std::make_unique<BoundingBox>();
 }
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, PointLonLat max,
-                                                               const projection::Rotation& rotation) {
-    projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                    new projection::EquidistantCylindrical};
+                                                               const Projection& projection) {
+    const auto& ll = point_coordinates<PointLonLat>();
+    if (projection.source_point_coordinates() != ll || projection.target_point_coordinates() != ll) {
+        throw exception::ProjectionError("BoundingBox: projection from (lon, lat) to (lon, lat) expected", Here());
+    }
 
-    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, projection);
+    // (lon, lat) to the projection's target (lon, lat) as (x, y), by a copy of the projection
+    spec::Custom copy;
+    projection.fill_spec(copy);
+    if (!copy.has("type")) {
+        copy.set("type", projection.type());
+    }
+
+    projection::Composer composer{ProjectionFactory::build(copy), new projection::EquidistantCylindrical};
+
+    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
     if (after->periodic()) {
         return std::make_unique<BoundingBox>(after->north(), 0, after->south(), PointLonLat::FULL_ANGLE);
     }
@@ -425,16 +441,18 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_typ
         s = SOUTH_POLE.lat();
     }
 
-    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
+    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[ (periodic, as the constructor, if spanning 2 pi)
     const auto min  = -PointLonLat::FLAT_ANGLE;
     const auto same = is_approximately_equal(w, e);
+    const auto periodic =
+        !same && (e - w > PointLonLat::FULL_ANGLE || is_approximately_equal(e - w, PointLonLat::FULL_ANGLE));
 
     w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
             ? min
             : PointLonLat::normalise_angle_to_minimum(w, min);
 
     auto a = PointLonLat::normalise_angle_to_minimum(e, w);
-    e      = same ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+    e      = same ? w : periodic || is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
 
     return std::make_unique<BoundingBox>(n, w, s, e);
 }
@@ -485,7 +503,9 @@ bool BoundingBox::contains(const Point& p) const {
 
     if ((south() < q.lat() && q.lat() < north()) || is_approximately_equal(q.lat(), north()) ||
         is_approximately_equal(q.lat(), south())) {
-        return PointLonLat::normalise_angle_to_minimum(q.lon(), west()) <= east();
+        // as latitudes, longitudes at the edges are approximate
+        const auto lon = PointLonLat::normalise_angle_to_minimum(q.lon(), west() - PointLonLat::EPS);
+        return lon <= east() || is_approximately_equal(lon, east());
     }
 
     return false;
@@ -500,7 +520,7 @@ const BoundingBox& BoundingBox::bounding_box_default() {
 
 bool BoundingBox::contains(const BoundingBox& other) const {
     if (other.empty()) {
-        return contains(PointLonLat{other.south(), other.west()});
+        return contains(PointLonLat{other.west(), other.south()});
     }
 
     // check for West/East range (if non-periodic), then other's corners
@@ -509,8 +529,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
         return false;
     }
 
-    return contains(PointLonLat{other.north(), other.west()}) && contains(PointLonLat{other.north(), other.east()}) &&
-           contains(PointLonLat{other.south(), other.west()}) && contains(PointLonLat{other.south(), other.east()});
+    return contains(PointLonLat{other.west(), other.north()}) && contains(PointLonLat{other.east(), other.north()}) &&
+           contains(PointLonLat{other.west(), other.south()}) && contains(PointLonLat{other.east(), other.south()});
 }
 
 
@@ -523,8 +543,9 @@ bool BoundingBox::intersects(BoundingBox& other) const {
         n = s;
     }
 
+    // both periodic, from this west
     if (periodic() && other.periodic()) {
-        other = {n, other.west(), s, other.east()};
+        other = {n, west(), s, west() + PointLonLat::FULL_ANGLE};
         return intersectsSN;
     }
 
@@ -568,7 +589,7 @@ bool BoundingBox::empty() const {
 
 
 double BoundingBox::area() const {
-    return figure::Earth::_area(*this);
+    return figure::EARTH.area(*this);
 }
 
 

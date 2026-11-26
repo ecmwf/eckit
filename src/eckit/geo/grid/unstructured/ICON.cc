@@ -1,20 +1,17 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/unstructured/ICON.h"
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -39,7 +36,8 @@ static std::string arrangement_to_string(Arrangement a) {
 
 ICON::ICON(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
-                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement")))) {}
+                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
+                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
 ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
@@ -47,7 +45,7 @@ ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_
 
 ICON::ICON(const std::string& name, Arrangement a) :
     ICON(*[](const std::string& grid) {
-        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match(grid).spec(grid));
+        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match_spec(grid, grid));
     }(name + "_" + arrangement_to_string(a))) {}
 
 
@@ -63,7 +61,7 @@ std::vector<size_t> ICON::shape() const {
 
 
 Grid::Spec* ICON::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get(str).spec() : GridSpecByName::instance().get(str).spec(str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(str) : GridSpecByName::instance().get_spec(str, str);
 }
 
 

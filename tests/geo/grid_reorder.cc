@@ -1,28 +1,22 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/order/HEALPix.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
 
 
 #define EXPECT_EQUAL_VECTOR(x, y)               \
     {                                           \
-        EXPECT_EQUAL(x.size(), y.size());       \
+        EXPECT(x.size() == y.size());           \
         for (size_t i = 0; i < x.size(); ++i) { \
-            EXPECT_EQUAL(x[i], y[i]);           \
+            EXPECT(x[i] == y[i]);               \
         }                                       \
     }
 
@@ -51,7 +45,7 @@ CASE("HEALPix") {
         };
 
         auto order_ring = ring->order();
-        EXPECT_EQUAL(order_ring, order::HEALPix::RING);
+        EXPECT(order_ring == order::HEALPix::RING);
 
         auto ren_to_ring = ring->reorder(order::HEALPix::RING);
         EXPECT_EQUAL_VECTOR(ren_to_ring, expected_ren_none);
@@ -63,7 +57,7 @@ CASE("HEALPix") {
         std::unique_ptr<const Grid> nested(ring->make_grid_reordered(order::HEALPix::NESTED));
 
         auto order_nested = nested->order();
-        EXPECT_EQUAL(order_nested, order::HEALPix::NESTED);
+        EXPECT(order_nested == order::HEALPix::NESTED);
 
         ren_to_nested = nested->reorder(order::HEALPix::NESTED);
         EXPECT_EQUAL_VECTOR(ren_to_nested, expected_ren_none);

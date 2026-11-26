@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/cache/Grid.h"
@@ -15,7 +7,10 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <ostream>
+#include <string>
 
+#include "eckit/container/CacheManager.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
@@ -23,12 +18,23 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/value/Content.h"
 
 
 namespace eckit::geo::cache {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
 
 
 Grid& Grid::instance() {
@@ -38,7 +44,7 @@ Grid& Grid::instance() {
 
 
 void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     if (!LibEcKitGeo::caching()) {
         return;
@@ -52,6 +58,12 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     section_t grid_names;
 
     const auto path = LibEcKitGeo::cacheGrid();
+    path.dirName().mkdir();
+
+    // across processes: the read-modify-write is locked, and the file replaced (renamed), never seen partially written
+    CacheManagerFileFlock locker(path);
+    AutoLock<CacheManagerFileFlock> flock(locker);
+
     if (path.exists()) {
         ValueMap map(YAMLParser::decodeFile(path));
 
@@ -98,7 +110,8 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     Log::debug<LibEcKitGeo>() << "eckit::geo::cache::Grid::regist(uid='" + uid + "'"
                               << (name.empty() ? "" : ", name='" + name + "'") << ")" << std::endl;
 
-    std::ofstream fs(path);
+    const auto tmp = PathName::unique(path);
+    std::ofstream fs(tmp.asString());
     ASSERT(fs);
 
     auto write_section = [&fs](const std::string& name, const section_t& section) {
@@ -118,6 +131,11 @@ void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
     fs << "---\n";
     write_section("grid_names", grid_names);
     write_section("grid_uids", grid_uids);
+
+    fs.close();
+    ASSERT(fs);
+
+    PathName::rename(tmp, path);
 }
 
 

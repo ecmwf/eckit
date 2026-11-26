@@ -24,6 +24,7 @@
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosPool.h"
@@ -178,7 +179,7 @@ CASE("Test Rados Handles") {
 
         EXPECT(buf == std::string(mem));
 
-        RadosCluster::instance().removeAll(obj);
+        obj.ensureAllDestroyed();
     }
 
     SECTION("RadosMultiObjWriteHandle closes an exact-part write") {
@@ -202,7 +203,7 @@ CASE("Test Rados Handles") {
         EXPECT(read == sizeof(buf) - 1);
         EXPECT(std::memcmp(buf, mem.data(), read) == 0);
 
-        RadosCluster::instance().removeAll(obj);
+        obj.ensureAllDestroyed();
     }
 
     SECTION("RadosMultiObjWriteHandle closes asynchronous writes") {
@@ -226,7 +227,7 @@ CASE("Test Rados Handles") {
         EXPECT(read == sizeof(buf) - 1);
         EXPECT(std::memcmp(buf, mem.data(), read) == 0);
 
-        RadosCluster::instance().removeAll(obj);
+        obj.ensureAllDestroyed();
     }
 
     SECTION("RadosMultiObjWriteHandle splits a write larger than the maximum write size") {
@@ -261,7 +262,7 @@ CASE("Test Rados Handles") {
         h->write(data.data() + 50, 50);
         h->close();
 
-        EXPECT(RadosObject(obj, 12).exists());
+        EXPECT(RadosMultiObject(obj).part(12).exists());
 
         Buffer mem(data.size());
         RadosMultiObjReadHandle g(obj);
@@ -303,14 +304,14 @@ CASE("Test Rados Handles") {
         h->openForWrite(0);
         h->write(data.data(), data.size());
         h->close();
-        EXPECT(RadosObject(obj, 6).exists());
+        EXPECT(RadosMultiObject(obj).part(6).exists());
 
         h->openForWrite(0);
         h->write(data.data(), 20);
         h->close();
-        EXPECT(RadosObject(obj, 1).exists());
+        EXPECT(RadosMultiObject(obj).part(1).exists());
         for (size_t i = 2; i < 7; ++i) {
-            EXPECT_NOT(RadosObject(obj, i).exists());
+            EXPECT_NOT(RadosMultiObject(obj).part(i).exists());
         }
 
         RadosMultiObjReadHandle g(obj);
@@ -528,7 +529,7 @@ CASE("Test Rados Handles") {
         {
             const std::string foreign = "written#elsewhere";
             RadosObject visible(pool.name(), nspace, "visible");
-            rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(visible);
+            rados_ioctx_t ctx = RadosCluster::instance().ioCtx(visible);
 
             RADOS_CALL(rados_write_full(ctx, foreign.c_str(), buf, sizeof(buf)));
             RADOS_CALL(rados_write_full(ctx, visible.name().c_str(), buf, sizeof(buf)));
@@ -562,15 +563,15 @@ CASE("Test Rados Handles") {
         h->write(data.data(), data.size());
         h->close();
 
-        EXPECT(RadosObject(obj, 6).exists());
-        EXPECT_NOT(RadosObject(obj, 7).exists());
+        EXPECT(RadosMultiObject(obj).part(6).exists());
+        EXPECT_NOT(RadosMultiObject(obj).part(7).exists());
 
-        RadosObject(obj, 3).ensureDestroyed();
+        RadosMultiObject(obj).part(3).ensureDestroyed();
 
         obj.ensureAllDestroyed();
 
         for (size_t i = 0; i < 7; ++i) {
-            EXPECT_NOT(RadosObject(obj, i).exists());
+            EXPECT_NOT(RadosMultiObject(obj).part(i).exists());
         }
 
         // must not throw for a missing object
@@ -691,7 +692,7 @@ CASE("Test Rados Handles") {
         EXPECT(read == long(5 * data.size()));
         EXPECT(std::string(static_cast<const char*>(mem.data()), mem.size()) == std::string(5 * data.size(), 'z'));
 
-        RadosCluster::instance().removeAll(obj);
+        obj.ensureAllDestroyed();
     }
 
     SECTION("Opening a handle on a missing pool fails and leaves it closed") {

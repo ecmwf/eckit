@@ -31,8 +31,6 @@ public:
 
     RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid);
 
-    RadosObject(const RadosObject& other, size_t part);
-
     const eckit::RadosNamespace& nspace() const { return ns_; }
     const std::string& name() const { return oid_; }
     /// @throws UserError for an object in the default namespace, which a URI cannot express
@@ -40,7 +38,13 @@ public:
     std::string str() const;
 
     bool exists() const;
+
+    /// @returns whether this is a part, other than the first, of a multipart object. See RadosMultiObject.
+    bool isPart() const;
+
+    /// Removes the object, if it exists
     void ensureDestroyed() const;
+    /// Removes the object and, if it was written as a multipart object, all its parts
     void ensureAllDestroyed() const;
 
     eckit::DataHandle* dataHandle() const;

@@ -20,9 +20,9 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosAsyncHandle.h"
-#include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/log/Log.h"
 
 
@@ -77,7 +77,7 @@ void RadosMultiObjWriteHandle::openPart() {
 
     ASSERT(!partOpen_);
 
-    RadosObject object(object_, part_);
+    const RadosObject object = RadosMultiObject(object_).part(part_);
     LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
 
     std::unique_ptr<DataHandle> handle;
@@ -182,14 +182,11 @@ void RadosMultiObjWriteHandle::flush() {
     closeParts(true);
 
     if (part_ > 0) {
-
-        RadosAttributes attrs;
-
-        attrs.set("length", position_);
-        attrs.set("parts", part_);
-        attrs.set("maxsize", maxPartSize_);
-
-        RadosCluster::instance().attributes(object_, attrs);
+        RadosMultiObject::Layout layout;
+        layout.length      = Length(static_cast<long long>(position_));
+        layout.parts       = part_;
+        layout.maxPartSize = maxPartSize_;
+        RadosMultiObject(object_).layout(layout);
     }
 }
 

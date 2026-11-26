@@ -54,7 +54,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() const {
 
     rados_write_op_create(op.op_, LIBRADOS_CREATE_IDEMPOTENT, NULL);
 
-    rados_ioctx_t& ctx             = RadosCluster::instance().ioCtx(object_);
+    rados_ioctx_t ctx              = RadosCluster::instance().ioCtx(object_);
     std::unique_ptr<RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(rados_aio_write_op_operate(op.op_, ctx, comp->comp_, name().c_str(), NULL,
@@ -100,7 +100,7 @@ bool RadosKeyValue::has(const std::string& key) const {
                                          1,  /// @note: number of keys/values requested
                                          &(key_len), &(iter.it_), &rc);
 
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(object_);
+    rados_ioctx_t ctx = RadosCluster::instance().ioCtx(object_);
     eckit::RadosAIO comp{};
 
     RADOS_CALL(rados_aio_read_op_operate(op.op_, ctx, comp.comp_, name().c_str(),
@@ -133,7 +133,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
                              1  /// @note: number of keys/values provided
     );
 
-    rados_ioctx_t& ctx                    = RadosCluster::instance().ioCtx(object_);
+    rados_ioctx_t ctx                     = RadosCluster::instance().ioCtx(object_);
     std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(rados_aio_write_op_operate(op.op_, ctx, comp->comp_, name().c_str(), NULL,
@@ -174,7 +174,7 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
                                          1,  /// @note: number of keys/values requested
                                          &(key_len), &(iter->it_), &rc);
 
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(object_);
+    rados_ioctx_t ctx = RadosCluster::instance().ioCtx(object_);
     eckit::RadosAIO comp{};
 
     RADOS_CALL(rados_aio_read_op_operate(op.op_, ctx, comp.comp_, name().c_str(),
@@ -253,7 +253,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& k
                                  1  /// @note: number of keys/values provided
     );
 
-    rados_ioctx_t& ctx                    = RadosCluster::instance().ioCtx(object_);
+    rados_ioctx_t ctx                     = RadosCluster::instance().ioCtx(object_);
     std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(rados_aio_write_op_operate(op.op_, ctx, comp->comp_, name().c_str(), NULL,
@@ -274,7 +274,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
     std::vector<std::string> res;
 
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(object_);
+    rados_ioctx_t ctx = RadosCluster::instance().ioCtx(object_);
 
     int rc;
     unsigned char more = 1;

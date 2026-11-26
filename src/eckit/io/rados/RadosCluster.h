@@ -10,12 +10,10 @@
 
 #include <rados/librados.h>
 
-#include <cerrno>
-#include <cstddef>
-#include <ctime>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,70 +21,82 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
 class RadosObject;
 class RadosAttributes;
 class RadosIOCtx;
 
-using NamespaceCtxCache = std::map<std::string, std::unique_ptr<RadosIOCtx>>;
-using PoolCtxCache      = std::map<std::string, NamespaceCtxCache>;
+//----------------------------------------------------------------------------------------------------------------------
 
+/// The connection to the Ceph cluster, and the operations on its pools and objects.
+///
+/// Configured through the resources radosClusterName, radosClusterUser and radosClusterConf, or the
+/// environment variables ECKIT_RADOS_CLUSTER_NAME, ECKIT_RADOS_CLUSTER_USER and ECKIT_RADOS_CLUSTER_CONF.
 class RadosCluster {
 public:
 
-    rados_ioctx_t& ioCtx(const std::string& pool, const std::string& nspace) const;
-    rados_ioctx_t& ioCtx(const RadosObject& object) const;
+    static RadosCluster& instance();
 
+    RadosCluster(const RadosCluster&)            = delete;
+    RadosCluster& operator=(const RadosCluster&) = delete;
+
+    /// The context for operations in a namespace of a pool. It stays valid as long as the cluster.
+    /// @throws NotFound if the pool does not exist
+    rados_ioctx_t ioCtx(const std::string& pool, const std::string& nspace);
+    rados_ioctx_t ioCtx(const RadosObject& object);
+
+    /// Largest write and largest object the cluster accepts
     Length maxWriteSize() const;
     Length maxObjectSize() const;
 
+    // -- pools
+
     bool poolExists(const std::string& pool) const;
-    void createPool(const std::string& pool) const;
-    void ensurePool(const std::string& pool) const;
-    void destroyPool(const std::string& pool) const;
+    /// @throws AlreadyExists
+    void createPool(const std::string& pool);
+    void ensurePool(const std::string& pool);
     /// @returns false if the pool did not exist
-    bool destroyPoolIfExists(const std::string& pool) const;
-
-    void attributes(const RadosObject& object, const RadosAttributes& attr) const;
-
-    RadosAttributes attributes(const RadosObject& object) const;
-
-    bool exists(const RadosObject& object) const;
-    Length size(const RadosObject& object) const;
-    void remove(const RadosObject& object) const;
-    /// @returns false if the object did not exist
-    bool removeIfExists(const RadosObject& object) const;
-    void truncate(const RadosObject& object, const Length& length = 0) const;
+    bool destroyPool(const std::string& pool);
 
     std::vector<std::string> listPools() const;
-    std::vector<std::string> listNamespaces(const std::string& pool) const;
-    std::vector<std::string> listObjects(const std::string& pool, const std::string& nspace) const;
+    /// @note: goes through every object of the pool, as Ceph keeps no list of namespaces
+    std::vector<std::string> listNamespaces(const std::string& pool);
+    /// @note: lists key-values as well, which are objects too
+    std::vector<std::string> listObjects(const std::string& pool, const std::string& nspace);
 
-    // For multi-object items
+    // -- objects
 
-    void removeAll(const RadosObject& object) const;
+    bool exists(const RadosObject& object);
+    /// @throws NotFound
+    Length size(const RadosObject& object);
     /// @returns false if the object did not exist
-    bool removeAllIfExists(const RadosObject& object) const;
+    bool remove(const RadosObject& object);
+    /// Sets the size of the object, creating it if it does not exist
+    void truncate(const RadosObject& object, const Length& length = 0);
 
-    static const RadosCluster& instance();
+    /// @returns nothing if the object does not exist
+    std::optional<RadosAttributes> attributes(const RadosObject& object);
+    /// Sets all the attributes in one operation, so that a reader never sees part of them
+    void attributes(const RadosObject& object, const RadosAttributes& attr);
 
-private:
+private:  // methods
 
     RadosCluster();
     ~RadosCluster();
 
-private:
+    /// @returns the size of the object, or nothing if it does not exist
+    std::optional<Length> stat(const RadosObject& object);
 
-    rados_t cluster_;
-    mutable PoolCtxCache ctx_;
+private:  // members
 
-    /// Contexts of destroyed pools. References to them may still be held, so they live as long as the cluster.
-    mutable std::vector<std::unique_ptr<RadosIOCtx>> retired_;
-    mutable std::mutex ctxMutex_;
+    rados_t cluster_{nullptr};
 
-    /// @returns false if the object does not exist
-    bool readAttributes(const RadosObject& object, RadosAttributes& attr) const;
+    /// Contexts by pool and namespace
+    std::map<std::string, std::map<std::string, std::unique_ptr<RadosIOCtx>>> ctx_;
+
+    /// Contexts of destroyed pools. They may still be in use, so they live as long as the cluster.
+    std::vector<std::unique_ptr<RadosIOCtx>> retired_;
+
+    std::mutex ctxMutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

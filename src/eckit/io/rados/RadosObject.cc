@@ -17,6 +17,7 @@
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosMultiObject.h"
 #include "eckit/io/rados/RadosName.h"
 #include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosPartHandle.h"
@@ -24,12 +25,6 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-RadosObject::RadosObject(const RadosObject& other, size_t part) : ns_(other.ns_), oid_(other.oid_) {
-    if (part != 0) {
-        oid_ += ";part-" + std::to_string(part);
-    }
-}
 
 RadosObject::RadosObject(const eckit::URI& uri) :
     RadosObject(rados::namesIn(uri, 3, "rados:<pool>/<namespace>/<name>")) {}
@@ -54,12 +49,16 @@ bool RadosObject::exists() const {
     return eckit::RadosCluster::instance().exists(*this);
 }
 
+bool RadosObject::isPart() const {
+    return eckit::RadosMultiObject::isPart(*this);
+}
+
 void RadosObject::ensureDestroyed() const {
-    eckit::RadosCluster::instance().removeIfExists(*this);
+    eckit::RadosCluster::instance().remove(*this);
 }
 
 void RadosObject::ensureAllDestroyed() const {
-    eckit::RadosCluster::instance().removeAllIfExists(*this);
+    eckit::RadosMultiObject(*this).remove();
 }
 
 eckit::DataHandle* RadosObject::dataHandle() const {

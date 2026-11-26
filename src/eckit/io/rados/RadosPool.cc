@@ -40,13 +40,13 @@ void RadosPool::ensureCreated() const {
 }
 
 void RadosPool::destroy() const {
-    if (!RadosCluster::instance().destroyPoolIfExists(pool_)) {
+    if (!RadosCluster::instance().destroyPool(pool_)) {
         throw NotFound("RADOS pool " + pool_, Here(), true);
     }
 }
 
 void RadosPool::ensureDestroyed() const {
-    RadosCluster::instance().destroyPoolIfExists(pool_);
+    RadosCluster::instance().destroyPool(pool_);
 }
 
 std::vector<std::string> RadosPool::listNamespaces() const {

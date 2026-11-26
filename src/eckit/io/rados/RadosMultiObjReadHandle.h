@@ -54,7 +54,7 @@ public:  // methods
 
 private:  // methods
 
-    /// Reads the attributes describing the parts, once.
+    /// Reads the attributes describing the parts, unless already read since the handle was last opened or closed.
     void load();
 
 private:  // members

@@ -67,6 +67,8 @@ Length RadosMultiObjReadHandle::size() {
 Length RadosMultiObjReadHandle::openForRead() {
     ASSERT(!opened_);
 
+    /// @note: the object may have been replaced since the attributes were last read
+    loaded_ = false;
     load();
 
     position_ = 0;
@@ -139,6 +141,7 @@ eckit::Offset RadosMultiObjReadHandle::seek(const eckit::Offset& offset) {
 
 void RadosMultiObjReadHandle::close() {
     opened_ = false;
+    loaded_ = false;
 }
 
 void RadosMultiObjReadHandle::rewind() {

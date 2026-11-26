@@ -11,8 +11,8 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
@@ -35,7 +35,7 @@ public:
 
     const eckit::RadosNamespace& nspace() const { return ns_; }
     const std::string& name() const { return oid_; }
-    /// @note: the default (empty) namespace cannot be expressed in a URI, so this throws for it
+    /// @throws UserError for an object in the default namespace, which a URI cannot express
     eckit::URI uri() const;
     std::string str() const;
 
@@ -52,7 +52,11 @@ public:
                                                  size_t maxHandleBuffSize         = 1024) const;
     eckit::DataHandle* multipartRangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
 
-private:
+private:  // methods
+
+    explicit RadosObject(const std::vector<std::string>& names);
+
+private:  // members
 
     eckit::RadosNamespace ns_;
     std::string oid_;

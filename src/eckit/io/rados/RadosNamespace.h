@@ -10,15 +10,17 @@
 #include <string>
 #include <vector>
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosPool.h"
 
 namespace eckit {
 
+class RadosObject;
+
 //----------------------------------------------------------------------------------------------------------------------
 
+/// A namespace of a pool. The empty name is the default namespace.
+/// @note: Ceph has no namespaces as such, only objects in them, so a namespace neither exists nor is created.
 class RadosNamespace {
 public:
 
@@ -27,12 +29,12 @@ public:
 
     const eckit::RadosPool& pool() const { return pool_; }
     const std::string& name() const { return ns_; }
-    /// @note: the default (empty) namespace cannot be expressed in a URI, so this throws for it
+
+    /// @throws UserError for the default namespace, which a URI cannot express
     eckit::URI uri() const;
     std::string str() const;
 
-    bool exists() const { return pool_.exists(); };
-    /// @note: objects whose name cannot be addressed (see RadosPool::checkName) are left out
+    /// @note: objects whose name cannot be addressed (see rados::validName) are left out
     std::vector<eckit::RadosObject> listObjects() const;
 
     /// Removes the objects which listObjects() returns
@@ -40,9 +42,7 @@ public:
 
 private:  // methods
 
-    friend class RadosObject;
-    friend class RadosKeyValue;
-    RadosNamespace() = default;
+    explicit RadosNamespace(const std::vector<std::string>& names);
 
 private:  // members
 

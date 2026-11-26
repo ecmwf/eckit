@@ -26,7 +26,6 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class RadosObject;
-class RadosKeyValue;
 class RadosAttributes;
 class RadosIOCtx;
 
@@ -38,7 +37,6 @@ public:
 
     rados_ioctx_t& ioCtx(const std::string& pool, const std::string& nspace) const;
     rados_ioctx_t& ioCtx(const RadosObject& object) const;
-    rados_ioctx_t& ioCtx(const RadosKeyValue& object) const;
 
     Length maxWriteSize() const;
     Length maxObjectSize() const;
@@ -60,9 +58,6 @@ public:
     /// @returns false if the object did not exist
     bool removeIfExists(const RadosObject& object) const;
     void truncate(const RadosObject& object, const Length& length = 0) const;
-
-    bool exists(const RadosKeyValue& object) const;
-    void remove(const RadosKeyValue& object) const;
 
     std::vector<std::string> listPools() const;
     std::vector<std::string> listNamespaces(const std::string& pool) const;

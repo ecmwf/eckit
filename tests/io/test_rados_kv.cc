@@ -178,7 +178,8 @@ CASE("Rados KeyValue") {
             }
             RadosWriteOp op;
             rados_write_op_omap_set2(op.op_, keys.data(), vals.data(), key_lens.data(), val_lens.data(), keys.size());
-            RADOS_CALL(rados_write_op_operate(op.op_, RadosCluster::instance().ioCtx(kv), kv.name().c_str(), NULL, 0));
+            RADOS_CALL(rados_write_op_operate(op.op_, RadosCluster::instance().ioCtx(kv.object()), kv.name().c_str(),
+                                              NULL, 0));
         }
 
         // they are listed when everything fits in one request, and reported, rather than looped on, otherwise

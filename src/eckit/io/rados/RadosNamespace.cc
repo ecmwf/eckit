@@ -3,49 +3,33 @@
 
 #include "eckit/io/rados/RadosNamespace.h"
 
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosName.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RadosNamespace::RadosNamespace(const eckit::URI& uri) {
+RadosNamespace::RadosNamespace(const eckit::URI& uri) :
+    RadosNamespace(rados::namesIn(uri, 2, "rados:<pool>/<namespace>")) {}
 
-    Tokenizer parse("/");
+RadosNamespace::RadosNamespace(const std::vector<std::string>& names) : RadosNamespace(names[0], names[1]) {}
 
-    std::vector<std::string> bits;
-    parse(uri.name(), bits);
-
-    if (bits.size() != 2) {
-        throw eckit::UserError("Invalid RADOS URI '" + uri.asString() + "', expected rados:<pool>/<namespace>", Here());
-    }
-
-    pool_ = eckit::RadosPool(bits[0]);
-    ns_   = bits[1];
-    RadosPool::checkName("namespace", ns_);
-}
-
-RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_({pool}), ns_(nspace) {
-    RadosPool::checkName("namespace", ns_);
+RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_(pool), ns_(nspace) {
+    rados::checkName("namespace", ns_);
 }
 
 eckit::URI RadosNamespace::uri() const {
-    if (ns_.empty()) {
-        throw eckit::UserError(
-            "The namespace " + str() + " is in the default namespace, which a RADOS URI cannot express", Here());
-    }
-    return eckit::URI{"rados", eckit::PathName(str())};
+    return rados::uriOf(str(), ns_);
 }
 
 std::string RadosNamespace::str() const {
@@ -56,23 +40,23 @@ std::vector<eckit::RadosObject> RadosNamespace::listObjects() const {
 
     std::vector<eckit::RadosObject> res;
 
-    for (const auto& i : eckit::RadosCluster::instance().listObjects(pool_.name(), ns_)) {
+    for (const auto& name : eckit::RadosCluster::instance().listObjects(pool_.name(), ns_)) {
 
         /// @note: an object written by another tool can have a name which cannot be addressed here
-        if (!RadosPool::validName(i)) {
-            LOG_DEBUG_LIB(LibEcKit) << "RadosNamespace::listObjects skipping object with unsupported name '" << i
+        if (!rados::validName(name)) {
+            LOG_DEBUG_LIB(LibEcKit) << "RadosNamespace::listObjects skipping object with unsupported name '" << name
                                     << "' in " << str() << std::endl;
             continue;
         }
 
-        res.emplace_back(pool_.name(), ns_, i);
+        res.emplace_back(pool_.name(), ns_, name);
     }
 
     return res;
 }
 
 void RadosNamespace::destroy() const {
-    for (auto& object : listObjects()) {
+    for (const auto& object : listObjects()) {
         object.ensureDestroyed();
     }
 }

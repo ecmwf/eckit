@@ -329,6 +329,8 @@ if( eckit_HAVE_RADOS )
         io/rados/RadosMultiObjWriteHandle.h
         io/rados/RadosAsyncHandle.cc
         io/rados/RadosAsyncHandle.h
+        io/rados/RadosName.cc
+        io/rados/RadosName.h
         io/rados/RadosNamespace.cc
         io/rados/RadosNamespace.h
         io/rados/RadosPool.cc

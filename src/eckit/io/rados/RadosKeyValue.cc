@@ -13,7 +13,6 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosCall.h"
@@ -21,46 +20,17 @@
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosObject.h"
-#include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/MemoryStream.h"
-#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RadosKeyValue::RadosKeyValue(const eckit::URI& uri) {
-    eckit::Tokenizer parse("/");
-    std::vector<std::string> bits;
-    parse(uri.name(), bits);
-
-    if (bits.size() != 3) {
-        throw eckit::UserError("Invalid RADOS URI '" + uri.asString() + "', expected rados:<pool>/<namespace>/<name>",
-                               Here());
-    }
-
-    ns_  = eckit::RadosNamespace{bits[0], bits[1]};
-    oid_ = bits[2];
-    RadosPool::checkName("key-value", oid_);
-}
+RadosKeyValue::RadosKeyValue(const eckit::URI& uri) : object_(uri) {}
 
 RadosKeyValue::RadosKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid) :
-    ns_(pool, nspace), oid_(oid) {
-    RadosPool::checkName("key-value", oid_);
-}
-
-eckit::URI RadosKeyValue::uri() const {
-    if (ns_.name().empty()) {
-        throw eckit::UserError(
-            "The key-value " + str() + " is in the default namespace, which a RADOS URI cannot express", Here());
-    }
-    return eckit::URI{"rados", eckit::PathName(str())};
-}
-
-std::string RadosKeyValue::str() const {
-    return ns_.pool().name() + '/' + ns_.name() + '/' + oid_;
-}
+    object_(pool, nspace, oid) {}
 
 namespace {
 
@@ -75,7 +45,7 @@ void checkKey(const std::string& key) {
 }  // namespace
 
 bool RadosKeyValue::exists() const {
-    return eckit::RadosCluster::instance().exists(*this);
+    return object_.exists();
 }
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() const {
@@ -84,7 +54,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() const {
 
     rados_write_op_create(op.op_, LIBRADOS_CREATE_IDEMPOTENT, NULL);
 
-    rados_ioctx_t& ctx             = RadosCluster::instance().ioCtx(*this);
+    rados_ioctx_t& ctx             = RadosCluster::instance().ioCtx(object_);
     std::unique_ptr<RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(rados_aio_write_op_operate(op.op_, ctx, comp->comp_, name().c_str(), NULL,
@@ -100,7 +70,7 @@ void RadosKeyValue::ensureCreated() const {
 }
 
 void RadosKeyValue::ensureDestroyed() const {
-    eckit::RadosCluster::instance().removeIfExists(eckit::RadosObject{ns_.pool().name(), ns_.name(), oid_});
+    object_.ensureDestroyed();
 }
 
 /// @note: librados cannot query the size of a value, so the value is fetched
@@ -130,7 +100,7 @@ bool RadosKeyValue::has(const std::string& key) const {
                                          1,  /// @note: number of keys/values requested
                                          &(key_len), &(iter.it_), &rc);
 
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
+    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(object_);
     eckit::RadosAIO comp{};
 
     RADOS_CALL(rados_aio_read_op_operate(op.op_, ctx, comp.comp_, name().c_str(),
@@ -163,7 +133,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
                              1  /// @note: number of keys/values provided
     );
 
-    rados_ioctx_t& ctx                    = RadosCluster::instance().ioCtx(*this);
+    rados_ioctx_t& ctx                    = RadosCluster::instance().ioCtx(object_);
     std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(rados_aio_write_op_operate(op.op_, ctx, comp->comp_, name().c_str(), NULL,
@@ -204,7 +174,7 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
                                          1,  /// @note: number of keys/values requested
                                          &(key_len), &(iter->it_), &rc);
 
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
+    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(object_);
     eckit::RadosAIO comp{};
 
     RADOS_CALL(rados_aio_read_op_operate(op.op_, ctx, comp.comp_, name().c_str(),
@@ -283,7 +253,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& k
                                  1  /// @note: number of keys/values provided
     );
 
-    rados_ioctx_t& ctx                    = RadosCluster::instance().ioCtx(*this);
+    rados_ioctx_t& ctx                    = RadosCluster::instance().ioCtx(object_);
     std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(rados_aio_write_op_operate(op.op_, ctx, comp->comp_, name().c_str(), NULL,
@@ -304,7 +274,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
     std::vector<std::string> res;
 
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
+    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(object_);
 
     int rc;
     unsigned char more = 1;

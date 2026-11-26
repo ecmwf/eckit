@@ -12,12 +12,12 @@
 #include <string>
 #include <vector>
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosNamespace.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/serialisation/MemoryStream.h"
 
 namespace eckit {
@@ -31,11 +31,13 @@ public:  // methods
     explicit RadosKeyValue(const eckit::URI& uri);
     RadosKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid);
 
-    const eckit::RadosNamespace& nspace() const { return ns_; }
-    const std::string& name() const { return oid_; }
-    /// @note: the default (empty) namespace cannot be expressed in a URI, so this throws for it
-    eckit::URI uri() const;
-    std::string str() const;
+    /// The object which holds the keys and values
+    const eckit::RadosObject& object() const { return object_; }
+
+    const eckit::RadosNamespace& nspace() const { return object_.nspace(); }
+    const std::string& name() const { return object_.name(); }
+    eckit::URI uri() const { return object_.uri(); }
+    std::string str() const { return object_.str(); }
     bool exists() const;
 
     virtual ~RadosKeyValue() = default;
@@ -69,8 +71,7 @@ private:  // methods
 
 private:  // members
 
-    eckit::RadosNamespace ns_;
-    std::string oid_;
+    eckit::RadosObject object_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

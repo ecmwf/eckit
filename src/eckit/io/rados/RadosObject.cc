@@ -4,13 +4,9 @@
 #include "eckit/io/rados/RadosObject.h"
 
 #include <cstddef>
-#include <sstream>
 #include <string>
 #include <vector>
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
@@ -18,57 +14,35 @@
 #include "eckit/io/PartHandle.h"
 #include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosName.h"
 #include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosPartHandle.h"
-#include "eckit/io/rados/RadosPool.h"
-#include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RadosObject::RadosObject(const RadosObject& other, size_t part) {
-    *this = other;
+RadosObject::RadosObject(const RadosObject& other, size_t part) : ns_(other.ns_), oid_(other.oid_) {
     if (part != 0) {
-        std::ostringstream oss;
-        oss << oid_ << ";part-" << part;
-        oid_ = oss.str();
+        oid_ += ";part-" + std::to_string(part);
     }
 }
 
-RadosObject::RadosObject(const eckit::URI& uri) {
+RadosObject::RadosObject(const eckit::URI& uri) :
+    RadosObject(rados::namesIn(uri, 3, "rados:<pool>/<namespace>/<name>")) {}
 
-    Tokenizer parse("/");
-
-    std::vector<std::string> bits;
-    parse(uri.name(), bits);
-
-    if (bits.size() != 3) {
-        throw eckit::UserError("Invalid RADOS URI '" + uri.asString() + "', expected rados:<pool>/<namespace>/<name>",
-                               Here());
-    }
-
-    ns_  = eckit::RadosNamespace{bits[0], bits[1]};
-    oid_ = bits[2];
-    RadosPool::checkName("object", oid_);
-}
+RadosObject::RadosObject(const std::vector<std::string>& names) : RadosObject(names[0], names[1], names[2]) {}
 
 RadosObject::RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid) :
     ns_(pool, nspace), oid_(oid) {
-    RadosPool::checkName("object", oid_);
+    rados::checkName("object", oid_);
 }
 
 eckit::URI RadosObject::uri() const {
-    if (ns_.name().empty()) {
-        throw eckit::UserError("The object " + str() + " is in the default namespace, which a RADOS URI cannot express",
-                               Here());
-    }
-    return eckit::URI{"rados", eckit::PathName(str())};
+    return rados::uriOf(str(), ns_.name());
 }
 
 std::string RadosObject::str() const {

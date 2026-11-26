@@ -29,7 +29,6 @@
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCall.h"
 #include "eckit/io/rados/RadosException.h"
-#include "eckit/io/rados/RadosKeyValue.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Log.h"
 
@@ -175,10 +174,6 @@ rados_ioctx_t& RadosCluster::ioCtx(const RadosObject& object) const {
     return ioCtx(object.nspace().pool().name(), object.nspace().name());
 }
 
-rados_ioctx_t& RadosCluster::ioCtx(const RadosKeyValue& object) const {
-    return ioCtx(object.nspace().pool().name(), object.nspace().name());
-}
-
 bool RadosCluster::poolExists(const std::string& pool) const {
     return RADOS_CALL_FOUND(rados_pool_lookup(cluster_, pool.c_str()));
 }
@@ -284,12 +279,6 @@ bool RadosCluster::exists(const RadosObject& object) const {
     return RADOS_CALL_FOUND(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
 }
 
-/// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
-///   define RadosCluster::exists() only for arguments of that base class.
-bool RadosCluster::exists(const RadosKeyValue& object) const {
-    return exists(RadosObject{object.nspace().pool().name(), object.nspace().name(), object.name()});
-}
-
 Length RadosCluster::size(const RadosObject& object) const {
     uint64_t psize = 0;
     time_t pmtime  = 0;
@@ -305,12 +294,6 @@ void RadosCluster::remove(const RadosObject& object) const {
 
 bool RadosCluster::removeIfExists(const RadosObject& object) const {
     return RADOS_CALL_FOUND(rados_remove(ioCtx(object), object.name().c_str()));
-}
-
-/// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
-///   define RadosCluster::remove() only for arguments of that base class.
-void RadosCluster::remove(const RadosKeyValue& object) const {
-    remove(RadosObject{object.nspace().pool().name(), object.nspace().name(), object.name()});
 }
 
 void RadosCluster::truncate(const RadosObject& object, const Length& length) const {

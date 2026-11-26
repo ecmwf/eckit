@@ -9,6 +9,7 @@
 
 #include "RadosTestUtils.h"
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
@@ -40,7 +41,9 @@ CASE("Test Rados Handles") {
     std::string pool_name;
     std::string nspace = "test_handle";
     pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
-    EXPECT(pool_name.length() > 0);
+    if (pool_name.empty()) {
+        throw eckit::UserError("The RADOS tests need the name of an existing pool in ECKIT_RADOS_TEST_POOL", Here());
+    }
     RadosPool pool(pool_name);
 #endif
 

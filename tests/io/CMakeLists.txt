@@ -50,25 +50,38 @@ foreach(_test
                     LIBS    eckit )
 endforeach()
 
+# The RADOS tests need a cluster. Unless they manage their own pools (ENABLE_RADOS_TESTS_MANAGE_POOLS)
+# they work in an existing pool, named by the ECKIT_RADOS_TEST_POOL cmake variable or, if that is not
+# set, by the ECKIT_RADOS_TEST_POOL environment variable at the time the tests run.
+set( _rados_test_env )
+if( eckit_HAVE_RADOS AND NOT eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
+    if( ECKIT_RADOS_TEST_POOL )
+        list( APPEND _rados_test_env ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
+    else()
+        message( STATUS "RADOS tests: ECKIT_RADOS_TEST_POOL is not set, the tests will read it from the environment" )
+    endif()
+endif()
+
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   eckit_HAVE_RADOS
                   LABELS      rados
                   LIBS        eckit
-                  ENVIRONMENT ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
+                  ENVIRONMENT ${_rados_test_env} )
 
 ecbuild_add_test( TARGET      eckit_test_rados_kv
                   SOURCES     test_rados_kv.cc
                   CONDITION   eckit_HAVE_RADOS
                   LABELS      rados
                   LIBS        eckit
-                  ENVIRONMENT ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
+                  ENVIRONMENT ${_rados_test_env} )
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc
                   CONDITION   HAVE_EXTRA_TESTS AND eckit_HAVE_RADOS
                   LABELS      rados
                   TEST_DEPENDS get_eckit_io_test_data
-                  LIBS        eckit )
+                  LIBS        eckit
+                  ENVIRONMENT ${_rados_test_env} )
 
 add_subdirectory( fam )

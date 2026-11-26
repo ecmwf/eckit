@@ -8,6 +8,8 @@
 #ifndef eckit_DateTime_h
 #define eckit_DateTime_h
 
+#include <string>
+#include <string_view>
 
 #include "eckit/types/Date.h"
 #include "eckit/types/Time.h"
@@ -26,7 +28,23 @@ public:
 
     DateTime(time_t = ::time(nullptr));
     DateTime(const Date&, const Time&);
-    DateTime(const std::string&);
+
+    /// Parses a date and time (always UTC), throwing BadValue on malformed input.
+    ///
+    /// A lenient parser is used, accepting any Date form followed by any Time form, separated by a
+    /// space or 'T', the compact YYYYMMDDHHMMSS and YYYYMMDDHHMM forms, and a trailing 'Z'.
+    ///
+    /// If iso8601 is true (second constructor) only these fixed width forms are accepted, optionally followed by 'Z'
+    /// for the ones that have a time:
+    ///   YYYYMMDD, YYYY-MM-DD (time is midnight), YYYYMMDDHHMMSS, YYYYMMDDTHHMMSS, YYYY-MM-DDTHH:MM:SS and
+    ///   YYYY-MM-DD HH:MM:SS
+    DateTime(const std::string& str) { parse(str, false); }
+
+    /// Same as above, but selecting the parser. Using std::string_view for the string (rather than a defaulted
+    /// bool on the std::string constructor) keeps calls such as DateTime(date, seconds) unambiguous, as a Date
+    /// converts to std::string but not to std::string_view.
+    DateTime(std::string_view str, bool iso8601) { parse(std::string(str), iso8601); }
+
     DateTime(double);
     DateTime(const DateTime& other);
 
@@ -77,6 +95,8 @@ protected:  // members
     Time time_;
 
 private:  // methods
+
+    void parse(const std::string&, bool iso8601);
 
     void print(std::ostream&) const;
 

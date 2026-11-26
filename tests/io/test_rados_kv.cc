@@ -54,7 +54,7 @@ CASE("Rados KeyValue") {
         std::string key2 = "key2";
         std::string val2 = "zyxwvutsrqponmlkjihgfedcba";
 
-        RadosKeyValue kv(pool.name(), "default", "foobar");
+        RadosKeyValue kv(pool.name(), nspace, "foobar");
 
         // create
         EXPECT_NOT(kv.exists());

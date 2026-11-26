@@ -16,9 +16,6 @@ namespace eckit::geo {
 namespace {
 
 
-constexpr double EPS = 1e-12;
-
-
 const PointXYZ Y_AXIS{0., 1., 0.};
 
 
@@ -34,7 +31,7 @@ PointXYZ normalise(const PointXYZ& p) {
 
 TangentPlane::TangentPlane(const PointXYZ& origin) : origin_(origin) {
     const auto up = normalise(origin);
-    east_         = std::hypot(up.X(), up.Y()) > EPS ? normalise({-up.Y(), up.X(), 0.}) : Y_AXIS;
+    east_         = std::hypot(up.X(), up.Y()) > PointXYZ::EPS ? normalise({-up.Y(), up.X(), 0.}) : Y_AXIS;
     north_        = cross(up, east_);
 }
 
@@ -48,7 +45,7 @@ TangentPlane::TangentPlane(const PointXYZ& origin, const PointLonLat& geodetic) 
     const auto sl = std::sin(lambda);
     const auto cl = std::cos(lambda);
 
-    if (std::abs(cp) < EPS) {
+    if (std::abs(cp) < PointXYZ::EPS) {
         east_  = Y_AXIS;
         north_ = cross(PointXYZ{0., 0., sp > 0. ? 1. : -1.}, east_);
         return;

@@ -14,6 +14,7 @@
 
 #include <cstring>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -85,8 +86,14 @@ void RadosKeyValue::ensureDestroyed() const {
     }
 }
 
+/// @note: librados cannot query the size of a value, so the value is fetched
 eckit::Length RadosKeyValue::size(const std::string& key) const {
-    NOTIMP;
+
+    char* found      = nullptr;
+    size_t found_len = 0;
+    auto val_mem     = get(key, found, found_len);
+
+    return eckit::Length(found_len);
 }
 
 bool RadosKeyValue::has(const std::string& key) const {
@@ -111,7 +118,13 @@ bool RadosKeyValue::has(const std::string& key) const {
                                          0  /// @note: flags
                                          ));
 
-    comp.waitForComplete();
+    /// @note: a key-value which does not exist has no keys
+    try {
+        comp.waitForComplete();
+    }
+    catch (eckit::RadosEntityNotFoundException& e) {
+        return false;
+    }
 
     ASSERT(rc == 0);
 
@@ -206,7 +219,12 @@ long RadosKeyValue::get(const std::string& key, void* buf, const long& len) cons
     size_t found_len = 0;
     auto val_mem     = get(key, found, found_len);
 
-    ASSERT(found_len <= len);
+    if (len < 0 || found_len > static_cast<size_t>(len)) {
+        std::ostringstream oss;
+        oss << "Value of key '" << key << "' in KeyValue " << str() << " has " << found_len
+            << " bytes, which do not fit in the buffer of " << len << " bytes";
+        throw eckit::BadValue(oss.str(), Here());
+    }
 
     if (found_len > 0) {
         std::memcpy(buf, found, found_len);
@@ -294,7 +312,9 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
         char* key = nullptr;
         size_t key_len;
 
-        for (int i = 0; i < rados_omap_iter_size(iter.it_); ++i) {
+        const unsigned int page = rados_omap_iter_size(iter.it_);
+
+        for (unsigned int i = 0; i < page; ++i) {
 
             RADOS_CALL(rados_omap_get_next2(iter.it_, &key,
                                             NULL,  /// @note: where to store the value
@@ -307,7 +327,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
         /// @note: If this page was empty while more keys are reported, there is no valid
         ///   marker to advance with, so stop to avoid an infinite loop.
-        if (res.empty()) {
+        if (page == 0) {
             break;
         }
         startAfter = res.back();

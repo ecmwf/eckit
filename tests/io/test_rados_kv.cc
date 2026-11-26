@@ -14,6 +14,8 @@
 #include <algorithm>
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 #ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
@@ -96,6 +98,27 @@ CASE("Rados KeyValue") {
         EXPECT(kv.has(key2));
         EXPECT(kv.has(empty_key));
         EXPECT_NOT(kv.has("key3"));
+
+        // size
+        EXPECT(kv.size(key) == Length(val.size()));
+        EXPECT(kv.size(empty_key) == Length(0));
+        EXPECT_THROWS_AS(kv.size("key3"), eckit::RadosEntityNotFoundException);
+
+        // get into a buffer which is too small
+        char small[4];
+        EXPECT_THROWS_AS(kv.get(key, small, sizeof(small)), eckit::BadValue);
+
+        // list keys over several pages
+        keys = kv.keys(2);
+        EXPECT(keys.size() == 3);
+        keys = kv.keys(1);
+        EXPECT(keys.size() == 3);
+
+        // a key-value which does not exist has no keys
+        RadosKeyValue missing(pool.name(), nspace, "no-such-kv");
+        EXPECT_NOT(missing.exists());
+        EXPECT_NOT(missing.has(key));
+        EXPECT_THROWS_AS(missing.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
 
         // remove
         kv.remove(key);

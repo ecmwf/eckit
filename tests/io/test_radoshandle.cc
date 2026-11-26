@@ -223,6 +223,52 @@ CASE("Test Rados Handles") {
         obj.ensureAllDestroyed();
     }
 
+    SECTION("Asynchronous RadosMultiObjWriteHandle writes more parts than handles it may hold") {
+
+        const std::string data(100, 'q');
+
+        RadosObject obj(pool.name(), nspace, "async-many-parts");
+
+        // 4 KiB of pending data per part, at most 3 open handles, 13 parts
+        std::unique_ptr<DataHandle> h(obj.asyncMultipartWriteHandle(8, 4096, 3));
+        h->openForWrite(0);
+        h->write(data.data(), 50);
+        h->flush();
+        h->write(data.data() + 50, 50);
+        h->close();
+
+        EXPECT(RadosObject(obj, 12).exists());
+
+        Buffer mem(data.size());
+        RadosMultiObjReadHandle g(obj);
+        EXPECT(g.openForRead() == Length(data.size()));
+        EXPECT(g.read(mem, mem.size()) == long(data.size()));
+        g.close();
+        EXPECT(std::string(static_cast<const char*>(mem.data()), mem.size()) == data);
+
+        obj.ensureAllDestroyed();
+    }
+
+    SECTION("RadosMultiObjWriteHandle stores an empty object") {
+
+        RadosObject obj(pool.name(), nspace, "empty-multi");
+
+        std::unique_ptr<DataHandle> h(obj.multipartWriteHandle(16));
+        h->openForWrite(0);
+        h->close();
+
+        EXPECT(obj.exists());
+
+        char c = 0;
+        RadosMultiObjReadHandle g(obj);
+        EXPECT(g.openForRead() == Length(0));
+        EXPECT(g.read(&c, 1) == 0);
+        g.close();
+
+        obj.ensureAllDestroyed();
+        EXPECT_NOT(obj.exists());
+    }
+
     SECTION("removeAll removes every part, also when some are already gone") {
 
         const std::string data(100, 'p');

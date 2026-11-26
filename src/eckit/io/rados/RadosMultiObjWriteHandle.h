@@ -36,6 +36,8 @@ public:  // methods
     RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0,
                              size_t maxAioBuffSize = 1024 * 1024, size_t maxHandleBuffSize = 1024);
 
+    ~RadosMultiObjWriteHandle() override;
+
     std::string title() const override;
 
 public:  // methods
@@ -55,6 +57,14 @@ public:  // methods
     void print(std::ostream& s) const override;
 
 
+private:  // methods
+
+    /// Opens a handle on the next part and makes it the current one.
+    void openPart();
+
+    /// Closes the handles held, optionally keeping the one of the part being written.
+    void closeParts(bool keepCurrent);
+
 private:  // members
 
     RadosObject object_;
@@ -68,6 +78,7 @@ private:  // members
     Offset position_{0};
     size_t part_{0};
     bool opened_{false};
+    bool partOpen_{false};  ///< the last handle is the one of a part which is still being written
 
     std::vector<std::unique_ptr<DataHandle>> handles_;
 };

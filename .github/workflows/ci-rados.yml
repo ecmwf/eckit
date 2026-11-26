@@ -8,12 +8,8 @@ on:
     tags-ignore:
       - "**"
 
-  # Trigger the workflow on pull request
-  pull_request: ~
-
-  # Trigger on public pull request approval
-  pull_request_target:
-    types: [labeled]
+  pull_request:
+    types: [opened, reopened, synchronize]
 
   # Trigger the workflow manually
   workflow_dispatch: ~
@@ -23,9 +19,20 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
+  ci-approval:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
+
   rados:
     name: Test Ceph/RADOS Backend
+    needs: ci-approval
     runs-on: ubuntu-latest
 
     env:
@@ -40,15 +47,17 @@ jobs:
 
     steps:
       - name: Checkout ecbuild
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ecmwf/ecbuild
           path: ecbuild
+          persist-credentials: false
 
       - name: Checkout eckit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: eckit
+          persist-credentials: false
 
       - name: Cache apt packages
         uses: actions/cache@v4

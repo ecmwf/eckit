@@ -28,6 +28,16 @@ configure_file( "${_repo}/VERSION" "${_staging}/VERSION" COPYONLY )
 set( PYTHONEXT_INSTALL_DIR "${_staging}/src" CACHE PATH "Install directory for Python extensions" FORCE )
 add_subdirectory( "${_repo}/python" python )
 
+# The extensions reach the staging directory only on install, which runs after the tests.
+enable_testing()
+add_test( NAME eckit-python_stage
+          COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --component python --prefix ${CMAKE_BINARY_DIR}/test-prefix )
+add_test( NAME eckit-python_pytest
+          COMMAND ${Python3_EXECUTABLE} -m pytest -vv -p no:cacheprovider --basetemp ${CMAKE_BINARY_DIR}/pytest-tmp "${_repo}/python/eckit/tests" )
+set_tests_properties( eckit-python_stage PROPERTIES FIXTURES_SETUP eckit-python_staged )
+set_tests_properties( eckit-python_pytest PROPERTIES FIXTURES_REQUIRED eckit-python_staged
+                      ENVIRONMENT "PYTHONPATH=${_staging}/src" )
+
 install( CODE "
     execute_process(
         COMMAND \"${Python3_EXECUTABLE}\" -m build --wheel --outdir \"\${CMAKE_INSTALL_PREFIX}/wheels\" \"${_staging}\"

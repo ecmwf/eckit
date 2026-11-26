@@ -4,6 +4,6 @@
 {% block set_environment %}
 {% import "ci-infrastructure/python.j2" as py %}
 {{ py.get_python_via_uv(python_version) }}
-uv pip install build cython
+uv pip install build -r "$CI_SOURCE_DIR/python/eckit/requirements.txt"
 CI_SOURCE_DIR="$CI_SOURCE_DIR/.ci/packages/eckit-python"
 {% endblock %}

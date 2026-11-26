@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
-#include <iostream>
 #include <mutex>
 #include <ostream>
 #include <set>
@@ -39,7 +38,7 @@ int call_rados(int code, const char* msg, const char* file, int line, const char
     LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => " << msg << std::endl;
 
     if (code < 0) {
-        std::cout << "RADOS_FAIL !! " << msg << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL failed [" << code << "] " << msg << std::endl;
         if (code == -ENOENT) {
             throw eckit::RadosEntityNotFoundException(msg);
         }
@@ -162,14 +161,13 @@ RadosCluster::RadosCluster() : cluster_(0) {
 
     uint64_t flags = 0;
 
-    std::cout << "RadosClusterName is " << radosClusterName << std::endl;
-    std::cout << "RadosClusterUser is " << radosClusterUser << std::endl;
-
+    LOG_DEBUG_LIB(LibEcKit) << "RadosClusterName is " << radosClusterName << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosClusterUser is " << radosClusterUser << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosClusterConf is " << radosClusterConf << std::endl;
 
     /* Initialize the cluster handle with the "ceph" cluster name and the "client.admin" user */
     RADOS_CALL(rados_create2(&cluster_, radosClusterName.c_str(), radosClusterUser.c_str(), flags));
 
-    std::cout << "RadosClusterConf is " << radosClusterConf << std::endl;
     RADOS_CALL(rados_conf_read_file(cluster_, radosClusterConfPath.fullName().path().c_str()));
 
     RADOS_CALL(rados_connect(cluster_));

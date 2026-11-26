@@ -13,6 +13,7 @@
 #include <rados/librados.h>
 
 #include <algorithm>
+#include <limits>
 #include <ostream>
 #include <string>
 
@@ -56,7 +57,8 @@ long RadosPartHandle::read(void* buf, long len) {
         return 0;
     }
 
-    len = std::min<long>(len, remaining);
+    /// @note: librados rejects reads larger than INT_MAX. A short read is fine for the caller.
+    len = std::min<long long>({len, remaining, std::numeric_limits<int>::max()});
 
     int read = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                      reinterpret_cast<char*>(buf), len, offset_ + pos_));

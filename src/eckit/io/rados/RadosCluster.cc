@@ -191,12 +191,19 @@ RadosCluster::RadosCluster() : cluster_(0) {
 
     static const std::string radosClusterName =
         Resource<std::string>("radosClusterName;$ECKIT_RADOS_CLUSTER_NAME", "ceph");
-    static const std::string radosClusterUser =
-        Resource<std::string>("radosClusterUser;$ECKIT_RADOS_CLUSTER_USER", "client.admin");
+    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser;$ECKIT_RADOS_CLUSTER_USER", "");
     static const std::string radosClusterConf =
         Resource<std::string>("radosClusterConf;$ECKIT_RADOS_CLUSTER_CONF", "~/.ceph/ceph.conf");
 
     static const PathName radosClusterConfPath(radosClusterConf, true);
+
+    /// @note: no default user, so that nothing connects with administrator credentials unknowingly
+    if (radosClusterUser.empty()) {
+        throw UserError(
+            "No Ceph user configured: set the radosClusterUser resource or the ECKIT_RADOS_CLUSTER_USER "
+            "environment variable, e.g. to client.<name>",
+            Here());
+    }
 
     uint64_t flags = 0;
 
@@ -204,7 +211,6 @@ RadosCluster::RadosCluster() : cluster_(0) {
     LOG_DEBUG_LIB(LibEcKit) << "RadosClusterUser is " << radosClusterUser << std::endl;
     LOG_DEBUG_LIB(LibEcKit) << "RadosClusterConf is " << radosClusterConf << std::endl;
 
-    /* Initialize the cluster handle with the "ceph" cluster name and the "client.admin" user */
     RADOS_CALL(rados_create2(&cluster_, radosClusterName.c_str(), radosClusterUser.c_str(), flags));
 
     /// @note: the destructor does not run if the constructor fails

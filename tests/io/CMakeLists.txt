@@ -53,7 +53,13 @@ endforeach()
 # The RADOS tests need a cluster. Unless they manage their own pools (ENABLE_RADOS_TESTS_MANAGE_POOLS)
 # they work in an existing pool, named by the ECKIT_RADOS_TEST_POOL cmake variable or, if that is not
 # set, by the ECKIT_RADOS_TEST_POOL environment variable at the time the tests run.
+#
+# The Ceph user has no default. It is taken from the ECKIT_RADOS_TEST_USER cmake variable or, if that is
+# not set, from the ECKIT_RADOS_CLUSTER_USER environment variable at the time the tests run.
 set( _rados_test_env )
+if( eckit_HAVE_RADOS AND ECKIT_RADOS_TEST_USER )
+    list( APPEND _rados_test_env ECKIT_RADOS_CLUSTER_USER=${ECKIT_RADOS_TEST_USER} )
+endif()
 if( eckit_HAVE_RADOS AND NOT eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
     if( ECKIT_RADOS_TEST_POOL )
         list( APPEND _rados_test_env ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )

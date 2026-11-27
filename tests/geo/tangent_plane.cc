@@ -7,6 +7,7 @@
 
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/TangentPlane.h"
+#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
@@ -19,6 +20,7 @@
 namespace eckit::geo::test {
 
 
+// unit vectors from a few trigonometric operations (orthonormal eps, smaller than PointXYZ::EPS)
 constexpr double EPS = 1e-12;
 
 
@@ -34,24 +36,18 @@ void expect_orthonormal(const TangentPlane& plane, const PointXYZ& up) {
 }
 
 
-void expect_point(const PointXYZ& p, const PointXYZ& q) {
-    EXPECT_APPROX(p.X(), q.X(), EPS);
-    EXPECT_APPROX(p.Y(), q.Y(), EPS);
-    EXPECT_APPROX(p.Z(), q.Z(), EPS);
-}
-
-
 CASE("sphere: axes") {
+    const figure::Sphere sphere(1.);
     const projection::LonLatToXYZ to_xyz(1.);
 
     SECTION("at the origin of longitude/latitude") {
         const PointLonLat geodetic{0., 0.};
         const auto origin = to_xyz.fwd(geodetic);
 
-        for (const auto& plane : {TangentPlane(origin), TangentPlane(origin, geodetic)}) {
-            expect_point(plane.origin(), origin);
-            expect_point(plane.east(), {0., 1., 0.});
-            expect_point(plane.north(), {0., 0., 1.});
+        for (const auto& plane : {TangentPlane(origin), TangentPlane(sphere, geodetic)}) {
+            EXPECT(points_equal(plane.origin(), origin));
+            EXPECT(points_equal(plane.east(), {0., 1., 0.}));
+            EXPECT(points_equal(plane.north(), {0., 0., 1.}));
         }
     }
 
@@ -59,12 +55,13 @@ CASE("sphere: axes") {
         for (const auto& geodetic : {PointLonLat{10., 20.}, PointLonLat{-170., -45.}, PointLonLat{90., 89.}}) {
             const auto origin = to_xyz.fwd(geodetic);
             const TangentPlane a(origin);
-            const TangentPlane b(origin, geodetic);
+            const TangentPlane b(sphere, geodetic);
 
             expect_orthonormal(a, origin);
             expect_orthonormal(b, origin);
-            expect_point(a.east(), b.east());
-            expect_point(a.north(), b.north());
+            EXPECT(points_equal(a.origin(), b.origin()));
+            EXPECT(points_equal(a.east(), b.east()));
+            EXPECT(points_equal(a.north(), b.north()));
         }
     }
 
@@ -73,10 +70,10 @@ CASE("sphere: axes") {
             const PointLonLat geodetic{0., lat};
             const auto origin = to_xyz.fwd(geodetic);
 
-            for (const auto& plane : {TangentPlane(origin), TangentPlane(origin, geodetic)}) {
+            for (const auto& plane : {TangentPlane(origin), TangentPlane(sphere, geodetic)}) {
                 expect_orthonormal(plane, {0., 0., lat > 0. ? 1. : -1.});
-                expect_point(plane.east(), {0., 1., 0.});
-                expect_point(plane.north(), {lat > 0. ? -1. : 1., 0., 0.});
+                EXPECT(points_equal(plane.east(), {0., 1., 0.}));
+                EXPECT(points_equal(plane.north(), {lat > 0. ? -1. : 1., 0., 0.}));
             }
         }
     }
@@ -88,16 +85,17 @@ CASE("sphere: offsets of nearby points") {
     constexpr double h = 1e-5;  // [degree]
     const auto dh      = h * util::DEGREE_TO_RADIAN;
 
+    const figure::Sphere sphere(R);
     const projection::LonLatToXYZ to_xyz(R);
 
     for (const auto& geodetic : {PointLonLat{0., 0.}, PointLonLat{30., 60.}, PointLonLat{-120., -30.}}) {
-        const TangentPlane plane(to_xyz.fwd(geodetic), geodetic);
+        const TangentPlane plane(sphere, geodetic);
         const auto lon = geodetic.lon();
         const auto lat = geodetic.lat();
 
         const auto o = plane(plane.origin());
-        EXPECT_APPROX(o.X(), 0., EPS);
-        EXPECT_APPROX(o.Y(), 0., EPS);
+        EXPECT_APPROX(o.X(), 0., PointXYZ::EPS);
+        EXPECT_APPROX(o.Y(), 0., PointXYZ::EPS);
 
         const auto e = plane(to_xyz.fwd({lon + h, lat}));
         EXPECT_APPROX(e.X() / (R * std::cos(lat * util::DEGREE_TO_RADIAN) * dh), 1., 1e-8);
@@ -124,7 +122,8 @@ CASE("oblate spheroid: normal to the surface, offsets by the radii of curvature"
         const auto phi = lat * util::DEGREE_TO_RADIAN;
         const auto lam = lon * util::DEGREE_TO_RADIAN;
 
-        const TangentPlane plane(to_xyz.fwd(geodetic), geodetic);
+        const TangentPlane plane(*wgs84, geodetic);
+        EXPECT(points_equal(plane.origin(), to_xyz.fwd(geodetic)));
 
         // the surface normal (geodetic), not the radial direction
         const PointXYZ normal{std::cos(phi) * std::cos(lam), std::cos(phi) * std::sin(lam), std::sin(phi)};

@@ -12,13 +12,16 @@
 namespace eckit::geo {
 
 
+class Figure;
+
+
 /**
  * @brief Local tangent plane at a point, with axes east and north
  *
  * Offsets of nearby points are their projection on the plane, in the units of the coordinates, valid for distances much
- * smaller than the figure. From a position alone, the plane is normal to the radial direction (sphere); from the
- * geodetic longitude/latitude too, it is normal to the surface (sphere or oblate spheroid). At the poles, east is the Y
- * axis.
+ * smaller than the figure. From a position alone, the plane is normal to the radial direction (sphere); from a figure
+ * and a geodetic longitude/latitude, it is normal to the surface (sphere or oblate spheroid), with the origin on the
+ * surface. At the poles, east is the Y axis.
  */
 class TangentPlane {
 public:
@@ -26,7 +29,10 @@ public:
     // -- Constructors
 
     explicit TangentPlane(const PointXYZ& origin);
-    TangentPlane(const PointXYZ& origin, const PointLonLat& geodetic);
+
+    /// Tangent plane at a geodetic longitude/latitude [degree] on the surface of a figure: the origin is computed from
+    /// both, so it is always consistent with the axes
+    TangentPlane(const Figure&, const PointLonLat& geodetic);
 
     // -- Operators
 

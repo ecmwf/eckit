@@ -7,6 +7,8 @@
 #include <cmath>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util.h"
 
 
@@ -36,7 +38,8 @@ TangentPlane::TangentPlane(const PointXYZ& origin) : origin_(origin) {
 }
 
 
-TangentPlane::TangentPlane(const PointXYZ& origin, const PointLonLat& geodetic) : origin_(origin) {
+TangentPlane::TangentPlane(const Figure& figure, const PointLonLat& geodetic) :
+    origin_(projection::LonLatToXYZ(figure.a(), figure.b()).fwd(geodetic)) {
     const auto phi    = geodetic.lat() * util::DEGREE_TO_RADIAN;
     const auto lambda = geodetic.lon() * util::DEGREE_TO_RADIAN;
 

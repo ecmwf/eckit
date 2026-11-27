@@ -131,6 +131,13 @@ public:
     double eccentricity() const;
     double flattening() const;
 
+    /// Meridional radius of curvature, M, at a geodetic latitude [degree]: length [L] per angle [radian] to the north
+    double meridional_radius(double lat) const;
+
+    /// Prime vertical radius of curvature, N, at a geodetic latitude [degree]: length [L] per angle [radian] normal to
+    /// the meridian (to the east, N cos(lat) along the parallel)
+    double prime_vertical_radius(double lat) const;
+
     Conformal conformal() const { return Conformal(eccentricity()); }
     Authalic authalic() const { return Authalic(eccentricity()); }
 

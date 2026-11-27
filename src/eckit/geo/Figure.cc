@@ -197,6 +197,19 @@ double Figure::Authalic::phi(double q) const {
 }
 
 
+double Figure::meridional_radius(double lat) const {
+    const auto e = eccentricity();
+    const auto s = e * std::sin(lat * util::DEGREE_TO_RADIAN);
+    return a() * (1. - e * e) / std::pow(1. - s * s, 1.5);
+}
+
+
+double Figure::prime_vertical_radius(double lat) const {
+    const auto s = eccentricity() * std::sin(lat * util::DEGREE_TO_RADIAN);
+    return a() / std::sqrt(1. - s * s);
+}
+
+
 bool Figure::is_default() const {
     // default figures are known figures (not all)
     auto fn = std::find_if(KNOWN.begin(), KNOWN.end(), [this](const auto& fn) { return *fn.first == *this; });

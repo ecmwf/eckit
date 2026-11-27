@@ -15,6 +15,8 @@
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/figure/SphereT.h"
 #include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -331,6 +333,50 @@ CASE("Two-unit Sphere") {
         auto local_1 = s1.area(bbox);
         auto local_2 = s2.area(bbox);
         EXPECT(types::is_approximately_equal(4. * local_1, local_2));
+    }
+}
+
+
+CASE("Figure: radii of curvature") {
+    constexpr double eps = 1e-12;
+
+    SECTION("sphere: one radius") {
+        const figure::Sphere sphere(2.);
+        for (double lat : {-90., -30., 0., 45., 90.}) {
+            EXPECT(types::is_approximately_equal(sphere.meridional_radius(lat), 2., eps));
+            EXPECT(types::is_approximately_equal(sphere.prime_vertical_radius(lat), 2., eps));
+        }
+    }
+
+    SECTION("oblate spheroid: at the equator and the poles") {
+        constexpr double a = 1.;
+        constexpr double b = 0.5;
+
+        const figure::OblateSpheroid spheroid(a, b);
+        EXPECT(types::is_approximately_equal(spheroid.meridional_radius(0.), b * b / a, eps));
+        EXPECT(types::is_approximately_equal(spheroid.prime_vertical_radius(0.), a, eps));
+
+        for (double lat : {-90., 90.}) {
+            EXPECT(types::is_approximately_equal(spheroid.meridional_radius(lat), a * a / b, eps));
+            EXPECT(types::is_approximately_equal(spheroid.prime_vertical_radius(lat), a * a / b, eps));
+        }
+    }
+
+    SECTION("oblate spheroid: lengths of short arcs, along the meridian and the parallel") {
+        F wgs84(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));
+
+        const projection::LonLatToXYZ to_xyz(wgs84->a(), wgs84->b());
+        constexpr double h = 1e-4;  // [degree]
+        const auto dh      = 2. * h * util::DEGREE_TO_RADIAN;
+
+        for (double lat : {-60., 0., 30., 75.}) {
+            const auto meridian = PointXYZ::distance(to_xyz.fwd({10., lat - h}), to_xyz.fwd({10., lat + h}));
+            EXPECT(types::is_approximately_equal(meridian / dh / wgs84->meridional_radius(lat), 1., 1e-8));
+
+            const auto parallel = PointXYZ::distance(to_xyz.fwd({10. - h, lat}), to_xyz.fwd({10. + h, lat}));
+            const auto radius   = wgs84->prime_vertical_radius(lat) * std::cos(lat * util::DEGREE_TO_RADIAN);
+            EXPECT(types::is_approximately_equal(parallel / dh / radius, 1., 1e-8));
+        }
     }
 }
 

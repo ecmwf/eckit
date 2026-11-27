@@ -56,6 +56,7 @@ foreach(_test
         search
         search_kdtree
         sh
+        tangent_plane
         util)
     eckit_geo_add_test(${_test})
 endforeach()

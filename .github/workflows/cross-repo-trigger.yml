@@ -150,7 +150,7 @@ jobs:
         with:
           current-branch: ${{ steps.pick.outputs.ref }}
           pin: ${{ !inputs.rebuild-request && (inputs.pin || format('{0}@{1}', inputs.from-repo, inputs.from-sha)) || inputs.pin }}
-          matrix: build
+          matrix: build,python
           token: ${{ steps.mint.outputs.token }}
           rebuild-missing: 'true'
 
@@ -247,3 +247,85 @@ jobs:
           phase: finish
           check-runs: ${{ needs.check-start__eckit__build.outputs.check-runs }}
           job-result: ${{ needs.eckit__build.result }}
+
+  eckit__python:
+    needs: [resolve, rebuild-producers, eckit__build]
+    if: ${{ !failure() && !cancelled() && (contains(fromJSON(inputs.from-jobs), 'ecbuild/build') || contains(fromJSON(inputs.from-jobs), 'stack-deps/build') || inputs.rebuild-request) && needs.eckit__build.result == 'success' }}
+    name: eckit/python (${{ matrix._resolved['job-name'] }})
+    runs-on: ${{ matrix['runs-on'] }}
+    container:
+      image: ${{ matrix.container || '' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(inputs.resolved || needs.resolve.outputs.json)['python'] }}
+    steps:
+      - id: mint
+        uses: ecmwf/ci-infrastructure/actions/mint-token@main
+        with:
+          client-id: ${{ vars.CI_READER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CI_READER_APP_PRIVATE_KEY }}
+          repositories: ecbuild,eckit,stack-dependencies
+          permissions: contents:read actions:read
+      - name: Announce image
+        uses: ecmwf/ci-infrastructure/actions/announce-image@main
+      - uses: actions/checkout@v6
+        with:
+          repository: ecmwf/eckit
+          ref: ${{ inputs.resolved-ref || needs.resolve.outputs.ref }}
+          token: ${{ steps.mint.outputs.token }}
+          persist-credentials: false
+      - name: Fetch resolved deps
+        id: deps
+        uses: ecmwf/ci-infrastructure/actions/fetch-deps@main
+        with:
+          deps-json: ${{ toJSON(matrix._resolved.deps) }}
+          token: ${{ steps.mint.outputs.token }}
+      - name: Build
+        id: build
+        uses: ecmwf/ci-infrastructure/actions/run-job-script@main
+        with:
+          job-script: ${{ matrix.job-script }}
+          matrix-leg: ${{ toJSON(matrix) }}
+          package: eckit
+          cmake-prefix-path: ${{ steps.deps.outputs.cmake-prefix-path }}
+      - name: Publish
+        uses: ecmwf/ci-infrastructure/actions/publish-artifact@main
+        with:
+          install-path: ${{ steps.build.outputs.install-path }}
+          artifact-name: ${{ matrix._resolved['own-artifact-name'] }}
+
+  check-start__eckit__python:
+    needs: [resolve]
+    if: ${{ !failure() && !cancelled() && (contains(fromJSON(inputs.from-jobs), 'ecbuild/build') || contains(fromJSON(inputs.from-jobs), 'stack-deps/build') || inputs.rebuild-request) && github.event_name == 'workflow_dispatch' && inputs.from-jobs != '[]' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      check-runs: ${{ steps.report.outputs.check-runs }}
+    steps:
+      - id: report
+        uses: ecmwf/ci-infrastructure/actions/report-check-runs@main
+        with:
+          client-id: ${{ vars.CI_REPORTER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CI_REPORTER_APP_PRIVATE_KEY }}
+          head-repo: ${{ inputs.from-repo }}
+          head-sha: ${{ inputs.from-sha }}
+          phase: start
+          job-name: eckit/python
+          matrix: ${{ toJSON(fromJSON(inputs.resolved || needs.resolve.outputs.json)['python']) }}
+
+  check-finish__eckit__python:
+    needs: [check-start__eckit__python, eckit__python]
+    if: ${{ always() && needs.check-start__eckit__python.outputs.check-runs != '' && needs.check-start__eckit__python.outputs.check-runs != '{}' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - uses: ecmwf/ci-infrastructure/actions/report-check-runs@main
+        with:
+          client-id: ${{ vars.CI_REPORTER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CI_REPORTER_APP_PRIVATE_KEY }}
+          head-repo: ${{ inputs.from-repo }}
+          head-sha: ${{ inputs.from-sha }}
+          phase: finish
+          check-runs: ${{ needs.check-start__eckit__python.outputs.check-runs }}
+          job-result: ${{ needs.eckit__python.result }}

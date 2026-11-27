@@ -5,11 +5,10 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosAttributes_h
-#define eckit_io_rados_RadosAttributes_h
+#pragma once
 
 #include <map>
-#include <memory>
+#include <ostream>
 #include <string>
 
 #include "eckit/io/Length.h"
@@ -18,9 +17,6 @@
 
 
 namespace eckit {
-
-class Stream;
-
 
 class RadosAttributes {
 public:
@@ -45,7 +41,7 @@ public:
         return false;
     }
 
-    bool get(const std::string& name, Length& value) {
+    bool get(const std::string& name, Length& value) const {
         long long v;
         if (!get(name, v)) {
             return false;
@@ -54,7 +50,7 @@ public:
         return true;
     }
 
-    bool get(const std::string& name, Offset& value) {
+    bool get(const std::string& name, Offset& value) const {
         long long v;
         if (!get(name, v)) {
             return false;
@@ -80,5 +76,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

@@ -3,96 +3,80 @@
 
 #include "eckit/io/rados/RadosHandle.h"
 
+#include <rados/librados.h>
+
+#include <algorithm>
+#include <ostream>
+#include <sstream>
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCall.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec RadosHandle::classSpec_ = {
-    &DataHandle::classSpec(),
-    "RadosHandle",
-};
-
-Reanimator<RadosHandle> RadosHandle::reanimator_;
-
-void RadosHandle::print(std::ostream& s) const {
-    s << "RadosHandle[" << object_ << ']';
-}
-
-void RadosHandle::encode(Stream& s) const {
-    DataHandle::encode(s);
-    s << object_;
-}
-
-RadosHandle::RadosHandle(Stream& s) : DataHandle(s), object_(s), offset_(0), opened_(false), write_(false) {}
-
-RadosHandle::RadosHandle(const RadosObject& object) : object_(object), offset_(0), opened_(false), write_(false) {}
-
-
-RadosHandle::RadosHandle(const std::string& object) : object_(object), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(const RadosObject& object) : object_(object) {}
 
 RadosHandle::~RadosHandle() {
-    // std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
-
-    if (opened_) {
-        close();
+    if (isOpen()) {
+        eckit::Log::error() << *this << " not closed before destruction." << std::endl;
     }
 }
 
-void RadosHandle::open() {
-
-    // std::cout << "RadosHandle::open " << object_ << std::endl;
-
-    ASSERT(!opened_);
-
-    offset_ = 0;
-
-    opened_ = true;
+void RadosHandle::print(std::ostream& s) const {
+    s << "RadosHandle[" << object_.str() << ']';
 }
 
-Length RadosHandle::estimate() {
+std::string RadosHandle::title() const {
+    return PathName::shorten(object_.str());
+}
+
+Length RadosHandle::size() {
     return RadosCluster::instance().size(object_);
 }
 
 Length RadosHandle::openForRead() {
 
-    // std::cout << "RadosHandle::openForRead " << object_ << std::endl;
+    ASSERT(!isOpen());
 
-    open();
-    write_ = false;
+    const Length length = size();
 
-    return RadosCluster::instance().size(object_);
+    offset_ = 0;
+    mode_   = Mode::Read;
+
+    return length;
 }
 
-void RadosHandle::openForWrite(const Length& length) {
+void RadosHandle::openForWrite(const Length&) {
 
-    // std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
+    ASSERT(!isOpen());
 
-    RadosCluster::instance().ensurePool(object_);
-    RadosCluster::instance().truncate(object_);
+    /// @note: fails here, rather than on the first write, if the pool does not exist
+    RadosCluster::instance().ioCtx(object_);
 
-    open();
-    write_ = true;
-}
-
-void RadosHandle::openForAppend(const Length&) {
-    NOTIMP;
+    offset_   = 0;
+    truncate_ = true;
+    mode_     = Mode::Write;
 }
 
 long RadosHandle::read(void* buffer, long length) {
 
-    // std::cout << "RadosHandle::read " << object_ << " " << length << std::endl;
+    ASSERT(mode_ == Mode::Read);
 
-    ASSERT(opened_);
-    ASSERT(!write_);
+    /// @note: a short read is fine for the caller
+    length = std::min(length, radosMaxReadSize);
 
-    long maxLength = RadosCluster::instance().maxObjectSize();
-
-    long readLength = length > maxLength ? maxLength : length;
-
-    int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.oid().c_str(),
-                                    reinterpret_cast<char*>(buffer), readLength, offset_));
-    // ASSERT(len  > 0);
+    const int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                                          static_cast<char*>(buffer), length, offset_));
 
     offset_ += len;
 
@@ -101,42 +85,86 @@ long RadosHandle::read(void* buffer, long length) {
 
 long RadosHandle::write(const void* buffer, long length) {
 
-    ASSERT(length);
+    ASSERT(mode_ == Mode::Write);
 
-    // std::cout << "RadosHandle::write " << object_ << " " << length << std::endl;
+    if (length == 0) {
+        return 0;
+    }
 
-    ASSERT(opened_);
-    ASSERT(write_);
+    const long long maxWrite  = RadosCluster::instance().maxWriteSize();
+    const long long maxObject = RadosCluster::instance().maxObjectSize();
 
-    RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_), object_.oid().c_str(),
-                           reinterpret_cast<const char*>(buffer), length, offset_));
+    if (length > maxWrite || static_cast<long long>(offset_) + length > maxObject) {
+        std::ostringstream oss;
+        oss << "Write of " << length << " bytes at offset " << offset_ << " of " << object_.str()
+            << " exceeds the maximum write size of " << maxWrite << " bytes or the maximum object size of " << maxObject
+            << " bytes";
+        throw BadValue(oss.str(), Here());
+    }
 
+    const char* buf = static_cast<const char*>(buffer);
+
+    RadosWriteOp op;
+
+    if (!truncate_) {
+        rados_write_op_write(op.op_, buf, length, offset_);
+    }
+    else if (offset_ == 0) {
+        /// @note: replaces the whole content, creating the object if needed
+        rados_write_op_write_full(op.op_, buf, length);
+    }
+    else {
+        rados_write_op_create(op.op_, LIBRADOS_CREATE_IDEMPOTENT, nullptr);
+        rados_write_op_truncate(op.op_, 0);
+        rados_write_op_write(op.op_, buf, length, offset_);
+    }
+
+    submit(op, length);
+
+    truncate_ = false;
     offset_ += length;
 
     return length;
 }
 
-void RadosHandle::flush() {
-    // NOTIMP;
+void RadosHandle::submit(RadosWriteOp& op, long) {
+    RADOS_CALL(
+        rados_write_op_operate(op.op_, RadosCluster::instance().ioCtx(object_), object_.name().c_str(), nullptr, 0));
 }
 
-void RadosHandle::close() {
-    std::cout << "RadosHandle::close " << object_ << std::endl;
-    ASSERT(opened_);
-    opened_ = false;
+void RadosHandle::flush() {}
+
+Offset RadosHandle::seek(const Offset& offset) {
+    ASSERT(isOpen());
+    ASSERT(offset >= Offset(0));
+    offset_ = offset;
+    return offset;
 }
 
 void RadosHandle::rewind() {
+    ASSERT(isOpen());
     offset_ = 0;
 }
-
 
 Offset RadosHandle::position() {
     return offset_;
 }
 
-std::string RadosHandle::title() const {
-    return PathName::shorten(object_.str());
+void RadosHandle::close() {
+
+    ASSERT(isOpen());
+
+    const bool empty = mode_ == Mode::Write && truncate_;
+
+    mode_     = Mode::Closed;
+    truncate_ = false;
+
+    /// @note: nothing was written, so the object is left existing and empty
+    if (empty) {
+        RadosCluster::instance().truncate(object_);
+    }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

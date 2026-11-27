@@ -3,10 +3,7 @@
 
 #include "eckit/io/rados/RadosAttributes.h"
 
-#include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
+#include <ostream>
 
 namespace eckit {
 

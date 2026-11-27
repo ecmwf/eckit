@@ -50,17 +50,53 @@ foreach(_test
                     LIBS    eckit )
 endforeach()
 
-ecbuild_add_test( TARGET      eckit_test_radoshandle
-                  SOURCES     test_radoshandle.cc
-                  CONDITION   HAVE_RADOS
-                  INCLUDES    ${RADOS_INCLUDE_DIRS}
-                  LIBS        eckit )
+# The RADOS tests need a cluster. Unless they manage their own pools (ENABLE_RADOS_TESTS_MANAGE_POOLS)
+# they work in an existing pool, named by the ECKIT_RADOS_TEST_POOL cmake variable or, if that is not
+# set, by the ECKIT_RADOS_TEST_POOL environment variable at the time the tests run.
+#
+# The Ceph user has no default. It is taken from the ECKIT_RADOS_TEST_USER cmake variable or, if that is
+# not set, from the ECKIT_RADOS_CLUSTER_USER environment variable at the time the tests run.
+#
+# The eckit RADOS headers include the librados ones, which eckit does not pass on to what links to it.
+set( _rados_test_libs )
+if( eckit_HAVE_RADOS )
+    list( APPEND _rados_test_libs Ceph::RADOS )
+endif()
+
+set( _rados_test_defs )
+if( eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
+    list( APPEND _rados_test_defs eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
+endif()
+
+set( _rados_test_env )
+if( eckit_HAVE_RADOS AND ECKIT_RADOS_TEST_USER )
+    list( APPEND _rados_test_env ECKIT_RADOS_CLUSTER_USER=${ECKIT_RADOS_TEST_USER} )
+endif()
+if( eckit_HAVE_RADOS AND NOT eckit_HAVE_RADOS_TESTS_MANAGE_POOLS )
+    if( ECKIT_RADOS_TEST_POOL )
+        list( APPEND _rados_test_env ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
+    else()
+        message( STATUS "RADOS tests: ECKIT_RADOS_TEST_POOL is not set, the tests will read it from the environment" )
+    endif()
+endif()
+
+foreach( _test radoshandle rados_kv )
+    ecbuild_add_test( TARGET      eckit_test_${_test}
+                      SOURCES     test_${_test}.cc
+                      CONDITION   eckit_HAVE_RADOS
+                      LABELS      rados
+                      LIBS        eckit ${_rados_test_libs}
+                      DEFINITIONS ${_rados_test_defs}
+                      ENVIRONMENT ${_rados_test_env} )
+endforeach()
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc
-                  CONDITION   HAVE_EXTRA_TESTS AND HAVE_RADOS
-                  INCLUDES    ${RADOS_INCLUDE_DIRS}
+                  CONDITION   HAVE_EXTRA_TESTS AND eckit_HAVE_RADOS
+                  LABELS      rados
                   TEST_DEPENDS get_eckit_io_test_data
-                  LIBS        eckit )
+                  LIBS        eckit ${_rados_test_libs}
+                  DEFINITIONS ${_rados_test_defs}
+                  ENVIRONMENT ${_rados_test_env} )
 
 add_subdirectory( fam )

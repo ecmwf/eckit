@@ -409,6 +409,43 @@ CASE("Search: grid points find themselves, on their figure") {
 }
 
 
+CASE("Search: grid points off the figure (space_view) not searched") {
+    // a sector across the west edge of the visible disc, of points off it (NaN)
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string(
+        R"({"dx":3622,"dy":3622,"nr":6.6107,"nx":12,"ny":4,"type":"space_view","xo":40,"xp":1856,"yo":1854,"yp":1856})"));
+
+    std::vector<size_t> on;
+    size_t i = 0;
+    for (const auto& p : *grid) {
+        if (const auto q = std::get<PointLonLat>(p); std::isfinite(q.lat()) && std::isfinite(q.lon())) {
+            on.push_back(i);
+        }
+        ++i;
+    }
+
+    EXPECT(0 < on.size() && on.size() < grid->size());
+
+    for (const auto& loader : {"memory", "mapped-file"}) {
+        const Search search(*grid, spec::Custom{}, Search::Storage{loader, Search::Storage::library().files});
+        EXPECT_EQUAL(search.size(), on.size());
+
+        // the points on the figure find themselves, by their grid index
+        for (auto j : on) {
+            const auto n = search.search_nn(grid->point(j));
+            EXPECT_EQUAL(n.index, j);
+            EXPECT(n.distance < 1e-6);
+        }
+
+        // the nearest points are of these only
+        const auto all = search.search_knn(grid->point(on.front()), grid->size());
+        EXPECT_EQUAL(all.size(), on.size());
+        for (const auto& n : all) {
+            EXPECT(std::isfinite(n.distance));
+        }
+    }
+}
+
+
 CASE("Grid::search") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{{"grid", "30/30"}}}));
 

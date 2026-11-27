@@ -5,13 +5,13 @@
 #include "eckit/geo/Search.h"
 
 #include <algorithm>
+#include <cmath>
 #include <exception>
 #include <limits>
 #include <map>
 #include <ostream>
 
 #include "eckit/eckit.h"
-
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
@@ -166,24 +166,33 @@ Search::Search(const Grid& grid, const Spec& spec, const Storage& storage) : sha
     shared_->to_xyz     = std::make_unique<projection::LonLatToXYZ>(FigureFactory::build(figure));
     shared_->llh_to_xyz = llh_to_xyz(figure, spec, has_heights(grid));
 
-    build(uid(grid, spec), grid.size(), spec, storage, [&grid, llh = shared_->llh_to_xyz.get()](auto& values) {
-        values.reserve(grid.size());
+    // points off the figure (e.g. of space_view grids, beyond the visible disc) aren't searchable, so the k-d tree has
+    // the other points only (of the grid indices), and its size is known before it is built or loaded
+    std::vector<KDTree::Value> values;
+    values.reserve(grid.size());
 
-        if (llh != nullptr) {
-            size_t i = 0;
-            for (const auto& p : grid) {
-                values.emplace_back(llh->fwd(std::get<PointLonLatH>(p)), i++);
-            }
-            return;
+    auto add = [&values](const PointXYZ& p, size_t i) {
+        if (std::isfinite(p.X()) && std::isfinite(p.Y()) && std::isfinite(p.Z())) {
+            values.emplace_back(p, i);
         }
+    };
 
+    if (const auto* llh = shared_->llh_to_xyz.get(); llh != nullptr) {
+        size_t i = 0;
+        for (const auto& p : grid) {
+            add(llh->fwd(std::get<PointLonLatH>(p)), i++);
+        }
+    }
+    else {
         const auto xyz = grid.to_xyz();
         ASSERT(xyz.size() == 3);
 
         for (size_t i = 0; i < xyz[0].size(); ++i) {
-            values.emplace_back(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, i);
+            add(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, i);
         }
-    });
+    }
+
+    build(uid(grid, spec), values.size(), spec, storage, [&values](auto& v) { v = std::move(values); });
 }
 
 

@@ -405,6 +405,15 @@ Grid::renumber_type Grid::reorder(const order_type&) const {
 }
 
 
+Grid::renumber_type Grid::reorder(const order_type& from, const order_type& to) const {
+    if (from == order()) {
+        return reorder(to);
+    }
+
+    throw exception::NotImplemented("Grid: reorder(from, to) is not implemented for type '" + type() + "'", Here());
+}
+
+
 Grid* Grid::make_grid_reordered(const order_type&) const {
     throw exception::NotImplemented("Grid: make_grid_reordered() is not implemented for type '" + type() + "'", Here());
 }

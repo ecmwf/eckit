@@ -45,6 +45,9 @@ public:
 
     const order_type& order() const override { return scan_.order(); }
     renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, nxacc()); }
+    renumber_type reorder(const order_type& from, const order_type& to) const override {
+        return order::ReducedScan{from}.reorder(to, nxacc());
+    }
 
 protected:
 

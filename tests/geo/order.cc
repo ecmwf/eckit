@@ -5,11 +5,13 @@
 #include <algorithm>
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/order/HEALPix.h"
 #include "eckit/geo/order/ReducedScan.h"
 #include "eckit/geo/order/RegularScan.h"
@@ -219,6 +221,37 @@ CASE("order=reduced scan") {
             }
         }
     }
+}
+
+
+CASE("Grid::reorder, from an order") {
+    // the renumbering of the order classes, of the grid's sizes; from the grid's own order as reorder(to)
+    std::unique_ptr<const Grid> ll(GridFactory::make_from_string("{grid: [10, 10], area: [10, 0, -10, 20]}"));
+    std::unique_ptr<const Grid> gg(GridFactory::make_from_string("{grid: O2}"));
+    std::unique_ptr<const Grid> hp(GridFactory::make_from_string("{grid: H2}"));
+
+    EXPECT(ll->reorder("i+j+", "i-j-") == order::RegularScan{"i+j+"}.reorder("i-j-", 3, 3));
+    const std::vector<size_t> nxacc{0, 20, 44, 68, 88};  // O2 pl: 20, 24, 24, 20
+    EXPECT(gg->reorder("i+j+", "i+j-") == order::ReducedScan{"i+j+"}.reorder("i+j-", nxacc));
+    EXPECT(hp->reorder(order::HEALPix::NESTED, order::HEALPix::RING) ==
+           order::HEALPix(2, order::HEALPix::NESTED).reorder(order::HEALPix::RING));
+
+    for (const auto* grid : {ll.get(), gg.get(), hp.get()}) {
+        EXPECT(grid->reorder(grid->order(), grid->order()) == grid->reorder(grid->order()));
+
+        // to an order and back, every point in place
+        const auto& from = grid == hp.get() ? order::HEALPix::NESTED : std::string{"i+j+"};
+        const auto to    = grid->reorder(grid->order(), from);
+        const auto back  = grid->reorder(from, grid->order());
+        for (size_t k = 0; k < to.size(); ++k) {
+            EXPECT(back[to[k]] == k);
+        }
+    }
+
+    // unstructured grids have no order to reorder from
+    std::unique_ptr<const Grid> un(
+        GridFactory::make_from_string("{type: unstructured_ll, longitudes: [0, 1], latitudes: [0, 1]}"));
+    EXPECT_THROWS_AS(un->reorder("i+j+", "i+j-"), exception::NotImplemented);
 }
 
 

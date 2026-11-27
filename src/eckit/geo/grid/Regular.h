@@ -28,6 +28,7 @@ public:
 
     const order_type& order() const final;
     renumber_type reorder(const order_type& to) const final;
+    renumber_type reorder(const order_type& from, const order_type& to) const final;
 
     /// Cropped by a bounding box (unprojected), of the same type and scanning mode if supported, otherwise unstructured
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const final;

@@ -47,6 +47,9 @@ public:
 
     const order_type& order() const override { return order_.order(); }
     renumber_type reorder(const order_type& to) const override { return order_.reorder(to); }
+    renumber_type reorder(const order_type& from, const order_type& to) const override {
+        return order::HEALPix{Nside(), from}.reorder(to);
+    }
 
     [[nodiscard]] Grid* make_grid_reordered(const order_type&) const override;
 

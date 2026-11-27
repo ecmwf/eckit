@@ -55,8 +55,10 @@ struct KDMemory : public StatCollector {
     void deleteNode(Ptr p, const Node*) {
         Node* n = static_cast<Node*>(p);
         if (n) {
-            deleteNode(n->left(*this), n);
-            deleteNode(n->right(*this), n);
+            // the nodes' allocator, which can derive from this (e.g. NoStatistics<KDMemory>)
+            auto& a = static_cast<typename Node::Alloc&>(*this);
+            deleteNode(n->left(a), n);
+            deleteNode(n->right(a), n);
             delete n;
             nbItems_--;
         }

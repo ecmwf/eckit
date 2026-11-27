@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <list>
+#include <random>
+#include <vector>
 
 #include "eckit/container/KDTree.h"
 #include "eckit/geometry/Point2.h"
+#include "eckit/geometry/Point3.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/testing/Test.h"
 
@@ -360,6 +363,58 @@ CASE("test_kdtree_iterate_empty") {
         count++;
     }
     EXPECT_EQUAL(count, 0);
+}
+
+CASE("test_kdtree_searches_as_brute_force") {
+    struct Traits {
+        using Point   = Point3;
+        using Payload = size_t;
+    };
+
+    std::mt19937 gen(1);
+    std::uniform_real_distribution<double> uniform(-1., 1.);
+
+    std::vector<KDTreeMemory<Traits>::Value> points;
+    for (size_t i = 0; i < 2000; ++i) {
+        points.emplace_back(Point3{uniform(gen), uniform(gen), uniform(gen)}, i);
+    }
+
+    auto ids = [](const auto& list) {
+        std::vector<size_t> v;
+        for (const auto& n : list) {
+            v.push_back(n.payload());
+        }
+        return v;
+    };
+
+    auto test = [&](auto& tree) {
+        auto copy = points;
+        tree.build(copy);
+
+        for (size_t i = 0; i < 200; ++i) {
+            const Point3 p{uniform(gen), uniform(gen), uniform(gen)};
+
+            EXPECT(tree.nearestNeighbour(p).payload() == tree.nearestNeighbourBruteForce(p).payload());
+
+            for (size_t k : {1, 4, 16, 50}) {
+                EXPECT(ids(tree.kNearestNeighbours(p, k)) == ids(tree.kNearestNeighboursBruteForce(p, k)));
+            }
+
+            for (double r : {0.05, 0.2, 0.5}) {
+                EXPECT(ids(tree.findInSphere(p, r)) == ids(tree.findInSphereBruteForce(p, r)));
+            }
+        }
+    };
+
+    SECTION("collecting statistics") {
+        KDTreeMemory<Traits> tree;
+        test(tree);
+    }
+
+    SECTION("not collecting statistics") {
+        KDTreeMemory<Traits, NoStatistics<KDMemory>> tree;
+        test(tree);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

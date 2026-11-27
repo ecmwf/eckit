@@ -60,13 +60,14 @@ public:
 };
 
 
-template <class Traits>
-class KDTreeMemory : public KDTreeX<TT<Traits, KDMemory>> {
-    KDMemory alloc_;
+// Alloc = NoStatistics<KDMemory> for queries not collecting statistics (no shared counters to write concurrently)
+template <class Traits, class Alloc = KDMemory>
+class KDTreeMemory : public KDTreeX<TT<Traits, Alloc>> {
+    Alloc alloc_;
 
 public:
 
-    using KDTree  = KDTreeX<TT<Traits, KDMemory>>;
+    using KDTree  = KDTreeX<TT<Traits, Alloc>>;
     using Value   = typename KDTree::Value;
     using Point   = typename KDTree::Point;
     using Payload = typename KDTree::Payload;
@@ -76,13 +77,14 @@ public:
     KDTreeMemory() : KDTree(alloc_) {}
 };
 
-template <class Traits>
-class KDTreeMapped : public KDTreeX<TT<Traits, KDMapped>> {
-    KDMapped alloc_;
+// Alloc = NoStatistics<KDMapped> for queries not collecting statistics (no shared counters to write concurrently)
+template <class Traits, class Alloc = KDMapped>
+class KDTreeMapped : public KDTreeX<TT<Traits, Alloc>> {
+    Alloc alloc_;
 
 public:
 
-    using KDTree  = KDTreeX<TT<Traits, KDMapped>>;
+    using KDTree  = KDTreeX<TT<Traits, Alloc>>;
     using Value   = typename KDTree::Value;
     using Point   = typename KDTree::Point;
     using Payload = typename KDTree::Payload;

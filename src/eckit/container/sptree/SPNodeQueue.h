@@ -6,7 +6,8 @@
 
 #include <algorithm>
 #include <limits>
-#include <queue>
+#include <utility>
+#include <vector>
 
 
 namespace eckit {
@@ -41,32 +42,49 @@ public:
 private:
 
     size_t k_;
-    std::priority_queue<NodeInfo> queue_;
+    std::vector<NodeInfo> heap_;  // max-heap by distance, at most k
+
+    // the farthest replaced by a nearer one (a single sift down, rather than a push and a pop)
+    void replace_top(const NodeInfo& info) {
+        const auto n = heap_.size();
+        size_t i     = 0;
+        for (size_t c = 1; c < n; c = 2 * i + 1) {
+            if (c + 1 < n && heap_[c] < heap_[c + 1]) {
+                ++c;
+            }
+            if (!(info < heap_[c])) {
+                break;
+            }
+            heap_[i] = heap_[c];
+            i        = c;
+        }
+        heap_[i] = info;
+    }
 
 public:
 
-    SPNodeQueue(size_t k) : k_(k) {}
+    SPNodeQueue(size_t k) : k_(k) { heap_.reserve(k); }
 
     void push(Node* n, ID id, double d) {
-        NodeInfo info(n, id, d);
-        queue_.push(info);
-        while (queue_.size() > k_) {
-            queue_.pop();
+        if (heap_.size() < k_) {
+            heap_.emplace_back(n, id, d);
+            std::push_heap(heap_.begin(), heap_.end());
+        }
+        else if (k_ > 0 && d < heap_.front().distance_) {
+            replace_top(NodeInfo(n, id, d));
         }
     }
 
-    double largest() const { return queue_.size() ? queue_.top().distance_ : std::numeric_limits<double>::max(); }
+    double largest() const { return heap_.empty() ? std::numeric_limits<double>::max() : heap_.front().distance_; }
 
+    // the candidates, nearest first (the queue is left empty)
     void fill(NodeList& v) {
-        v.reserve(k_);
-        while (!queue_.empty()) {
-            v.push_back(queue_.top());
-            queue_.pop();
-        }
+        v = std::move(heap_);
+        heap_.clear();
         std::sort(v.begin(), v.end());
     }
 
-    bool incomplete() const { return queue_.size() < k_; }
+    bool incomplete() const { return heap_.size() < k_; }
 };
 
 }  // namespace eckit

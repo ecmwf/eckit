@@ -68,6 +68,12 @@ public:
 
     static const order_type& order_default() { return RING; }
 
+    // -- Deprecated (see deprecated.cc)
+
+    [[deprecated("use HEALPix(Nside, order)")]] explicit HEALPix(const order_type&);
+    [[deprecated("use HEALPix(Nside, order).reorder(to)")]] renumber_type reorder(const order_type& to,
+                                                                                  size_t Nside) const;
+
 private:
 
     // -- Members

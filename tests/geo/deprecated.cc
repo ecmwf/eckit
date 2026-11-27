@@ -8,6 +8,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
+#include "eckit/geo/order/HEALPix.h"
 #include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/testing/Test.h"
@@ -41,6 +42,17 @@ CASE("order::Scan") {
     EXPECT(scan.reorder("i+j-", 3, 2) == order::RegularScan("i+j+").reorder("i+j-", 3, 2));
 
     EXPECT_THROWS_AS(order::Scan("i?j?"), exception::OrderError);
+}
+
+
+CASE("order::HEALPix") {
+    using order::HEALPix;
+
+    const HEALPix ring(HEALPix::RING);
+    EXPECT(ring.reorder(HEALPix::NESTED, 2) == HEALPix(2, HEALPix::RING).reorder(HEALPix::NESTED));
+    EXPECT(HEALPix(HEALPix::NESTED).reorder(HEALPix::RING, 4) == HEALPix(4, HEALPix::NESTED).reorder(HEALPix::RING));
+
+    EXPECT_THROWS_AS(HEALPix("unknown"), exception::OrderError);
 }
 
 

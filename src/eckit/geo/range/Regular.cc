@@ -5,6 +5,7 @@
 #include "eckit/geo/range/Regular.h"
 
 #include <algorithm>
+#include <cmath>
 #include <optional>
 #include <vector>
 
@@ -31,9 +32,18 @@ using lock_type = util::lock_type<lock_tag>;
 namespace detail {
 
 
-/// A multiple of inc, the nearest to target (up or down)
-Fraction adjust(const Fraction& target, const Fraction& inc, bool up) {
+/// A multiple of inc, the nearest to target (up or down); a multiple within precision is the target (e.g. of bounds
+/// encoded to the microdegree, truncated inwards), unless the increment is too small to tell
+Fraction adjust(const Fraction& target, const Fraction& inc, bool up, double precision = 0.) {
     auto r = target / inc;
+
+    if (0. < precision && 2. * precision < std::abs(static_cast<double>(inc))) {
+        if (const auto m = Fraction{static_cast<Fraction::value_type>(std::llround(static_cast<double>(r)))};
+            std::abs(static_cast<double>(target - m * inc)) <= precision) {
+            return m * inc;
+        }
+    }
+
     auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
 
     return n * inc;
@@ -187,10 +197,12 @@ Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fr
         const auto first = shift_ + detail::adjust(a_ - shift_, inc_, true);
         const auto last  = shift_ + detail::adjust(b_ - shift_, inc_, false);
 
+        // the last value of the first by the number of values (as a + k inc, the same of fractions of large terms, if
+        // rounded)
         if ((last - first) * inc_ >= 0) {
             a_    = first;
-            b_    = last;
-            size_ = detail::N(inc_, a_, b_);
+            size_ = detail::N(inc_, first, last);
+            b_    = a_ + Fraction{static_cast<Fraction::value_type>(size_ - 1)} * inc_;
         }
     }
 
@@ -199,6 +211,15 @@ Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fr
         inc_   = {};
         shift_ = {};
     }
+}
+
+
+Fraction Regular::adjust(const Fraction& value, const Fraction& inc, const Fraction& ref, bool up, double precision) {
+    ASSERT(inc != 0);
+    ASSERT(precision >= 0.);
+
+    const auto shift = detail::shift(ref, inc);
+    return shift + detail::adjust(value - shift, inc, up, precision);
 }
 
 

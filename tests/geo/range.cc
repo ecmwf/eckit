@@ -193,23 +193,30 @@ CASE("range::RegularLongitude") {
 
         EXPECT(cropped->size() == 1);
         EXPECT(cropped->a() == 0.);
-        EXPECT(cropped->increment() == 0.);
+        EXPECT(cropped->increment() == 11.25);
     }
 
 
     SECTION("degenerate") {
-        // a single value, as given and without increment
-        for (const auto& [range, value] : std::vector<std::pair<range::RegularLongitude, double>>{
-                 {range::RegularLongitude(1., 1., 1.), 1.},
-                 {range::RegularLongitude(2., 2., 2.), 2.},
-                 {range::RegularLongitude(0., 2., 2.), 2.},
-                 {range::RegularLongitude(0., 2., 2., 1.), 2.},
-                 {range::RegularLongitude(0.5, 2., 2., 0.1), 2.},  // not a multiple of the increment from ref
-                 {range::RegularLongitude(360., 0., 10.), 0.},     // a single multiple of the increment, not periodic
+        // a single value, as given and of the increment given
+        struct test_t {
+            range::RegularLongitude range;
+            double value;
+            double increment;
+        };
+
+        for (const auto& [range, value, increment] : std::vector<test_t>{
+                 {range::RegularLongitude(1., 1., 1.), 1., 1.},
+                 {range::RegularLongitude(2., 2., 2.), 2., 2.},
+                 {range::RegularLongitude(0., 2., 2.), 2., 0.},
+                 {range::RegularLongitude(0., 2., 2., 1.), 2., 0.},
+                 {range::RegularLongitude(0.5, 2., 2., 0.1), 2., 0.5},  // not a multiple of the increment from ref
+                 {range::RegularLongitude(360., 0., 10.), 0.,
+                  360.},  // a single multiple of the increment, not periodic
              }) {
             EXPECT(range.size() == 1);
             EXPECT(range.values().front() == value);
-            EXPECT(range.increment() == 0.);
+            EXPECT(range.increment() == increment);
             EXPECT_NOT(range.periodic());
         }
     }
@@ -458,25 +465,26 @@ CASE("range::Regular") {
 
 
 CASE("range::RegularLatitude, a single value") {
-    // a single value, as given and without increment (eg. a grid of a single point, row or column)
+    // a single value, as given and of the increment given (eg. a grid of a single point, row or column)
     struct test_t {
         range::RegularLatitude range;
         double value;
+        double increment;
     };
 
     const std::vector<test_t> tests{
-        {range::RegularLatitude(0.5, 45., 45.), 45.},        {range::RegularLatitude(0., 45., 45.), 45.},
-        {range::RegularLatitude(0.5, 45., 44.), 45.},         // b not in the direction of the increment
-        {range::RegularLatitude(1., 44.8, 45.7), 45.},        // a single multiple of the increment
-        {range::RegularLatitude(1., 45.3, 45.3), 45.3},       // as given (not a multiple of the increment)
-        {range::RegularLatitude(1., 45.3, 45.3, 0.3), 45.3},  // a multiple of the increment, from the reference
+        {range::RegularLatitude(0.5, 45., 45.), 45., 0.5},       {range::RegularLatitude(0., 45., 45.), 45., 0.},
+        {range::RegularLatitude(0.5, 45., 44.), 45., 0.5},        // b not in the direction of the increment
+        {range::RegularLatitude(1., 44.8, 45.7), 45., 1.},        // a single multiple of the increment
+        {range::RegularLatitude(1., 45.3, 45.3), 45.3, 1.},       // as given (not a multiple of the increment)
+        {range::RegularLatitude(1., 45.3, 45.3, 0.3), 45.3, 1.},  // a multiple of the increment, from the reference
     };
     for (const auto& test : tests) {
         const auto& range = test.range;
         const auto value  = test.value;
 
         EXPECT(range.size() == 1);
-        EXPECT(range.increment() == 0.);
+        EXPECT(range.increment() == test.increment);
         EXPECT_APPROX(range.values().front(), value);
 
         // cropped (in either direction): as is if within the crop, otherwise empty
@@ -492,7 +500,7 @@ CASE("range::RegularLatitude, a single value") {
         for (const auto& crop : crops) {
             std::unique_ptr<const range::Regular> cropped(range.make_cropped_range(crop.a, crop.b));
             EXPECT(cropped->size() == crop.size);
-            EXPECT(cropped->increment() == 0.);
+            EXPECT(cropped->increment() == (crop.size == 1 ? test.increment : 0.));
             if (crop.size == 1) {
                 EXPECT_APPROX(cropped->values().front(), value);
             }
@@ -580,6 +588,77 @@ CASE("range::RegularLatitude, poles") {
         EXPECT(test.range.includesNorthPole() == test.north);
         EXPECT(test.range.includesSouthPole() == test.south);
     }
+}
+
+
+CASE("range::Regular::adjust") {
+    // up or down, to a value of the range (multiples of the increment from the reference)
+    EXPECT(range::Regular::adjust(Fraction(5, 2), Fraction(1), Fraction(0), true) == 3);
+    EXPECT(range::Regular::adjust(Fraction(5, 2), Fraction(1), Fraction(0), false) == 2);
+    EXPECT(range::Regular::adjust(Fraction(-5, 2), Fraction(1), Fraction(0), true) == -2);
+    EXPECT(range::Regular::adjust(Fraction(-5, 2), Fraction(1), Fraction(0), false) == -3);
+    EXPECT(range::Regular::adjust(Fraction(2), Fraction(1), Fraction(0), true) == 2);
+    EXPECT(range::Regular::adjust(Fraction(2), Fraction(1), Fraction(0), false) == 2);
+    EXPECT(range::Regular::adjust(Fraction(0), Fraction(2), Fraction(1), true) == 1);
+    EXPECT(range::Regular::adjust(Fraction(0), Fraction(2), Fraction(1), false) == -1);
+
+    // within a precision, the value itself (of 30/128 degree, half an increment off the equator, as encoded to the
+    // microdegree), otherwise as exact
+    using range::Regular;
+    const Fraction inc(30, 128);
+    const Fraction half(15, 128);
+    const double precision = 2e-6;
+    EXPECT(Regular::adjust(Fraction(80.039062), inc, half, true, precision) == Fraction(10245, 128));
+    EXPECT(Regular::adjust(Fraction(80.039063), inc, half, false, precision) == Fraction(10245, 128));
+    EXPECT(Regular::adjust(Fraction(80.039065), inc, half, true, precision) == Fraction(10275, 128));
+    EXPECT(Regular::adjust(Fraction(80.039063), inc, half, true, precision) == Fraction(10245, 128));
+    EXPECT(Regular::adjust(Fraction(80.039063), inc, half, true) == Fraction(10245, 128) + inc);
+
+    // ... unless the increment is too small to tell
+    EXPECT(Regular::adjust(Fraction(1, 1000000), Fraction(3, 1000000), Fraction(0), false, precision) == 0);
+
+    EXPECT_THROWS_AS(Regular::adjust(Fraction(1), Fraction(0), Fraction(0), true), AssertionFailed);
+}
+
+
+CASE("range::RegularLatitude: bounds encoded to the microdegree (MIR-351), of values within them") {
+    // latitudes of 30/128 degree, half an increment off the equator (+-80.0390625), encoded to the microdegree
+    using range::Regular;
+    const Fraction inc(30, 128);
+    const Fraction half(15, 128);
+    const Fraction s(-80.039062);
+    const Fraction n(80.039062);
+    const double precision = 2e-6;
+
+    EXPECT(range::RegularLatitude(inc, s, n, half).size() == 682);
+
+    // ... including the values within the precision of the bounds (as encoded)
+    range::RegularLatitude lat(inc, Regular::adjust(s, inc, half, true, precision),
+                               Regular::adjust(n, inc, half, false, precision), half);
+    EXPECT(lat.size() == 684);
+    EXPECT(lat.af() == Fraction(-10245, 128));
+    EXPECT(lat.bf() == Fraction(10245, 128));
+}
+
+
+CASE("range::RegularLatitude, range::RegularLongitude: as of a bounding box (MIR-390)") {
+    // 89.9958333333, 0.004166666667, -89.9958333333, 359.995833333 (1/240 off the poles and Greenwich)
+    const Fraction n(21599, 240);
+    const Fraction w(1, 240);
+    const Fraction s(-21599, 240);
+    const Fraction e(86399, 240);
+    const Fraction inc(1, 120);
+
+    range::RegularLatitude lat(inc, s, n, s);
+    EXPECT(lat.af() == s);
+    EXPECT(lat.bf() == n);
+    EXPECT(lat.size() == 21600);
+
+    range::RegularLongitude lon(inc, w, e, w);
+    EXPECT(lon.af() == w);
+    EXPECT(lon.bf() == e);
+    EXPECT(lon.size() == 43200);
+    EXPECT(lon.periodic());
 }
 
 

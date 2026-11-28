@@ -203,8 +203,11 @@ private:
 };
 
 
+// The bounding box of the rectangle [min, max] of the projection's target (x, y); if x is periodic (period_x > 0, e.g.
+// longitudes), points of x outside of the rectangle by periods are in it
 [[nodiscard]] std::unique_ptr<BoundingBox> make_bounding_box(PointXY min, PointXY max, const Projection& projection,
-                                                             double precision_ll, double precision_xy) {
+                                                             double precision_ll, double precision_xy,
+                                                             double period_x = 0.) {
     using types::is_strictly_greater;
 
 
@@ -222,10 +225,16 @@ private:
 
     struct : public std::pair<PointXY, PointXY> {
         using pair::pair;
+        double period = 0.;
         bool contains(const PointXY& P) const {
-            return (first.X() < P.X() && P.X() < second.X()) && (first.Y() < P.Y() && P.Y() < second.Y());
+            auto x = P.X();
+            if (period > 0.) {
+                x = first.X() + std::fmod(std::fmod(x - first.X(), period) + period, period);
+            }
+            return (first.X() < x && x < second.X()) && (first.Y() < P.Y() && P.Y() < second.Y());
         }
     } rect(min, max);
+    rect.period = period_x;
 
     const std::pair<PointXY, PointXY> segments[] = {{{min.X(), max.Y()}, {max.X(), max.Y()}},
                                                     {{max.X(), max.Y()}, {max.X(), min.Y()}},
@@ -449,7 +458,9 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
 
         projection::Composer composer{ProjectionFactory::build(copy), new projection::EquidistantCylindrical};
 
-        after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer);
+        // (x, y) are longitudes and latitudes, so x is periodic
+        after = make_bounding_box(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, composer, PRECISION_LL,
+                                  PRECISION_XY, PointLonLat::FULL_ANGLE);
     }
 
     if (after->periodic()) {
@@ -470,15 +481,11 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_typ
         s = SOUTH_POLE.lat();
     }
 
-    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[ (periodic, as the constructor, if spanning 2 pi)
-    const auto min  = -PointLonLat::FLAT_ANGLE;
+    // west as given (e.g. the longitude of a first point, as encoded), east in [west, west + 2 pi[ (periodic, as the
+    // constructor, if spanning 2 pi)
     const auto same = is_approximately_equal(w, e);
     const auto periodic =
         !same && (e - w > PointLonLat::FULL_ANGLE || is_approximately_equal(e - w, PointLonLat::FULL_ANGLE));
-
-    w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
-            ? min
-            : PointLonLat::normalise_angle_to_minimum(w, min);
 
     auto a = PointLonLat::normalise_angle_to_minimum(e, w);
     e      = same ? w : periodic || is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
@@ -631,14 +638,19 @@ const std::string& BoundingBox::type() const {
 
 
 bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
-    const auto c = BoundingBox::make_from_area(a.north(), a.west(), a.south(), a.east());
-    ASSERT(c);
+    // longitudes in the same period (the west is as given, so -10 and 350 are the same)
+    auto west = [](const BoundingBox& x) {
+        const auto min = -PointLonLat::FLAT_ANGLE;
+        return is_approximately_equal(x.west(), min) || is_approximately_equal(x.west(), min + PointLonLat::FULL_ANGLE)
+                   ? min
+                   : PointLonLat::normalise_angle_to_minimum(x.west(), min);
+    };
 
-    const auto d = BoundingBox::make_from_area(b.north(), b.west(), b.south(), b.east());
-    ASSERT(c);
+    const auto wa = west(a);
+    const auto wb = west(b);
 
-    return is_approximately_equal(c->north(), d->north()) && is_approximately_equal(c->south(), d->south()) &&
-           is_approximately_equal(c->west(), d->west()) && is_approximately_equal(c->east(), d->east());
+    return is_approximately_equal(a.north(), b.north()) && is_approximately_equal(a.south(), b.south()) &&
+           is_approximately_equal(wa, wb) && is_approximately_equal(wa + a.east() - a.west(), wb + b.east() - b.west());
 }
 
 

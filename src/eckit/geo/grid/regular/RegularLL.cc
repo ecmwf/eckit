@@ -101,7 +101,11 @@ Grid::Spec* RegularLL::spec(const std::string& name) {
 
 
 void RegularLL::fill_spec(spec::Custom& custom) const {
-    Regular::fill_spec(custom);
+    // as Regular::fill_spec, but the area of the grid's own frame (below), not of boundingBox() (of the rotated grid)
+    projection().fill_grid_spec(custom);
+    if (const auto order = scan().order(); order != order::RegularScan::order_default()) {
+        custom.set("order", order);
+    }
 
     custom.set("grid", std::vector<double>{std::abs(dx()), std::abs(dy())});
 
@@ -142,7 +146,9 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
         return calculate_bbox_xy();
     }
 
-    return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()}, p)
+    // the longitudes around the globe (periodic) to the full angle, not to the last longitude
+    const auto east = x_.periodic() ? x_.min() + PointLonLat::FULL_ANGLE : x_.max();
+    return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{east, y_.max()}, p)
         .release();
 }
 

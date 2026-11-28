@@ -12,6 +12,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/area/BoundingBoxXY.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -43,7 +44,8 @@ CASE("AreaFactory::make_from_string") {
     std::unique_ptr<const Area> area2(
         geo::AreaFactory::make_from_string(R"({north: 10, west: 35641, south: 0, east: 15130})"));
 
-    EXPECT(area2->spec_str() == R"({"area":[10,1,0,10]})");
+    // west as given
+    EXPECT(area2->spec_str() == R"({"area":[10,35641,0,35650]})");
 }
 
 
@@ -75,6 +77,23 @@ CASE("global") {
     area::BoundingBox a;
     area::BoundingBox b(90, 0, -90, 360);
     EXPECT(a == b);
+}
+
+
+CASE("global, of a rotation") {
+    // the sphere is the sphere, whichever the rotation (also about the rotated pole), and a regional box isn't global
+    for (double angle : {0., 15., 90., -15., 180.}) {
+        const projection::Rotation rotation({30., -40.}, angle);
+
+        auto global = area::BoundingBox::make_from_projection(PointLonLat{0., -90.}, PointLonLat{360., 90.}, rotation);
+        ASSERT(global);
+        EXPECT(global->global());
+
+        auto regional =
+            area::BoundingBox::make_from_projection(PointLonLat{-10., -10.}, PointLonLat{10., 10.}, rotation);
+        ASSERT(regional);
+        EXPECT(!regional->global());
+    }
 }
 
 

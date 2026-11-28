@@ -141,7 +141,11 @@ void Unstructured::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
     if (!name_.empty()) {
-        auto grid = name_ + (name_.empty() || arrangement_.empty() ? "" : "_" + arrangement_);
+        // the name with the arrangement if known as such (e.g. ORCA2_T), otherwise the name (e.g. of ICON grids)
+        auto grid = name_;
+        if (const auto with = name_ + "_" + arrangement_; !arrangement_.empty() && GridSpecByName::has_name(with)) {
+            grid = with;
+        }
         custom.set("grid", grid);
 
         // the uid, unless the name gives it

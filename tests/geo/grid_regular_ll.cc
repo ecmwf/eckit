@@ -157,6 +157,33 @@ CASE("rotated") {
             EXPECT(points_equal(points[i], points_ref[i], EPS));
         }
     }
+
+
+    SECTION("global, and the area and rotation of other longitudes (as normalised on encoding)") {
+        auto grd = [](const std::string& str) {
+            return std::unique_ptr<const Grid>(GridFactory::make_from_string(str));
+        };
+
+        auto global = grd("{grid: [10, 10], rotation: [-43, 10]}");
+        EXPECT(global->spec_str() == R"({"grid":[10,10],"projection":{"south_pole":[10,-43],"type":"rotation"}})");
+        EXPECT(global->x().size() == 36);
+        EXPECT(global->y().size() == 19);
+
+        // the same points, whichever the longitudes of the area (the rotated frame's) and of the south pole are
+        auto a = grd("{area: [10, -10, -10, 10], grid: [1, 1], rotation: [-43, 10]}");
+        EXPECT(a->size() == 21 * 21);
+
+        const auto pa = a->to_points();
+        for (const auto* spec : {"{area: [10, 350, -10, 370], grid: [1, 1], rotation: [-43, 10]}",
+                                 "{area: [10, -10, -10, 10], grid: [1, 1], rotation: [-43, 370]}",
+                                 "{area: [10, 350, -10, 370], grid: [1, 1], rotation: [-43, -350]}"}) {
+            const auto pb = grd(spec)->to_points();
+            EXPECT(pb.size() == pa.size());
+            for (size_t i = 0; i < pa.size(); ++i) {
+                EXPECT(points_equal(std::get<PointLonLat>(pa[i]), std::get<PointLonLat>(pb[i])));
+            }
+        }
+    }
 }
 
 
@@ -762,7 +789,7 @@ CASE("alternating rows (or columns)") {
 
 
 CASE("single point, row or column") {
-    // the points as given, without increment in the direction of a single point
+    // the points as given, of the increment given (even in the direction of a single point)
     struct test_t {
         std::string spec;
         std::vector<size_t> shape;
@@ -774,17 +801,17 @@ CASE("single point, row or column") {
     for (const auto& test : std::vector<test_t>{
              {"{grid: [0.5, 0.5], area: [45, 10, 45, 10]}",
               {1, 1},
-              R"({"area":[45,10,45,10],"grid":[0,0]})",
+              R"({"area":[45,10,45,10],"grid":[0.5,0.5]})",
               {10., 45.},
               {10., 45.}},
              {"{grid: [0.5, 0.5], area: [45, 10, 45, 11]}",
               {1, 3},
-              R"({"area":[45,10,45,11],"grid":[0.5,0]})",
+              R"({"area":[45,10,45,11],"grid":[0.5,0.5]})",
               {10., 45.},
               {11., 45.}},
              {"{grid: [0.5, 0.5], area: [46, 10, 45, 10]}",
               {3, 1},
-              R"({"area":[46,10,45,10],"grid":[0,0.5]})",
+              R"({"area":[46,10,45,10],"grid":[0.5,0.5]})",
               {10., 46.},
               {10., 45.}},
              {"{grid: [0, 0], area: [45, 10, 45, 10]}",
@@ -818,7 +845,7 @@ CASE("single point, row or column") {
 
         EXPECT(grid->size() == 1);
         EXPECT(grid->spec_str() ==
-               R"({"area":[1,2,1,2],"grid":[0,0],"projection":{"south_pole":[10,-40],"type":"rotation"}})");
+               R"({"area":[1,2,1,2],"grid":[0.5,0.5],"projection":{"south_pole":[10,-40],"type":"rotation"}})");
 
         const projection::Rotation rotation(PointLonLat{10., -40.});
         const auto p = std::get<PointLonLat>(grid->to_points().front());

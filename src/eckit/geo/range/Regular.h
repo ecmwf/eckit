@@ -66,6 +66,13 @@ public:
     bool includesNorthPole() const override { return impl_->includesNorthPole(); }
     bool includesSouthPole() const override { return impl_->includesSouthPole(); }
 
+    // -- Class methods
+
+    /// The value of a range of increment and reference (multiples of inc from ref) nearest to value, up or down; a
+    /// value within precision of it is it (e.g. of bounds as encoded), unless the increment is too small to tell
+    [[nodiscard]] static Fraction adjust(const Fraction& value, const Fraction& inc, const Fraction& ref, bool up,
+                                         double precision = 0.);
+
     // -- Methods
 
     Fraction shift() const { return impl_->shift_; }

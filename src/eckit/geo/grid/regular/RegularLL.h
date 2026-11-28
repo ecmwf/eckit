@@ -34,6 +34,14 @@ public:
         value_type dlon() const { return operator[](0); }
         value_type dlat() const { return operator[](1); }
 
+        /// Longitudes around the globe, of an increment dividing it (exactly, as fractions)
+        bool periodic() const;
+
+        /// A point off the multiples of the increments (exactly, as fractions), of an increment not zero
+        bool shifted(const PointLonLat& p) const { return lon_shifted(p.lon()) || lat_shifted(p.lat()); }
+        bool lon_shifted(value_type lon) const;
+        bool lat_shifted(value_type lat) const;
+
         static Increments make_from_spec(const Spec&);
     };
 

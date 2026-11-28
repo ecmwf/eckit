@@ -18,6 +18,7 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::grid::regular {
@@ -32,6 +33,21 @@ RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon
     if (dlon < 0 || dlat < 0) {
         throw exception::GridError("RegularLL: {grid: [dlon, dlat]} (positive) expected", Here());
     }
+}
+
+
+bool RegularLL::Increments::periodic() const {
+    return dlon() > 0 && (Fraction{PointLonLat::FULL_ANGLE} / Fraction{dlon()}).integer();
+}
+
+
+bool RegularLL::Increments::lon_shifted(value_type lon) const {
+    return dlon() > 0 && !(Fraction{lon} / Fraction{dlon()}).integer();
+}
+
+
+bool RegularLL::Increments::lat_shifted(value_type lat) const {
+    return dlat() > 0 && !(Fraction{lat} / Fraction{dlat()}).integer();
 }
 
 

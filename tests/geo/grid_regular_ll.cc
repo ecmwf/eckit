@@ -27,6 +27,33 @@ namespace eckit::geo::test {
 using grid::regular::RegularLL;
 
 
+CASE("RegularLL::Increments: periodic, shifted") {
+    using Increments = grid::regular::RegularLL::Increments;
+
+    // longitudes around the globe, of an increment dividing it exactly
+    EXPECT(Increments(1., 1.).periodic());
+    EXPECT(Increments(0.25, 0.25).periodic());
+    EXPECT(Increments(45. / 128., 30. / 128.).periodic());
+    EXPECT(Increments(1. / 120., 1. / 120.).periodic());  // as a double (0.008333...)
+    EXPECT_NOT(Increments(0.7, 0.7).periodic());
+    EXPECT_NOT(Increments(0., 1.).periodic());
+
+    // points off the multiples of the increments, of each increment (zero not shifting)
+    const Increments inc(1., 0.5);
+    EXPECT_NOT(inc.shifted(PointLonLat{2., -1.5}));
+    EXPECT(inc.shifted(PointLonLat{0.5, 0.}));
+    EXPECT(inc.shifted(PointLonLat{0., 0.25}));
+    EXPECT(inc.lon_shifted(0.5) && !inc.lat_shifted(0.5));
+
+    const Increments half(45. / 128., 30. / 128.);  // MIR-351
+    EXPECT(half.shifted(PointLonLat{45. / 256., 0.}));
+    EXPECT(half.shifted(PointLonLat{0., 15. / 128.}));
+    EXPECT_NOT(half.shifted(PointLonLat{45. / 128., -30. / 128.}));
+
+    EXPECT_NOT(Increments(0., 0.).shifted(PointLonLat{0.5, 0.5}));
+}
+
+
 CASE("rotated: spec equivalences") {
     auto grd = [](const std::string& str) { return std::unique_ptr<const Grid>(GridFactory::make_from_string(str)); };
 

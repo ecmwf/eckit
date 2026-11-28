@@ -58,6 +58,15 @@ def test_grid_unstructured_ll():
     assert grid.spec == dict(grid=name)
 
 
+def test_grid_unstructured_ll_duplicates_allowed():
+    # like ORCA periodic columns: the last point repeats the first
+    grid = Grid(latitudes=[0, 10, 0], longitudes=[0, 10, 0], duplicates_allowed=True)
+
+    assert grid.spec == dict(type="unstructured_ll", uid=grid.uid, duplicates_allowed=True)
+    assert grid == Grid(grid.spec_str)
+    assert "duplicates_allowed" not in Grid(latitudes=[0, 10, 0], longitudes=[0, 10, 0]).spec
+
+
 def test_grid_from_uid():
     grid = Grid({"grid": [0.5, 0.5]})
     assert Grid({"uid": grid.uid}) == grid

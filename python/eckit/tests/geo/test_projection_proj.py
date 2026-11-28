@@ -217,6 +217,10 @@ def test_proj_epsg_4326_to_3857_arrays():
             dict(type="polar_stereographic", lat_0=90, lon_0=-45, figure="wgs84"),
             "+proj=stere +lat_0=90 +lon_0=-45 +ellps=WGS84",
         ),
+        (
+            dict(type="tmerc", lat_0=49, lon_0=-2, k_0=0.9996012717, a=6377563.396, b=6356256.909),
+            "+proj=tmerc +k_0=0.9996012717 +lat_0=49 +lon_0=-2 +a=6377563.396 +b=6356256.909",
+        ),
         (dict(type="ll-to-xyz", figure="wgs84"), "+proj=cart +ellps=WGS84"),
     ],
 )

@@ -51,9 +51,13 @@ cdef class Grid:
 
             # coordinates are passed directly avoiding a spec string
             has_coordinates = "latitudes" in spec and "longitudes" in spec
-            if has_coordinates and set(spec) <= {"latitudes", "longitudes", "name"}:
+            keys = {"latitudes", "longitudes", "name", "duplicates_allowed"}
+            if has_coordinates and set(spec) <= keys:
                 self._grid = new eckit_geo_grid.Unstructured(
-                    spec["longitudes"], spec["latitudes"], spec.get("name", "")
+                    spec["longitudes"],
+                    spec["latitudes"],
+                    spec.get("name", ""),
+                    spec.get("duplicates_allowed", False),
                 )
                 return
 

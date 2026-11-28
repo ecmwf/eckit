@@ -92,12 +92,16 @@ list(APPEND eckit_geo_srcs
     grid/reduced/ReducedGaussian.h
     grid/reduced/ReducedLonLat.cc
     grid/reduced/ReducedLonLat.h
+    grid/regular/IrregularLL.cc
+    grid/regular/IrregularLL.h
     grid/regular/RegularGaussian.cc
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
     grid/regular/RegularLL.h
     grid/regular/RegularXY.cc
     grid/regular/RegularXY.h
+    grid/regular/SpaceView.cc
+    grid/regular/SpaceView.h
     grid/unstructured/FESOM.cc
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
@@ -138,8 +142,12 @@ list(APPEND eckit_geo_srcs
     projection/SpaceView.h
     projection/Stretch.cc
     projection/Stretch.h
+    projection/TransverseMercator.cc
+    projection/TransverseMercator.h
     range/GaussianLatitude.cc
     range/GaussianLatitude.h
+    range/Irregular.cc
+    range/Irregular.h
     range/Regular.cc
     range/Regular.h
     range/RegularXY.cc

@@ -46,7 +46,9 @@ foreach(_test
         grid_cubed_sphere
         grid_cubed_sphere_lfric
         grid_healpix
+        grid_irregular_ll
         grid_reduced_gg
+        grid_space_view
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
@@ -76,6 +78,7 @@ foreach(_test
         projection_stretch
         projection_space_view
         projection_stere
+        projection_tmerc
         range
         sh
         util)

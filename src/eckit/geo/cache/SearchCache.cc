@@ -46,8 +46,9 @@ SearchCache::SearchCache() :
 
 std::shared_ptr<const Search> SearchCache::get(const Grid& grid, const spec::Spec& spec) {
     const auto kdtree = Search::spec_kdtree(spec);
-    const auto search = MemoryCache::get(Search::uid(grid) + kdtree->str(), Search::estimate(grid.size(), storage_),
-                                         [&]() { return std::make_shared<const Search>(grid, *kdtree, storage_); });
+    const auto search =
+        MemoryCache::get(Search::uid(grid, *kdtree) + kdtree->str(), Search::estimate(grid.size(), storage_),
+                         [&]() { return std::make_shared<const Search>(grid, *kdtree, storage_); });
 
     if (!Search::spec_has_behaviour(spec)) {
         return search;

@@ -52,6 +52,12 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         const Grid* make_from_string(const string) except +
 
 
+cdef extern from "eckit/geo/grid/unstructured/UnstructuredLLH.h" namespace \
+        "eckit::geo::grid::unstructured":
+    cdef cppclass UnstructuredLLH(Grid):
+        UnstructuredLLH(vector[double], vector[double], vector[double]) except +
+
+
 cdef extern from "eckit/geo/grid/Unstructured.h" namespace "eckit::geo::grid":
     cdef cppclass Unstructured(Grid):
         Unstructured(
@@ -96,6 +102,9 @@ cdef extern from * namespace "eckit::geo::python":
                 }
                 else if constexpr (std::is_same_v<P, PointLonLatR>) {
                     return {q.lonr(), q.latr()};
+                }
+                else if constexpr (std::is_same_v<P, PointLonLatH>) {
+                    return {q.lon(), q.lat(), q.height()};
                 }
                 else {
                     throw exception::GridError("Grid: invalid point", Here());

@@ -68,7 +68,7 @@ def test_grid_unstructured_ll_numpy_arrays():
     grid = Grid(latitudes=np.array(LATS), longitudes=np.array(LONS))
     assert grid.type == "unstructured_ll"
     assert grid.uid == reference.uid
-    assert grid.to_latlons() == (LATS, LONS)
+    assert tuple(map(list, grid.to_latlons())) == (LATS, LONS)
 
 
 def test_grid_unstructured_ll_numpy_dict_spec():
@@ -88,7 +88,7 @@ def test_grid_unstructured_ll_numpy_dtypes(dtype):
         latitudes=np.array(LATS, dtype=dtype),
         longitudes=np.array(LONS, dtype=dtype),
     )
-    assert grid.to_latlons() == (LATS, LONS)
+    assert tuple(map(list, grid.to_latlons())) == (LATS, LONS)
     assert grid.uid == Grid(latitudes=LATS, longitudes=LONS).uid
 
 

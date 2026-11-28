@@ -7,12 +7,14 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
+#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/search/KDTreeCache.h"
 #include "eckit/spec/Custom.h"
@@ -73,7 +75,7 @@ std::vector<PointXYZ> random_points_on_unit_sphere(size_t n, unsigned seed) {
     std::uniform_real_distribution<double> lon(-180., 180.);
     std::uniform_real_distribution<double> sinlat(-1., 1.);
 
-    projection::LonLatToXYZ to_xyz(1.);
+    projection::LonLatToXYZ to_xyz(new figure::Sphere(1.));
 
     std::vector<PointXYZ> points;
     points.reserve(n);
@@ -266,6 +268,36 @@ CASE("Search: search(points), as search(point) for each") {
 }
 
 
+CASE("Search: concurrent queries, sharing a k-d tree") {
+    const Search search(random_points_on_unit_sphere(5000, 3), spec::Custom{{{"R", 1.}}});
+    const auto queries = random_points_on_unit_sphere(200, 4);
+
+    std::vector<Search::Neighbours> expected;
+    for (const auto& q : queries) {
+        expected.emplace_back(search.search_knn(q, 5));
+    }
+
+    std::vector<std::vector<Search::Neighbours>> results(8);
+    std::vector<std::thread> threads;
+    for (auto& result : results) {
+        threads.emplace_back([&search, &queries, &result]() {
+            const Search nn(search, spec::Custom{{{"search", "knn"}, {"search-k", 5}}});
+            for (const auto& q : queries) {
+                result.emplace_back(nn.search(q));
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    for (const auto& result : results) {
+        EXPECT(result == expected);
+    }
+}
+
+
 CASE("KDTree::query_order: every point once, nearby points consecutively") {
     // two clusters, interleaved
     const std::vector<PointXYZ> points{{0., 0., 0.}, {10., 10., 10.}, {0.1, 0., 0.}, {10.1, 10., 10.}, {0., 0.1, 0.}};
@@ -282,7 +314,7 @@ CASE("Search: (lon, lat) points") {
     // unit sphere, as configured
     const spec::Custom spec{{{"R", 1.}}};
 
-    projection::LonLatToXYZ to_xyz(1.);
+    projection::LonLatToXYZ to_xyz(new figure::Sphere(1.));
     const std::vector<PointXYZ> points{to_xyz.fwd(PointLonLat{0., 0.}), to_xyz.fwd(PointLonLat{90., 0.}),
                                        to_xyz.fwd(PointLonLat{180., 0.}), to_xyz.fwd(PointLonLat{0., 90.})};
 
@@ -372,6 +404,43 @@ CASE("Search: grid points find themselves, on their figure") {
 
         for (const auto& p : *grid) {
             EXPECT(search.search_nn(p).distance < 1e-6);
+        }
+    }
+}
+
+
+CASE("Search: grid points off the figure (space_view) not searched") {
+    // a sector across the west edge of the visible disc, of points off it (NaN)
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string(
+        R"({"dx":3622,"dy":3622,"nr":6.6107,"nx":12,"ny":4,"type":"space_view","xo":40,"xp":1856,"yo":1854,"yp":1856})"));
+
+    std::vector<size_t> on;
+    size_t i = 0;
+    for (const auto& p : *grid) {
+        if (const auto q = std::get<PointLonLat>(p); std::isfinite(q.lat()) && std::isfinite(q.lon())) {
+            on.push_back(i);
+        }
+        ++i;
+    }
+
+    EXPECT(0 < on.size() && on.size() < grid->size());
+
+    for (const auto& loader : {"memory", "mapped-file"}) {
+        const Search search(*grid, spec::Custom{}, Search::Storage{loader, Search::Storage::library().files});
+        EXPECT_EQUAL(search.size(), on.size());
+
+        // the points on the figure find themselves, by their grid index
+        for (auto j : on) {
+            const auto n = search.search_nn(grid->point(j));
+            EXPECT_EQUAL(n.index, j);
+            EXPECT(n.distance < 1e-6);
+        }
+
+        // the nearest points are of these only
+        const auto all = search.search_knn(grid->point(on.front()), grid->size());
+        EXPECT_EQUAL(all.size(), on.size());
+        for (const auto& n : all) {
+            EXPECT(std::isfinite(n.distance));
         }
     }
 }

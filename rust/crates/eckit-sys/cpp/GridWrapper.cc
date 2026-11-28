@@ -26,7 +26,7 @@
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
-#include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/geo/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
@@ -261,6 +261,10 @@ void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon)
             lat[i] = util::RADIAN_TO_DEGREE * r->latr();
             lon[i] = util::RADIAN_TO_DEGREE * r->lonr();
         }
+        else if (const auto* h = std::get_if<PointLonLatH>(&point)) {
+            lat[i] = h->lat();
+            lon[i] = h->lon();
+        }
         else {
             throw exception::GridError("GridWrapper::fill_latlons: grid points are not (lon, lat)", Here());
         }
@@ -273,21 +277,33 @@ void GridWrapper::fill_xyz(rust::Slice<double> x, rust::Slice<double> y, rust::S
 
     check_size("fill_xyz", grid_->size(), std::min({x.size(), y.size(), z.size()}));
 
-    const auto& figure = grid_->figure();
-    const projection::LonLatToXYZ to_xyz(figure.a(), figure.b());
+    const auto a = grid_->figure().a();
+    const auto b = grid_->figure().b();
+    using projection::ToFromXYZ;
+
+    auto xyz = [&](const Point& point) -> PointXYZ {
+        if (const auto* p = std::get_if<PointXYZ>(&point)) {
+            return *p;
+        }
+        if (const auto* p = std::get_if<PointLonLat>(&point)) {
+            return ToFromXYZ::to_xyz(a, b, *p);
+        }
+        if (const auto* p = std::get_if<PointLonLatR>(&point)) {
+            return ToFromXYZ::to_xyz(
+                a, b, PointLonLat{util::RADIAN_TO_DEGREE * p->lonr(), util::RADIAN_TO_DEGREE * p->latr()});
+        }
+        if (const auto* p = std::get_if<PointLonLatH>(&point)) {
+            return ToFromXYZ::to_xyz(a, b, p->lonlat(), p->height());
+        }
+        throw exception::GridError("GridWrapper::fill_xyz: grid points are not geographic", Here());
+    };
 
     size_t i = 0;
     std::for_each(grid_->cbegin(), grid_->cend(), [&](const auto& point) {
-        const auto q =
-            std::holds_alternative<PointXYZ>(point)      ? std::get<PointXYZ>(point)
-            : std::holds_alternative<PointLonLat>(point) ? to_xyz.fwd(std::get<PointLonLat>(point))
-            : std::holds_alternative<PointLonLatR>(point)
-                ? to_xyz.fwd(PointLonLat{util::RADIAN_TO_DEGREE * std::get<PointLonLatR>(point).lonr(),
-                                         util::RADIAN_TO_DEGREE * std::get<PointLonLatR>(point).latr()})
-                : throw exception::GridError("GridWrapper::fill_xyz: grid points are not geographic", Here());
-        x[i] = q.X();
-        y[i] = q.Y();
-        z[i] = q.Z();
+        const auto q = xyz(point);
+        x[i]         = q.X();
+        y[i]         = q.Y();
+        z[i]         = q.Z();
         ++i;
     });
 }

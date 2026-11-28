@@ -27,6 +27,32 @@ def _as_area(area):
     return Area(area)
 
 
+cdef vector[double] _doubles(values) except *:
+    try:
+        import numpy as np
+    except ImportError:  # numpy is optional
+        return [float(v) for v in values]
+
+    cdef const double[::1] a = np.ascontiguousarray(values, dtype=np.float64).ravel()
+    cdef vector[double] v
+    if a.shape[0] > 0:
+        v.assign(&a[0], &a[0] + a.shape[0])
+    return v
+
+
+cdef _array(const vector[double]& v):
+    try:
+        import numpy as np
+    except ImportError:  # numpy is optional
+        return list(v)
+
+    out = np.empty(v.size())
+    cdef double[::1] a = out
+    if v.size() > 0:
+        memcpy(&a[0], v.data(), v.size() * sizeof(double))
+    return out
+
+
 cdef const eckit_geo_area.Area* _area_ptr(area):
     return <const eckit_geo_area.Area*>PyCapsule_GetPointer(
         area._capsule(), "eckit::geo::Area"
@@ -54,10 +80,19 @@ cdef class Grid:
             keys = {"latitudes", "longitudes", "name", "duplicates_allowed"}
             if has_coordinates and set(spec) <= keys:
                 self._grid = new eckit_geo_grid.Unstructured(
-                    spec["longitudes"],
-                    spec["latitudes"],
+                    _doubles(spec["longitudes"]),
+                    _doubles(spec["latitudes"]),
                     spec.get("name", ""),
                     spec.get("duplicates_allowed", False),
+                )
+                return
+
+            # (longitude, latitude, height) points
+            if set(spec) == {"longitudes", "latitudes", "heights"}:
+                self._grid = new eckit_geo_grid.UnstructuredLLH(
+                    _doubles(spec["longitudes"]),
+                    _doubles(spec["latitudes"]),
+                    _doubles(spec["heights"]),
                 )
                 return
 
@@ -72,12 +107,14 @@ cdef class Grid:
         return self.spec_str == other.spec_str
 
     def to_latlons(self):
+        """Latitudes and longitudes of the grid points (numpy arrays, or lists)."""
         cdef pair[vector[double], vector[double]] latlons = self._grid.to_latlons()
-        return list(latlons.first), list(latlons.second)
+        return _array(latlons.first), _array(latlons.second)
 
     def to_xyz(self):
+        """Geocentric (x, y, z) of the grid points (numpy arrays, or lists)."""
         cdef vector[vector[double]] xyz = self._grid.to_xyz()
-        return list(xyz[0]), list(xyz[1]), list(xyz[2])
+        return _array(xyz[0]), _array(xyz[1]), _array(xyz[2])
 
     def to_points(self) -> dict:
         """Grid points, as a dict of coordinate name (see point_coordinates) to values
@@ -88,18 +125,9 @@ cdef class Grid:
         )
         assert <size_t>len(names) == w.size()
 
-        try:
-            import numpy as np
-        except ImportError:  # numpy is optional
-            return {name: list(c) for name, c in zip(names, w)}
-
-        cdef double[::1] array
         out = {}
         for k in range(w.size()):
-            out[names[k]] = np.empty(w[k].size())
-            array = out[names[k]]
-            if w[k].size() > 0:
-                memcpy(&array[0], w[k].data(), w[k].size() * sizeof(double))
+            out[names[k]] = _array(w[k])
         return out
 
     @property
@@ -124,16 +152,16 @@ cdef class Grid:
         return self.lon()
 
     def x(self):
-        return list(eckit_geo_grid.grid_x_values(dereference(self._grid)))
+        return _array(eckit_geo_grid.grid_x_values(dereference(self._grid)))
 
     def y(self):
-        return list(eckit_geo_grid.grid_y_values(dereference(self._grid)))
+        return _array(eckit_geo_grid.grid_y_values(dereference(self._grid)))
 
     def lon(self):
-        return list(eckit_geo_grid.grid_lon_values(dereference(self._grid)))
+        return _array(eckit_geo_grid.grid_lon_values(dereference(self._grid)))
 
     def lat(self):
-        return list(eckit_geo_grid.grid_lat_values(dereference(self._grid)))
+        return _array(eckit_geo_grid.grid_lat_values(dereference(self._grid)))
 
     def crop(self, area) -> list:
         """Indices of the grid points in the area (Area, BoundingBox or spec), as the

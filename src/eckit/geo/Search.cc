@@ -5,19 +5,25 @@
 #include "eckit/geo/Search.h"
 
 #include <algorithm>
+#include <cmath>
+#include <exception>
+#include <limits>
 #include <map>
 #include <ostream>
 
+#include "eckit/eckit.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Trace.h"
 #include "eckit/geo/cache/SearchCache.h"
+#include "eckit/geo/projection/LonLatHToXYZ.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo {
@@ -55,15 +61,74 @@ void check_radius(double radius) {
 }
 
 
+bool has_heights(const Grid& grid) {
+    return !grid.empty() && std::holds_alternative<PointLonLatH>(grid.first_point());
+}
+
+
+std::unique_ptr<const projection::LonLatHToXYZ> llh_to_xyz(const Figure& figure, const Search::Spec& spec,
+                                                           bool heights) {
+    if (!heights && !spec.has("height-scale-factor")) {
+        return nullptr;
+    }
+
+    if (!heights) {
+        throw exception::SearchError("Search: 'height-scale-factor' requires points with heights", Here());
+    }
+
+    return std::make_unique<projection::LonLatHToXYZ>(FigureFactory::build(figure),
+                                                      spec.get_double("height-scale-factor", 1.));
+}
+
+
+// static schedule, so each thread queries a contiguous range (of nearby points, in query order); exceptions can't leave
+// an OpenMP region, the first is rethrown after
+template <typename F>
+void parallel_for(size_t n, const F& f) {
+#if eckit_HAVE_OMP
+    std::exception_ptr error;
+    const auto num_threads = into_signed(LibEcKitGeo::searchNumThreads());
+
+#pragma omp parallel for schedule(static) num_threads(num_threads)
+    for (long i = 0; i < into_signed(n); ++i) {
+        try {
+            f(into_unsigned(i));
+        }
+        catch (...) {
+#pragma omp critical(eckit_geo_search_error)
+            {
+                if (!error) {
+                    error = std::current_exception();
+                }
+            }
+        }
+    }
+
+    if (error) {
+        std::rethrow_exception(error);
+    }
+#else
+    for (size_t i = 0; i < n; ++i) {
+        f(i);
+    }
+#endif
+}
+
+
+void check_int(size_t value, const std::string& what) {
+    if (value > into_unsigned(std::numeric_limits<int>::max())) {
+        throw exception::SearchError("Search::CSR: " + what + " " + std::to_string(value) + " > INT_MAX", Here());
+    }
+}
+
+
 }  // namespace
 
 
 struct Search::Shared {
     std::unique_ptr<KDTree> kdtree;
     std::unique_ptr<const projection::LonLatToXYZ> to_xyz;
-
-    // queries update the k-d tree statistics
-    util::recursive_mutex mutex;
+    std::unique_ptr<const projection::LonLatHToXYZ> llh_to_xyz;  // if points have heights
 };
 
 
@@ -85,9 +150,11 @@ void Search::build(const std::string& uid, size_t size, const Spec& spec, const 
 }
 
 
-std::string Search::uid(const Grid& grid) {
+std::string Search::uid(const Grid& grid, const Spec& spec) {
     const auto& figure = grid.figure();
-    return MD5{grid.uid() + projection::LonLatToXYZ(figure.a(), figure.b()).spec_str()}.digest();
+    const auto llh     = llh_to_xyz(figure, spec, has_heights(grid));
+    return MD5{grid.uid() + (llh ? llh->spec_str() : projection::LonLatToXYZ(FigureFactory::build(figure)).spec_str())}
+        .digest();
 }
 
 
@@ -95,18 +162,37 @@ Search::Search(const Grid& grid, const Spec& spec, const Storage& storage) : sha
     configure(spec);
 
     // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
-    const auto& figure = grid.figure();
-    shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
+    const auto& figure  = grid.figure();
+    shared_->to_xyz     = std::make_unique<projection::LonLatToXYZ>(FigureFactory::build(figure));
+    shared_->llh_to_xyz = llh_to_xyz(figure, spec, has_heights(grid));
 
-    build(uid(grid), grid.size(), spec, storage, [&grid](std::vector<KDTree::Value>& values) {
+    // points off the figure (e.g. of space_view grids, beyond the visible disc) aren't searchable, so the k-d tree has
+    // the other points only (of the grid indices), and its size is known before it is built or loaded
+    std::vector<KDTree::Value> values;
+    values.reserve(grid.size());
+
+    auto add = [&values](const PointXYZ& p, size_t i) {
+        if (std::isfinite(p.X()) && std::isfinite(p.Y()) && std::isfinite(p.Z())) {
+            values.emplace_back(p, i);
+        }
+    };
+
+    if (const auto* llh = shared_->llh_to_xyz.get(); llh != nullptr) {
+        size_t i = 0;
+        for (const auto& p : grid) {
+            add(llh->fwd(std::get<PointLonLatH>(p)), i++);
+        }
+    }
+    else {
         const auto xyz = grid.to_xyz();
         ASSERT(xyz.size() == 3);
 
-        values.reserve(xyz[0].size());
         for (size_t i = 0; i < xyz[0].size(); ++i) {
-            values.emplace_back(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, i);
+            add(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, i);
         }
-    });
+    }
+
+    build(uid(grid, spec), values.size(), spec, storage, [&values](auto& v) { v = std::move(values); });
 }
 
 
@@ -114,7 +200,8 @@ Search::Search(const std::vector<PointXYZ>& points, const Spec& spec, const Stor
     shared_(std::make_shared<Shared>()) {
     configure(spec);
 
-    shared_->to_xyz = std::make_unique<projection::LonLatToXYZ>(spec);
+    shared_->to_xyz     = std::make_unique<projection::LonLatToXYZ>(spec);
+    shared_->llh_to_xyz = llh_to_xyz(shared_->to_xyz->figure(), spec, false);
 
     build(points_uid(points), points.size(), spec, storage, [&points](std::vector<KDTree::Value>& values) {
         values.reserve(points.size());
@@ -160,12 +247,16 @@ std::unique_ptr<spec::Custom> Search::spec_kdtree(const Spec& spec) {
         kdtree->set("search-fast-build", spec.get_bool("search-fast-build"));
     }
 
+    if (spec.has("height-scale-factor")) {
+        kdtree->set("height-scale-factor", spec.get_double("height-scale-factor"));
+    }
+
     return kdtree;
 }
 
 
 bool Search::spec_has_behaviour(const Spec& spec) {
-    return spec.has("search") || spec.has("search-k") || spec.has("search-radius");
+    return spec.has("search") || spec.has("search-k") || spec.has("search-radius") || spec.has("search-query-order");
 }
 
 
@@ -207,6 +298,13 @@ void Search::configure(const Spec& spec) {
         tolerance_ = spec.get_double("search-tolerance", tolerance_);
         check_radius(tolerance_);
     }
+
+    if (const auto order = spec.get_string("search-query-order", "morton"); order == "input") {
+        query_order_ = QueryOrder::INPUT;
+    }
+    else if (order != "morton") {
+        throw exception::SearchError("Search: unknown search-query-order '" + order + "' (morton or input)", Here());
+    }
 }
 
 
@@ -231,29 +329,78 @@ Search::Neighbours Search::search(const Point& p) const {
 
 
 std::vector<Search::Neighbours> Search::search(const std::vector<Point>& points) const {
-    std::vector<PointXYZ> xyz;
-    xyz.reserve(points.size());
-    for (const auto& p : points) {
-        xyz.emplace_back(to_xyz(p));
+    return search_xyz(to_xyz(points));
+}
+
+
+std::vector<Search::Neighbours> Search::search_xyz(const std::vector<PointXYZ>& xyz) const {
+    std::vector<Neighbours> result(xyz.size());
+
+    if (query_order_ == QueryOrder::INPUT) {
+        parallel_for(xyz.size(), [this, &xyz, &result](size_t i) { result[i] = search(xyz[i]); });
+        return result;
     }
 
-    std::vector<Neighbours> result(points.size());
-
-    // locked once for all queries
-    util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-    for (auto i : KDTree::query_order(xyz)) {
-        result[i] = search(xyz[i]);
-    }
+    const auto order = KDTree::query_order(xyz);
+    parallel_for(order.size(), [this, &order, &xyz, &result](size_t j) {
+        const auto i = order[j];
+        result[i]    = search(xyz[i]);
+    });
 
     return result;
 }
 
 
-Search::Neighbour Search::search_nn(const Point& p) const {
-    const auto q = to_xyz(p);
+Search::CSR Search::csr_search(const std::vector<PointXYZ>& points, ColumnOrder order) const {
+    check_int(size(), "points");
 
-    util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-    return shared_->kdtree->nearest_neighbour(q);
+    auto neighbours = search_xyz(points);
+
+    CSR csr;
+    csr.cols = size();
+
+    // offsets by rows of neighbours, then the rows copied (and released) on threads
+    csr.offsets.resize(points.size() + 1);
+    size_t entries = 0;
+    for (size_t i = 0; i < neighbours.size(); ++i) {
+        entries += neighbours[i].size();
+        check_int(entries, "neighbours");
+        csr.offsets[i + 1] = static_cast<int>(entries);
+    }
+
+    csr.indices.resize(entries);
+    csr.distances.resize(entries);
+    parallel_for(neighbours.size(), [&csr, &neighbours, order](size_t i) {
+        auto& n = neighbours[i];
+        if (order == ColumnOrder::INDEX) {
+            std::sort(n.begin(), n.end(), [](const auto& a, const auto& b) { return a.index < b.index; });
+        }
+
+        auto j = into_unsigned(csr.offsets[i]);
+        for (const auto& m : n) {
+            csr.indices[j]     = static_cast<int>(m.index);
+            csr.distances[j++] = m.distance;
+        }
+
+        Neighbours().swap(n);
+    });
+
+    return csr;
+}
+
+
+Search::CSR Search::csr_search(const std::vector<PointLonLat>& points, ColumnOrder order) const {
+    return csr_search(to_xyz(points), order);
+}
+
+
+Search::CSR Search::csr_search(const std::vector<PointLonLatH>& points, ColumnOrder order) const {
+    return csr_search(to_xyz(points), order);
+}
+
+
+Search::Neighbour Search::search_nn(const Point& p) const {
+    return shared_->kdtree->nearest_neighbour(to_xyz(p));
 }
 
 
@@ -266,14 +413,7 @@ Search::Neighbours Search::search_knn(const Point& p, size_t k) const {
         return {search_nn(p)};
     }
 
-    const auto q = to_xyz(p);
-
-    Neighbours result;
-    {
-        util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        result = shared_->kdtree->k_nearest_neighbours(q, k);
-    }
-
+    auto result = shared_->kdtree->k_nearest_neighbours(to_xyz(p), k);
     sort(result);
     return result;
 }
@@ -282,14 +422,7 @@ Search::Neighbours Search::search_knn(const Point& p, size_t k) const {
 Search::Neighbours Search::search_radius(const Point& p, double radius) const {
     check_radius(radius);
 
-    const auto q = to_xyz(p);
-
-    Neighbours result;
-    {
-        util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
-        result = shared_->kdtree->find_in_sphere(q, radius);
-    }
-
+    auto result = shared_->kdtree->find_in_sphere(to_xyz(p), radius);
     sort(result);
     return result;
 }
@@ -334,16 +467,38 @@ Search::Neighbours Search::search_knn_or_same_radius(const Point& p, size_t k, d
 }
 
 
+template <typename P>
+std::vector<PointXYZ> Search::to_xyz(const std::vector<P>& points) const {
+    std::vector<PointXYZ> xyz(points.size());
+    parallel_for(points.size(), [this, &points, &xyz](size_t i) { xyz[i] = to_xyz(Point{points[i]}); });
+    return xyz;
+}
+
+
 PointXYZ Search::to_xyz(const Point& p) const {
     if (std::holds_alternative<PointXYZ>(p)) {
         return std::get<PointXYZ>(p);
     }
 
+    // on points with heights, (lon, lat) would be at height 0, and find wrong neighbours
     if (const auto* q = std::get_if<PointLonLat>(&p); q != nullptr) {
+        if (shared_->llh_to_xyz) {
+            throw exception::SearchError(
+                "Search: (lon, lat) queries of points with heights, expected (lon, lat, height)", Here());
+        }
         return shared_->to_xyz->fwd(*q);
     }
 
-    throw exception::SearchError("Search: unsupported point type (supported: PointXYZ, PointLonLat)", Here());
+    if (const auto* q = std::get_if<PointLonLatH>(&p); q != nullptr) {
+        if (!shared_->llh_to_xyz) {
+            throw exception::SearchError(
+                "Search: (lon, lat, height) queries require points with heights (see height-scale-factor)", Here());
+        }
+        return shared_->llh_to_xyz->fwd(*q);
+    }
+
+    throw exception::SearchError("Search: unsupported point type (supported: PointXYZ, PointLonLat, PointLonLatH)",
+                                 Here());
 }
 
 

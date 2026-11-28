@@ -5,9 +5,11 @@
 #include "eckit/geo/polygon/PolygonXY.h"
 
 #include <algorithm>
+#include <iterator>
 #include <ostream>
 
 #include "eckit/types/FloatCompare.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::polygon {
@@ -52,19 +54,13 @@ bool PolygonXY::operator==(const PolygonXY& poly) const {
             return true;
         }
 
-        int offset = -1;
-        for (int i = 0; i < size(); i++) {
-            if (at(i) == poly.at(0)) {
-                offset = i;
-                break;
-            }
-        }
-
-        if (offset == -1) {
+        const auto it = std::find(begin(), end(), poly.front());
+        if (it == end()) {
             return false;
         }
 
-        for (int i = 1; i < size(); i++) {
+        const auto offset = into_unsigned(std::distance(begin(), it));
+        for (size_t i = 1; i < size(); i++) {
             if (at((i + offset) % size()) != poly.at(i)) {
                 return false;
             }
@@ -138,7 +134,7 @@ void PolygonXY::emplace_back_point(PointXY P) {
 
 PolygonXY::Edge PolygonXY::edge(int i) const {
     const auto n = static_cast<int>(size());
-    return {at(((i % n) + n) % n), at(((i % n) + n + 1) % n)};
+    return {at(into_unsigned(((i % n) + n) % n)), at(into_unsigned(((i % n) + n + 1) % n))};
 }
 
 

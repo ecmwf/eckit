@@ -10,6 +10,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid {
@@ -111,7 +112,7 @@ size_t Reduced::row(size_t index) const {
     const auto& acc = nxacc();
     ASSERT(index < acc.back());
 
-    return static_cast<size_t>(std::distance(acc.begin(), std::upper_bound(acc.begin(), acc.end(), index))) - 1;
+    return into_unsigned(std::distance(acc.begin(), std::upper_bound(acc.begin(), acc.end(), index))) - 1;
 }
 
 

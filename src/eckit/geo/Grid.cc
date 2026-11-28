@@ -14,6 +14,7 @@
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util.h"
@@ -22,6 +23,7 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 #include "eckit/utils/StringTools.h"
 
 
@@ -141,7 +143,7 @@ Grid::Iterator& Grid::Iterator::operator=(const Iterator& other) {
 
 Grid::Iterator& Grid::Iterator::operator+=(difference_type d) {
     const auto i = static_cast<difference_type>(index_) + d;
-    index_       = 0 <= i && i < static_cast<difference_type>(size_) ? static_cast<size_t>(i) : size_;
+    index_       = 0 <= i && i < into_signed(size_) ? into_unsigned(i) : size_;
     return *this;
 }
 
@@ -322,6 +324,10 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
             ll.first.emplace_back(util::RADIAN_TO_DEGREE * r->latr());
             ll.second.emplace_back(util::RADIAN_TO_DEGREE * r->lonr());
         }
+        else if (const auto* h = std::get_if<PointLonLatH>(&p); h != nullptr) {
+            ll.first.emplace_back(h->lat());
+            ll.second.emplace_back(h->lon());
+        }
         else {
             throw exception::GridError("Grid::to_latlons: grid points are not (lon, lat)", Here());
         }
@@ -348,8 +354,29 @@ std::vector<std::vector<double>> Grid::to_xyz() const {
         return xyz;
     }
 
+    // heights are along the normal of the figure (to_latlons would drop them)
+    if (!empty() && std::holds_alternative<PointLonLatH>(first_point())) {
+        const auto a = figure().a();
+        const auto b = figure().b();
+
+        std::vector<std::vector<double>> xyz(3);
+        for (auto& v : xyz) {
+            v.reserve(size());
+        }
+
+        for (const auto& p : *this) {
+            const auto& r = std::get<PointLonLatH>(p);
+            const auto q  = projection::ToFromXYZ::to_xyz(a, b, r.lonlat(), r.height());
+            xyz[0].emplace_back(q.X());
+            xyz[1].emplace_back(q.Y());
+            xyz[2].emplace_back(q.Z());
+        }
+
+        return xyz;
+    }
+
     const auto [lat, lon] = to_latlons();
-    return projection::LonLatToXYZ(figure().a(), figure().b()).fwd(lon, lat);
+    return projection::LonLatToXYZ(FigureFactory::build(figure())).fwd(lon, lat);
 }
 
 

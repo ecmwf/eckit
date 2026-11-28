@@ -136,6 +136,9 @@ private:
 struct FigureFactory {
     /// Build the spec's figure, or the default one if the spec doesn't describe any
     [[nodiscard]] static Figure* build(const Figure::Spec&);
+
+    /// Build a copy of a figure (from its spec)
+    [[nodiscard]] static Figure* build(const Figure&);
     [[nodiscard]] static Figure* make_from_string(const std::string&);
     [[nodiscard]] static const Figure* make_default();
 

@@ -81,7 +81,7 @@ def test_grid_unstructured_ll_from_coordinates():
     assert grid == Grid(_spec_str(dict(latitudes=lat, longitudes=lon)))
     assert grid == Grid(uid=grid.uid)
     assert grid.shape == (len(lat),)
-    assert grid.to_latlons() == (lat, lon)
+    assert list(map(list, grid.to_latlons())) == [list(lat), list(lon)]
 
 
 def test_grid_to_unstructured_ll():
@@ -89,7 +89,7 @@ def test_grid_to_unstructured_ll():
 
     a = grid.to_unstructured_ll()
     assert a.type == "unstructured_ll"
-    assert a.to_latlons() == grid.to_latlons()
+    assert list(map(list, a.to_latlons())) == list(map(list, grid.to_latlons()))
     assert a.uid == grid.uid  # no name given, same points -> same uid
 
     name = "custom-to-unstructured-ll"
@@ -232,29 +232,26 @@ def test_grid_point_coordinates(spec, coordinates):
     assert tuple(grid.to_points()) == coordinates
 
 
-def indices(neighbours):
-    return [index for index, _ in neighbours]
-
-
 def test_grid_search():
     grid = Grid(grid=[30, 30])
     search = grid.search()
     assert len(search) == len(grid)
 
     # rows of 12 points from the North Pole: (lon, lat) = (0, 0) is point 36
-    index, distance = search.search_nn((0, 0))
+    index, distance = search.search_nn((0, 0), distance=True)
     assert index == 36
+    assert search.search_nn((0, 0)) == 36
     assert distance == pytest.approx(0, abs=1e-6)
 
     # equidistant to (0, 0) and (30, 0), in metres (chord on the Earth)
-    knn = search.search_knn((15, 0), 2)
-    assert sorted(indices(knn)) == [36, 37]
-    assert knn[0][1] == pytest.approx(knn[1][1])
-    assert knn[0][1] == pytest.approx(1.663e6, rel=1e-3)
+    knn, distance = search.search_knn((15, 0), 2, distance=True)
+    assert sorted(knn) == [36, 37]
+    assert distance[0] == pytest.approx(distance[1])
+    assert distance[0] == pytest.approx(1.663e6, rel=1e-3)
 
-    radius = knn[0][1] * 1.001
-    assert sorted(indices(search.search_radius((15, 0), radius))) == [36, 37]
-    assert sorted(indices(search.search_knn_and_radius((15, 0), 4, radius))) == [36, 37]
+    radius = distance[0] * 1.001
+    assert sorted(search.search_radius((15, 0), radius)) == [36, 37]
+    assert sorted(search.search_knn_and_radius((15, 0), 4, radius)) == [36, 37]
     assert len(search.search_knn_or_radius((15, 0), 4, 1.0)) == 4
 
 
@@ -262,7 +259,7 @@ def test_grid_search_spec():
     grid = Grid(grid=[30, 30])
 
     search = grid.search(search="knn", k=3)
-    assert search.search((15, 0)) == search.search_knn((15, 0), 3)
+    assert list(search.search((15, 0))) == list(search.search_knn((15, 0), 3))
 
     with pytest.raises(RuntimeError):
         grid.search(search="knn")  # k is required

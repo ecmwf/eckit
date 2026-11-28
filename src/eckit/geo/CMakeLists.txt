@@ -21,6 +21,8 @@ list(APPEND eckit_geo_srcs
     Point.h
     PointLonLat.cc
     PointLonLat.h
+    PointLonLatH.cc
+    PointLonLatH.h
     PointLonLatR.cc
     PointLonLatR.h
     PointXY.cc
@@ -106,6 +108,8 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
     grid/unstructured/ICON.h
+    grid/unstructured/UnstructuredLLH.cc
+    grid/unstructured/UnstructuredLLH.h
     order/HEALPix.cc
     order/HEALPix.h
     order/ReducedScan.cc
@@ -130,6 +134,8 @@ list(APPEND eckit_geo_srcs
     projection/LambertConformalConic.h
     projection/LonLatToXYZ.cc
     projection/LonLatToXYZ.h
+    projection/LonLatHToXYZ.cc
+    projection/LonLatHToXYZ.h
     projection/Mercator.cc
     projection/Mercator.h
     projection/PolarStereographic.cc
@@ -142,6 +148,8 @@ list(APPEND eckit_geo_srcs
     projection/SpaceView.h
     projection/Stretch.cc
     projection/Stretch.h
+    projection/ToFromXYZ.cc
+    projection/ToFromXYZ.h
     projection/TransverseMercator.cc
     projection/TransverseMercator.h
     range/GaussianLatitude.cc
@@ -185,6 +193,11 @@ set(eckit_geo_include_dirs
 
 set(eckit_geo_libs eckit_cache eckit_codec eckit_maths eckit_spec)
 set(eckit_geo_private_libs)
+
+if(eckit_HAVE_OMP)
+    list(APPEND eckit_geo_private_libs OpenMP::OpenMP_CXX)
+endif()
+
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID
     "~eckit/share/eckit/geo/grid.yaml"

@@ -14,6 +14,7 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid::reduced {
@@ -140,8 +141,8 @@ bool ReducedGaussian::matches(const pl_type& reference) const {
     ASSERT(reference.size() == pl().size());
 
     // rows before the first and after the last with points are outside the bounding box, whatever their pl
-    const auto first = static_cast<std::ptrdiff_t>(first_);
-    const auto last  = static_cast<std::ptrdiff_t>(last_);
+    const auto first = into_signed(first_);
+    const auto last  = into_signed(last_);
     return std::equal(pl().begin() + first, pl().begin() + last, reference.begin() + first);
 }
 

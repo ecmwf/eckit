@@ -25,17 +25,6 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
-[[nodiscard]] size_t into_unsigned(int value) {
-    // promote exception to contain it
-    try {
-        return static_cast<size_t>(eckit::into_unsigned(value));
-    }
-    catch (const eckit::BadCast& e) {
-        throw exception::SpecError(e.what(), Here());
-    }
-}
-
-
 SphericalHarmonics::SphericalHarmonics(const Spec& spec) : SphericalHarmonics(spec.get_int("truncation")) {}
 
 
@@ -46,7 +35,7 @@ SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {
 }
 
 
-SphericalHarmonics::SphericalHarmonics(int T) : SphericalHarmonics(static_cast<size_t>(into_unsigned(T))) {}
+SphericalHarmonics::SphericalHarmonics(int T) : SphericalHarmonics(T > 0 ? size_t{into_unsigned(T)} : 0) {}
 
 
 Grid::Spec* SphericalHarmonics::spec(const std::string& name) {

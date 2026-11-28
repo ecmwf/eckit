@@ -13,10 +13,10 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -271,9 +271,9 @@ CASE("rotation: Cartesian points") {
 
         const std::vector<PointLonLat> values{{0., 0.}, {45., 30.}, {-120., -75.}, {200., 89.}};
         for (const auto& p : values) {
-            const auto xyz = figure::UnitSphere::_convertSphericalToCartesian(p);
-            EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(rotation.fwd(xyz)), rotation.fwd(p)));
-            EXPECT(points_equal(figure::UnitSphere::_convertCartesianToSpherical(rotation.inv(xyz)), rotation.inv(p)));
+            const auto xyz = projection::ToFromXYZ::to_xyz(1., p);
+            EXPECT(points_equal(projection::ToFromXYZ::to_lonlat(rotation.fwd(xyz)), rotation.fwd(p)));
+            EXPECT(points_equal(projection::ToFromXYZ::to_lonlat(rotation.inv(xyz)), rotation.inv(p)));
 
             // as Point (variant)
             EXPECT(points_equal(std::get<PointXYZ>(rotation.fwd(Point{xyz})), rotation.fwd(xyz)));

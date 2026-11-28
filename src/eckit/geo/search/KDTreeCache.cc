@@ -85,7 +85,7 @@ private:
 };
 
 
-using ReadOnlyKDTree = KDTreeX<TT<Traits, Alloc>>;
+using ReadOnlyKDTree = KDTreeX<TT<Traits, NoStatistics<Alloc>>>;
 
 static_assert(sizeof(ReadOnlyKDTree::Node) == sizeof(MappedContainer::Node), "k-d tree node layouts differ");
 
@@ -118,10 +118,14 @@ bool safe_uid(const std::string& uid) {
 
 
 struct KDTreeCache::Content {
-    explicit Content(const char* content) : alloc(items(content), header(content).itemCount_), kdtree(alloc) {}
+    explicit Content(const char* content) : alloc(items(content), header(content).itemCount_), kdtree(alloc) {
+        kdtree.root_ = alloc.root();  // so queries don't set it
+    }
 
-    Alloc alloc;
-    ReadOnlyKDTree kdtree;
+    NoStatistics<Alloc> alloc;
+
+    // queries don't modify it (no statistics), but aren't const (eckit::SPTree)
+    mutable ReadOnlyKDTree kdtree;
 };
 
 
@@ -218,28 +222,18 @@ bool KDTreeCache::build(const Fill& fill, bool balanced) {
 }
 
 
-Neighbour KDTreeCache::nearest_neighbour(const Point& p) {
+Neighbour KDTreeCache::nearest_neighbour(const Point& p) const {
     return to_neighbour(content().kdtree.nearestNeighbour(p));
 }
 
 
-Neighbours KDTreeCache::k_nearest_neighbours(const Point& p, size_t k) {
+Neighbours KDTreeCache::k_nearest_neighbours(const Point& p, size_t k) const {
     return to_neighbours(content().kdtree.kNearestNeighbours(p, k));
 }
 
 
-Neighbours KDTreeCache::find_in_sphere(const Point& p, double radius) {
+Neighbours KDTreeCache::find_in_sphere(const Point& p, double radius) const {
     return to_neighbours(content().kdtree.findInSphere(p, radius));
-}
-
-
-void KDTreeCache::stats_print(std::ostream& out, bool pretty) const {
-    content().kdtree.statsPrint(out, pretty);
-}
-
-
-void KDTreeCache::stats_reset() {
-    content().kdtree.statsReset();
 }
 
 

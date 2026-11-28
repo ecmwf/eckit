@@ -38,28 +38,18 @@ bool KDTreeMemory::build(const Fill& fill, bool balanced) {
 }
 
 
-Neighbour KDTreeMemory::nearest_neighbour(const Point& p) {
+Neighbour KDTreeMemory::nearest_neighbour(const Point& p) const {
     return to_neighbour(tree_.nearestNeighbour(p));
 }
 
 
-Neighbours KDTreeMemory::k_nearest_neighbours(const Point& p, size_t k) {
+Neighbours KDTreeMemory::k_nearest_neighbours(const Point& p, size_t k) const {
     return to_neighbours(tree_.kNearestNeighbours(p, k));
 }
 
 
-Neighbours KDTreeMemory::find_in_sphere(const Point& p, double radius) {
+Neighbours KDTreeMemory::find_in_sphere(const Point& p, double radius) const {
     return to_neighbours(tree_.findInSphere(p, radius));
-}
-
-
-void KDTreeMemory::stats_print(std::ostream& out, bool pretty) const {
-    tree_.statsPrint(out, pretty);
-}
-
-
-void KDTreeMemory::stats_reset() {
-    tree_.statsReset();
 }
 
 

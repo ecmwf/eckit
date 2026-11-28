@@ -33,9 +33,6 @@ public:
     static double eccentricity(double a, double b);
     static double flattening(double a, double b);
 
-    /// Convert geocentric coordinates to Cartesian
-    static PointXYZ convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);
-
 private:
 
     // -- Members

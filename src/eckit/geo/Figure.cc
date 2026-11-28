@@ -289,6 +289,12 @@ Figure* FigureFactory::build(const Figure::Spec& spec) {
 }
 
 
+Figure* FigureFactory::build(const Figure& figure) {
+    std::unique_ptr<const spec::Custom> spec(figure.spec());
+    return build(*spec);
+}
+
+
 bool operator==(const Figure& a, const Figure& b) {
     return types::is_approximately_equal(a.a(), b.a()) && types::is_approximately_equal(a.b(), b.b());
 }

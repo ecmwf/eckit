@@ -10,6 +10,8 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/figure/OblateSpheroid.h"
+#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -34,21 +36,20 @@ CASE("projection: ll-to-xyz") {
 
     // spherical projections
     P to_xyz_1(Factory<Projection>::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
-    P to_xyz_2(new projection::LonLatToXYZ(1., 1.));
+    P to_xyz_2(new projection::LonLatToXYZ(new figure::Sphere(1.)));
 
     EXPECT(*to_xyz_1 == *to_xyz_2);
-    EXPECT(*to_xyz_1 == projection::LonLatToXYZ(1.));
 
 
     // oblate spheroid projections
     P to_xyz_3(Factory<Projection>::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
-    P to_xyz_4(new projection::LonLatToXYZ(1., 0.5));
+    P to_xyz_4(new projection::LonLatToXYZ(new figure::OblateSpheroid(1., 0.5)));
 
     EXPECT(*to_xyz_3 == *to_xyz_4);
 
 
     // problate spheroid (not supported)
-    EXPECT_THROWS(projection::LonLatToXYZ(0.5, 1.));
+    EXPECT_THROWS(projection::LonLatToXYZ(new figure::OblateSpheroid(0.5, 1.)));
 
 
     SECTION("spec") {

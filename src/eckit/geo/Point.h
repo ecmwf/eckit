@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointLonLatH.h"
 #include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/PointXYZ.h"
@@ -19,7 +20,7 @@
 namespace eckit::geo {
 
 
-using Point = std::variant<std::monostate, PointXY, PointXYZ, PointLonLat, PointLonLatR>;
+using Point = std::variant<std::monostate, PointXY, PointXYZ, PointLonLat, PointLonLatR, PointLonLatH>;
 
 
 /// Point comparison functions
@@ -45,6 +46,9 @@ const std::vector<std::string>& point_coordinates<PointLonLat>();
 
 template <>
 const std::vector<std::string>& point_coordinates<PointLonLatR>();
+
+template <>
+const std::vector<std::string>& point_coordinates<PointLonLatH>();
 
 const std::vector<std::string>& point_coordinates(const Point&);
 

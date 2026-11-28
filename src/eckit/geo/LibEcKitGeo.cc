@@ -12,6 +12,7 @@
 #include "eckit/cache/LibEcKitCache.h"
 #include "eckit/cache/MemoryCache.h"
 #include "eckit/config/Resource.h"
+#include "eckit/eckit.h"
 #include "eckit/eckit_version.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
@@ -19,7 +20,12 @@
 #include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/log/JSON.h"
+#include "eckit/utils/SafeCasts.h"
 #include "eckit/utils/StringTools.h"
+
+#if eckit_HAVE_OMP
+#include <omp.h>
+#endif
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
@@ -138,6 +144,22 @@ bool LibEcKitGeo::searchFastBuild() {
     static const bool yes{
         LibResource<bool, LibEcKitGeo>("eckit-geo-search-fast-build;$ECKIT_GEO_SEARCH_FAST_BUILD", true)};
     return yes;
+}
+
+
+size_t LibEcKitGeo::searchNumThreads() {
+#if eckit_HAVE_OMP
+    static const size_t num_threads = []() -> size_t {
+        const long n{LibResource<long, LibEcKitGeo>("eckit-geo-search-num-threads;$ECKIT_GEO_SEARCH_NUM_THREADS", 1)};
+        if (n < 0) {
+            throw BadValue("LibEcKitGeo: eckit-geo-search-num-threads >= 0", Here());
+        }
+        return n > 0 ? into_unsigned(n) : into_unsigned(omp_get_max_threads());
+    }();
+    return num_threads;
+#else
+    return 1;
+#endif
 }
 
 
@@ -308,6 +330,7 @@ void LibEcKitGeo::cacheInfo(JSON& j) {
     j << "search";
     j.startObject();
     j << "loader" << searchCacheLoader();
+    j << "num_threads" << searchNumThreads();
     j << "shared_memory_huge_pages" << sharedMemoryHugePages();
     j << "shared_memory_round_huge_pages" << sharedMemoryRoundHugePages();
     j << "size" << size("search");

@@ -187,7 +187,7 @@ std::unique_ptr<Grid::Iterator::State> HEALPix::make_state() const {
 
 
 size_t HEALPix::nxj(size_t j) const {
-    return static_cast<size_t>(pl().at(j));
+    return into_unsigned(pl().at(j));
 }
 
 

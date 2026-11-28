@@ -4,9 +4,7 @@
 
 #include "eckit/geo/figure/Sphere.h"
 
-#include <algorithm>
 #include <cmath>
-#include <cstdlib>
 #include <limits>
 
 #include "eckit/geo/Exceptions.h"
@@ -115,47 +113,6 @@ void Sphere::greatCircleLongitudeGivenLatitude(const PointLonLat& P1, const Poin
 
     Clon1 = lon.size() > 0 ? lon[0] : std::numeric_limits<double>::signaling_NaN();
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
-}
-
-
-PointXYZ Sphere::convertSphericalToCartesian(double radius, const PointLonLat& P, double height) {
-    ASSERT(radius > 0.);
-
-    /*
-     * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
-     * numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line).
-     *
-     * cos φ = sqrt( 1 - sin^2 φ) is better conditioned than explicit cos φ, and
-     * coupled with λ in [-180°, 180°[ the accuracy of the trigonometric
-     * functions is the same (before converting/multiplying its angle argument
-     * to radian) and explicitly chosing -180° over 180° for longitude.
-     *
-     * These conditionings combined project accurately to sphere poles and quadrants.
-     */
-
-    const auto Q      = PointLonLat::make(P.lon(), P.lat(), -180.);
-    const auto lambda = util::DEGREE_TO_RADIAN * Q.lon();
-    const auto phi    = util::DEGREE_TO_RADIAN * Q.lat();
-
-    const auto sp = std::sin(phi);
-    const auto cp = std::sqrt(1. - sp * sp);
-    const auto sl = std::abs(Q.lon()) < 180. ? std::sin(lambda) : 0.;
-    const auto cl = std::abs(Q.lon()) > 90. ? std::cos(lambda) : std::sqrt(1. - sl * sl);
-
-    return {(radius + height) * cp * cl, (radius + height) * cp * sl, (radius + height) * sp};
-}
-
-
-PointLonLat Sphere::convertCartesianToSpherical(double radius, const PointXYZ& A) {
-    ASSERT(radius > 0.);
-
-    // numerical conditioning for both z (poles) and y
-
-    const auto x = A[0];
-    const auto y = types::is_approximately_equal(A[1], 0.) ? 0. : A[1];
-    const auto z = std::min(radius, std::max(-radius, A[2])) / radius;
-
-    return {util::RADIAN_TO_DEGREE * std::atan2(y, x), util::RADIAN_TO_DEGREE * std::asin(z)};
 }
 
 

@@ -9,22 +9,19 @@
 
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/ToFromXYZ.h"
 
 
 namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
-class LonLatToXYZ : public Projection {
+class LonLatToXYZ : public ToFromXYZ {
 public:
 
     // -- Constructors
 
     explicit LonLatToXYZ(Figure* = nullptr);
-
-    explicit LonLatToXYZ(double R);
-    explicit LonLatToXYZ(double a, double b);
 
     explicit LonLatToXYZ(const Spec&);
 
@@ -33,7 +30,9 @@ public:
     using Projection::fwd;
     using Projection::inv;
 
-    PointXYZ fwd(const PointLonLat&) const;
+    PointXYZ fwd(const PointLonLat& p) const { return to_xyz(p); }
+
+    /// On a sphere only
     PointLonLat inv(const PointXYZ&) const;
 
     // -- Overridden methods
@@ -51,14 +50,6 @@ protected:
 
     std::vector<std::vector<double>> fwd_vector(const std::vector<double>& lon, const std::vector<double>& lat,
                                                 const std::vector<double>&) const override;
-
-private:
-
-    // -- Members
-
-    const double a_;
-    const double b_;
-    const bool spherical_;
 };
 
 

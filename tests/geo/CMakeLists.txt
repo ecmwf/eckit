@@ -49,6 +49,7 @@ foreach(_test
         grid_irregular_ll
         grid_reduced_gg
         grid_space_view
+        grid_unstructured_llh
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
@@ -66,12 +67,14 @@ foreach(_test
         point2
         point3
         pointlonlat
+        pointlonlath
         pointlonlatr
         projection
         projection_albers
         projection_laea
         projection_lcc
         projection_ll_to_xyz
+        projection_llh_to_xyz
         projection_mercator
         projection_plate-caree
         projection_rotation
@@ -80,6 +83,7 @@ foreach(_test
         projection_stere
         projection_tmerc
         range
+        search_height
         sh
         util)
     eckit_geo_add_test(${_test})
@@ -128,6 +132,53 @@ foreach(_loader ${_loaders})
         set_tests_properties(eckit_test_geo_search_${_loader} PROPERTIES FIXTURES_REQUIRED eckit_geo_cache)
     endif()
 endforeach()
+
+# searches of many points, on threads if OpenMP, by the k-d tree loaders in memory and in a cache file
+foreach(_loader memory mapped-file)
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_search_csr_${_loader}
+        SOURCES     search_csr.cc
+        LIBS        eckit_geo
+        ENVIRONMENT ${eckit_geo_test_environment}
+                    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_csr_${_loader}:${eckit_geo_test_cache_seeds}"
+                    "ECKIT_GEO_SEARCH_LOADER=${_loader}"
+                    "ECKIT_GEO_SEARCH_NUM_THREADS=4" )
+
+    if(TEST eckit_test_geo_search_csr_${_loader})
+        set_tests_properties(eckit_test_geo_search_csr_${_loader} PROPERTIES FIXTURES_REQUIRED eckit_geo_cache)
+    endif()
+endforeach()
+
+# eckit-geo-search, many-point searches of a grid (about 10 s in a Debug build), single-threaded and on 4 threads if
+# OpenMP; the k-d tree in a cache file, as the library by default
+set(_num_threads 1)
+if(eckit_HAVE_OMP)
+    list(APPEND _num_threads 4)
+endif()
+
+foreach(_n ${_num_threads})
+    ecbuild_add_test(
+        TARGET          eckit_test_geo_search_tool_${_n}
+        COMMAND         eckit_geo_search
+        ARGS            --grid=O320 --query-grid=O288 --search=knn --k=4
+        ENVIRONMENT     ${eckit_geo_test_environment}
+                        "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_tool_${_n}:${eckit_geo_test_cache_seeds}"
+                        "ECKIT_GEO_SEARCH_LOADER=mapped-file"
+                        "ECKIT_GEO_SEARCH_NUM_THREADS=${_n}"
+        TEST_PROPERTIES PASS_REGULAR_EXPRESSION "num_threads: ${_n}.*rows: 342144.*entries: 1368576"
+                        FIXTURES_REQUIRED eckit_geo_cache )
+endforeach()
+
+# eckit-geo-search, the phases of a many-point search timed single-threaded (in the test output)
+ecbuild_add_test(
+    TARGET          eckit_test_geo_search_tool_profile
+    COMMAND         eckit_geo_search
+    ARGS            --grid=O320 --query-grid=O48 --search=knn --k=16 --profile
+    ENVIRONMENT     ${eckit_geo_test_environment}
+                    "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/cache/search_tool_profile:${eckit_geo_test_cache_seeds}"
+                    "ECKIT_GEO_SEARCH_NUM_THREADS=1"
+    TEST_PROPERTIES PASS_REGULAR_EXPRESSION "k-d tree queries, in Morton order"
+                    FIXTURES_REQUIRED eckit_geo_cache )
 
 # cache directories: read-only, then writable (given by an environment variable, as an expansion)
 eckit_geo_add_test(cache_roots ENVIRONMENT

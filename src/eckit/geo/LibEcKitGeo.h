@@ -78,6 +78,10 @@ public:
     /// default true)
     static bool searchFastBuild();
 
+    /// Threads of many-point searches, if OpenMP (eckit-geo-search-num-threads;$ECKIT_GEO_SEARCH_NUM_THREADS, default
+    /// 1; 0 as OpenMP), otherwise 1
+    static size_t searchNumThreads();
+
     /**
      * If shared memory uses huge pages (where reserved), and if its size is rounded up to the huge page size
      * (eckit-geo-shared-memory-[round-]hugepages, default false)

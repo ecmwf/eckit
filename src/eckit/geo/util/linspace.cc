@@ -7,7 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/cache/MemoryCache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
 
@@ -18,17 +19,17 @@ namespace eckit::geo::util {
 const std::vector<double>& linspace(double start, double stop, size_t num) {
     const auto key = (eckit::MD5{} << start << stop << num).digest();
 
-    static cache::MemoryCacheT<decltype(key), std::vector<double>> cache;
-    if (cache.contains(key)) {
-        return cache[key];
+    static eckit::cache::MemoryCacheT<decltype(key), std::vector<double>> cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(key)) {
+        return *cached;
     }
 
     if (num == 0) {
-        return (cache[key] = {});
+        return cache.insert(key, {});
     }
 
     if (num == 1 || types::is_approximately_equal(start, stop)) {
-        return (cache[key] = {start});
+        return cache.insert(key, {start});
     }
 
     const auto step = (stop - start) / static_cast<double>(num - 1);
@@ -38,7 +39,7 @@ const std::vector<double>& linspace(double start, double stop, size_t num) {
                     [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
     l.back() = stop;  // no rounding past the end (e.g. a pole)
 
-    return (cache[key] = std::move(l));
+    return cache.insert(key, std::move(l));
 }
 
 

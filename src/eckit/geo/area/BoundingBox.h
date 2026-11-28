@@ -54,11 +54,13 @@ public:
     bool operator!=(const BoundingBox& other) const { return !operator==(other); }
 
     BoundingBox& operator=(const BoundingBox& other) {
+        Area::operator=(other);
         container_type::operator=(other);
         return *this;
     }
 
     BoundingBox& operator=(BoundingBox&& other) {
+        Area::operator=(other);
         container_type::operator=(other);
         return *this;
     }

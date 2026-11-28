@@ -22,6 +22,11 @@ namespace eckit::geo {
 PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, value_type minimum) {
     const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
+    // not finite (e.g. NaN from a failed projection): as is, rather than a number
+    if (!std::isfinite(a)) {
+        return a;
+    }
+
     auto diff = a - minimum;
     if (0. <= diff && diff < FULL_ANGLE) {
         return a;
@@ -34,6 +39,11 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, va
 
 PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, value_type maximum) {
     const auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
+
+    // not finite (e.g. NaN from a failed projection): as is, rather than a number
+    if (!std::isfinite(a)) {
+        return a;
+    }
 
     auto diff = a - maximum;
     if (-FULL_ANGLE < diff && diff <= 0.) {
@@ -97,7 +107,7 @@ PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::strin
         return {v[0], v[1]};
     }
 
-    throw exception::SpecError("PointLonLat::make_from_spec: '" + name + "' expected [lon, lat] values", Here());
+    throw exception::SpecError("PointLonLat: {" + name + ": [lon, lat]} expected", Here());
 }
 
 

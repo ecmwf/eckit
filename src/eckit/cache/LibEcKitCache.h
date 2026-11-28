@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "eckit/cache/MemoryUsage.h"
+#include "eckit/cache/Roots.h"
 #include "eckit/system/Library.h"
 
 
@@ -41,6 +43,21 @@ public:
      * be about to open them (eckit-cache-file-kept;$ECKIT_CACHE_FILE_KEPT, default from CMake eckit_CACHE_FILE_KEPT)
      */
     static int fileCacheKept_s();
+
+    /// Cache directories of eckit ("path1:path2:...", eckit-cache-path;$ECKIT_CACHE_PATH, default none)
+    static std::string cachePath();
+
+    /**
+     * Cache directories: these paths ("path1:path2:..."), then those of eckit (see cachePath), so these take priority
+     * (searched first, and written to first)
+     */
+    static cache::Roots cacheRoots(const std::string& paths = "", bool writing = true);
+
+    /**
+     * Capacity of a group of in-process caches, by default (see cache::MemoryCaches), as "process[,shared]" [byte]
+     * (eckit-cache-total-memory-footprint;$ECKIT_CACHE_TOTAL_CACHE_MEMORY_FOOTPRINT, default unlimited)
+     */
+    static cache::MemoryUsage totalMemoryCapacity();
 
 private:
 

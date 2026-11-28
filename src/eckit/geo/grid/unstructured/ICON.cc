@@ -12,32 +12,16 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::grid::unstructured {
 
 
-static Arrangement arrangement_from_string(const std::string& str) {
-    return str == "C"   ? Arrangement::ICON_C
-           : str == "V" ? Arrangement::ICON_V
-           : str == "E" ? Arrangement::ICON_E
-                        : throw SeriousBug("ICON: unsupported arrangement '" + str + "'");
-}
-
-
-static std::string arrangement_to_string(Arrangement a) {
-    return a == Arrangement::ICON_C   ? "C"
-           : a == Arrangement::ICON_V ? "V"
-           : a == Arrangement::ICON_E
-               ? "E"
-               : throw SeriousBug("ICON: unsupported arrangement '" + std::to_string(a) + "'", Here());
-}
-
-
 ICON::ICON(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
-                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+                 arrangement_to_string(arrangement_from_string("ICON", spec.get_string("arrangement"))),
+                 bounding_box_from_spec(spec), projection_from_spec(spec)) {}
 
 
 ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
@@ -61,7 +45,7 @@ std::vector<size_t> ICON::shape() const {
 
 
 Grid::Spec* ICON::spec(const std::string& str) {
-    return is_uid(str) ? GridSpecByUID::instance().get_spec(str) : GridSpecByName::instance().get_spec(str, str);
+    return is_uid(str) ? GridSpecByUID::instance().get_spec(StringTools::lower(str)) : GridSpecByName::spec(str);
 }
 
 

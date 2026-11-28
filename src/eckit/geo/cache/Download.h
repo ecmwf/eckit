@@ -4,58 +4,25 @@
 
 #pragma once
 
-#include <map>
+// Deprecated, moved to eckit::cache (for existing users, e.g. mir)
 #include <string>
 
-#include "eckit/filesystem/PathName.h"
-#include "eckit/geo/cache/DiskCache.h"
-#include "eckit/log/Bytes.h"
+#include "eckit/cache/Download.h"
 
 
 namespace eckit::geo::cache {
 
 
-class Download final : public DiskCache {
+class Download {
 public:
 
-    // -- Types
+    [[deprecated("use eckit::cache::Download")]] explicit Download(const PathName& root);
 
-    using url_type     = std::string;
-    using headers_type = std::map<std::string, std::string>;  // keys in lowercase
-
-    struct info_type {
-        Bytes bytes;
-        double time_s;
-    };
-
-    // -- Constructors
-
-    explicit Download(const PathName& root = default_root(), bool html = false) : DiskCache(root), html_(html) {}
-
-    // -- Methods
-
-    static const std::string PREFIX;
-    static const std::string SUFFIX;
-
-    PathName to_cached_path(const url_type&, const std::string& prefix = PREFIX,
-                            const std::string& suffix = SUFFIX) const;
-
-    // -- Class methods
-
-    static info_type to_path(const url_type&, const PathName&, bool html = false);
-
-    static std::string validate_response(const url_type&, long code, const headers_type&, bool html = false);
-
-    static PathName default_root();
-
-    static std::string url_file_basename(const url_type&, bool ext = true);
-    static std::string url_file_extension(const url_type&);
+    [[deprecated("use eckit::cache::Download::toCachedPath")]] PathName to_cached_path(const std::string& url) const;
 
 private:
 
-    void rmdir(const PathName&) const;
-
-    bool html_;
+    eckit::cache::Download download_;
 };
 
 

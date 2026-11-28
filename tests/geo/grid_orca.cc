@@ -108,6 +108,16 @@ CASE("catalog") {
 }
 
 
+CASE("first and last points") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{uid:" + UID + "}"));
+
+    EXPECT(points_equal(grid->first_point(), grid->point(0)));
+    EXPECT(points_equal(grid->first_point(), *grid->begin()));
+    EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+    EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
+}
+
+
 }  // namespace eckit::geo::test
 
 

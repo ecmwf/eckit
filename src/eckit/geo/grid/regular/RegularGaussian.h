@@ -5,12 +5,13 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/Regular.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 
@@ -24,10 +25,12 @@ public:
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, BoundingBox = {}, order::Scan = scan_default(), const Projection* = nullptr);
+    explicit RegularGaussian(size_t N, BoundingBox = {}, order::RegularScan = scan_default(),
+                             std::unique_ptr<const Projection> = nullptr);
 
     /// Of ni longitudes (global, 4N if 0)
-    RegularGaussian(size_t N, size_t ni, BoundingBox, order::Scan = scan_default(), const Projection* = nullptr);
+    RegularGaussian(size_t N, size_t ni, BoundingBox, order::RegularScan = scan_default(),
+                    std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
@@ -39,9 +42,6 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
-
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 

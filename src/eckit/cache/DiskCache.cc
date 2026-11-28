@@ -171,10 +171,28 @@ bool DiskCache::create(const PathName& path, const Write& write, const Valid& va
         Log::warning() << "DiskCache: invalid '" << path << "', recreating" << std::endl;
     }
 
+    write_locked(path, write);
+    return true;
+}
+
+
+void DiskCache::write(const PathName& path, const Write& write) {
+    if (const auto dir = path.dirName(); !dir.exists()) {
+        dir.mkdir();
+    }
+
+    PathLock locker(path);
+    util::lock_guard<PathLock> lock(locker);
+
+    write_locked(path, write);
+}
+
+
+void DiskCache::write_locked(const PathName& path, const Write& write) {
     // same directory (same filesystem), so the rename is atomic
     const auto tmp = PathName::unique(path);
     try {
-        Log::debug<LibEcKitCache>() << "DiskCache: creating '" << path << "'" << std::endl;
+        Log::debug<LibEcKitCache>() << "DiskCache: writing '" << path << "'" << std::endl;
         write(tmp);
 
         share(tmp);
@@ -185,8 +203,6 @@ bool DiskCache::create(const PathName& path, const Write& write, const Valid& va
         remove(tmp);
         throw;
     }
-
-    return true;
 }
 
 

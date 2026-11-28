@@ -25,38 +25,34 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), BoundingBox* = nullptr,
-                     const Projection* = nullptr);
+    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), std::unique_ptr<BoundingBox> = nullptr,
+                     std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
-    size_t Nside() const { return Nside_; }
+    size_t Nside() const { return order_.Nside(); }
 
     // -- Overridden methods
 
-    std::string name() const override { return "H" + std::to_string(Nside_); }
+    std::string name() const override { return "H" + std::to_string(Nside()); }
 
     BoundingBox* calculate_bbox() const override;
 
-    iterator cbegin() const override;
-    iterator cend() const override;
+    [[nodiscard]] Point point(size_t index) const override;
 
     size_t size() const override;
 
     size_t nxj(size_t j) const override;
     const Range& lat() const override { return *y_; }
 
-    [[nodiscard]] std::vector<Point> to_points() const override;
-
     const order_type& order() const override { return order_.order(); }
-    renumber_type reorder(const order_type& to) const override { return order_.reorder(to, Nside_); }
+    renumber_type reorder(const order_type& to) const override { return order_.reorder(to); }
 
-    [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
-        return new HEALPix(Nside_, order);
-    }
+    [[nodiscard]] Grid* make_grid_reordered(const order_type&) const override;
 
     [[nodiscard]] const std::vector<double>& latitudes() const override;
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
+    double longitude(size_t j, size_t i) const override;
 
     // -- Class members
 
@@ -69,19 +65,23 @@ public:
 
 private:
 
+    // -- Types
+
+    struct Nested;
+
     // -- Members
 
-    const size_t Nside_;
-    order::HEALPix order_;
-
+    const order::HEALPix order_;
     const std::unique_ptr<Range> y_;
 
-    mutable std::vector<double> nested_latitudes_;
-    mutable std::vector<double> nested_longitudes_;
+    // -- Methods
+
+    bool is_order_nested() const { return order_.order() == order::HEALPix::NESTED; }
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    std::unique_ptr<Iterator::State> make_state() const override;
     const std::string& type() const override;
 };
 

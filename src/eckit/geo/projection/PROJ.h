@@ -81,6 +81,7 @@ private:
 
     const std::string source_;
     const std::string target_;
+    const double lon_minimum_;
 };
 
 

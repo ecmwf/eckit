@@ -4,17 +4,15 @@
 
 #include "eckit/geo/cache/LatitudeLongitude.h"
 
-#include <memory>
-#include <string>
+#include <map>
 #include <utility>
 
+#include "eckit/cache/Download.h"
+#include "eckit/cache/FileCache.h"
 #include "eckit/codec/codec.h"
 #include "eckit/config/Resource.h"
-#include "eckit/container/CacheManager.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/Version.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Spec.h"
@@ -26,13 +24,40 @@ namespace eckit::geo::cache {
 namespace {
 
 
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+struct State final : geo::Grid::Iterator::State {
+    explicit State(const LatitudeLongitude& record) : record_(record) {}
+
+    Point point(size_t index) override { return record_.point(index); }
+
+    std::unique_ptr<geo::Grid::Iterator::State> clone() const override { return std::make_unique<State>(*this); }
+
+    const LatitudeLongitude& record_;
 };
 
 
+}  // namespace
+
+
+std::unique_ptr<geo::Grid::Iterator::State> LatitudeLongitude::make_state() const {
+    return std::make_unique<State>(*this);
+}
+
+
+namespace {
+
+
+// coordinates are loaded once (loading can be a download), not concurrently
+struct lock_tag;  // of this file's mutex
+using lock_type = util::lock_type<lock_tag>;
+
+
 using Cache = cache::RecordCacheT<LatitudeLongitude, LatitudeLongitude::uid_type>;
+
+
+std::map<std::string, LatitudeLongitude::load_type>& loads() {
+    static std::map<std::string, LatitudeLongitude::load_type> loads;
+    return loads;
+}
 
 
 struct Loader final : Cache::Loader {
@@ -51,9 +76,14 @@ struct Loader final : Cache::Loader {
             return;
         }
 
+        if (auto load = loads().find(spec->get_string("type")); load != loads().end()) {
+            record = load->second(*spec);
+            return;
+        }
+
         if (spec->has("url")) {
-            static const Download download;
-            record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
+            static const eckit::cache::Download download(LibEcKitGeo::cacheRoots("download"));
+            record.read(download.toCachedPath(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }
 
@@ -64,7 +94,7 @@ struct Loader final : Cache::Loader {
 
 Cache& cache() {
     static const Loader loader;
-    static Cache CACHE(loader);
+    static Cache CACHE(LibEcKitGeo::memoryCaches(), loader);
     return CACHE;
 }
 
@@ -72,9 +102,12 @@ Cache& cache() {
 }  // namespace
 
 
-LatitudeLongitude::LatitudeLongitude(const std::vector<double>& lat, const std::vector<double>& lon) :
-    lon_(lon), lat_(lat) {
-    ASSERT(lat_.size() == lon_.size());
+LatitudeLongitude::LatitudeLongitude(std::vector<double> lat, std::vector<double> lon) :
+    lon_(std::move(lon)), lat_(std::move(lat)) {
+    if (lat_.size() != lon_.size()) {
+        throw exception::SpecError(
+            "LatitudeLongitude: {latitudes: [...], longitudes: [...]} (of the same size) expected", Here());
+    }
 }
 
 
@@ -90,15 +123,26 @@ const LatitudeLongitude& LatitudeLongitude::set(const uid_type& uid, LatitudeLon
 }
 
 
+void LatitudeLongitude::register_load(const std::string& type, load_type load) {
+    lock_type lock;
+    loads()[type] = load;
+}
+
+
 void LatitudeLongitude::read(const PathName& p) {
-    ASSERT_MSG(p.exists(), "LatitudeLongitude: path '" + p + "' not found");
+    if (!p.exists()) {
+        throw exception::GridError("LatitudeLongitude: '" + p + "' not found (e.g. the cache was removed)", Here());
+    }
 
     codec::RecordReader record(p);
     record.read("latitude", lat_);
     record.read("longitude", lon_);
     record.wait();
 
-    ASSERT(lat_.size() == lon_.size());
+    if (lat_.size() != lon_.size()) {
+        throw exception::GridError("LatitudeLongitude: '" + p + "' latitudes and longitudes of different sizes",
+                                   Here());
+    }
 }
 
 
@@ -120,39 +164,35 @@ void LatitudeLongitude::write(const PathName& p) const {
 
 
 PathName LatitudeLongitude::to_cached_path() const {
-    // the cache file (as Download, not in memory), created exclusively across processes (eckit::CacheManager: the
-    // creation is locked, written to a process-specific file then renamed, so other processes never read a partial
-    // file)
-    struct Traits {
-        using value_type = PathName;
-        using Locker     = CacheManagerFileFlock;
+    const auto uid = grid::Unstructured::uid_from_latlons(latitude(), longitude());
+    return file_cache().getOrCreate(uid, [this](const PathName& tmp) { write(tmp); }, valid());
+}
 
-        static const char* name() { return "latlon"; }
-        static int version() { return version::LATLON; }
-        static const char* extension() { return ".ek"; }
 
-        static void save(const CacheManagerBase&, const value_type&, const PathName&) {}  // by the creator
-        static void load(const CacheManagerBase&, value_type& path, const PathName& cached) { path = cached; }
-    };
+std::optional<PathName> LatitudeLongitude::find_cached_path() const {
+    return file_cache().find(grid::Unstructured::uid_from_latlons(latitude(), longitude()), valid());
+}
 
-    using LatLonCache = CacheManager<Traits>;
-    static const LatLonCache CACHE(Traits::name(), LibEcKitGeo::cacheDir(), false, 0);
 
-    struct Creator final : LatLonCache::CacheContentCreator {
-        explicit Creator(const LatitudeLongitude& ll) : ll_(ll) {}
-        void create(const PathName& path, PathName&, bool& saved) override {
-            ll_.write(path);
-            saved = true;
+eckit::cache::DiskCache::Valid LatitudeLongitude::valid() const {
+    return [this](const PathName& p) {
+        lock_type lock;
+        try {
+            LatitudeLongitude cached;
+            cached.read(p);
+            return cached.lat_ == lat_ && cached.lon_ == lon_;
         }
-        const LatitudeLongitude& ll_;
-    } creator(*this);
+        catch (const std::exception&) {
+            return false;
+        }
+    };
+}
 
-    // the file lock is per process
-    lock_type lock;
 
-    PathName path;
-    CACHE.getOrCreate(grid::Unstructured::uid_from_latlons(latitude(), longitude()), creator, path);
-    return path;
+const eckit::cache::FileCache& LatitudeLongitude::file_cache() {
+    // written from the grid in memory, so never missing (no throw on miss)
+    static const eckit::cache::FileCache cache(LibEcKitGeo::cacheRoots(), "latlon", VERSION, ".ek", {}, false);
+    return cache;
 }
 
 

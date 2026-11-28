@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Range.h"
 #include "eckit/types/Fraction.h"
@@ -21,6 +22,8 @@ public:
 
     struct Implementation {
         Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref);
+
+        Implementation(const Implementation& other, Fraction a, Fraction b, size_t size);
 
         Implementation(const Implementation&) = default;
         Implementation(Implementation&&)      = default;
@@ -48,6 +51,7 @@ public:
     // -- Overridden methods
 
     [[nodiscard]] const std::vector<double>& values() const override;
+    double value(size_t i) const override;
 
     [[nodiscard]] Regular* make_cropped_range(double crop_a, double crop_b) const override {
         return impl_->make_cropped_range(crop_a, crop_b);
@@ -72,7 +76,7 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(Implementation*);
+    explicit Regular(std::unique_ptr<Implementation>);
 
 private:
 
@@ -87,7 +91,13 @@ struct RegularLatitude : Regular {
     explicit RegularLatitude(double inc, double a, double b, double ref = 0) :
         RegularLatitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
 
+    [[nodiscard]] static RegularLatitude* make_empty_range(Fraction a, Fraction b);
+
     [[nodiscard]] RegularLatitude* make_cropped_range(double crop_a, double crop_b) const override;
+
+private:
+
+    explicit RegularLatitude(std::unique_ptr<Implementation> impl) : Regular(std::move(impl)) {}
 };
 
 
@@ -105,7 +115,7 @@ struct RegularLongitude : Regular {
 
 private:
 
-    explicit RegularLongitude(Implementation* impl) : Regular(impl) {}
+    explicit RegularLongitude(std::unique_ptr<Implementation> impl) : Regular(std::move(impl)) {}
 };
 
 

@@ -5,12 +5,13 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/Regular.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/range/Regular.h"
 
 
@@ -41,8 +42,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::Scan = scan_default(),
-                       const Projection* = nullptr);
+    explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::RegularScan = scan_default(),
+                       std::unique_ptr<const Projection> = nullptr);
 
     // -- Methods
 
@@ -52,9 +53,6 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
-
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
@@ -84,10 +82,6 @@ private:
 
     const range::RegularLongitude x_;
     const range::RegularLatitude y_;
-
-    // -- Friends
-
-    friend class geo::iterator::Regular;
 };
 
 

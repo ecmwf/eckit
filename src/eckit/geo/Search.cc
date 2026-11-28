@@ -12,9 +12,11 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Trace.h"
+#include "eckit/geo/cache/SearchCache.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -25,17 +27,6 @@ namespace {
 
 
 using KDTree = search::KDTree;
-
-
-std::string loader(const spec::Spec& spec) {
-    return spec.get_string("search-loader",
-                           spec.get_bool("caching", LibEcKitGeo::caching()) ? LibEcKitGeo::searchLoader() : "memory");
-}
-
-
-bool fast_build(const spec::Spec& spec) {
-    return spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild());
-}
 
 
 std::string points_uid(const std::vector<PointXYZ>& points) {
@@ -76,48 +67,38 @@ struct Search::Shared {
 };
 
 
-template <typename Fill>
-void Search::build(const std::string& uid, size_t size, const Spec& spec, const Fill& fill) {
-    auto& kdtree = shared_->kdtree;
-    kdtree.reset(geo::search::KDTreeFactory::build(loader(spec), uid, size));
-
-    util::lock_guard<KDTree> lock(*kdtree);
-
-    if (kdtree->ready()) {
-        Log::debug() << "Search: loaded " << *kdtree << std::endl;
-        return;
-    }
-
-    Trace trace("Search: build " + uid);
-
-    std::vector<KDTree::Value> values;
-    fill(values);
-    ASSERT(values.size() == size);
-
-    if (fast_build(spec)) {
-        kdtree->build(values);
-    }
-    else {
-        for (const auto& value : values) {
-            kdtree->insert(value);
-        }
-    }
-
-    kdtree->commit();
+const Search::Storage& Search::Storage::library() {
+    static const Storage storage{LibEcKitGeo::searchCacheLoader(), cache::SearchCache::file_cache()};
+    return storage;
 }
 
 
-Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Shared>()) {
+void Search::build(const std::string& uid, size_t size, const Spec& spec, const Storage& storage,
+                   const KDTree::Fill& fill) {
+    auto& kdtree = shared_->kdtree;
+    kdtree       = search::KDTreeFactory::build(storage.loader, uid, size, storage.files);
+
+    Trace trace("Search: build or load " + uid);
+    if (!kdtree->build(fill, spec.get_bool("search-fast-build", LibEcKitGeo::searchFastBuild()))) {
+        Log::debug() << "Search: loaded " << *kdtree << std::endl;
+    }
+}
+
+
+std::string Search::uid(const Grid& grid) {
+    const auto& figure = grid.figure();
+    return MD5{grid.uid() + projection::LonLatToXYZ(figure.a(), figure.b()).spec_str()}.digest();
+}
+
+
+Search::Search(const Grid& grid, const Spec& spec, const Storage& storage) : shared_(std::make_shared<Shared>()) {
     configure(spec);
 
     // (lon, lat) queries are on the figure of the grid points, as Grid::to_xyz
     const auto& figure = grid.figure();
     shared_->to_xyz    = std::make_unique<projection::LonLatToXYZ>(figure.a(), figure.b());
 
-    // the k-d tree depends on the grid points and the figure they're converted on
-    const auto uid = MD5{grid.uid() + shared_->to_xyz->spec_str()}.digest();
-
-    build(uid, grid.size(), spec, [&grid](std::vector<KDTree::Value>& values) {
+    build(uid(grid), grid.size(), spec, storage, [&grid](std::vector<KDTree::Value>& values) {
         const auto xyz = grid.to_xyz();
         ASSERT(xyz.size() == 3);
 
@@ -129,12 +110,13 @@ Search::Search(const Grid& grid, const Spec& spec) : shared_(std::make_shared<Sh
 }
 
 
-Search::Search(const std::vector<PointXYZ>& points, const Spec& spec) : shared_(std::make_shared<Shared>()) {
+Search::Search(const std::vector<PointXYZ>& points, const Spec& spec, const Storage& storage) :
+    shared_(std::make_shared<Shared>()) {
     configure(spec);
 
     shared_->to_xyz = std::make_unique<projection::LonLatToXYZ>(spec);
 
-    build(points_uid(points), points.size(), spec, [&points](std::vector<KDTree::Value>& values) {
+    build(points_uid(points), points.size(), spec, storage, [&points](std::vector<KDTree::Value>& values) {
         values.reserve(points.size());
         for (size_t i = 0; i < points.size(); ++i) {
             values.emplace_back(points[i], i);
@@ -166,22 +148,16 @@ const search::KDTree& Search::kdtree() const {
 }
 
 
-Search::MemoryUsage Search::estimate(size_t size, const Spec& spec) {
-    return geo::search::KDTreeFactory::estimate(loader(spec), size);
+Search::MemoryUsage Search::estimate(size_t size, const Storage& storage) {
+    return search::KDTreeFactory::estimate(storage.loader, size);
 }
 
 
 std::unique_ptr<spec::Custom> Search::spec_kdtree(const Spec& spec) {
     auto kdtree = std::make_unique<spec::Custom>();
 
-    if (spec.has("search-loader")) {
-        kdtree->set("search-loader", spec.get_string("search-loader"));
-    }
-
-    for (const std::string key : {"caching", "search-fast-build"}) {
-        if (spec.has(key)) {
-            kdtree->set(key, spec.get_bool(key));
-        }
+    if (spec.has("search-fast-build")) {
+        kdtree->set("search-fast-build", spec.get_bool("search-fast-build"));
     }
 
     return kdtree;
@@ -200,6 +176,7 @@ void Search::configure(const Spec& spec) {
         {"radius", Mode::RADIUS},
         {"knn_or_radius", Mode::KNN_OR_RADIUS},
         {"knn_and_radius", Mode::KNN_AND_RADIUS},
+        {"knn_or_same_radius", Mode::KNN_OR_SAME_RADIUS},
     };
 
     const auto name = spec.get_string("search", "nn");
@@ -210,7 +187,8 @@ void Search::configure(const Spec& spec) {
 
     mode_ = it->second;
 
-    if (mode_ == Mode::KNN || mode_ == Mode::KNN_OR_RADIUS || mode_ == Mode::KNN_AND_RADIUS) {
+    if (mode_ == Mode::KNN || mode_ == Mode::KNN_OR_RADIUS || mode_ == Mode::KNN_AND_RADIUS ||
+        mode_ == Mode::KNN_OR_SAME_RADIUS) {
         if (!spec.has("search-k")) {
             throw exception::SearchError("Search: search '" + name + "' requires 'search-k'", Here());
         }
@@ -223,6 +201,11 @@ void Search::configure(const Spec& spec) {
         }
         radius_ = spec.get_double("search-radius");
         check_radius(radius_);
+    }
+
+    if (mode_ == Mode::KNN_OR_SAME_RADIUS) {
+        tolerance_ = spec.get_double("search-tolerance", tolerance_);
+        check_radius(tolerance_);
     }
 }
 
@@ -239,9 +222,30 @@ Search::Neighbours Search::search(const Point& p) const {
             return search_knn_or_radius(p, k_, radius_);
         case Mode::KNN_AND_RADIUS:
             return search_knn_and_radius(p, k_, radius_);
+        case Mode::KNN_OR_SAME_RADIUS:
+            return search_knn_or_same_radius(p, k_, tolerance_);
     }
 
     NOTIMP;
+}
+
+
+std::vector<Search::Neighbours> Search::search(const std::vector<Point>& points) const {
+    std::vector<PointXYZ> xyz;
+    xyz.reserve(points.size());
+    for (const auto& p : points) {
+        xyz.emplace_back(to_xyz(p));
+    }
+
+    std::vector<Neighbours> result(points.size());
+
+    // locked once for all queries
+    util::lock_guard<util::recursive_mutex> lock(shared_->mutex);
+    for (auto i : KDTree::query_order(xyz)) {
+        result[i] = search(xyz[i]);
+    }
+
+    return result;
 }
 
 
@@ -315,6 +319,18 @@ Search::Neighbours Search::search_knn_and_radius(const Point& p, size_t k, doubl
                  result.end());
 
     return result;
+}
+
+
+Search::Neighbours Search::search_knn_or_same_radius(const Point& p, size_t k, double tolerance) const {
+    check_radius(tolerance);
+
+    auto knn = search_knn(p, k);
+    if (knn.empty() || !types::is_approximately_equal(knn.back().distance, knn.front().distance, tolerance)) {
+        return knn;
+    }
+
+    return search_radius(p, knn.back().distance + tolerance);
 }
 
 

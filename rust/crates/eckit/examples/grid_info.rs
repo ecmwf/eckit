@@ -220,7 +220,7 @@ fn search(grid: &Grid, lat: &[f64], lon: &[f64]) {
             );
             show(
                 "k-d tree",
-                search.footprint().map(|f| human_bytes(f.memory)),
+                search.footprint().map(|f| human_bytes(f.process)),
             );
         }
         Err(err) => show("nearest", Err::<String, _>(err)),
@@ -254,13 +254,13 @@ fn caches(grid: Grid) {
                 s.size,
                 s.hits,
                 s.misses,
-                human_bytes(s.usage.memory)
+                human_bytes(s.usage.process)
             )
         }),
     );
     field("footprint", &human_bytes(cache_footprint()));
     drop(grid);
-    cache_purge();
+    show("purge", cache_purge().map(|()| "done"));
     field("after purge", &human_bytes(cache_footprint()));
 }
 

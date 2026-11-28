@@ -14,6 +14,11 @@ namespace eckit::geo {
 PointLonLatR::value_type PointLonLatR::normalise_angle_to_minimum(value_type a, value_type minimum) {
     static const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
+    // not finite (e.g. NaN from a failed projection): as is, rather than a number
+    if (!std::isfinite(a)) {
+        return a;
+    }
+
     auto diff = a - minimum;
     if (0. <= diff && diff < FULL_ANGLE) {
         return a;
@@ -26,6 +31,11 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_minimum(value_type a, 
 
 PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, value_type maximum) {
     auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
+
+    // not finite (e.g. NaN from a failed projection): as is, rather than a number
+    if (!std::isfinite(a)) {
+        return a;
+    }
 
     auto diff = a - maximum;
     if (-FULL_ANGLE < diff && diff <= 0.) {

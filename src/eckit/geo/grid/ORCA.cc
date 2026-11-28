@@ -4,15 +4,15 @@
 
 #include "eckit/geo/grid/ORCA.h"
 
-#include <memory>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::util {
@@ -24,9 +24,9 @@ namespace eckit::geo::grid {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Grid(bounding_box_from_spec(spec), ProjectionFactory::build(spec)),
+    Grid(bounding_box_from_spec(spec), projection_from_spec(spec)),
     name_(spec.get_string("name")),
-    arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
+    arrangement_(arrangement_from_string("ORCA", spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));
 }
 
@@ -62,39 +62,13 @@ Grid::uid_type ORCA::calculate_uid() const {
 }
 
 
-Grid::iterator ORCA::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record().longitude(), record().latitude())};
+Point ORCA::point(size_t index) const {
+    return record().point(index);
 }
 
 
-Grid::iterator ORCA::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this)};
-}
-
-
-Point ORCA::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record().longitude().front(), record().latitude().front()};
-}
-
-
-Point ORCA::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record().longitude().back(), record().latitude().back()};
-}
-
-
-std::vector<Point> ORCA::to_points() const {
-    const auto& lon = record().longitude();
-    const auto& lat = record().latitude();
-
-    std::vector<Point> p;
-    p.reserve(size());
-
-    for (size_t i = 0; i < size(); ++i) {
-        p.emplace_back(PointLonLat{lon[i], lat[i]});
-    }
-    return p;
+std::unique_ptr<Grid::Iterator::State> ORCA::make_state() const {
+    return record().make_state();
 }
 
 
@@ -118,37 +92,17 @@ Grid::Spec* ORCA::spec_from_uid(const uid_type& uid) {
 }
 
 
-Arrangement ORCA::arrangement_from_string(const std::string& str) {
-    return str == "F"   ? Arrangement::ORCA_F
-           : str == "T" ? Arrangement::ORCA_T
-           : str == "U" ? Arrangement::ORCA_U
-           : str == "V" ? Arrangement::ORCA_V
-           : str == "W" ? Arrangement::ORCA_W
-                        : throw SeriousBug("ORCA: unsupported arrangement '" + str + "'");
-}
-
-
-std::string ORCA::arrangement_to_string(Arrangement a) {
-    return a == Arrangement::ORCA_F   ? "F"
-           : a == Arrangement::ORCA_T ? "T"
-           : a == Arrangement::ORCA_U ? "U"
-           : a == Arrangement::ORCA_V ? "V"
-           : a == Arrangement::ORCA_W
-               ? "W"
-               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
-}
-
-
 void ORCA::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
     auto grid = name_ + "_" + arrangement_to_string(arrangement_);
     custom.set("grid", grid);
 
-    if (auto _uid = uid();
-        !GridSpecByName::instance().exists(grid) ||
-        std::unique_ptr<const Spec>(GridSpecByName::instance().match_spec(grid, grid))->get_string("uid") != _uid) {
-        custom.set("uid", _uid);
+    // the uid, unless the name gives it
+    if (std::unique_ptr<const Spec> named(
+            GridSpecByName::has_name(grid) ? GridSpecByName::instance().match_spec(grid, grid) : nullptr);
+        !named || StringTools::lower(named->get_string("uid")) != uid()) {
+        custom.set("uid", uid());
     }
 }
 

@@ -63,10 +63,10 @@ public:
     bool exists(const key_t&) const;
     bool matches(const std::string&) const;
 
-    void regist(const key_t&, generator_t*);
+    void regist(const key_t&, std::unique_ptr<generator_t>);
     void unregist(const key_t&);
 
-    void replace(const key_t&, generator_t*);
+    void replace(const key_t&, std::unique_ptr<generator_t>);
 
     const generator_t& get(const key_t& k) const { return *get_shared(k); }
     const generator_t& match(const std::string& k) const { return *match_shared(k); }
@@ -158,23 +158,23 @@ bool GeneratorT<C>::matches(const std::string& k) const {
 }
 
 template <class C>
-void GeneratorT<C>::regist(const key_t& k, generator_t* c) {
+void GeneratorT<C>::regist(const key_t& k, std::unique_ptr<generator_t> c) {
     lock_type lock(mutex_);
 
     if (exists(k)) {
         throw BadParameter("Generator has already a builder for " + k, Here());
     }
 
-    ASSERT(c != nullptr);
-    store_[k].reset(c);
+    ASSERT(c);
+    store_[k] = std::move(c);
 }
 
 template <class C>
-void GeneratorT<C>::replace(const key_t& k, generator_t* c) {
+void GeneratorT<C>::replace(const key_t& k, std::unique_ptr<generator_t> c) {
     lock_type lock(mutex_);
 
-    ASSERT(c != nullptr);
-    store_[k].reset(c);
+    ASSERT(c);
+    store_[k] = std::move(c);
 }
 
 template <class C>
@@ -299,8 +299,8 @@ struct SpecGeneratorT2 : public SpecGenerator {
 
 template <class T>
 struct ConcreteSpecGeneratorT0 final : public SpecGeneratorT0 {
-    explicit ConcreteSpecGeneratorT0(const typename SpecGeneratorT0::key_t& key) {
-        GeneratorT<SpecGeneratorT0>::instance().regist(key, this);
+    static void regist(const typename SpecGeneratorT0::key_t& key) {
+        GeneratorT<SpecGeneratorT0>::instance().regist(key, std::make_unique<ConcreteSpecGeneratorT0>());
     }
 
     [[nodiscard]] Spec* spec() const override { return T::spec(); }
@@ -310,8 +310,8 @@ struct ConcreteSpecGeneratorT0 final : public SpecGeneratorT0 {
 
 template <class T, typename ARG1>
 struct ConcreteSpecGeneratorT1 final : public SpecGeneratorT1<ARG1> {
-    explicit ConcreteSpecGeneratorT1(const typename SpecGeneratorT1<ARG1>::key_t& key) {
-        GeneratorT<SpecGeneratorT1<ARG1>>::instance().regist(key, this);
+    static void regist(const typename SpecGeneratorT1<ARG1>::key_t& key) {
+        GeneratorT<SpecGeneratorT1<ARG1>>::instance().regist(key, std::make_unique<ConcreteSpecGeneratorT1>());
     }
 
     [[nodiscard]] Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::spec(p1); }
@@ -321,8 +321,8 @@ struct ConcreteSpecGeneratorT1 final : public SpecGeneratorT1<ARG1> {
 
 template <class T, typename ARG1, typename ARG2>
 struct ConcreteSpecGeneratorT2 final : public SpecGeneratorT2<ARG1, ARG2> {
-    explicit ConcreteSpecGeneratorT2(const typename SpecGeneratorT2<ARG1, ARG2>::key_t& key) {
-        GeneratorT<SpecGeneratorT2<ARG1, ARG2>>::instance().regist(key, this);
+    static void regist(const typename SpecGeneratorT2<ARG1, ARG2>::key_t& key) {
+        GeneratorT<SpecGeneratorT2<ARG1, ARG2>>::instance().regist(key, std::make_unique<ConcreteSpecGeneratorT2>());
     }
 
     [[nodiscard]] Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1,

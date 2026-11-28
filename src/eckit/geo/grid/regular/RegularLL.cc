@@ -6,8 +6,8 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <memory>
 #include <regex>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Area.h"
@@ -15,7 +15,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/iterator/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
@@ -31,7 +30,7 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {
     if (dlon < 0 || dlat < 0) {
-        throw exception::GridError("'grid' = ['dlon', 'dlat'] must be positive", Here());
+        throw exception::GridError("RegularLL: {grid: [dlon, dlat]} (positive) expected", Here());
     }
 }
 
@@ -51,7 +50,7 @@ RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
         return {grid[0], grid[1]};
     }
 
-    throw exception::GridError("'grid' = ['dlon', 'dlat'] expected", Here());
+    throw exception::GridError("RegularLL: {grid: [dlon, dlat]} expected", Here());
 }
 
 
@@ -70,24 +69,31 @@ RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec},
-              ProjectionFactory::build(spec)) {}
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec),
+              order::RegularScan{spec}, projection_from_spec(spec)) {}
 
 
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, const Projection* p) :
-    Regular(s, p),
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::RegularScan s,
+                     std::unique_ptr<const Projection> p) :
+    Regular(s, std::move(p)),
     x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},
     y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(), s.is_scan_j_positive() ? bbox.south() : bbox.north(),
        s.is_scan_j_positive() ? bbox.north() : bbox.south(), ref.lat()} {
-    ASSERT(!empty());
+    if (empty()) {
+        throw exception::GridError("RegularLL: no points (in the area)", Here());
+    }
 }
 
 
 Grid::Spec* RegularLL::spec(const std::string& name) {
+    // case-insensitive, as grid names (e.g. 1E-1/1E-1)
+    static const std::regex REGEX(REGULAR_LL_PATTERN, std::regex_constants::icase);
+
     std::smatch match;
-    std::regex_match(name, match, std::regex(REGULAR_LL_PATTERN));
-    ASSERT(match.size() == 9);
+    if (!std::regex_match(name, match, REGEX) || match.size() != 9) {
+        throw exception::SpecError("RegularLL: {grid: dlon/dlat} expected, not '" + name + "'", Here());
+    }
 
     return new spec::Custom(
         {{"type", "regular_ll"}, {"grid", std::vector<double>{std::stod(match[1].str()), std::stod(match[5].str())}}});
@@ -114,18 +120,6 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 const std::string& RegularLL::type() const {
     static const std::string type{"regular_ll"};
     return type;
-}
-
-
-Point RegularLL::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().front(), y().values().front()};
-}
-
-
-Point RegularLL::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{x().values().back(), y().values().back()};
 }
 
 
@@ -173,13 +167,7 @@ Grid::BoundingBox* RegularLL::calculate_bbox_xy() const {
 struct ArakawaC : RegularLL {
     explicit ArakawaC(const Spec& spec) :
         RegularLL(*std::unique_ptr<Spec>([](const Spec& spec) {
-            auto a = [](const std::string& str) {
-                return str == "T" || str == "t"   ? Arrangement::ARAKAWA_C_T
-                       : str == "U" || str == "u" ? Arrangement::ARAKAWA_C_U
-                       : str == "V" || str == "v"
-                           ? Arrangement::ARAKAWA_C_V
-                           : throw exception::GridError("ArakawaC: unsupported arrangement '" + str + "'", Here());
-            }(spec.get_string("arrangement", "T"));
+            auto a = arrangement_from_string("ArakawaC", spec.get_string("arrangement", "T"));
 
             auto N = spec.get_unsigned("n");
             if (N == 0) {
@@ -189,10 +177,8 @@ struct ArakawaC : RegularLL {
             auto grid_factor = spec.get_double_vector("grid_factor", {1., 1.});
             if (grid_factor.size() != 2 || types::is_approximately_lesser_or_equal(grid_factor[0], 0.) ||
                 types::is_approximately_lesser_or_equal(grid_factor[1], 0.)) {
-                throw exception::GridError(
-                    "ArakawaC: 'grid_factor' = ['dlon-factor', 'dlat-factor'] must be a vector of two positive "
-                    "real numbers",
-                    Here());
+                throw exception::GridError("ArakawaC: {grid_factor: [dlon_factor, dlat_factor]} (positive) expected",
+                                           Here());
             }
 
             auto dlon = grid_factor[0] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);

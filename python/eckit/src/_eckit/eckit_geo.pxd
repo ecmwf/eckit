@@ -13,10 +13,13 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         LibEcKitGeo& instance()
 
         @staticmethod
-        string cacheDir() except +
+        string cacheInfo() except +
 
         @staticmethod
-        void purgeCacheDir() except +
+        void purgeCache() except +
+
+        @staticmethod
+        void removeCacheDir() except +
 
         @staticmethod
         bool projdb_is_available() except +
@@ -25,9 +28,6 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         void projdb_set_search_paths(
             const string& db_path, const vector[string]& search_paths
         ) except +
-
-        @staticmethod
-        void projdb_reset() except +
 
         string version() except +
         string gitsha1(unsigned int n) except +  # n=40 for full sha1

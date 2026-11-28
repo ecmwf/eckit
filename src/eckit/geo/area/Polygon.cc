@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <memory>
-#include <numeric>
-#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -43,8 +41,14 @@ bool Polygon::contains(const Point& p) const {
 
 
 double Polygon::area() const {
-    // NOTE this is "signed area", meaning it respects the point ordering
-    return std::accumulate(begin(), end(), 0., [](auto a, const auto& poly) { return a + poly.area(); });
+    // rings alternately include/exclude (see contains), so are signed by their nesting, whatever their orientation
+    double a = 0.;
+    for (const auto& ring : *this) {
+        const auto depth = std::count_if(
+            begin(), end(), [&ring](const auto& other) { return &other != &ring && other.contains(ring.front()); });
+        a += (depth % 2 == 0 ? 1. : -1.) * ring.area();
+    }
+    return a;
 }
 
 
@@ -112,7 +116,8 @@ Polygon* Polygon::make_from_spec(const Area::Spec& spec) {
         std::vector<double> longitudes;
         if (!spec.get("latitudes", latitudes) || !spec.get("longitudes", longitudes) ||
             latitudes.size() != longitudes.size()) {
-            throw exception::AreaError("Polygon: 'latitudes' and 'longitudes' expected, of the same size", Here());
+            throw exception::AreaError("Polygon: {latitudes: [...], longitudes: [...]} (of the same size) expected",
+                                       Here());
         }
 
         grids.emplace_back(new grid::Unstructured(longitudes, latitudes));
@@ -127,7 +132,8 @@ Polygon* Polygon::make_from_spec(const Area::Spec& spec) {
         }
     }
     else {
-        throw exception::AreaError("Polygon: 'latitudes' and 'longitudes', or 'uid' (one or more) expected", Here());
+        throw exception::AreaError(
+            "Polygon: {latitudes: [...], longitudes: [...]} or {uid: ...} (one or more) expected", Here());
     }
 
     container_type rings;

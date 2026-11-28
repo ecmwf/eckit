@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,36 @@ namespace eckit::geo::test {
 
 
 using P = std::unique_ptr<const Projection>;
+
+
+/// An environment variable set, restored (or unset, as it was) when out of scope
+class ScopedEnv {
+public:
+
+    ScopedEnv(const char* name, const char* value) : name_(name) {
+        if (const auto* old = ::getenv(name); old != nullptr) {
+            old_ = old;
+        }
+        ::setenv(name, value, 1);
+    }
+
+    ScopedEnv(const ScopedEnv&)            = delete;
+    ScopedEnv& operator=(const ScopedEnv&) = delete;
+
+    ~ScopedEnv() {
+        if (old_) {
+            ::setenv(name_.c_str(), old_->c_str(), 1);
+        }
+        else {
+            ::unsetenv(name_.c_str());
+        }
+    }
+
+private:
+
+    const std::string name_;
+    std::optional<std::string> old_;
+};
 
 
 CASE("projdb") {
@@ -51,12 +82,13 @@ CASE("projdb") {
 
 
     SECTION("unavailable when PROJ_DATA points nowhere") {
-        ::setenv("PROJ_DATA", "/does/not/exist", 1);
-        LibEcKitGeo::projdb_reset();
+        {
+            const ScopedEnv env("PROJ_DATA", "/does/not/exist");
+            LibEcKitGeo::projdb_reset();
 
-        EXPECT(!LibEcKitGeo::projdb_is_available());
+            EXPECT(!LibEcKitGeo::projdb_is_available());
+        }
 
-        ::unsetenv("PROJ_DATA");
         LibEcKitGeo::projdb_reset();
 
         EXPECT(LibEcKitGeo::projdb_is_available());
@@ -151,7 +183,7 @@ CASE("PROJ strings of projections") {
     // no PROJ equivalent
     for (const auto& spec : std::vector<std::string>{
              "{type: space_view, h: 35785831}",
-             "{type: stretch, stretching_factor: 2}",
+             "{type: stretch, factor: 2}",
          }) {
         P projection(ProjectionFactory::make_from_string(spec));
         EXPECT_THROWS_AS(projection->proj_str(), exception::ProjectionError);
@@ -339,6 +371,28 @@ CASE("projection: proj vectors") {
 
         const auto lonlat = ll->fwd(v{190., -10.}, v{0., 0.});
         EXPECT(approx(lonlat[0], v{-170., -10.}, eps_ll));
+
+        // in the spec, so the same projection by its spec
+        EXPECT(ll->spec().get_double("lon_minimum") == -180.);
+
+        P same(ProjectionFactory::build(ll->spec()));
+        EXPECT(*same == *ll);
+        EXPECT(approx(same->fwd(v{190.}, v{0.})[0], v{-170.}, eps_ll));
+    }
+
+
+    SECTION("outside of the projection domain: an error, or NaN as vectors") {
+        P ortho(ProjectionFactory::build(spec::Custom{{{"type", "proj"}, {"target", "+proj=ortho +R=6371229"}}}));
+
+        // beyond the visible disk
+        EXPECT_THROWS_AS((void)ortho->inv(PointXY{1e7, 1e7}), exception::ProjectionError);
+
+        const auto ll = ortho->inv(v{0., 1e7}, v{0., 1e7});
+        EXPECT(approx(v{ll[0][0], ll[1][0]}, v{0., 0.}, eps_ll));
+        EXPECT(std::isnan(ll[0][1]) && std::isnan(ll[1][1]));
+
+        // a box of its centre beyond the visible disk: global, not an error
+        EXPECT(area::BoundingBox::make_from_projection(PointXY{5e6, 5e6}, PointXY{2e7, 2e7}, *ortho)->global());
     }
 }
 

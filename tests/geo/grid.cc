@@ -14,6 +14,7 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -49,6 +50,11 @@ CASE("Grid from spec/uid") {
 
         EXPECT(*same == *grid);
 
+        // every grid known by uid has a type and uid
+        std::unique_ptr<const spec::Spec> by_uid(GridSpecByUID::instance().get_spec(grid->uid()));
+        EXPECT(by_uid->get_string("type") == grid->type());
+        EXPECT(by_uid->get_string("uid") == grid->uid());
+
         static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
         EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
@@ -75,6 +81,12 @@ CASE("Grid name/arrangement") {
 
         EXPECT(grid->name() == test.name);
         EXPECT(grid->arrangement().empty());
+
+        // every grid known by name has a type
+        if (!grid->name().empty()) {
+            std::unique_ptr<const spec::Spec> by_name(GridSpecByName::instance().match_spec(test.name, test.name));
+            EXPECT(by_name->has("type"));
+        }
     }
 }
 
@@ -83,7 +95,7 @@ CASE("Grid from name") {
     struct {
         const char* name;
         size_t size;
-    } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
+    } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}, {"LAEA-EFAS-5km", 1000 * 950}};
 
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));
@@ -223,6 +235,41 @@ CASE("Grid::to_xyz") {
             EXPECT(points_equal(PointXYZ{xyz[0][i], xyz[1][i], xyz[2][i]}, std::get<PointXYZ>(p)));
             ++i;
         }
+    }
+}
+
+
+CASE("Grid::pl") {
+    const std::vector<long> pl{20, 24, 24, 20};
+
+    for (const auto* spec : {"{pl: [20, 24, 24, 20]}", "{type: reduced_ll, pl: [20, 24, 24, 20]}",
+                             "{pl: [20, 24, 24, 20], area: [90, 0, 0, 360]}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        // the defining pl (also of a cropped grid), by reference
+        EXPECT(grid->pl() == pl);
+        EXPECT(&grid->pl() == &grid->pl());
+    }
+
+    // a known pl is the cached one, not a copy (O2, by pl or by name), but a reduced_ll pl is the grid's own
+    std::unique_ptr<const Grid> o2(GridFactory::make_from_string("{grid: o2}"));
+    std::unique_ptr<const Grid> o2_pl(GridFactory::make_from_string("{pl: [20, 24, 24, 20]}"));
+    std::unique_ptr<const Grid> o2_ll(GridFactory::make_from_string("{type: reduced_ll, pl: [20, 24, 24, 20]}"));
+
+    EXPECT(&o2->pl() == &util::reduced_octahedral_pl(2));
+    EXPECT(&o2_pl->pl() == &o2->pl());
+    EXPECT(&o2_ll->pl() != &o2->pl());
+
+    // HEALPix rings, whatever the order of the points (cached)
+    std::unique_ptr<const Grid> h2(GridFactory::make_from_string("{grid: h2}"));
+    std::unique_ptr<const Grid> h2n(GridFactory::make_from_string("{grid: h2n}"));
+
+    EXPECT(h2->pl() == std::vector<long>({4, 8, 8, 8, 8, 8, 4}));
+    EXPECT(&h2n->pl() == &h2->pl());
+
+    for (const auto* spec : {"{grid: [10, 10]}", "{grid: f2}"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        EXPECT_THROWS_AS((void)grid->pl(), exception::NotImplemented);
     }
 }
 

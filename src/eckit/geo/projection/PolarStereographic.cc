@@ -30,10 +30,15 @@ PolarStereographic::PolarStereographic(double lat_0, double lat_ts, double lon_0
         throw exception::ProjectionError("PolarStereographic: lat_0 = 90 or -90 expected (polar)", Here());
     }
 
-    const auto e     = figure().eccentricity();
-    const auto phi_c = sign_ * lat_ts * util::DEGREE_TO_RADIAN;
+    if (sign_ * lat_ts < 0.) {
+        throw exception::ProjectionError("PolarStereographic: lat_ts in the hemisphere of the pole expected", Here());
+    }
 
-    k_ = types::is_approximately_equal(lat_ts, lat_0)
+    const auto e     = figure().eccentricity();
+    const auto lat_c = std::abs(lat_ts_);
+    const auto phi_c = lat_c * util::DEGREE_TO_RADIAN;
+
+    k_ = types::is_approximately_equal(lat_c, PointLonLat::RIGHT_ANGLE)
              ? 2. * figure().a() / std::sqrt(std::pow(1. + e, 1. + e) * std::pow(1. - e, 1. - e))
              : figure().a() * conformal_.m(phi_c) / conformal_.t(phi_c);
 }

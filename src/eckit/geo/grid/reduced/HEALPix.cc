@@ -4,18 +4,15 @@
 
 #include "eckit/geo/grid/reduced/HEALPix.h"
 
-#include <algorithm>
 #include <cmath>
 #include <regex>
 #include <utility>
 
+#include "eckit/cache/MemoryCache.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/cache/MemoryCache.h"
-#include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/util.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
 
@@ -23,38 +20,20 @@
 namespace eckit::geo::range {
 
 
-namespace {
-
-
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-}  // namespace
-
-
 class HEALPixLatitude final : public Range {
 public:
 
-    explicit HEALPixLatitude(size_t Nside) : Nside_(Nside) {
-        if (Nside_ == 0) {
-            throw exception::GridError("HEALPix: Nside must be greater than zero", Here());
-        }
-    }
+    explicit HEALPixLatitude(size_t Nside) : Nside_(Nside) {}
 
     [[nodiscard]] HEALPixLatitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        lock_type lock;
-
-        using cache_t = cache::MemoryCacheT<size_t, std::vector<double>>;
+        using cache_t = eckit::cache::MemoryCacheT<size_t, std::vector<double>>;
         const cache_t::key_type key{Nside_};
 
-        static cache_t cache;
-        if (cache.contains(key)) {
-            return cache[key];
+        static cache_t cache(LibEcKitGeo::memoryCaches());
+        if (const auto* cached = cache.find(key)) {
+            return *cached;
         }
 
         const auto Nj = size();
@@ -73,7 +52,7 @@ public:
 
         *i = 0.;
 
-        return (cache[key] = std::move(lats));
+        return cache.insert(key, std::move(lats));
     }
 
     size_t size() const override { return 4 * Nside_ - 1; }
@@ -92,39 +71,33 @@ private:
 class HEALPixLongitude final : public Range {
 public:
 
-    HEALPixLongitude(size_t Nside, size_t j) : Nside_(Nside), j_(j) {
-        ASSERT(Nside_ > 0);
-        ASSERT(j_ < 4 * Nside_ - 1);
-    }
+    HEALPixLongitude(size_t Nside, size_t j, size_t Ni) : Nside_(Nside), j_(j), Ni_(Ni) {}
 
     [[nodiscard]] HEALPixLongitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        lock_type lock;
-
-        using cache_t = cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
+        using cache_t = eckit::cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
         const cache_t::key_type key{Nside_, j_};
 
-        static cache_t cache;
-        if (cache.contains(key)) {
-            return cache[key];
+        static cache_t cache(LibEcKitGeo::memoryCaches());
+        if (const auto* cached = cache.find(key)) {
+            return *cached;
         }
 
-        const auto Ni = size();
-        ASSERT(0 < Ni);
+        std::vector<double> lons(size());
+        for (size_t i = 0; i < lons.size(); ++i) {
+            lons[i] = value(i);
+        }
 
-        const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(Ni);
-        const auto start = j_ < Nside_ || 3 * Nside_ - 1 < j_ || static_cast<bool>((j_ + Nside_) % 2) ? step / 2. : 0.;
-
-        std::vector<double> lons(Ni);
-        std::generate_n(lons.begin(), Ni,
-                        [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
-
-        return (cache[key] = std::move(lons));
+        return cache.insert(key, std::move(lons));
     }
 
-    size_t size() const override {
-        return j_ < Nside_ ? 4 * (j_ + 1) : j_ < 3 * Nside_ ? 4 * Nside_ : 4 * (4 * Nside_ - 1 - j_);
+    size_t size() const override { return Ni_; }
+
+    double value(size_t i) const override {
+        const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(size());
+        const auto start = j_ < Nside_ || 3 * Nside_ - 1 < j_ || static_cast<bool>((j_ + Nside_) % 2) ? step / 2. : 0.;
+        return start + static_cast<double>(i) * step;
     }
 
     double a() const override { return values().front(); }
@@ -134,6 +107,7 @@ private:
 
     const size_t Nside_;
     const size_t j_;
+    const size_t Ni_;
 };
 
 
@@ -146,54 +120,74 @@ namespace eckit::geo::grid::reduced {
 static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 
+static const pl_type& healpix_pl(size_t Nside) {
+    if (Nside == 0) {
+        throw exception::GridError("HEALPix: Nside must be greater than zero", Here());
+    }
+
+    static eckit::cache::MemoryCacheT<size_t, pl_type> cache(LibEcKitGeo::memoryCaches());
+    if (const auto* cached = cache.find(Nside)) {
+        return *cached;
+    }
+
+    // rings of 4 to 4 Nside points (polar caps), and of 4 Nside points (equatorial belt)
+    pl_type pl(4 * Nside - 1, static_cast<pl_type::value_type>(4 * Nside));
+    for (size_t j = 0; j < Nside; ++j) {
+        pl[j] = pl[pl.size() - 1 - j] = static_cast<pl_type::value_type>(4 * (j + 1));
+    }
+
+    return cache.insert(Nside, std::move(pl));
+}
+
+
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default()),
-            bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+            bounding_box_from_spec(spec), projection_from_spec(spec)) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projection* p) :
-    Reduced(bbox, p), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
-    ASSERT(y_);
+HEALPix::HEALPix(size_t Nside, order_type order, std::unique_ptr<BoundingBox> bbox,
+                 std::unique_ptr<const Projection> p) :
+    Reduced(PL::cached(healpix_pl(Nside)), std::move(bbox), std::move(p)),
+    order_(Nside, order),
+    y_(new range::HEALPixLatitude(Nside)) {}
+
+
+Grid* HEALPix::make_grid_reordered(const order_type& to) const {
+    return new HEALPix(Nside(), to, std::make_unique<BoundingBox>(boundingBox()), projection_copy());
 }
 
 
-Grid::iterator HEALPix::cbegin() const {
-    if (order_.order() == order::HEALPix::RING) {
-        return iterator{new geo::iterator::Reduced(*this, 0)};
+/// Nested order: no row to remember, as consecutive points jump across rings (the row is by the nested index)
+struct HEALPix::Nested final : Iterator::State {
+    explicit Nested(const HEALPix& grid) :
+        grid_(grid), projection_(grid.projection()), latitudes_(grid.latitudes()), renumber_(grid.order_.renumber()) {}
+
+    Point point(size_t index) override {
+        const auto [j, i] = renumber_.nest_to_row(index);
+        return projection_.from_grid_xy(grid_.longitude(j, i), latitudes_.at(j));
     }
 
-    // order=nested: cache full latitudes/longitudes for the unstructured iterator
-    if (nested_latitudes_.empty()) {
-        const auto ren = order::HEALPix{}.reorder(order(), Nside_);
+    std::unique_ptr<Iterator::State> clone() const override { return std::make_unique<Nested>(*this); }
 
-        nested_latitudes_.resize(size());
-        nested_longitudes_.resize(size());
+    const HEALPix& grid_;
+    const Projection& projection_;
+    const std::vector<double>& latitudes_;
+    const order::HEALPix::Renumber& renumber_;
+};
 
-        const auto& latvec = latitudes();
-        for (size_t j = 0, k = 0; j < latvec.size(); ++j) {
-            for (const auto lon : longitudes(j)) {
-                nested_latitudes_[ren.at(k)]  = latvec[j];
-                nested_longitudes_[ren.at(k)] = lon;
-                ++k;
-            }
-        }
-    }
 
-    return iterator{new geo::iterator::Unstructured(*this, 0, nested_longitudes_, nested_latitudes_)};
+Point HEALPix::point(size_t index) const {
+    return is_order_nested() ? Nested(*this).point(index) : Reduced::point(index);
 }
 
 
-Grid::iterator HEALPix::cend() const {
-    if (order_.order() == order::HEALPix::RING) {
-        return iterator{new geo::iterator::Reduced(*this, size())};
-    }
-    return iterator{new geo::iterator::Unstructured(*this)};
+std::unique_ptr<Grid::Iterator::State> HEALPix::make_state() const {
+    return is_order_nested() ? std::make_unique<Nested>(*this) : Reduced::make_state();
 }
 
 
 size_t HEALPix::nxj(size_t j) const {
-    ASSERT(j < ny());
-    return j < Nside_ ? 4 * (j + 1) : j < 3 * Nside_ ? 4 * Nside_ : nxj(ny() - 1 - j);
+    return static_cast<size_t>(pl().at(j));
 }
 
 
@@ -226,29 +220,7 @@ size_t HEALPix::nside_from_size(size_t size) {
 
 
 size_t HEALPix::size() const {
-    return size_from_nside(Nside_);
-}
-
-
-std::vector<Point> HEALPix::to_points() const {
-    // This isn't very efficient
-    std::vector<Point> points;
-    points.reserve(size());
-
-    if (!nested_latitudes_.empty() || !nested_longitudes_.empty()) {
-        ASSERT(nested_latitudes_.size() == size() && nested_longitudes_.size() == size());
-        for (size_t i = 0; i < size(); ++i) {
-            points.emplace_back(PointLonLat{nested_longitudes_[i], nested_latitudes_[i]});
-        }
-        return points;
-    }
-
-    auto [lats, lons] = to_latlons();
-    for (size_t i = 0; i < size(); ++i) {
-        points.emplace_back(PointLonLat{lons[i], lats[i]});
-    }
-
-    return points;
+    return size_from_nside(Nside());
 }
 
 
@@ -258,7 +230,12 @@ const std::vector<double>& HEALPix::latitudes() const {
 
 
 const std::vector<double>& HEALPix::longitudes(size_t j) const {
-    return range::HEALPixLongitude{Nside_, j}.values();
+    return range::HEALPixLongitude{Nside(), j, nxj(j)}.values();
+}
+
+
+double HEALPix::longitude(size_t j, size_t i) const {
+    return range::HEALPixLongitude{Nside(), j, nxj(j)}.value(i);
 }
 
 

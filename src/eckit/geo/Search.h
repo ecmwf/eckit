@@ -15,12 +15,12 @@
 #include "eckit/spec/Custom.h"
 
 
+namespace eckit::cache {
+class FileCache;
+}
 namespace eckit::geo {
 class Grid;
-namespace cache {
-class SearchCache;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -32,9 +32,10 @@ namespace eckit::geo {
  * @details Points are geocentric (X, Y, Z): grid points as Grid::to_xyz, and queries either (X, Y, Z) or (lon, lat) on
  * the same figure. Distances are chord lengths (metres, on the Earth). Results are by increasing distance, then index.
  *
- * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius), search-k, search-radius.
- * Spec, of the k-d tree: search-loader (see search::KDTreeFactory), caching, search-fast-build (defaults in
- * LibEcKitGeo).
+ * Spec, of the behaviour: search (nn, knn, radius, knn_or_radius, knn_and_radius, knn_or_same_radius), search-k,
+ * search-radius, search-tolerance (metres, default 1).
+ * Spec, of the k-d tree: search-fast-build (default LibEcKitGeo::searchFastBuild); its storage (loader and cache files)
+ * is of the library (see Storage::library) unless given.
  */
 class Search {
 public:
@@ -43,13 +44,22 @@ public:
 
     using Neighbour   = geo::search::Neighbour;
     using Neighbours  = geo::search::Neighbours;
-    using MemoryUsage = cache::MemoryUsage;
+    using MemoryUsage = eckit::cache::MemoryUsage;
     using Spec        = spec::Spec;
+
+    /// Where k-d trees are kept: in process memory, or in cache files loaded by a loader (see eckit::cache::Loader)
+    struct Storage {
+        std::string loader;
+        const eckit::cache::FileCache& files;
+
+        /// As the library: LibEcKitGeo::searchCacheLoader, in cache::SearchCache::file_cache
+        static const Storage& library();
+    };
 
     // -- Constructors
 
-    explicit Search(const Grid&, const Spec& = spec::Custom{});
-    explicit Search(const std::vector<PointXYZ>&, const Spec& = spec::Custom{});
+    explicit Search(const Grid&, const Spec& = spec::Custom{}, const Storage& = Storage::library());
+    explicit Search(const std::vector<PointXYZ>&, const Spec& = spec::Custom{}, const Storage& = Storage::library());
 
     /// Sharing the k-d tree of another search, with another behaviour
     Search(const Search&, const Spec&);
@@ -71,11 +81,20 @@ public:
     /// As configured (spec)
     Neighbours search(const Point&) const;
 
+    /// As configured, for many points (queried in search::KDTree::query_order); @return neighbours in point order
+    std::vector<Neighbours> search(const std::vector<Point>&) const;
+
     Neighbour search_nn(const Point&) const;
     Neighbours search_knn(const Point&, size_t k) const;
     Neighbours search_radius(const Point&, double radius) const;
     Neighbours search_knn_or_radius(const Point&, size_t k, double radius) const;
     Neighbours search_knn_and_radius(const Point&, size_t k, double radius) const;
+
+    /**
+     * k nearest points or, if all as near (within tolerance, metres), all points as near, not an arbitrary k of them
+     * (e.g. at a pole)
+     */
+    Neighbours search_knn_or_same_radius(const Point&, size_t k, double tolerance = 1.) const;
 
     size_t size() const;
 
@@ -83,14 +102,26 @@ public:
 
     const geo::search::KDTree& kdtree() const;
 
+    // -- Class methods
+
+    /// k-d tree identifier of a grid: its points, on the figure they are converted on (see Grid::to_xyz)
+    static std::string uid(const Grid&);
+
+    /// k-d tree configuration, so searches of other behaviours can share it
+    static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
+
+    /// Footprint of a search of size points, before building or loading it
+    static MemoryUsage estimate(size_t size, const Storage& = Storage::library());
+
+    /// If the spec sets a behaviour, so the search is not the shared one as is
+    static bool spec_has_behaviour(const Spec&);
+
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const Search& s) {
         s.print(out);
         return out;
     }
-
-    friend class cache::SearchCache;
 
 private:
 
@@ -102,6 +133,7 @@ private:
         RADIUS,
         KNN_OR_RADIUS,
         KNN_AND_RADIUS,
+        KNN_OR_SAME_RADIUS,
     };
 
     /// k-d tree and (lon, lat) conversion, shareable between searches
@@ -111,29 +143,20 @@ private:
 
     std::shared_ptr<Shared> shared_;
 
-    Mode mode_     = Mode::NN;
-    size_t k_      = 0;
-    double radius_ = 0.;
+    Mode mode_        = Mode::NN;
+    size_t k_         = 0;
+    double radius_    = 0.;
+    double tolerance_ = 1.;
 
     // -- Methods
 
     void configure(const Spec&);
 
-    template <typename Fill>
-    void build(const std::string& uid, size_t size, const Spec&, const Fill&);
+    void build(const std::string& uid, size_t size, const Spec&, const Storage&, const search::KDTree::Fill&);
 
     PointXYZ to_xyz(const Point&) const;
 
     void print(std::ostream&) const;
-
-    // -- Class methods
-
-    /// k-d tree configuration, so searches of other behaviours can share it
-    static std::unique_ptr<spec::Custom> spec_kdtree(const Spec&);
-
-    /// Footprint of a search of size points, before building or loading it
-    static MemoryUsage estimate(size_t size, const Spec&);
-    static bool spec_has_behaviour(const Spec&);
 };
 
 

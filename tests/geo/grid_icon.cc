@@ -11,6 +11,7 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::test {
@@ -44,6 +45,14 @@ CASE("spec") {
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid1 == *grid3);
     EXPECT(*grid1 == grid4);
+
+    // uids in any case
+    grid::unstructured::ICON upper(StringTools::upper(UID));
+    EXPECT(upper.uid() == UID);
+    EXPECT(*grid1 == upper);
+
+    std::unique_ptr<spec::Spec> upper_spec(grid::unstructured::ICON::spec(StringTools::upper(UID)));
+    EXPECT(upper_spec->get_string("uid") == UID);
 }
 
 
@@ -78,6 +87,16 @@ CASE("equals") {
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == grid4);
     EXPECT(grid4 == *grid1);
+}
+
+
+CASE("first and last points") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{uid:" + UID + "}"));
+
+    EXPECT(points_equal(grid->first_point(), grid->point(0)));
+    EXPECT(points_equal(grid->first_point(), *grid->begin()));
+    EXPECT(points_equal(grid->last_point(), grid->point(grid->size() - 1)));
+    EXPECT(points_equal(grid->last_point(), grid->to_points().back()));
 }
 
 

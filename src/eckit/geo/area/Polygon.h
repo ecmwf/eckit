@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Area.h"
@@ -28,10 +29,10 @@ public:
     explicit Polygon(const Area::Spec&);
 
     Polygon(const Polygon& other) : Area(other), container_type(other) {}
-    Polygon(Polygon&& other) : Area(other), container_type(other) {}
+    Polygon(Polygon&& other) : Area(std::move(other)), container_type(std::move(other)) {}
 
     Polygon(const container_type& cont) : vector(cont) {}
-    Polygon(container_type&& cont) : vector(cont) {}
+    Polygon(container_type&& cont) : vector(std::move(cont)) {}
 
     // -- Destructor
 
@@ -40,11 +41,13 @@ public:
     // -- Operators
 
     Polygon& operator=(const Polygon& other) {
+        Area::operator=(other);
         container_type::operator=(other);
         return *this;
     }
 
     Polygon& operator=(Polygon&& other) {
+        Area::operator=(other);
         container_type::operator=(other);
         return *this;
     }

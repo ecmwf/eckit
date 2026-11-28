@@ -73,6 +73,11 @@ public:
     [[nodiscard]] static Fraction adjust(const Fraction& value, const Fraction& inc, const Fraction& ref, bool up,
                                          double precision = 0.);
 
+    /// As above, of the values as fractions
+    [[nodiscard]] static double adjust(double value, double inc, double ref, bool up, double precision = 0.) {
+        return adjust(Fraction{value}, Fraction{inc}, Fraction{ref}, up, precision);
+    }
+
     // -- Methods
 
     Fraction shift() const { return impl_->shift_; }

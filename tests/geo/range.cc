@@ -618,6 +618,12 @@ CASE("range::Regular::adjust") {
     EXPECT(Regular::adjust(Fraction(1, 1000000), Fraction(3, 1000000), Fraction(0), false, precision) == 0);
 
     EXPECT_THROWS_AS(Regular::adjust(Fraction(1), Fraction(0), Fraction(0), true), AssertionFailed);
+
+    // of the values as fractions
+    EXPECT(Regular::adjust(2.5, 1., 0., true) == 3.);
+    EXPECT(Regular::adjust(-2.5, 1., 0., false) == -3.);
+    EXPECT(Regular::adjust(80.039062, 30. / 128., 15. / 128., true, precision) == 10245. / 128.);
+    EXPECT(Regular::adjust(80.039063, 30. / 128., 15. / 128., true) == 10275. / 128.);
 }
 
 

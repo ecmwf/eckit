@@ -180,6 +180,10 @@ public:
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
 
+    /// Renumbering of the points numbered in an order (of this grid's points, e.g. of values held in another order) to
+    /// another order
+    virtual renumber_type reorder(const order_type& from, const order_type& to) const;
+
     virtual const Area& area() const;
     virtual renumber_type crop(const Area&) const;
 

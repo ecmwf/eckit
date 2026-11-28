@@ -114,6 +114,11 @@ Grid::renumber_type Regular::reorder(const order_type& to) const {
 }
 
 
+Grid::renumber_type Regular::reorder(const order_type& from, const order_type& to) const {
+    return order::RegularScan{from}.reorder(to, nx(), ny());
+}
+
+
 Grid* Regular::make_grid_cropped(const Area& area) const {
     auto* cropped = regular_cropped(area);
     return cropped != nullptr ? cropped : make_grid_cropped_unstructured_ll(area);
